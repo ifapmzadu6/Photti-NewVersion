@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "71E884FD19115C7E005A78E0"
-               BuildableName = "PicasaWebAlbum.app"
-               BlueprintName = "PicasaWebAlbum"
-               ReferencedContainer = "container:PicasaWebAlbum.xcodeproj">
+               BlueprintIdentifier = "4F1AD9010B71603F00DC0485"
+               BuildableName = "DevelopmentTestTool"
+               BlueprintName = "DevelopmentTestTool"
+               ReferencedContainer = "container:GData.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -28,24 +28,14 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "71E8852119115C7E005A78E0"
-               BuildableName = "PicasaWebAlbumTests.xctest"
-               BlueprintName = "PicasaWebAlbumTests"
-               ReferencedContainer = "container:PicasaWebAlbum.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "71E884FD19115C7E005A78E0"
-            BuildableName = "PicasaWebAlbum.app"
-            BlueprintName = "PicasaWebAlbum"
-            ReferencedContainer = "container:PicasaWebAlbum.xcodeproj">
+            BlueprintIdentifier = "4F1AD9010B71603F00DC0485"
+            BuildableName = "DevelopmentTestTool"
+            BlueprintName = "DevelopmentTestTool"
+            ReferencedContainer = "container:GData.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -61,10 +51,10 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "71E884FD19115C7E005A78E0"
-            BuildableName = "PicasaWebAlbum.app"
-            BlueprintName = "PicasaWebAlbum"
-            ReferencedContainer = "container:PicasaWebAlbum.xcodeproj">
+            BlueprintIdentifier = "4F1AD9010B71603F00DC0485"
+            BuildableName = "DevelopmentTestTool"
+            BlueprintName = "DevelopmentTestTool"
+            ReferencedContainer = "container:GData.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -79,10 +69,10 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "71E884FD19115C7E005A78E0"
-            BuildableName = "PicasaWebAlbum.app"
-            BlueprintName = "PicasaWebAlbum"
-            ReferencedContainer = "container:PicasaWebAlbum.xcodeproj">
+            BlueprintIdentifier = "4F1AD9010B71603F00DC0485"
+            BuildableName = "DevelopmentTestTool"
+            BlueprintName = "DevelopmentTestTool"
+            ReferencedContainer = "container:GData.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

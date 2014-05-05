@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13C1021" minimumToolsVersion="Xcode 4.5" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="PWAlbumManagedObject" representedClassName="Album" syncable="YES">
+        <attribute name="author_name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="author_url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="category_scheme" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="category_term" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="edited" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="id_str" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="numphotos" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="published" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="rights" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="summary" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="updated" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userid" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="gphoto" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWGPhotoManagedObject" inverseName="album" inverseEntity="PWGPhotoManagedObject" syncable="YES"/>
+        <relationship name="link" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PWLinkManagedObject" inverseName="album" inverseEntity="PWLinkManagedObject" syncable="YES"/>
+        <relationship name="media" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWMediaManagedObject" inverseName="album" inverseEntity="PWMediaManagedObject" syncable="YES"/>
+    </entity>
+    <entity name="PWGPhotoManagedObject" representedClassName="PWGPhotoObject" syncable="YES">
+        <attribute name="access" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="albumid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="albumType" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="allowDownloads" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="allowPrints" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="bytesUsed" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="checksum" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="commentCount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="commentingEnabled" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="height" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="id_str" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="imageVersion" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="license_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="license_name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="license_text" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="license_url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="location" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="nickname" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="numphotos" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="numphotosremaining" optional="YES" attributeType="Integer 32" syncable="YES"/>
+        <attribute name="originalvideo_audioCodec" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="originalvideo_channels" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="originalvideo_duration" optional="YES" attributeType="Double" defaultValueString="0" syncable="YES"/>
+        <attribute name="originalvideo_fps" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="originalvideo_height" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="originalvideo_samplingrate" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="originalvideo_type" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="originalvideo_videoCodec" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="originalvideo_width" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="shapes" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="size" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="streamId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="user" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="videostatus" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="width" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="album" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWAlbumManagedObject" inverseName="gphoto" inverseEntity="PWAlbumManagedObject" syncable="YES"/>
+        <relationship name="photo" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWPhotoManagedObject" inverseName="gphoto" inverseEntity="PWPhotoManagedObject" syncable="YES"/>
+    </entity>
+    <entity name="PWLinkManagedObject" representedClassName="PWPhotoLinkObject" syncable="YES">
+        <attribute name="href" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="rel" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="album" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PWAlbumManagedObject" inverseName="link" inverseEntity="PWAlbumManagedObject" syncable="YES"/>
+        <relationship name="photo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PWPhotoManagedObject" inverseName="link" inverseEntity="PWPhotoManagedObject" syncable="YES"/>
+    </entity>
+    <entity name="PWMediaContentManagedObject" representedClassName="PWPhotoMediaContentObject" syncable="YES">
+        <attribute name="height" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="medium" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="width" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="media" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWMediaManagedObject" inverseName="content" inverseEntity="PWMediaManagedObject" syncable="YES"/>
+    </entity>
+    <entity name="PWMediaManagedObject" representedClassName="PWPhotoMediaObject" syncable="YES">
+        <attribute name="credit" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="keywords" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="album" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PWAlbumManagedObject" inverseName="media" inverseEntity="PWAlbumManagedObject" syncable="YES"/>
+        <relationship name="content" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PWMediaContentManagedObject" inverseName="media" inverseEntity="PWMediaContentManagedObject" syncable="YES"/>
+        <relationship name="photo" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWPhotoManagedObject" inverseName="media" inverseEntity="PWPhotoManagedObject" syncable="YES"/>
+        <relationship name="thumbnail" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PWMediaThumbnailManagedObject" inverseName="media" inverseEntity="PWMediaThumbnailManagedObject" syncable="YES"/>
+    </entity>
+    <entity name="PWMediaThumbnailManagedObject" representedClassName="PWPhotoMediaThumbnailObject" syncable="YES">
+        <attribute name="height" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="width" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="media" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PWMediaManagedObject" inverseName="thumbnail" inverseEntity="PWMediaManagedObject" syncable="YES"/>
+    </entity>
+    <entity name="PWPhotoExitManagedObject" representedClassName="PWPhotoExitObject" syncable="YES">
+        <attribute name="distance" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exposure" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="flash" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="focallength" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fstop" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="imageUniqueID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="iso" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="make" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="model" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="photo" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWPhotoManagedObject" inverseName="exif" inverseEntity="PWPhotoManagedObject" syncable="YES"/>
+    </entity>
+    <entity name="PWPhotoManagedObject" representedClassName="PWPhotoObject" syncable="YES">
+        <attribute name="app_edited" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="category_cheme" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="category_term" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="content_src" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="content_type" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="id_str" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="published" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="rights" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="summary" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="updated" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="exif" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWPhotoExitManagedObject" inverseName="photo" inverseEntity="PWPhotoExitManagedObject" syncable="YES"/>
+        <relationship name="gphoto" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWGPhotoManagedObject" inverseName="photo" inverseEntity="PWGPhotoManagedObject" syncable="YES"/>
+        <relationship name="link" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="PWLinkManagedObject" inverseName="photo" inverseEntity="PWLinkManagedObject" syncable="YES"/>
+        <relationship name="media" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWMediaManagedObject" inverseName="photo" inverseEntity="PWMediaManagedObject" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="PWAlbumManagedObject" positionX="-63" positionY="-18" width="128" height="313"/>
+        <element name="PWGPhotoManagedObject" positionX="-36" positionY="54" width="128" height="628"/>
+        <element name="PWPhotoExitManagedObject" positionX="18" positionY="180" width="128" height="208"/>
+        <element name="PWLinkManagedObject" positionX="0" positionY="171" width="128" height="118"/>
+        <element name="PWMediaContentManagedObject" positionX="-45" positionY="36" width="128" height="135"/>
+        <element name="PWMediaManagedObject" positionX="-36" positionY="81" width="128" height="148"/>
+        <element name="PWMediaThumbnailManagedObject" positionX="-27" positionY="72" width="128" height="103"/>
+        <element name="PWPhotoManagedObject" positionX="-54" positionY="45" width="128" height="268"/>
+    </elements>
+</model>
