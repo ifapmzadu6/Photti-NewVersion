@@ -34,7 +34,6 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 
 + (BOOL)isLogin {
     GTMOAuth2Authentication *auth = [PWOAuthManager authentication];
-    
     BOOL isLogin = [auth canAuthorize];
     if (!isLogin) {
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:auth.tokenURL];
@@ -52,11 +51,38 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 
 + (UINavigationController *)loginViewControllerWithCompletionHandler:(GTMOAuth2ViewControllerCompletionHandler)completionHandler {
     GTMOAuth2ViewControllerTouch *viewController = [GTMOAuth2ViewControllerTouch controllerWithScope:PWScope clientID:PWClientID clientSecret:PWClientSecret keychainItemName:PWKeyChainItemName completionHandler:completionHandler];
+    viewController.automaticallyAdjustsScrollViewInsets = NO;
+    for (UIView *view in viewController.view.subviews) {
+        if ([view isKindOfClass:[UIWebView class]]) {
+            UIWebView *webView = (UIWebView *)view;
+            webView.scrollView.contentInset = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
+            webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
+        }
+    }
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     navigationController.view.backgroundColor = [UIColor whiteColor];
+    navigationController.automaticallyAdjustsScrollViewInsets = NO;
     
     return navigationController;
+}
+
++ (void)authorizeActionWithViewController:(UIViewController *)viewController actionBlock:(void (^)())actionBlock {
+    if ([PWOAuthManager isLogin]) {
+        if (actionBlock) {
+            actionBlock();
+        }
+    }
+    else {
+        UINavigationController *navigationController = [PWOAuthManager loginViewControllerWithCompletionHandler:^(GTMOAuth2ViewControllerTouch *viewController, GTMOAuth2Authentication *auth, NSError *error) {
+            [viewController dismissViewControllerAnimated:YES completion:^{
+                if (actionBlock) {
+                    actionBlock();
+                }
+            }];
+        }];
+        [viewController presentViewController:navigationController animated:YES completion:nil];
+    }
 }
 
 + (void)logout {

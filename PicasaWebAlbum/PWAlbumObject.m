@@ -24,6 +24,7 @@
 @dynamic category_term;
 @dynamic published;
 @dynamic rights;
+@dynamic sortIndex;
 @dynamic summary;
 @dynamic title;
 @dynamic updated;

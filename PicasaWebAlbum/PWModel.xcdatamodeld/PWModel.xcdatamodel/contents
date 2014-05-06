@@ -10,6 +10,7 @@
         <attribute name="numphotos" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="published" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="rights" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sortIndex" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="summary" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
@@ -78,6 +79,7 @@
     </entity>
     <entity name="PWMediaManagedObject" representedClassName="PWPhotoMediaObject" syncable="YES">
         <attribute name="credit" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="description_text" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="keywords" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="album" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PWAlbumManagedObject" inverseName="media" inverseEntity="PWAlbumManagedObject" syncable="YES"/>
@@ -111,8 +113,10 @@
         <attribute name="content_src" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="content_type" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id_str" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="pos" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="published" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="rights" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sortIndex" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="summary" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="updated" optional="YES" attributeType="String" syncable="YES"/>
@@ -122,13 +126,13 @@
         <relationship name="media" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWMediaManagedObject" inverseName="photo" inverseEntity="PWMediaManagedObject" syncable="YES"/>
     </entity>
     <elements>
-        <element name="PWAlbumManagedObject" positionX="-63" positionY="-18" width="128" height="313"/>
+        <element name="PWAlbumManagedObject" positionX="-63" positionY="-18" width="128" height="330"/>
         <element name="PWGPhotoManagedObject" positionX="-36" positionY="54" width="128" height="628"/>
-        <element name="PWPhotoExitManagedObject" positionX="18" positionY="180" width="128" height="208"/>
         <element name="PWLinkManagedObject" positionX="0" positionY="171" width="128" height="118"/>
         <element name="PWMediaContentManagedObject" positionX="-45" positionY="36" width="128" height="135"/>
-        <element name="PWMediaManagedObject" positionX="-36" positionY="81" width="128" height="148"/>
+        <element name="PWMediaManagedObject" positionX="-36" positionY="81" width="128" height="163"/>
         <element name="PWMediaThumbnailManagedObject" positionX="-27" positionY="72" width="128" height="103"/>
-        <element name="PWPhotoManagedObject" positionX="-54" positionY="45" width="128" height="268"/>
+        <element name="PWPhotoExitManagedObject" positionX="18" positionY="180" width="128" height="208"/>
+        <element name="PWPhotoManagedObject" positionX="-54" positionY="45" width="128" height="298"/>
     </elements>
 </model>

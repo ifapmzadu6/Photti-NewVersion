@@ -24,6 +24,7 @@
 @property (nonatomic, retain) NSString * category_term;
 @property (nonatomic, retain) NSString * published;
 @property (nonatomic, retain) NSString * rights;
+@property (nonatomic, retain) NSNumber * sortIndex;
 @property (nonatomic, retain) NSString * summary;
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSString * updated;

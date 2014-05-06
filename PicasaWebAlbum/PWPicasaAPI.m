@@ -2,103 +2,161 @@
 //  PWPicasaAPI.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/05/01.
+//  Created by Keisuke Karijuku on 2014/05/06.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
 #import "PWPicasaAPI.h"
 
-#import "PWOAuthManager.h"
+#import "PWPicasaGETRequest.h"
+#import "PWPicasaParser.h"
+#import "XmlReader.h"
 
-static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/api/user/default";
-static NSString * const PWPhotoURL = @"https://picasaweb.google.com/data/feed/api/user/defalut/albumid/6008134399656118257/photoid/6008268666980154946";
+#define NULL_TO_NIL(obj) ({ __typeof__ (obj) __obj = (obj); __obj == [NSNull null] ? nil : obj; })
 
-@interface PWPicasaAPI ()
-
-@end
+NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
 
 @implementation PWPicasaAPI
 
-+ (void)getListOfAlbumsWithCompletionHandler:(void (^)(NSData *, NSURLResponse *, NSError *))completionHandler {
-    NSURL *url = [PWPicasaAPI urlWithUrlString:PWGETListURL param:nil];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    request.allHTTPHeaderFields = [PWPicasaAPI httpHeaderFields];
++ (void)getListOfAlbumsWithIndex:(NSUInteger)index completion:(void (^)(NSArray *, NSUInteger, NSError *))completion {
+    if (index == NSUIntegerMax) {
+        return;
+    }
+    NSInteger apiIndex = index + 1;
     
-    [PWPicasaAPI authorizedGETRequest:request completionHandler:completionHandler];
-}
-
-+ (void)getListOfPhotosInAlbumWithAlbumID:(NSString *)albumID completionHandler:(void (^)(NSData *, NSURLResponse *, NSError *))completionHandler {
-    NSString *urlString = [NSString stringWithFormat:@"%@/albumid/%@", PWGETListURL, albumID];
-    NSURL *url = [PWPicasaAPI urlWithUrlString:urlString param:nil];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    request.allHTTPHeaderFields = [PWPicasaAPI httpHeaderFields];
-    
-    [PWPicasaAPI authorizedGETRequest:request completionHandler:completionHandler];
-}
-
-+ (void)getPhotoWithAlbumID:(NSString *)albumID photoID:(NSString *)photoID completionHandler:(void (^)(NSData *, NSURLResponse *, NSError *))completionHandler {
-    NSString *urlString = [NSString stringWithFormat:@"%@/albumid/%@/photoid/%@", PWGETListURL, albumID, photoID];
-    NSURL *url = [PWPicasaAPI urlWithUrlString:urlString param:nil];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    request.allHTTPHeaderFields = [PWPicasaAPI httpHeaderFields];
-    
-    [PWPicasaAPI authorizedGETRequest:request completionHandler:completionHandler];
-}
-
-+ (void)getTestAccessURL:(NSString *)urlString completionHandler:(void (^)(NSData *, NSURLResponse *, NSError *))completionHandler {
-    NSURL *url = [PWPicasaAPI urlWithUrlString:urlString param:nil];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    request.allHTTPHeaderFields = [PWPicasaAPI httpHeaderFields];
-    
-    [PWPicasaAPI authorizedGETRequest:request completionHandler:completionHandler];
-}
-
-+ (void)authorizedGETRequest:(NSMutableURLRequest *)request completionHandler:(void (^)(NSData *, NSURLResponse *, NSError *))completionHandler {
-    
-    GTMOAuth2Authentication *auth = [PWOAuthManager authentication];
-    [auth authorizeRequest:request completionHandler:^(NSError *error) {
+    [PWPicasaGETRequest getListOfAlbumsWithIndex:apiIndex completion:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
-            if (completionHandler) {
-                completionHandler(nil, nil, error);
+            if (completion) {
+                completion(nil, index, error);
             }
             return;
         }
         
-        NSURLSession *session = [NSURLSession sharedSession];
-        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            if (error) {
-                if (completionHandler) {
-                    completionHandler(nil, nil, error);
-                }
-                return;
-            }
+        if (data) {
+            NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+//            NSLog(@"%@", json.description);
             
-            completionHandler(data, response, nil);
-        }];
-        [task resume];
+            [PWCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+                NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
+                NSDictionary *startIndexDic = NULL_TO_NIL(feed[@"openSearch:startIndex"]);
+                NSDictionary *totalResultsDic = NULL_TO_NIL(feed[@"openSearch:totalResults"]);
+                if (totalResultsDic && startIndexDic) {
+                    NSString *startIndex = NULL_TO_NIL(startIndexDic[@"text"]);
+                    if ([startIndex longLongValue] != apiIndex) {
+                        if (completion) {
+                            completion(nil, 0, [PWPicasaAPI parserError]);
+                        }
+                    }
+                    
+                    NSString *totalResults = NULL_TO_NIL(totalResultsDic[@"text"]);
+                    if ([totalResults longLongValue] > 0) {
+                        NSArray *albums = [PWPicasaParser parseListOfAlbumFromJson:json context:context];
+                        if (!albums) {
+                            if (completion) {
+                                completion(nil, 0, [PWPicasaAPI parserError]);
+                            }
+                            return;
+                        }
+                        for (PWAlbumObject *album in albums) {
+                            album.sortIndex = @([startIndex integerValue] + [albums indexOfObject:album]);
+                        }
+                        
+                        NSError *coreDataError = nil;
+                        [context save:&coreDataError];
+                        if (coreDataError) {
+                            if (completion) {
+                                completion(nil, 0, [PWPicasaAPI coreDataError]);
+                            }
+                        }
+                        
+                        if (completion) {
+                            completion(albums, index + [totalResults integerValue], nil);
+                        }
+                    }
+                }
+                else {
+                    if (completion) {
+                        completion(nil, 0, [PWPicasaAPI parserError]);
+                    }
+                }
+            }];
+        }
     }];
 }
 
-+ (NSURL *)urlWithUrlString:(NSString *)urlString param:(NSDictionary *)param {
-    if (!param) {
-        return [NSURL URLWithString:urlString];
++ (void)getListOfPhotosInAlbumWithAlbumID:(NSString *)albumID index:(NSUInteger)index completion:(void (^)(NSArray *, NSUInteger, NSError *))completion {
+    if (index == NSUIntegerMax) {
+        return;
     }
+    NSInteger apiIndex = index + 1;
     
-    NSString *tmpUrlString = urlString.copy;
-    if (param.count > 0) {
-        for (NSString *key in param.allKeys) {
-            tmpUrlString = [NSString stringWithFormat:@"%@&%@=%@", tmpUrlString, key, param[key]];
+    [PWPicasaGETRequest getListOfPhotosInAlbumWithAlbumID:albumID index:apiIndex completion:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (error) {
+            if (completion) {
+                completion(nil, index, error);
+            }
+            return;
         }
-    }
-    
-    NSURL *url = [NSURL URLWithString:tmpUrlString];
-    return url;
+        
+        if (data) {
+            NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+//            NSLog(@"%@", json.description);
+            
+            [PWCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+                NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
+                NSDictionary *startIndexDic = NULL_TO_NIL(feed[@"openSearch:startIndex"]);
+                NSDictionary *totalResultsDic = NULL_TO_NIL(feed[@"openSearch:totalResults"]);
+                if (totalResultsDic && startIndexDic) {
+                    NSString *startIndex = NULL_TO_NIL(startIndexDic[@"text"]);
+                    if ([startIndex longLongValue] != apiIndex) {
+                        if (completion) {
+                            completion(nil, 0, [PWPicasaAPI parserError]);
+                        }
+                    }
+                    
+                    NSString *totalResults = NULL_TO_NIL(totalResultsDic[@"text"]);
+                    if ([totalResults longLongValue] > 0) {
+                        NSArray *photos = [PWPicasaParser parseListOfPhotoFromJson:json context:context];
+                        if (!photos) {
+                            if (completion) {
+                                completion(nil, 0, [PWPicasaAPI parserError]);
+                            }
+                            return;
+                        }
+                        for (PWPhotoObject *photo in photos) {
+                            photo.sortIndex = @([startIndex integerValue] + [photos indexOfObject:photo]);
+                        }
+                        
+                        NSError *coreDataError = nil;
+                        [context save:&coreDataError];
+                        if (coreDataError) {
+                            if (completion) {
+                                completion(nil, 0, [PWPicasaAPI coreDataError]);
+                            }
+                        }
+                        
+                        if (completion) {
+                            completion(photos, index + [totalResults integerValue], nil);
+                        }
+                    }
+                }
+                else {
+                    if (completion) {
+                        completion(nil, 0, [PWPicasaAPI parserError]);
+                    }
+                }
+            }];
+        }
+    }];
 }
 
-+ (NSDictionary *)httpHeaderFields {
-    NSDictionary *headerFields = @{@"GData-Version": @"2"};
-    
-    return headerFields;
+
++ (NSError *)parserError {
+    return [[NSError alloc] initWithDomain:PWParserErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: @"[ERROR] Parser Error from Picasa JSON!"}];
+}
+
++ (NSError *)coreDataError {
+    return [[NSError alloc] initWithDomain:PWParserErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: @"[ERROR] CoreData Context Error!"}];
 }
 
 @end

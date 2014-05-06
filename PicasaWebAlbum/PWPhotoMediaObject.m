@@ -15,10 +15,23 @@
 @implementation PWPhotoMediaObject
 
 @dynamic credit;
+@dynamic description_text;
 @dynamic keywords;
 @dynamic title;
 @dynamic content;
 @dynamic photo;
 @dynamic thumbnail;
+
+- (void)addContentObject:(PWPhotoMediaContentObject *)value {
+    NSMutableSet *tempSet = [NSMutableSet setWithSet:self.content];
+    [tempSet addObject:value];
+    self.content = tempSet;
+}
+
+- (void)addThumbnailObject:(PWPhotoMediaThumbnailObject *)value {
+    NSMutableSet *tempSet = [NSMutableSet setWithSet:self.thumbnail];
+    [tempSet addObject:value];
+    self.thumbnail = tempSet;
+}
 
 @end

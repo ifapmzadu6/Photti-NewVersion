@@ -22,15 +22,20 @@
     if (!json) return nil;
 //    NSLog(@"%@", json);
     
-    NSDictionary *feed = json[@"feed"];
+    NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
     if (!feed) return nil;
-    NSArray *entries = feed[@"entry"];
+    id entries = NULL_TO_NIL(feed[@"entry"]);
     if (!entries) return nil;
-//    NSLog(@"%@", entries);
     
     NSMutableArray *albums = [NSMutableArray array];
-    for (NSDictionary *entry in entries) {
-        PWAlbumObject *album = [PWPicasaParser albumFromJson:entry context:context];
+    if ([entries isKindOfClass:[NSArray class]]) {
+        for (NSDictionary *entry in entries) {
+            PWAlbumObject *album = [PWPicasaParser albumFromJson:entry context:context];
+            [albums addObject:album];
+        }
+    }
+    else if ([entries isKindOfClass:[NSDictionary class]]) {
+        PWAlbumObject *album = [PWPicasaParser albumFromJson:entries context:context];
         [albums addObject:album];
     }
     
@@ -47,7 +52,7 @@
     
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"%K = %@", @"id_str", gphotoid];
+    request.predicate = [NSPredicate predicateWithFormat:@"%K = %@", @"id_str", id_str];
     NSError *error;
     NSArray *albums = [context executeFetchRequest:request error:&error];
     for (PWAlbumObject *object in albums) {
@@ -120,8 +125,132 @@
         [album addLinkObject:link];
     }
     album.gphoto = [PWPicasaParser gphotoFromJson:json context:context];
+    album.media = [PWPicasaParser mediaFromJson:json context:context];
     
     return album;
+}
+
++ (NSArray *)parseListOfPhotoFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
+    NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
+    if (!feed) return nil;
+    id entries = NULL_TO_NIL(feed[@"entry"]);
+    if (!entries) return nil;
+    
+    NSMutableArray *photos = [NSMutableArray array];
+    if ([entries isKindOfClass:[NSArray class]]) {
+        for (NSDictionary *entry in entries) {
+            PWPhotoObject *album = [PWPicasaParser photoFromJson:entry context:context];
+            [photos addObject:album];
+        }
+    }
+    else if ([entries isKindOfClass:[NSDictionary class]]) {
+        PWPhotoObject *album = [PWPicasaParser photoFromJson:entries context:context];
+        [photos addObject:album];
+    }
+    
+    return photos;
+}
+
++ (PWPhotoObject *)photoFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
+    if (!json) return nil;
+//    NSLog(@"%@", json);
+    
+    PWPhotoObject *photo = [NSEntityDescription insertNewObjectForEntityForName:@"PWPhotoManagedObject" inManagedObjectContext:context];
+    
+    NSDictionary *appEdited = NULL_TO_NIL(json[@"app:edited"]);
+    if (appEdited) {
+        photo.app_edited = NULL_TO_NIL(appEdited[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"photo.app_edited = %@", photo.app_edited);
+#endif
+    }
+    NSDictionary *category = NULL_TO_NIL(json[@"category"]);
+    if (category) {
+        photo.category_cheme = NULL_TO_NIL(category[@"scheme"]);
+        photo.category_term = NULL_TO_NIL(category[@"term"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"photo.category_cheme = %@", photo.category_cheme);
+        NSLog(@"photo.category_term = %@", photo.category_term);
+#endif
+    }
+    NSDictionary *content = NULL_TO_NIL(json[@"content"]);
+    if (context) {
+        photo.content_src = NULL_TO_NIL(content[@"src"]);
+        photo.content_type = NULL_TO_NIL(content[@"type"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"photo.content_src = %@", photo.content_src);
+        NSLog(@"photo.content_type = %@", photo.content_type);
+#endif
+    }
+    NSDictionary *exifTags = NULL_TO_NIL(json[@"exif:tags"]);
+    if (exifTags) {
+        photo.exif = [PWPicasaParser exifFromJson:exifTags context:context];
+    }
+    NSDictionary *georssWhere = NULL_TO_NIL(json[@"georss:where"]);
+    if (georssWhere) {
+        NSDictionary *gmlPoint = NULL_TO_NIL(georssWhere[@"gml:Point"]);
+        if (gmlPoint) {
+            NSDictionary *gmlPos = NULL_TO_NIL(gmlPoint[@"gml:pos"]);
+            if (gmlPos) {
+                photo.pos = NULL_TO_NIL(gmlPos[@"text"]);
+#ifdef DEBUG_LOCAL
+                NSLog(@"photo.pos = %@", photo.pos);
+#endif
+            }
+        }
+    }
+    NSDictionary *id_str = NULL_TO_NIL(json[@"gphoto:id"]);
+    if (id_str) {
+        photo.id_str = NULL_TO_NIL(id_str[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"photo.id_str = %@", photo.id_str);
+#endif
+    }
+    id links = NULL_TO_NIL(json[@"link"]);
+    if ([links isKindOfClass:[NSArray class]]) {
+        for (NSDictionary *linkJson in links) {
+            PWPhotoLinkObject *link = [PWPicasaParser linkFromJson:linkJson context:context];
+            [photo addLinkObject:link];
+        }
+    }
+    else if ([links isKindOfClass:[NSDictionary class]]) {
+        PWPhotoLinkObject *link = [PWPicasaParser linkFromJson:links context:context];
+        [photo addLinkObject:link];
+    }
+    NSDictionary *media = NULL_TO_NIL(json[@"media:group"]);
+    if (media) {
+        photo.media = [PWPicasaParser mediaFromJson:media context:context];
+    }
+    NSDictionary *published = NULL_TO_NIL(json[@"published"]);
+    if (published) {
+        photo.published = NULL_TO_NIL(published[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"photo.published = %@", photo.published);
+#endif
+    }
+    NSDictionary *summary = NULL_TO_NIL(json[@"summary"]);
+    if (summary) {
+        photo.summary = NULL_TO_NIL(summary[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"photo.summary = %@", photo.summary);
+#endif
+    }
+    NSDictionary *title = NULL_TO_NIL(json[@"title"]);
+    if (title) {
+        photo.title = NULL_TO_NIL(title[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"photo.title = %@", photo.title);
+#endif
+    }
+    NSDictionary *updated = NULL_TO_NIL(json[@"updated"]);
+    if (updated) {
+        photo.updated = NULL_TO_NIL(updated[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"photo.updated = %@", photo.updated);
+#endif
+    }
+    
+    return photo;
 }
 
 + (PWPhotoLinkObject *)linkFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
@@ -207,6 +336,195 @@
     }
     
     return gphoto;
+}
+
++ (PWPhotoMediaObject *)mediaFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
+    if (!json) return nil;
+//    NSLog(@"%@", json);
+    
+    NSDictionary *group = NULL_TO_NIL(json[@"media:group"]);
+    if (!group) return nil;
+    
+    PWPhotoMediaObject *media = [NSEntityDescription insertNewObjectForEntityForName:@"PWMediaManagedObject" inManagedObjectContext:context];
+    
+    id contents = NULL_TO_NIL(group[@"media:content"]);
+    if ([contents isKindOfClass:[NSArray class]]) {
+        for (NSDictionary *contentJson in contents) {
+            PWPhotoMediaContentObject *content = [PWPicasaParser mediaContentFromJson:contentJson context:context];
+            [media addContentObject:content];
+        }
+    }
+    else if ([contents isKindOfClass:[NSDictionary class]]) {
+        PWPhotoMediaContentObject *content = [PWPicasaParser mediaContentFromJson:contents context:context];
+        [media addContentObject:content];
+    }
+    NSDictionary *credit = NULL_TO_NIL(group[@"media:credit"]);
+    if (credit) {
+        media.credit = NULL_TO_NIL(credit[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"media.credit = %@", media.credit);
+#endif
+    }
+    NSDictionary *description = NULL_TO_NIL(group[@"media:description"]);
+    if (description) {
+        media.description_text = NULL_TO_NIL(description[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"media.description_text = %@", media.description_text);
+#endif
+    }
+    NSDictionary *keywords = NULL_TO_NIL(group[@"media:keywords"]);
+    if (keywords) {
+        media.keywords = NULL_TO_NIL(keywords[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"media.keywords = %@", media.keywords);
+#endif
+    }
+    id thumbnails = NULL_TO_NIL(group[@"media:thumbnail"]);
+    if ([thumbnails isKindOfClass:[NSArray class]]) {
+        for (NSDictionary *thumbnailJson in thumbnails) {
+            PWPhotoMediaThumbnailObject *thumbnail = [PWPicasaParser mediaThumbnailFromJson:thumbnailJson context:context];
+            [media addThumbnailObject:thumbnail];
+        }
+    }
+    else if ([thumbnails isKindOfClass:[NSDictionary class]]) {
+        PWPhotoMediaThumbnailObject *thumbnail = [PWPicasaParser mediaThumbnailFromJson:thumbnails context:context];
+        [media addThumbnailObject:thumbnail];
+    }
+    NSDictionary *title = NULL_TO_NIL(group[@"media:title"]);
+    if (title) {
+        media.title = NULL_TO_NIL(title[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"media.title = %@", media.title);
+#endif
+    }
+    
+    return media;
+}
+
++ (PWPhotoMediaContentObject *)mediaContentFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
+    if (!json) return nil;
+//    NSLog(@"%@", json);
+    
+    PWPhotoMediaContentObject *content = [NSEntityDescription insertNewObjectForEntityForName:@"PWMediaContentManagedObject" inManagedObjectContext:context];
+    
+    NSString *height = NULL_TO_NIL(json[@"height"]);
+    content.height = [NSNumber numberWithInteger:[height integerValue]];
+    content.medium = NULL_TO_NIL(json[@"medium"]);
+    content.type = NULL_TO_NIL(json[@"type"]);
+    content.url = NULL_TO_NIL(json[@"url"]);
+    NSString *width = NULL_TO_NIL(json[@"width"]);
+    content.width = [NSNumber numberWithInteger:[width integerValue]];
+    
+#ifdef DEBUG_LOCAL
+    NSLog(@"content.height = %@", content.height);
+    NSLog(@"content.medium = %@", content.medium);
+    NSLog(@"content.type = %@", content.type);
+    NSLog(@"content.url = %@", content.url);
+    NSLog(@"content.width = %@", content.width);
+#endif
+    
+    return content;
+}
+
++ (PWPhotoMediaThumbnailObject *)mediaThumbnailFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
+    if (!json) return nil;
+//    NSLog(@"%@", json);
+    
+    PWPhotoMediaThumbnailObject *thumbnail = [NSEntityDescription insertNewObjectForEntityForName:@"PWMediaThumbnailManagedObject" inManagedObjectContext:context];
+    
+    NSString *height = NULL_TO_NIL(json[@"height"]);
+    thumbnail.height = [NSNumber numberWithInteger:[height integerValue]];
+    NSString *width = NULL_TO_NIL(json[@"width"]);
+    thumbnail.width = [NSNumber numberWithInteger:[width integerValue]];
+    thumbnail.url = NULL_TO_NIL(json[@"url"]);
+    
+#ifdef DEBUG_LOCAL
+    NSLog(@"thumbnail.height = %@", thumbnail.height);
+    NSLog(@"thumbnail.width = %@", thumbnail.width);
+    NSLog(@"thumbnail.url = %@", thumbnail.url);
+#endif
+    
+    return thumbnail;
+}
+
++ (PWPhotoExitObject *)exifFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
+    if (!json) return nil;
+//    NSLog(@"%@", json);
+    
+    PWPhotoExitObject *exif = [NSEntityDescription insertNewObjectForEntityForName:@"PWPhotoExitManagedObject" inManagedObjectContext:context];
+    
+    NSDictionary *distance = NULL_TO_NIL(json[@"exif:distance"]);
+    if (distance) {
+        exif.distance = NULL_TO_NIL(distance[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"exif.distance = %@", exif.distance);
+#endif
+    }
+    NSDictionary *exposure = NULL_TO_NIL(json[@"exif:exposure"]);
+    if (exposure) {
+        exif.exposure = NULL_TO_NIL(exposure[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"exif.exposure = %@", exif.exposure);
+#endif
+    }
+    NSDictionary *flash = NULL_TO_NIL(json[@"exif:flash"]);
+    if (flash) {
+        exif.flash = NULL_TO_NIL(flash[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"exif.flash = %@", exif.flash);
+#endif
+    }
+    NSDictionary *focallength = NULL_TO_NIL(json[@"exif:focallength"]);
+    if (focallength) {
+        exif.focallength = NULL_TO_NIL(focallength[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"exif.focallength = %@", exif.focallength);
+#endif
+    }
+    NSDictionary *fstop = NULL_TO_NIL(json[@"exif:fstop"]);
+    if (fstop) {
+        exif.fstop = NULL_TO_NIL(fstop[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"exif.fstop = %@", exif.fstop);
+#endif
+    }
+    NSDictionary *imageUniqueID = NULL_TO_NIL(json[@"exif:imageUniqueID"]);
+    if (imageUniqueID) {
+        exif.imageUniqueID = NULL_TO_NIL(imageUniqueID[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"exif.imageUniqueID = %@", exif.imageUniqueID);
+#endif
+    }
+    NSDictionary *iso = NULL_TO_NIL(json[@"exif:iso"]);
+    if (iso) {
+        exif.iso = NULL_TO_NIL(iso[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"exif.iso = %@", exif.iso);
+#endif
+    }
+    NSDictionary *make = NULL_TO_NIL(json[@"exif:make"]);
+    if (make) {
+        exif.make = NULL_TO_NIL(make[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"exif.make = %@", exif.make);
+#endif
+    }
+    NSDictionary *model = NULL_TO_NIL(json[@"exif:model"]);
+    if (model) {
+        exif.model = NULL_TO_NIL(model[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"exif.model = %@", exif.model);
+#endif
+    }
+    NSDictionary *time = NULL_TO_NIL(json[@"exif:time"]);
+    if (time) {
+        exif.time = NULL_TO_NIL(time[@"text"]);
+#ifdef DEBUG_LOCAL
+        NSLog(@"exif.time = %@", exif.time);
+#endif
+    }
+    
+    return exif;
 }
 
 @end

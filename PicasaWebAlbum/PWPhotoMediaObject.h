@@ -14,6 +14,7 @@
 @interface PWPhotoMediaObject : NSManagedObject
 
 @property (nonatomic, retain) NSString * credit;
+@property (nonatomic, retain) NSString * description_text;
 @property (nonatomic, retain) NSString * keywords;
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSSet *content;

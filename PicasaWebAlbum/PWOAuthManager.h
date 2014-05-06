@@ -19,6 +19,7 @@
 
 + (BOOL)isLogin;
 + (UINavigationController *)loginViewControllerWithCompletionHandler:(GTMOAuth2ViewControllerCompletionHandler)completionHandler;
++ (void)authorizeActionWithViewController:(UIViewController *)viewController actionBlock:(void (^)())actionBlock;
 + (void)logout;
 
 @end

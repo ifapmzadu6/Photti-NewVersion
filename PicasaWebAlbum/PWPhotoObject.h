@@ -19,8 +19,10 @@
 @property (nonatomic, retain) NSString * content_src;
 @property (nonatomic, retain) NSString * content_type;
 @property (nonatomic, retain) NSString * id_str;
+@property (nonatomic, retain) NSString * pos;
 @property (nonatomic, retain) NSString * published;
 @property (nonatomic, retain) NSString * rights;
+@property (nonatomic, retain) NSNumber * sortIndex;
 @property (nonatomic, retain) NSString * summary;
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSString * updated;

@@ -21,8 +21,10 @@
 @dynamic content_src;
 @dynamic content_type;
 @dynamic id_str;
+@dynamic pos;
 @dynamic published;
 @dynamic rights;
+@dynamic sortIndex;
 @dynamic summary;
 @dynamic title;
 @dynamic updated;
