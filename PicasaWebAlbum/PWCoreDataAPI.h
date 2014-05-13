@@ -18,4 +18,6 @@
 
 + (void)performBlock:(void (^)(NSManagedObjectContext *context))block;
 
++ (void)performBlockAndWait:(void (^)(NSManagedObjectContext *context))block;
+
 @end

@@ -6,8 +6,20 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+
+#import "PWModelObject.h"
 
 @interface PWPicasaPOSTRequest : NSObject
+
++ (void)postCreatingNewAlbumRequest:(NSString *)title
+                            summary:(NSString *)summary
+                           location:(NSString *)location
+                             access:(NSString *)access
+                          timestamp:(NSString *)timestamp
+                           keywords:(NSString *)keywords
+                         completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion;
+
++ (void)deleteAlbumWithID:(NSString *)albumID completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion;
 
 @end

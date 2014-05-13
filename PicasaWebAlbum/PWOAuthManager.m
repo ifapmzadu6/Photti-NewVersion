@@ -8,87 +8,124 @@
 
 #import "PWOAuthManager.h"
 
+//#import <GTMOAuth2Authentication.h>
+//#import <GTMOAuth2ViewControllerTouch.h>
+
 static NSString * const PWScope = @"https://picasaweb.google.com/data/";
 static NSString * const PWClientID = @"982107973738-pqihuiltucj69o5413n38hm52lj3ubm3.apps.googleusercontent.com";
 static NSString * const PWClientSecret = @"5OS58Vf-PA09YGHlFZUc_BtX";
 static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
+
+#define dispatch_main_sync_safe(block)\
+if ([NSThread isMainThread]) {\
+block();\
+}\
+else {\
+dispatch_sync(dispatch_get_main_queue(), block);\
+}
 
 @interface PWOAuthManager ()
 
 @end
 
 @implementation PWOAuthManager
-
-+ (PWOAuthManager *)sharedManager {
-    static dispatch_once_t once;
-    static id instance;
-    dispatch_once(&once, ^{instance = self.new;});
-    return instance;
++ (GTMOAuth2Authentication *)authentication {
+    return [PWOAuthManager authenticationWithRefresh:NO];
 }
 
-+ (GTMOAuth2Authentication *)authentication {
-    GTMOAuth2Authentication *auth =  [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
-    
++ (GTMOAuth2Authentication *)authenticationWithRefresh:(BOOL)refresh {
+    static dispatch_once_t once;
+    static id auth;
+    if (refresh) {
+        dispatch_main_sync_safe(^{
+            auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
+        });
+    }
+    else {
+        dispatch_once(&once, ^{
+            dispatch_main_sync_safe(^{
+                auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
+            });
+        });
+    }
     return auth;
 }
 
-+ (BOOL)isLogin {
-    GTMOAuth2Authentication *auth = [PWOAuthManager authentication];
-    BOOL isLogin = [auth canAuthorize];
-    if (!isLogin) {
-        NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:auth.tokenURL];
-        isLogin = [auth authorizeRequest:request];
-        [auth authorizeRequest:request completionHandler:^(NSError *error) {
-            NSLog(@"%@",error);
-        }];
-        NSLog(@"Auth was expired. So refresh the token of auth.");
-        
-        return NO;
-    }
-    
-    return YES;
-}
-
-+ (UINavigationController *)loginViewControllerWithCompletionHandler:(GTMOAuth2ViewControllerCompletionHandler)completionHandler {
-    GTMOAuth2ViewControllerTouch *viewController = [GTMOAuth2ViewControllerTouch controllerWithScope:PWScope clientID:PWClientID clientSecret:PWClientSecret keychainItemName:PWKeyChainItemName completionHandler:completionHandler];
-    viewController.automaticallyAdjustsScrollViewInsets = NO;
-    for (UIView *view in viewController.view.subviews) {
-        if ([view isKindOfClass:[UIWebView class]]) {
-            UIWebView *webView = (UIWebView *)view;
-            webView.scrollView.contentInset = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
-            webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
++ (void)getAccessTokenWithCompletion:(void (^)(NSString *))completion {
+    dispatch_main_sync_safe(^{
+        GTMOAuth2Authentication *auth = [PWOAuthManager authentication];
+        NSString *accessToken = [auth accessToken];
+        if (accessToken) {
+            if (completion) {
+                completion(accessToken);
+            }
         }
-    }
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-    navigationController.view.backgroundColor = [UIColor whiteColor];
-    navigationController.automaticallyAdjustsScrollViewInsets = NO;
-    
-    return navigationController;
-}
-
-+ (void)authorizeActionWithViewController:(UIViewController *)viewController actionBlock:(void (^)())actionBlock {
-    if ([PWOAuthManager isLogin]) {
-        if (actionBlock) {
-            actionBlock();
-        }
-    }
-    else {
-        UINavigationController *navigationController = [PWOAuthManager loginViewControllerWithCompletionHandler:^(GTMOAuth2ViewControllerTouch *viewController, GTMOAuth2Authentication *auth, NSError *error) {
-            [viewController dismissViewControllerAnimated:YES completion:^{
-                if (actionBlock) {
-                    actionBlock();
+        else {
+            NSString *refreshToken = [auth refreshToken];
+            if (!refreshToken) {
+                auth = [PWOAuthManager authenticationWithRefresh:YES];
+            }
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
+            [auth authorizeRequest:request completionHandler:^(NSError *error) {
+                if (error) {
+                    if (completion) {
+                        completion(nil);
+                    }
+                }
+                else {
+                    NSString *accessToken = [[PWOAuthManager authentication] accessToken];
+                    if (completion) {
+                        completion(accessToken);
+                    }
                 }
             }];
-        }];
-        [viewController presentViewController:navigationController animated:YES completion:nil];
-    }
+        }
+    });
+}
+
++ (void)authorizeRequestWithCompletion:(void (^)(NSError *error))completion {
+    dispatch_main_sync_safe(^{
+        GTMOAuth2Authentication *newAuth = [PWOAuthManager authenticationWithRefresh:YES];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:newAuth.tokenURL];
+        [newAuth authorizeRequest:request completionHandler:completion];
+    });
 }
 
 + (void)logout {
-    [GTMOAuth2ViewControllerTouch removeAuthFromKeychainForName:PWKeyChainItemName];
-    GTMOAuth2Authentication *auth = [PWOAuthManager authentication];
-    [GTMOAuth2ViewControllerTouch revokeTokenForGoogleAuthentication:auth];
+    dispatch_main_sync_safe(^{
+        [GTMOAuth2ViewControllerTouch removeAuthFromKeychainForName:PWKeyChainItemName];
+        [GTMOAuth2ViewControllerTouch revokeTokenForGoogleAuthentication:[PWOAuthManager authentication]];
+    });
+}
+
++ (UINavigationController *)loginViewControllerWithCompletion:(void (^)())completion {
+    __block UINavigationController *navigationController = nil;
+    dispatch_main_sync_safe(^{
+        GTMOAuth2ViewControllerTouch *viewController = [GTMOAuth2ViewControllerTouch controllerWithScope:PWScope clientID:PWClientID clientSecret:PWClientSecret keychainItemName:PWKeyChainItemName completionHandler:^(GTMOAuth2ViewControllerTouch *viewController, GTMOAuth2Authentication *auth, NSError *error) {
+            [viewController dismissViewControllerAnimated:YES completion:^{
+                [PWOAuthManager authorizeRequestWithCompletion:^(NSError *error) {
+                    if (!error) {
+                        if (completion) {
+                            completion();
+                        }
+                    }
+                }];
+            }];
+        }];
+        viewController.automaticallyAdjustsScrollViewInsets = NO;
+        for (UIView *view in viewController.view.subviews) {
+            if ([view isKindOfClass:[UIWebView class]]) {
+                UIWebView *webView = (UIWebView *)view;
+                webView.scrollView.contentInset = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
+                webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
+            }
+        }
+        
+        navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navigationController.view.backgroundColor = [UIColor whiteColor];
+        navigationController.automaticallyAdjustsScrollViewInsets = NO;
+    });
+    return navigationController;
 }
 
 @end

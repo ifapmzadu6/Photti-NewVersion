@@ -13,13 +13,9 @@
 
 @interface PWOAuthManager : NSObject
 
-+ (PWOAuthManager *)sharedManager;
-
 + (GTMOAuth2Authentication *)authentication;
-
-+ (BOOL)isLogin;
-+ (UINavigationController *)loginViewControllerWithCompletionHandler:(GTMOAuth2ViewControllerCompletionHandler)completionHandler;
-+ (void)authorizeActionWithViewController:(UIViewController *)viewController actionBlock:(void (^)())actionBlock;
++ (void)getAccessTokenWithCompletion:(void (^)(NSString *accessToken))completion;
 + (void)logout;
++ (UINavigationController *)loginViewControllerWithCompletion:(void (^)())completion;
 
 @end

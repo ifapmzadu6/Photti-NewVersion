@@ -21,4 +21,16 @@
 #import "PWPhotoExitObject.h"
 #import "PWPhotoMediaThumbnailObject.h"
 
+#import "PWAlbumObject+Methods.h"
+#import "PWPhotoObject+Methods.h"
+
+static NSString * const kPWAlbumManagedObjectName = @"PWAlbumManagedObject";
+static NSString * const kPWGPhotoManagedObjectName = @"PWGPhotoManagedObject";
+static NSString * const kPWLinkManagedObjectName = @"PWLinkManagedObject";
+static NSString * const kPWMediaContentManagedObjectName = @"PWMediaContentManagedObject";
+static NSString * const kPWMediaManagedObjectName = @"PWMediaManagedObject";
+static NSString * const kPWMediaThumbnailManagedObjectName = @"PWMediaThumbnailManagedObject";
+static NSString * const kPWPhotoExitManagedObjectName = @"PWPhotoExitManagedObject";
+static NSString * const kPWPhotoManagedObjectName = @"PWPhotoManagedObject";
+
 #endif

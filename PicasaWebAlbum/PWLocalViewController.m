@@ -8,6 +8,8 @@
 
 #import "PWLocalViewController.h"
 
+#import "PWColors.h"
+
 @interface PWLocalViewController ()
 
 @end
@@ -17,13 +19,20 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = @"端末内の写真";
+        self.title = @"カメラロール";
+        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
 }
 
 - (void)didReceiveMemoryWarning {

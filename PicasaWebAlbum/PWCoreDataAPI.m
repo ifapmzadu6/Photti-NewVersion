@@ -72,6 +72,19 @@
     }];
 }
 
++ (void)performBlockAndWait:(void (^)(NSManagedObjectContext *))block {
+    NSManagedObjectContext *context = [[PWCoreDataAPI sharedManager] managedObjectContext];
+    if (!context) {
+//        DDLogError(@"%s", __func__);
+        return;
+    }
+    [context performBlockAndWait:^{
+        if (block) {
+            block(context);
+        }
+    }];
+}
+
 #pragma mark - Application's Documents directory
 // Returns the URL to the application's Documents directory.
 - (NSURL *)applicationDocumentsDirectory {

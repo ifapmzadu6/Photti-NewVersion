@@ -7,7 +7,6 @@
         <attribute name="category_term" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="edited" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id_str" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="numphotos" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="published" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="rights" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="sortIndex" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -107,6 +106,7 @@
         <relationship name="photo" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWPhotoManagedObject" inverseName="exif" inverseEntity="PWPhotoManagedObject" syncable="YES"/>
     </entity>
     <entity name="PWPhotoManagedObject" representedClassName="PWPhotoObject" syncable="YES">
+        <attribute name="albumid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="app_edited" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="category_cheme" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="category_term" optional="YES" attributeType="String" syncable="YES"/>
@@ -126,13 +126,13 @@
         <relationship name="media" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWMediaManagedObject" inverseName="photo" inverseEntity="PWMediaManagedObject" syncable="YES"/>
     </entity>
     <elements>
-        <element name="PWAlbumManagedObject" positionX="-63" positionY="-18" width="128" height="330"/>
+        <element name="PWAlbumManagedObject" positionX="-63" positionY="-18" width="128" height="313"/>
         <element name="PWGPhotoManagedObject" positionX="-36" positionY="54" width="128" height="628"/>
         <element name="PWLinkManagedObject" positionX="0" positionY="171" width="128" height="118"/>
         <element name="PWMediaContentManagedObject" positionX="-45" positionY="36" width="128" height="135"/>
         <element name="PWMediaManagedObject" positionX="-36" positionY="81" width="128" height="163"/>
         <element name="PWMediaThumbnailManagedObject" positionX="-27" positionY="72" width="128" height="103"/>
         <element name="PWPhotoExitManagedObject" positionX="18" positionY="180" width="128" height="208"/>
-        <element name="PWPhotoManagedObject" positionX="-54" positionY="45" width="128" height="298"/>
+        <element name="PWPhotoManagedObject" positionX="-54" positionY="45" width="128" height="313"/>
     </elements>
 </model>

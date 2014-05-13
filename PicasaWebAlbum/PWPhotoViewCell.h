@@ -13,5 +13,6 @@
 @interface PWPhotoViewCell : UICollectionViewCell
 
 @property (strong, nonatomic) PWPhotoObject *photo;
+@property (nonatomic) BOOL isSelectWithCheckMark;
 
 @end

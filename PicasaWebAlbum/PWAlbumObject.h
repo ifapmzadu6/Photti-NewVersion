@@ -16,7 +16,6 @@
 @property (nonatomic, retain) NSString * id_str;
 @property (nonatomic, retain) NSString * author_url;
 @property (nonatomic, retain) NSString * author_name;
-@property (nonatomic, retain) NSString * numphotos;
 @property (nonatomic, retain) NSString * timestamp;
 @property (nonatomic, retain) NSString * type;
 @property (nonatomic, retain) NSString * userid;

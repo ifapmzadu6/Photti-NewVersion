@@ -16,7 +16,6 @@
 @dynamic id_str;
 @dynamic author_url;
 @dynamic author_name;
-@dynamic numphotos;
 @dynamic timestamp;
 @dynamic type;
 @dynamic userid;

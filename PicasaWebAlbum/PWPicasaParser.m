@@ -47,18 +47,19 @@
 //    NSLog(@"%@", json);
     
     NSDictionary *gphotoid = NULL_TO_NIL(json[@"gphoto:id"]);
+    if (!gphotoid) return nil;
     NSString *id_str = NULL_TO_NIL(gphotoid[@"text"]);
     if (!id_str) return nil;
     
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
+    request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
     request.predicate = [NSPredicate predicateWithFormat:@"%K = %@", @"id_str", id_str];
     NSError *error;
     NSArray *albums = [context executeFetchRequest:request error:&error];
     for (PWAlbumObject *object in albums) {
         [context deleteObject:object];
     }
-    PWAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
+    PWAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
     
     album.id_str = id_str;
 #ifdef DEBUG_LOCAL
@@ -125,7 +126,10 @@
         [album addLinkObject:link];
     }
     album.gphoto = [PWPicasaParser gphotoFromJson:json context:context];
-    album.media = [PWPicasaParser mediaFromJson:json context:context];
+    NSDictionary *media = NULL_TO_NIL(json[@"media:group"]);
+    if (media) {
+        album.media = [PWPicasaParser mediaFromJson:media context:context];
+    }
     
     return album;
 }
@@ -154,9 +158,25 @@
 + (PWPhotoObject *)photoFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
     if (!json) return nil;
 //    NSLog(@"%@", json);
+    NSDictionary *gphotoid = NULL_TO_NIL(json[@"gphoto:id"]);
+    if (!gphotoid) return nil;
+    NSString *id_str = NULL_TO_NIL(gphotoid[@"text"]);
+    if (!id_str) return nil;
     
-    PWPhotoObject *photo = [NSEntityDescription insertNewObjectForEntityForName:@"PWPhotoManagedObject" inManagedObjectContext:context];
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+    request.predicate = [NSPredicate predicateWithFormat:@"%K = %@", @"id_str", id_str];
+    NSError *error;
+    NSArray *photos = [context executeFetchRequest:request error:&error];
+    for (PWPhotoObject *object in photos) {
+        [context deleteObject:object];
+    }
+    PWPhotoObject *photo = [NSEntityDescription insertNewObjectForEntityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
     
+    NSDictionary *albumid = NULL_TO_NIL(json[@"gphoto:albumid"]);
+    if (albumid) {
+        photo.albumid = NULL_TO_NIL(albumid[@"text"]);
+    }
     NSDictionary *appEdited = NULL_TO_NIL(json[@"app:edited"]);
     if (appEdited) {
         photo.app_edited = NULL_TO_NIL(appEdited[@"text"]);
@@ -199,9 +219,8 @@
             }
         }
     }
-    NSDictionary *id_str = NULL_TO_NIL(json[@"gphoto:id"]);
     if (id_str) {
-        photo.id_str = NULL_TO_NIL(id_str[@"text"]);
+        photo.id_str = id_str;
 #ifdef DEBUG_LOCAL
         NSLog(@"photo.id_str = %@", photo.id_str);
 #endif
@@ -257,7 +276,7 @@
     if (!json) return nil;
 //    NSLog(@"%@", json);
     
-    PWPhotoLinkObject *link = [NSEntityDescription insertNewObjectForEntityForName:@"PWLinkManagedObject" inManagedObjectContext:context];
+    PWPhotoLinkObject *link = [NSEntityDescription insertNewObjectForEntityForName:kPWLinkManagedObjectName inManagedObjectContext:context];
     
     link.href = NULL_TO_NIL(json[@"href"]);
     link.rel = NULL_TO_NIL(json[@"rel"]);
@@ -276,14 +295,14 @@
     if (!json) return nil;
 //    NSLog(@"%@", json);
     
-    PWGPhotoObject *gphoto = [NSEntityDescription insertNewObjectForEntityForName:@"PWGPhotoManagedObject" inManagedObjectContext:context];
+    PWGPhotoObject *gphoto = [NSEntityDescription insertNewObjectForEntityForName:kPWGPhotoManagedObjectName inManagedObjectContext:context];
     
     NSDictionary *access = NULL_TO_NIL(json[@"gphoto:access"]);
     if (access) {
         gphoto.access = NULL_TO_NIL(access[@"text"]);
-#ifdef DEBUG_LOCAL
+//#ifdef DEBUG_LOCAL
         NSLog(@"gphoto.access = %@", gphoto.access);
-#endif
+//#endif
     }
     NSDictionary *albumType = NULL_TO_NIL(json[@"gphoto:albumType"]);
     if (albumType) {
@@ -342,12 +361,9 @@
     if (!json) return nil;
 //    NSLog(@"%@", json);
     
-    NSDictionary *group = NULL_TO_NIL(json[@"media:group"]);
-    if (!group) return nil;
+    PWPhotoMediaObject *media = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaManagedObjectName inManagedObjectContext:context];
     
-    PWPhotoMediaObject *media = [NSEntityDescription insertNewObjectForEntityForName:@"PWMediaManagedObject" inManagedObjectContext:context];
-    
-    id contents = NULL_TO_NIL(group[@"media:content"]);
+    id contents = NULL_TO_NIL(json[@"media:content"]);
     if ([contents isKindOfClass:[NSArray class]]) {
         for (NSDictionary *contentJson in contents) {
             PWPhotoMediaContentObject *content = [PWPicasaParser mediaContentFromJson:contentJson context:context];
@@ -358,28 +374,28 @@
         PWPhotoMediaContentObject *content = [PWPicasaParser mediaContentFromJson:contents context:context];
         [media addContentObject:content];
     }
-    NSDictionary *credit = NULL_TO_NIL(group[@"media:credit"]);
+    NSDictionary *credit = NULL_TO_NIL(json[@"media:credit"]);
     if (credit) {
         media.credit = NULL_TO_NIL(credit[@"text"]);
 #ifdef DEBUG_LOCAL
         NSLog(@"media.credit = %@", media.credit);
 #endif
     }
-    NSDictionary *description = NULL_TO_NIL(group[@"media:description"]);
+    NSDictionary *description = NULL_TO_NIL(json[@"media:description"]);
     if (description) {
         media.description_text = NULL_TO_NIL(description[@"text"]);
 #ifdef DEBUG_LOCAL
         NSLog(@"media.description_text = %@", media.description_text);
 #endif
     }
-    NSDictionary *keywords = NULL_TO_NIL(group[@"media:keywords"]);
+    NSDictionary *keywords = NULL_TO_NIL(json[@"media:keywords"]);
     if (keywords) {
         media.keywords = NULL_TO_NIL(keywords[@"text"]);
 #ifdef DEBUG_LOCAL
         NSLog(@"media.keywords = %@", media.keywords);
 #endif
     }
-    id thumbnails = NULL_TO_NIL(group[@"media:thumbnail"]);
+    id thumbnails = NULL_TO_NIL(json[@"media:thumbnail"]);
     if ([thumbnails isKindOfClass:[NSArray class]]) {
         for (NSDictionary *thumbnailJson in thumbnails) {
             PWPhotoMediaThumbnailObject *thumbnail = [PWPicasaParser mediaThumbnailFromJson:thumbnailJson context:context];
@@ -390,7 +406,7 @@
         PWPhotoMediaThumbnailObject *thumbnail = [PWPicasaParser mediaThumbnailFromJson:thumbnails context:context];
         [media addThumbnailObject:thumbnail];
     }
-    NSDictionary *title = NULL_TO_NIL(group[@"media:title"]);
+    NSDictionary *title = NULL_TO_NIL(json[@"media:title"]);
     if (title) {
         media.title = NULL_TO_NIL(title[@"text"]);
 #ifdef DEBUG_LOCAL
@@ -405,7 +421,7 @@
     if (!json) return nil;
 //    NSLog(@"%@", json);
     
-    PWPhotoMediaContentObject *content = [NSEntityDescription insertNewObjectForEntityForName:@"PWMediaContentManagedObject" inManagedObjectContext:context];
+    PWPhotoMediaContentObject *content = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaContentManagedObjectName inManagedObjectContext:context];
     
     NSString *height = NULL_TO_NIL(json[@"height"]);
     content.height = [NSNumber numberWithInteger:[height integerValue]];
@@ -430,7 +446,7 @@
     if (!json) return nil;
 //    NSLog(@"%@", json);
     
-    PWPhotoMediaThumbnailObject *thumbnail = [NSEntityDescription insertNewObjectForEntityForName:@"PWMediaThumbnailManagedObject" inManagedObjectContext:context];
+    PWPhotoMediaThumbnailObject *thumbnail = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaThumbnailManagedObjectName inManagedObjectContext:context];
     
     NSString *height = NULL_TO_NIL(json[@"height"]);
     thumbnail.height = [NSNumber numberWithInteger:[height integerValue]];
@@ -451,7 +467,7 @@
     if (!json) return nil;
 //    NSLog(@"%@", json);
     
-    PWPhotoExitObject *exif = [NSEntityDescription insertNewObjectForEntityForName:@"PWPhotoExitManagedObject" inManagedObjectContext:context];
+    PWPhotoExitObject *exif = [NSEntityDescription insertNewObjectForEntityForName:kPWPhotoExitManagedObjectName inManagedObjectContext:context];
     
     NSDictionary *distance = NULL_TO_NIL(json[@"exif:distance"]);
     if (distance) {

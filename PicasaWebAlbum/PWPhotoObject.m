@@ -15,6 +15,7 @@
 
 @implementation PWPhotoObject
 
+@dynamic albumid;
 @dynamic app_edited;
 @dynamic category_cheme;
 @dynamic category_term;

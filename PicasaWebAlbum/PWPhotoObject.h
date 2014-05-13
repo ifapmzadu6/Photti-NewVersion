@@ -13,6 +13,7 @@
 
 @interface PWPhotoObject : NSManagedObject
 
+@property (nonatomic, retain) NSString * albumid;
 @property (nonatomic, retain) NSString * app_edited;
 @property (nonatomic, retain) NSString * category_cheme;
 @property (nonatomic, retain) NSString * category_term;

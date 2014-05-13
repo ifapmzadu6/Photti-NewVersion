@@ -8,11 +8,26 @@
 
 #import "PWTabBarController.h"
 
+#import "SDImageCache.h"
+
+#import "PWNavigationController.h"
+#import "PWSearchNavigationController.h"
 #import "PWLocalViewController.h"
 #import "PWAlbumListViewController.h"
 #import "PWAutoUploadViewController.h"
 
+static const CGFloat animationDuration = 0.3f;
+
 @interface PWTabBarController ()
+
+@property (strong, nonatomic) UIToolbar *toolbar;
+@property (strong, nonatomic) UIToolbar *actionToolbar;
+@property (strong, nonatomic) UINavigationBar *actionNavigationBar;
+
+@property (nonatomic) BOOL isTabBarHidden;
+@property (nonatomic) BOOL isToolbarHidden;
+@property (nonatomic) BOOL isActionToolbarHidden;
+@property (nonatomic) BOOL isActionNavigationBarHidden;
 
 @end
 
@@ -22,19 +37,36 @@
     self = [super init];
     if (self) {
         PWLocalViewController *localViewController = [[PWLocalViewController alloc] init];
-        UINavigationController *localNavigationController = [[UINavigationController alloc] initWithRootViewController:localViewController];
+        PWNavigationController *localNavigationController = [[PWNavigationController alloc] initWithRootViewController:localViewController];
         
         PWAlbumListViewController *albumListViweController = [[PWAlbumListViewController alloc] init];
-        UINavigationController *albumNavigationController = [[UINavigationController alloc] initWithRootViewController:albumListViweController];
+        PWSearchNavigationController *albumNavigationController = [[PWSearchNavigationController alloc] initWithRootViewController:albumListViweController];
         
         PWAutoUploadViewController *autoUploadViewController = [[PWAutoUploadViewController alloc] init];
-        UINavigationController *autoUploadNavigationController = [[UINavigationController alloc] initWithRootViewController:autoUploadViewController];
+        PWNavigationController *autoUploadNavigationController = [[PWNavigationController alloc] initWithRootViewController:autoUploadViewController];
         
         self.viewControllers = @[localNavigationController, albumNavigationController, autoUploadNavigationController];
-        
         self.selectedIndex = 1;
-        
         self.delegate = self;
+        
+        _toolbar = [[UIToolbar alloc] init];
+        _toolbar.alpha = 0.0f;
+        [self.view addSubview:_toolbar];
+        
+        _isToolbarHidden = YES;
+        
+        _actionToolbar = [[UIToolbar alloc] init];
+        _actionToolbar.barTintColor = [UIColor blackColor];
+        _actionToolbar.alpha = 0.0f;
+        [self.view addSubview:_actionToolbar];
+        
+        _isActionToolbarHidden = YES;
+        
+        _actionNavigationBar = [[UINavigationBar alloc] init];
+        _actionNavigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor colorWithWhite:0.7f alpha:1.0f]};
+        _actionNavigationBar.barTintColor = [UIColor blackColor];
+        _actionNavigationBar.alpha = 0.0f;
+        [self.view addSubview:_actionNavigationBar];
     }
     return self;
 }
@@ -43,10 +75,190 @@
     [super viewDidLoad];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat fHeight = screenRect.size.height;
+    CGFloat tHeight = 44.0f;
+    BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
+    if(isLandscape) {
+        fHeight = screenRect.size.width;
+        tHeight = 32.0f;
+    }
+    for(UIView *view in self.view.subviews) {
+        if([view isKindOfClass:[UITabBar class]]) {
+            [view setFrame:CGRectMake(view.frame.origin.x, fHeight - tHeight, view.frame.size.width, tHeight)];
+        }
+    }
+    
+    CGRect rect = self.view.bounds;
+    
+    CGRect toolbarFrame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
+    _toolbar.frame = toolbarFrame;
+    _actionToolbar.frame = toolbarFrame;
+    
+    CGRect navigationbarFrame = CGRectMake(0.0f, 0.0f, rect.size.width, tHeight + 20.0f);
+    _actionNavigationBar.frame = navigationbarFrame;
+    
+    if (isLandscape) {
+        for (UIViewController *viewController in self.viewControllers) {
+            viewController.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f);
+        }
+    }
+    else {
+        for (UIViewController *viewController in self.viewControllers) {
+            viewController.tabBarItem.imageInsets = UIEdgeInsetsZero;
+        }
+    }
 }
 
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    
+    [[SDImageCache sharedImageCache] clearMemory];
+}
 
+#pragma mark TabBarHidden
+- (BOOL)isTabBarHidden {
+    return _isTabBarHidden;
+}
+
+- (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
+    _isTabBarHidden = hidden;
+    
+    void (^block)() = ^{
+        for(UIView *view in self.view.subviews) {
+            if([view isKindOfClass:[UITabBar class]]) {
+                if (hidden) {
+                    view.alpha = 0.0f;
+                    view.userInteractionEnabled = NO;
+                }
+                else {
+                    view.alpha = 1.0f;
+                    view.userInteractionEnabled = YES;
+                }
+            }
+        }
+    };
+    
+    if (animated) {
+        [UIView animateWithDuration:animationDuration animations:block completion:completion];
+    }
+    else {
+        block();
+        if (completion) {
+            completion(YES);
+        }
+    }
+}
+
+- (BOOL)isToolbarHideen {
+    return _isToolbarHidden;
+}
+
+- (void)setToolbarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
+    _isToolbarHidden = hidden;
+    
+    void (^block)() = ^{
+        if (hidden) {
+            _toolbar.alpha = 0.0f;
+            _toolbar.userInteractionEnabled = NO;
+        }
+        else {
+            _toolbar.alpha = 1.0f;
+            _toolbar.userInteractionEnabled = YES;
+        }
+    };
+    
+    if (animated) {
+        [UIView animateWithDuration:animationDuration animations:block completion:completion];
+    }
+    else {
+        block();
+        if (completion) {
+            completion(YES);
+        }
+    }
+}
+
+- (void)setToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated {
+    [_toolbar setItems:toolbarItems animated:animated];
+}
+
+- (BOOL)isActionToolbarHidden {
+    return _isActionToolbarHidden;
+}
+
+- (void)setActionToolbarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
+    _isActionToolbarHidden = hidden;
+    
+    void (^block)() = ^{
+        if (hidden) {
+            _actionToolbar.alpha = 0.0f;
+            _actionToolbar.userInteractionEnabled = NO;
+        }
+        else {
+            _actionToolbar.alpha = 1.0f;
+            _actionToolbar.userInteractionEnabled = YES;
+        }
+    };
+    
+    if (animated) {
+        [UIView animateWithDuration:animationDuration animations:block completion:completion];
+    }
+    else {
+        block();
+        if (completion) {
+            completion(YES);
+        }
+    }
+}
+
+- (void)setActionToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated {
+    [_actionToolbar setItems:toolbarItems animated:animated];
+}
+
+- (void)setToolbarBarTintColor:(UIColor *)color animated:(BOOL)animated {
+    void (^block)() = ^{
+        [_toolbar setBarTintColor:color];
+    };
+    
+    if (animated) {
+        [UIView animateWithDuration:animationDuration animations:block];
+    }
+    else {
+        block();
+    }
+}
+
+- (void)setActionNavigationBarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
+    _isActionNavigationBarHidden = hidden;
+    
+    void (^block)() = ^{
+        if (hidden) {
+            _actionNavigationBar.alpha = 0.0f;
+            _actionNavigationBar.userInteractionEnabled = NO;
+        }
+        else {
+            _actionNavigationBar.alpha = 1.0f;
+            _actionNavigationBar.userInteractionEnabled = YES;
+        }
+    };
+    
+    if (animated) {
+        [UIView animateWithDuration:animationDuration animations:block completion:completion];
+    }
+    else {
+        block();
+        if (completion) {
+            completion(YES);
+        }
+    }
+}
+
+- (void)setActionNavigationItem:(UINavigationItem *)item animated:(BOOL)animated {
+    [_actionNavigationBar setItems:@[item] animated:animated];
+}
 
 @end
