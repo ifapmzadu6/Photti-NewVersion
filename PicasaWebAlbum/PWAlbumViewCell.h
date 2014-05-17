@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@class PWAlbumObject;
+#import "PWPicasaAPI.h"
 
 @interface PWAlbumViewCell : UICollectionViewCell
+
+@property (strong, nonatomic) void (^actionButtonActionBlock)(PWAlbumObject *album);
 
 @property (strong, nonatomic) PWAlbumObject *album;
 

@@ -8,8 +8,8 @@
 
 @import UIKit;
 
-@interface PWNewAlbumEditViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+#import "PWAlbumEditViewController.h"
 
-@property (strong, nonatomic) void (^successBlock)();
+@interface PWNewAlbumEditViewController : PWAlbumEditViewController
 
 @end

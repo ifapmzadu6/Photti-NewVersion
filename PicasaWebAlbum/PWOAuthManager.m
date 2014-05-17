@@ -59,27 +59,24 @@ dispatch_sync(dispatch_get_main_queue(), block);\
             if (completion) {
                 completion(accessToken);
             }
+            return;
         }
-        else {
-            NSString *refreshToken = [auth refreshToken];
-            if (!refreshToken) {
-                auth = [PWOAuthManager authenticationWithRefresh:YES];
+        
+        if (![auth canAuthorize]) {
+            auth = [PWOAuthManager authenticationWithRefresh:YES];
+        }
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
+        [auth authorizeRequest:request completionHandler:^(NSError *error) {
+            if (error) {
+                NSLog(@"AuthorizeRequest Error!");
+                NSLog(@"%@", error.description);
+                return;
             }
-            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
-            [auth authorizeRequest:request completionHandler:^(NSError *error) {
-                if (error) {
-                    if (completion) {
-                        completion(nil);
-                    }
-                }
-                else {
-                    NSString *accessToken = [[PWOAuthManager authentication] accessToken];
-                    if (completion) {
-                        completion(accessToken);
-                    }
-                }
-            }];
-        }
+            
+            if (completion) {
+                completion([auth accessToken]);
+            }
+        }];
     });
 }
 

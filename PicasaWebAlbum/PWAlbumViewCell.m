@@ -23,7 +23,7 @@
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UILabel *numPhotosLabel;
-@property (strong, nonatomic) UIButton *settingButton;
+@property (strong, nonatomic) UIButton *actionButton;
 @property (strong, nonatomic) UIView *overrayView;
 
 @property (nonatomic) NSUInteger requestHash;
@@ -73,16 +73,20 @@
     _numPhotosLabel.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.667f];
     [self.contentView addSubview:_numPhotosLabel];
     
-    _settingButton = [[UIButton alloc] init];
-    _settingButton.hitEdgeInsets = UIEdgeInsetsMake(-4.0f, -10.0f, -4.0f, 0.0f);
-    [_settingButton setImage:[PWIcons albumActionButtonIcon] forState:UIControlStateNormal];
-    [_settingButton setBackgroundImage:[PWIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.05f]] forState:UIControlStateHighlighted];
-    [self.contentView addSubview:_settingButton];
+    _actionButton = [[UIButton alloc] init];
+    [_actionButton addTarget:self action:@selector(actionButtonAction) forControlEvents:UIControlEventTouchUpInside];
+    _actionButton.hitEdgeInsets = UIEdgeInsetsMake(-4.0f, -10.0f, -4.0f, 0.0f);
+    [_actionButton setImage:[PWIcons albumActionButtonIcon] forState:UIControlStateNormal];
+    [_actionButton setBackgroundImage:[PWIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.05f]] forState:UIControlStateHighlighted];
+    [self.contentView addSubview:_actionButton];
     
     _overrayView = [[UIView alloc] init];
     _overrayView.alpha = 0.0f;
     _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.1f];
     [self.contentView addSubview:_overrayView];
+    
+    UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressGestureRecognizerAction:)];
+    [self addGestureRecognizer:gestureRecognizer];
 }
 
 - (void)setSelected:(BOOL)selected {
@@ -119,7 +123,7 @@
     
     _numPhotosLabel.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 40.0f, CGRectGetMaxY(_imageView.frame) - 20.0f, 36.0f, 16.0f);
     
-    _settingButton.frame = CGRectMake(CGRectGetMaxX(rect) - 20.0f, CGRectGetMaxY(_imageView.frame) + 5.0f, 20.0f, 30.0f);
+    _actionButton.frame = CGRectMake(CGRectGetMaxX(rect) - 20.0f, CGRectGetMaxY(_imageView.frame) + 5.0f, 20.0f, 30.0f);
     
     _overrayView.frame = rect;
 }
@@ -268,6 +272,21 @@
     UIGraphicsEndImageContext();
 	
 	return resizedImage;
+}
+
+#pragma mark Action
+- (void)actionButtonAction {
+    if (_actionButtonActionBlock) {
+        _actionButtonActionBlock(_album);
+    }
+}
+
+- (void)longPressGestureRecognizerAction:(UILongPressGestureRecognizer *)sender {
+    if([sender state] == UIGestureRecognizerStateBegan){
+        if (_actionButtonActionBlock) {
+            _actionButtonActionBlock(_album);
+        }
+    }
 }
 
 @end

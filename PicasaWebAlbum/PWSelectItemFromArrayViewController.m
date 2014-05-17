@@ -97,6 +97,11 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     _selectedIndex = indexPath.row;
+    
+    if (_changeValueBlock) {
+        _changeValueBlock(_items[_selectedIndex]);
+    }
+    
     [tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationAutomatic
      ];
 }

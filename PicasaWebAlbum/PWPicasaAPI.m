@@ -34,6 +34,8 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
         }
         else {
             if (data) {
+//                NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+                
                 NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
                 //            NSLog(@"%@", json.description);
                 
@@ -148,8 +150,8 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                             if (completion) {
                                 completion(nil, 0, [PWPicasaAPI coreDataError]);
                             }
+                            return;
                         }
-                        
                         if (completion) {
                             completion(photos, index + [totalResults integerValue], nil);
                         }
@@ -165,14 +167,14 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
     }];
 }
 
-+ (void)postCreatingNewAlbumRequest:(NSString *)title
++ (void)postCreatingNewAlbumRequestWithTitle:(NSString *)title
                             summary:(NSString *)summary
                            location:(NSString *)location
                              access:(NSString *)access
                           timestamp:(NSString *)timestamp
                            keywords:(NSString *)keywords
                          completion:(void (^)(NSError *error))completion {
-    [PWPicasaPOSTRequest postCreatingNewAlbumRequest:title
+    [PWPicasaPOSTRequest postCreatingNewAlbumRequestWithTitle:title
                                              summary:summary
                                             location:location
                                               access:access
@@ -198,6 +200,43 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                                                   completion(nil);
                                               }
                                           }];
+}
+
++ (void)putModifyingAlbumWithID:(NSString *)albumID
+                          title:(NSString *)title
+                        summary:(NSString *)summary
+                       location:(NSString *)location
+                         access:(NSString *)access
+                      timestamp:(NSString *)timestamp
+                       keywords:(NSString *)keywords
+                     completion:(void (^)(NSError *))completion {
+    [PWPicasaPOSTRequest putModifyingAlbumWithID:albumID
+                                           title:title
+                                         summary:summary
+                                        location:location
+                                          access:access
+                                       timestamp:timestamp
+                                        keywords:keywords
+                                      completion:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                          if (error) {
+                                              if (completion) {
+                                                  completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]);
+                                              }
+                                              return;
+                                          }
+                                          
+                                          NSUInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
+                                          if (statusCode != 200) {
+                                              if (completion) {
+                                                  completion([NSError errorWithDomain:PWParserErrorDomain code:statusCode userInfo:nil]);
+                                              }
+                                              return;
+                                          }
+                                          
+                                          if (completion) {
+                                              completion(nil);
+                                          }
+                                      }];
 }
 
 + (void)deleteAlbum:(PWAlbumObject *)album completion:(void (^)(NSError *error))completion {

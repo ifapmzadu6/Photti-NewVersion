@@ -12,11 +12,13 @@
 #import "PWPicasaAPI.h"
 #import "PWAlbumViewCell.h"
 #import "PWRefreshControl.h"
+#import "BlocksKit+UIKit.h"
 
 #import "PWPhotoListViewController.h"
 #import "PWSearchNavigationController.h"
 #import "PWTabBarController.h"
 #import "PWNewAlbumEditViewController.h"
+#import "PWAlbumEditViewController.h"
 
 @interface PWAlbumListViewController ()
 
@@ -126,17 +128,6 @@
 
 #pragma mark UIBarButtonItem - Depricated
 - (void)actionBarButtonAction {
-//    [PWPicasaAPI deleteAlbum:_albums.lastObject completion:^(NSError *error) {
-//        typeof(wself) sself = wself;
-//        if (!sself) return;
-//        
-//        if (error) {
-//            NSLog(@"%@", error.description);
-//            return;
-//        }
-//        
-//        [sself reloadData];
-//    }];
 }
 
 #pragma mark UICollectionViewDataSource
@@ -152,8 +143,14 @@
     _isDisplayed = YES;
     
     PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-    
     cell.album = _albums[indexPath.row];
+    __weak typeof(self) wself = self;
+    [cell setActionButtonActionBlock:^(PWAlbumObject *album) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself showAlbumActionSheet:album];
+    }];
     
     return cell;
 }
@@ -320,5 +317,66 @@
     }];
 }
 
+#pragma mark UIActionSheet
+- (void)showAlbumActionSheet:(PWAlbumObject *)album {
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.title];
+    __weak typeof(self) wself = self;
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"情報", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        PWAlbumEditViewController *viewController = [[PWAlbumEditViewController alloc] initWithAlbum:album];
+        [viewController setSuccessBlock:^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            [sself reloadData];
+        }];
+        PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+        [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+    }];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"共有", nil) handler:^{
+        if ([kPWPicasaAPIGphotoAccessProtected isEqualToString:album.gphoto.access] || [kPWPicasaAPIGphotoAccessPrivate isEqualToString:album.gphoto.access]) {
+//            UIActionSheet *shareActionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"アルバムのアクセス権限を変更する必要があります", nil)];
+        }
+    }];
+    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"本当に削除しますか？アルバム内の写真はすべて削除されます。", nil)];
+        [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除する", nil) handler:^{
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"アルバムを削除しています", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
+            [indicator startAnimating];
+            [alertView setValue:indicator forKey:@"accessoryView"];
+            [alertView show];
+            
+            [PWPicasaAPI deleteAlbum:album completion:^(NSError *error) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                    [sself reloadData];
+                });
+            }];
+        }];
+        [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+        
+        [deleteActionSheet showFromTabBar:sself.tabBarController.tabBar];
+    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
+        
+    }];
+    
+    [actionSheet showFromTabBar:self.tabBarController.tabBar];
+}
 
 @end

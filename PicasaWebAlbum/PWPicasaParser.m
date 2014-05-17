@@ -300,9 +300,9 @@
     NSDictionary *access = NULL_TO_NIL(json[@"gphoto:access"]);
     if (access) {
         gphoto.access = NULL_TO_NIL(access[@"text"]);
-//#ifdef DEBUG_LOCAL
+#ifdef DEBUG_LOCAL
         NSLog(@"gphoto.access = %@", gphoto.access);
-//#endif
+#endif
     }
     NSDictionary *albumType = NULL_TO_NIL(json[@"gphoto:albumType"]);
     if (albumType) {

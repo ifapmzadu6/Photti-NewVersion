@@ -16,6 +16,8 @@ static NSString * const kPWPicasaAPIGphotoAccessPrivate = @"private";
 static NSString * const kPWPicasaAPIGphotoAccessPublic = @"public";
 static NSString * const kPWPicasaAPIGphotoAccessProtected = @"protected";
 
+static NSString * const kPWPicasaAPILinkRelShare = @"alternate";
+
 @interface PWPicasaAPI : NSObject
 
 + (void)getListOfAlbumsWithIndex:(NSUInteger)index completion:(void (^)(NSArray *albums, NSUInteger nextIndex, NSError *error))completion;
@@ -26,13 +28,22 @@ static NSString * const kPWPicasaAPIGphotoAccessProtected = @"protected";
 
 + (void)getAuthorizedURLRequest:(NSURL *)url completion:(void (^)(NSMutableURLRequest *request, NSError *error))completion;
 
-+ (void)postCreatingNewAlbumRequest:(NSString *)title
++ (void)postCreatingNewAlbumRequestWithTitle:(NSString *)title
                             summary:(NSString *)summary
                            location:(NSString *)location
                              access:(NSString *)access
                           timestamp:(NSString *)timestamp
                            keywords:(NSString *)keywords
                          completion:(void (^)(NSError *error))completion;
+
++ (void)putModifyingAlbumWithID:(NSString *)albumID
+                          title:(NSString *)title
+                        summary:(NSString *)summary
+                       location:(NSString *)location
+                         access:(NSString *)access
+                      timestamp:(NSString *)timestamp
+                       keywords:(NSString *)keywords
+                     completion:(void (^)(NSError *error))completion;
 
 + (void)deleteAlbum:(PWAlbumObject *)album completion:(void (^)(NSError *error))completion;
 
