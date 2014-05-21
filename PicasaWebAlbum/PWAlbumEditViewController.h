@@ -22,12 +22,8 @@
 @property (strong, nonatomic) UIView *backgroundView;
 @property (strong, nonatomic) PWDatePickerView *datePickerView;
 @property (strong, nonatomic) UITextField *textField;
-@property (strong, nonatomic) UIButton *linkCopyButton;
-@property (strong, nonatomic) UIButton *linkShareButton;
 
 @property (strong, nonatomic) NSString *timestamp;
-@property (strong, nonatomic) NSString *access;
-@property (strong, nonatomic) NSString *accessDisplayString;
 
 @property (nonatomic) BOOL isDisplayed;
 

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13D65" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="PLAlbumObject" representedClassName="PLAlbumObject" syncable="YES">
+        <attribute name="edited" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="id_str" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="import" optional="YES" attributeType="Date" indexed="YES" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tag_date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="tag_enddate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="tag_type" optional="YES" attributeType="Integer 16" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="update" optional="YES" attributeType="Date" indexed="YES" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="PLPhotoObject" inverseName="albums" inverseEntity="PLPhotoObject" syncable="YES"/>
+        <relationship name="thumbnail" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PLPhotoObject" inverseName="thumbnailed" inverseEntity="PLPhotoObject" syncable="YES"/>
+    </entity>
+    <entity name="PLPhotoObject" representedClassName="PLPhotoObject" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="filename" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="height" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="import" optional="YES" attributeType="Date" indexed="YES" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="update" optional="YES" attributeType="Date" indexed="YES" syncable="YES"/>
+        <attribute name="url" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="width" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="albums" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PLAlbumObject" inverseName="photos" inverseEntity="PLAlbumObject" syncable="YES"/>
+        <relationship name="thumbnailed" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PLAlbumObject" inverseName="thumbnail" inverseEntity="PLAlbumObject" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="PLPhotoObject" positionX="-461" positionY="-133" width="128" height="238"/>
+        <element name="PLAlbumObject" positionX="-54" positionY="-9" width="128" height="238"/>
+    </elements>
+</model>

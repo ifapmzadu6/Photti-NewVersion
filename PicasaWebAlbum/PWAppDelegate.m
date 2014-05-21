@@ -13,7 +13,6 @@
 @implementation PWAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = [[PWTabBarController alloc] init];
     self.window.backgroundColor = [UIColor whiteColor];

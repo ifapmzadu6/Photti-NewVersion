@@ -17,8 +17,9 @@
 #import "PWPhotoListViewController.h"
 #import "PWSearchNavigationController.h"
 #import "PWTabBarController.h"
-#import "PWNewAlbumEditViewController.h"
 #import "PWAlbumEditViewController.h"
+#import "PWNewAlbumEditViewController.h"
+#import "PWAlbumShareViewController.h"
 
 @interface PWAlbumListViewController ()
 
@@ -89,6 +90,9 @@
         
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
     }
+    
+    [_refreshControl beginRefreshing];
+    [self loadLocalData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -106,8 +110,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    [self loadLocalData];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -236,13 +238,15 @@
         
         if (error) {
             NSLog(@"%@", error);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [sself.refreshControl endRefreshing];
-                UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
-                    [sself loadDataWithStartIndex:index];
-                }];
-                [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
-            });
+            if (error.code == 401) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [sself.refreshControl endRefreshing];
+                    UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
+                        [sself loadDataWithStartIndex:index];
+                    }];
+                    [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
+                });
+            }
             return;
         }
         
@@ -263,23 +267,43 @@
         
         if (error) {
             NSLog(@"%@", error);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [sself.refreshControl endRefreshing];
-                UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
-                    [sself reloadData];
-                }];
-                [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
-            });
+            if (error.code == 401) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [sself.refreshControl endRefreshing];
+                    UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
+                        [sself reloadData];
+                    }];
+                    [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
+                });
+            }
+            return;
         }
-        else {
-            sself.requestIndex = nextIndex;
-            sself.albums = albums.mutableCopy;
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [sself.activityIndicatorView stopAnimating];
-                [sself.refreshControl endRefreshing];
-                [sself.collectionView reloadData];
-            });
+        
+        sself.requestIndex = nextIndex;
+        sself.albums = albums.mutableCopy;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sself.activityIndicatorView stopAnimating];
+            [sself.refreshControl endRefreshing];
+            [sself.collectionView reloadData];
+        });
+        
+        NSMutableArray *deleteAlbums = albums.mutableCopy;
+        for (PWAlbumObject *album in albums) {
+            for (PWAlbumObject *deleteAlbum in deleteAlbums) {
+                if ([album.id_str isEqualToString:deleteAlbum.id_str]) {
+                    [deleteAlbums removeObject:deleteAlbum];
+                    break;
+                }
+            }
+        }
+        if (deleteAlbums.count > 0) {
+            [PWCoreDataAPI performBlockAndWait:^(NSManagedObjectContext *context) {
+                for (PWAlbumObject *album in deleteAlbums) {
+                    [context deleteObject:album];
+                }
+                [context save:nil];
+            }];
         }
     }];
 }
@@ -310,9 +334,8 @@
                     [sself.collectionView reloadData];
                 }
             }
-            else {
-                [sself reloadData];
-            }
+            
+            [sself reloadData];
         });
     }];
 }
@@ -336,9 +359,20 @@
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"共有", nil) handler:^{
-        if ([kPWPicasaAPIGphotoAccessProtected isEqualToString:album.gphoto.access] || [kPWPicasaAPIGphotoAccessPrivate isEqualToString:album.gphoto.access]) {
-//            UIActionSheet *shareActionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"アルバムのアクセス権限を変更する必要があります", nil)];
-        }
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        PWAlbumShareViewController *viewController = [[PWAlbumShareViewController alloc] initWithAlbum:album];
+        [viewController setChangedAlbumBlock:^(NSString *retAccess, NSSet *link) {
+            album.link = link;
+            album.gphoto.access = retAccess;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
+            });
+        }];
+        PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+        [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除", nil) handler:^{
         typeof(wself) sself = wself;

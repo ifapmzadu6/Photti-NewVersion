@@ -12,10 +12,8 @@
 #import "PWDatePickerView.h"
 #import "BlocksKit+UIKit.h"
 
-#import "PWSelectItemFromArrayViewController.h"
-
 typedef enum _PWAlbumEditViewControllerCellRow {
-    PWAlbumEditViewControllerCellRowTitle = 0,
+    PWAlbumEditViewControllerCellRowTitle,
     PWAlbumEditViewControllerCellRowTimestamp
 } PWAlbumEditViewControllerCellRow;
 
@@ -47,15 +45,6 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     
     _timestamp = _album.gphoto.timestamp;
     
-    NSString *access = NSLocalizedString(@"非公開", nil);
-    if ([_album.gphoto.access isEqualToString:kPWPicasaAPIGphotoAccessPublic]) {
-        access = NSLocalizedString(@"すべての人に公開", nil);
-    }
-    else if ([_album.gphoto.access isEqualToString:kPWPicasaAPIGphotoAccessPrivate]) {
-        access = NSLocalizedString(@"リンクを知っている人に公開", nil);
-    }
-    _accessDisplayString = access;
-    
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
@@ -82,15 +71,6 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
         dHeight = 162.0 + 44.0f;
     }
     _datePickerView.frame = CGRectMake(0.0f, rect.size.height - dHeight, rect.size.width, dHeight);
-    
-    UIButton *linkCopyButton = _linkCopyButton;
-    if (linkCopyButton) {
-        linkCopyButton.frame = CGRectMake(20.0f, 2.0f, (rect.size.width - 40.0f) / 2.0f - 10.0f, 40.0f);
-    }
-    UIButton *linkShareButton = _linkShareButton;
-    if (linkShareButton) {
-        linkShareButton.frame = CGRectMake(20.0f + 20.0f + (rect.size.width - 40.0f) / 2.0f - 10.0f, 2.0f, (rect.size.width - 40.0f) / 2.0f - 10.0f, 40.0f);
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -107,15 +87,10 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
 
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 1) {
-        if ([_accessDisplayString isEqualToString:NSLocalizedString(@"非公開", nil)]) {
-            return 1;
-        }
-    }
     return 2;
 }
 
@@ -156,50 +131,6 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
     }
-    else if (indexPath.section == 1) {
-        if (indexPath.row == PWAlbumEditViewControllerCellAccessRowAccess) {
-            cell.textLabel.text = @"共有";
-            cell.detailTextLabel.text = _accessDisplayString;
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-        }
-        else if (indexPath.row == PWAlbumEditViewControllerCellAccessRowShare) {
-            cell.textLabel.text = nil;
-            cell.detailTextLabel.text = nil;
-            
-            CGRect rect = self.view.bounds;
-            if (_linkCopyButton) {
-                [_linkCopyButton removeFromSuperview];
-                _linkCopyButton = nil;
-            }
-            if (_linkShareButton) {
-                [_linkShareButton removeFromSuperview];
-                _linkShareButton = nil;
-            }
-            if (!_linkCopyButton) {
-                UIButton *linkCopyButton = [[UIButton alloc] initWithFrame:CGRectMake(20.0f, 2.0f, (rect.size.width - 40.0f) / 2.0f - 10.0f, 40.0f)];
-                [linkCopyButton addTarget:self action:@selector(linkCopyAction) forControlEvents:UIControlEventTouchUpInside];
-                linkCopyButton.titleLabel.font = [UIFont boldSystemFontOfSize:15.0f];
-                [linkCopyButton setTitle:NSLocalizedString(@"リンクをコピー", nil) forState:UIControlStateNormal];
-                [linkCopyButton setTitleColor:linkCopyButton.tintColor forState:UIControlStateNormal];
-                [linkCopyButton setTitleColor:[linkCopyButton.tintColor colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
-                [cell.contentView addSubview:linkCopyButton];
-                
-                _linkCopyButton = linkCopyButton;
-            }
-            if (!_linkShareButton) {
-                UIButton *linkShareButton = [[UIButton alloc] initWithFrame:CGRectMake(20.0f + 20.0f + (rect.size.width - 40.0f) / 2.0f - 10.0f, 2.0f, (rect.size.width - 40.0f) / 2.0f - 10.0f, 40.0f)];
-                [linkShareButton addTarget:self action:@selector(linkShareAction) forControlEvents:UIControlEventTouchUpInside];
-                linkShareButton.titleLabel.font = [UIFont boldSystemFontOfSize:15.0f];
-                [linkShareButton setTitle:NSLocalizedString(@"リンクを共有", nil) forState:UIControlStateNormal];
-                [linkShareButton setTitleColor:linkShareButton.tintColor forState:UIControlStateNormal];
-                [linkShareButton setTitleColor:[linkShareButton.tintColor colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
-                [cell.contentView addSubview:linkShareButton];
-                
-                _linkShareButton = linkShareButton;
-            }
-        }
-    }
     
     return cell;
 }
@@ -209,13 +140,6 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     if (indexPath.section == 0) {
         if (indexPath.row == PWAlbumEditViewControllerCellRowTimestamp) {
             [self enableDatePicker];
-        }
-    }
-    else if (indexPath.section == 1) {
-        if (indexPath.row == PWAlbumEditViewControllerCellAccessRowAccess) {
-            UILabel *label = (UILabel *)[_tableView cellForRowAtIndexPath:indexPath].detailTextLabel;
-            UIViewController *viewController = [self viewControllerSelectItemViewController:label];
-            [self.navigationController pushViewController:viewController animated:YES];
         }
     }
 }
@@ -284,37 +208,6 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[_album.title, url] applicationActivities:nil];
     [self.navigationController presentViewController:activityViewController animated:YES completion:nil];
-}
-
-- (UIViewController *)viewControllerSelectItemViewController:(UILabel *)label {
-    NSArray *items = [self arrayOfAccessItem];
-    NSUInteger index = NSUIntegerMax;
-    for (NSString *item in items) {
-        if ([item isEqualToString:_accessDisplayString]) {
-            index = [items indexOfObject:item];
-        }
-    }
-    PWSelectItemFromArrayViewController *viewController = [[PWSelectItemFromArrayViewController alloc] initWithItems:items defaultIndex:index];
-    viewController.disableIndex = NSUIntegerMax;
-    viewController.title = NSLocalizedString(@"共有", nil);
-    __weak typeof(self) wself = self;
-    [viewController setDoneBlock:^(NSString *selectedItem) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        sself.accessDisplayString = selectedItem;
-        
-        label.text = (NSString *)selectedItem;
-        
-        [sself.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationAutomatic];
-    }];
-    
-    return viewController;
-}
-
-- (NSArray *)arrayOfAccessItem {
-    NSArray *items = @[NSLocalizedString(@"すべての人に公開", nil), NSLocalizedString(@"リンクを知っている人に公開", nil), NSLocalizedString(@"非公開", nil)];
-    return items;
 }
 
 - (void)enableDatePicker {
@@ -397,14 +290,6 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     [alertView setValue:indicator forKey:@"accessoryView"];
     [alertView show];
     
-    NSString *access = kPWPicasaAPIGphotoAccessProtected;
-    if ([_accessDisplayString isEqualToString:NSLocalizedString(@"すべての人に公開", nil)]) {
-        access = kPWPicasaAPIGphotoAccessPublic;
-    }
-    else if ([_accessDisplayString isEqualToString:NSLocalizedString(@"リンクを知っている人に公開", nil)]) {
-        access = kPWPicasaAPIGphotoAccessPrivate;
-    }
-    
     NSString *albumTitle = nil;
     UITextField *textField = _textField;
     if (textField) {
@@ -421,10 +306,10 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
                                    title:albumTitle
                                  summary:_album.summary
                                 location:_album.gphoto.location
-                                  access:access
+                                  access:kPWPicasaAPIGphotoAccessProtected
                                timestamp:_timestamp
                                 keywords:_album.media.keywords
-                              completion:^(NSError *error) {
+                              completion:^(NSString *newAccess, NSSet *link, NSError *error) {
                                   if (error) {
                                       NSLog(@"%@", error.description);
                                       dispatch_async(dispatch_get_main_queue(), ^{

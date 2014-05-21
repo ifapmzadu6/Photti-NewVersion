@@ -41,10 +41,10 @@ static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/
 }
 
 + (void)getAuthorizedURLRequest:(NSURL *)url completion:(void (^)(NSMutableURLRequest *, NSError *))completion {
-    [PWPicasaGETRequest getHttpHeaderFieldsWithCompletion:^(NSDictionary *headerFields) {
-        if (!headerFields) {
+    [PWPicasaGETRequest getHttpHeaderFieldsWithCompletion:^(NSDictionary *headerFields, NSError *error) {
+        if (error) {
             if (completion) {
-                completion(nil, [NSError errorWithDomain:@"photti.PicasaWebAlbum.com.PWPicasaGETRequest" code:401 userInfo:nil]);
+                completion(nil, error);
             }
         }
         else {
@@ -58,17 +58,16 @@ static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/
 }
 
 + (void)authorizedGETRequestWithURL:(NSURL *)url completion:(void (^)(NSData *, NSURLResponse *, NSError *))completion {
-    [PWPicasaGETRequest getHttpHeaderFieldsWithCompletion:^(NSDictionary *headerFields) {
-        if (!headerFields) {
+    [PWPicasaGETRequest getHttpHeaderFieldsWithCompletion:^(NSDictionary *headerFields, NSError *error) {
+        if (error) {
             if (completion) {
-                completion(nil, nil, [NSError errorWithDomain:@"photti.PicasaWebAlbum.com.PWPicasaGETRequest" code:401 userInfo:nil]);
+                completion(nil, nil, error);
             }
         }
         else {
             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
             request.allHTTPHeaderFields = headerFields;
-            NSURLSession *session = [NSURLSession sharedSession];
-            NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:completion];
+            NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
             [task resume];
         }
     }];
@@ -93,18 +92,19 @@ static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/
     return url;
 }
 
-+ (void)getHttpHeaderFieldsWithCompletion:(void (^)(NSDictionary *headerFields))completion {
-    [PWOAuthManager getAccessTokenWithCompletion:^(NSString *accessToken) {
++ (void)getHttpHeaderFieldsWithCompletion:(void (^)(NSDictionary *headerFields, NSError *error))completion {
+    [PWOAuthManager getAccessTokenWithCompletion:^(NSString *accessToken, NSError *error) {
         if (!accessToken) {
             if (completion) {
-                completion(nil);
+                completion(nil, error);
             }
         }
         else {
-            NSString *tokenHeaderFieldValue = [NSString stringWithFormat:@"OAuth %@", accessToken];
-            NSDictionary *headerFields = @{@"GData-Version": @"2", @"Authorization": tokenHeaderFieldValue};
+//            NSString *tokenHeaderFieldValue = [NSString stringWithFormat:@"Bearer %@", accessToken];
+//            NSDictionary *headerFields = @{@"GData-Version": @"2", @"Authorization": tokenHeaderFieldValue};
+            NSDictionary *headerFields = @{@"GData-Version": @"2", @"Authorization": accessToken};
             if (completion) {
-                completion(headerFields);
+                completion(headerFields, nil);
             }
         }
     }];

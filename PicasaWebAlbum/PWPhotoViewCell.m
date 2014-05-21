@@ -71,11 +71,11 @@
     
     if (selected) {
         if (_isSelectWithCheckMark) {
-            _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.2f];
+            _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.25f];
             _checkMark.alpha = 1.0f;
         }
         else {
-            _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.2f];
+            _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.25f];
             _checkMark.alpha = 0.0f;
         }
         _overrayView.alpha = 1.0f;
@@ -90,6 +90,12 @@
     [super setHighlighted:highlighted];
     
     if (highlighted) {
+        if (_isSelectWithCheckMark) {
+            _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.25f];
+        }
+        else {
+            _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.25f];
+        }
         _overrayView.alpha = 1.0f;
     }
     else {
@@ -194,7 +200,7 @@
                                 if (sself.requestHash == hash) {
                                     UIImage *image = [UIImage imageWithData:data];
                                     UIImage *thumbnailImage = [sself createThumbnail:image size:sself.bounds.size];
-                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                    dispatch_sync(dispatch_get_main_queue(), ^{
                                         typeof(wself) sself = wself;
                                         if (!sself) return;
                                         if (sself.requestHash == hash) {

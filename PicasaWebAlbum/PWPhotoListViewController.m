@@ -16,7 +16,11 @@
 
 #import "PWPhotoViewCell.h"
 #import "PWTabBarController.h"
+#import "PWNavigationController.h"
 #import "PWPhotoPageViewController.h"
+#import "PWAlbumEditViewController.h"
+#import "PWNewAlbumEditViewController.h"
+#import "PWAlbumShareViewController.h"
 
 @interface PWPhotoListViewController ()
 
@@ -75,6 +79,7 @@
 //    UIBarButtonItem *mapBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Info"] style:UIBarButtonItemStylePlain target:self action:@selector(mapBarButtonAction)];
 //    self.navigationItem.rightBarButtonItem = mapBarButtonItem;
     
+    [_refreshControl beginRefreshing];
     [self loadLocalData];
 }
 
@@ -142,7 +147,7 @@
 }
 
 - (void)actionBarButtonAction {
-    
+    [self showAlbumActionSheet:_album];
 }
 
 - (void)addBarButtonAction {
@@ -163,23 +168,7 @@
 }
 
 - (void)trashBarButtonAction {
-    __weak typeof(self) wself = self;
-    [PWPhotoObject getCountFromPhotoObjects:_photos completion:^(NSUInteger countOfPhoto, NSUInteger countOfVideo) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        NSString *itemString = [PWString itemNameFromPhotoCount:countOfPhoto videoCount:countOfVideo];
-        NSString *deleteButton = [NSString stringWithFormat:@"%@を削除", itemString];
-        NSString *cancelButton = @"Cancel";
-        
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
-        [actionSheet bk_setDestructiveButtonWithTitle:deleteButton handler:^{
-            
-        }];
-        [actionSheet bk_setCancelButtonWithTitle:cancelButton handler:nil];
-        
-        [actionSheet showFromTabBar:sself.tabBarController.tabBar];
-    }];
+    [self showTrashPhotosActionSheet];
 }
 
 - (void)moveBarButtonAction {
@@ -280,17 +269,19 @@
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     [cancelBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
     UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:@"項目を選択"];
-    [navigationItem setRightBarButtonItem:cancelBarButtonItem animated:NO];
+    [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
     [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        sself.navigationController.navigationBar.hidden = YES;
+        sself.navigationController.navigationBar.alpha = 0.0f;
     }];
 	if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
 		self.navigationController.interactivePopGestureRecognizer.enabled = NO;
 	}
+        
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
 - (void)disableSelectMode {
@@ -312,12 +303,14 @@
     [tabBarController setToolbarHidden:NO animated:NO completion:nil];
     [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
     
-    self.navigationController.navigationBar.hidden = NO;
+    self.navigationController.navigationBar.alpha = 1.0f;
     [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
     
 	if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
 		self.navigationController.interactivePopGestureRecognizer.enabled = YES;
 	}
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 #pragma mark LoadData
@@ -356,13 +349,15 @@
         
         if (error) {
             NSLog(@"%@", error);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [sself.refreshControl endRefreshing];
-                UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
-                    [sself reloadData];
-                }];
-                [sself presentViewController:viewController animated:YES completion:nil];
-            });
+            if (error.code == 401) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [sself.refreshControl endRefreshing];
+                    UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
+                        [sself reloadData];
+                    }];
+                    [sself presentViewController:viewController animated:YES completion:nil];
+                });
+            }
             return;
         }
         
@@ -372,8 +367,30 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [sself.activityIndicatorView stopAnimating];
             [sself.refreshControl endRefreshing];
+            NSArray *indexPathsForSelectedItems = sself.collectionView.indexPathsForSelectedItems;
             [sself.collectionView reloadData];
+            for (NSIndexPath *indexPath in indexPathsForSelectedItems) {
+                [sself.collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+            }
         });
+        
+        NSMutableArray *deletePhotos = photos.mutableCopy;
+        for (PWPhotoObject *photo in photos) {
+            for (PWPhotoObject *deletePhoto in deletePhotos) {
+                if ([photo.id_str isEqualToString:deletePhoto.id_str]) {
+                    [deletePhotos removeObject:deletePhoto];
+                    break;
+                }
+            }
+        }
+        if (deletePhotos.count > 0) {
+            [PWCoreDataAPI performBlockAndWait:^(NSManagedObjectContext *context) {
+                for (PWPhotoObject *photo in deletePhotos) {
+                    [context deleteObject:photo];
+                }
+                [context save:nil];
+            }];
+        }
     }];
 }
 
@@ -387,7 +404,7 @@
         
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-        request.predicate = [NSPredicate predicateWithFormat:@"%K = %@", @"albumid", sself.album.id_str];
+        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", sself.album.id_str];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         NSError *error;
         NSArray *photos = [context executeFetchRequest:request error:&error];
@@ -400,10 +417,133 @@
                     [sself.collectionView reloadData];
                 }
             }
-            else {
-                [sself reloadData];
-            }
+            [sself reloadData];
         });
+    }];
+}
+
+#pragma mark Action
+- (void)showAlbumActionSheet:(PWAlbumObject *)album {
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.title];
+    __weak typeof(self) wself = self;
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"情報", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        PWAlbumEditViewController *viewController = [[PWAlbumEditViewController alloc] initWithAlbum:album];
+        [viewController setSuccessBlock:^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            [sself reloadData];
+        }];
+        PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+        [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+    }];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"共有", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        PWAlbumShareViewController *viewController = [[PWAlbumShareViewController alloc] initWithAlbum:album];
+        [viewController setChangedAlbumBlock:^(NSString *retAccess, NSSet *link) {
+            album.link = link;
+            album.gphoto.access = retAccess;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
+            });
+        }];
+        PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+        [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+    }];
+    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"本当に削除しますか？アルバム内の写真はすべて削除されます。", nil)];
+        [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除する", nil) handler:^{
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"アルバムを削除しています", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
+            [indicator startAnimating];
+            [alertView setValue:indicator forKey:@"accessoryView"];
+            [alertView show];
+            
+            [PWPicasaAPI deleteAlbum:album completion:^(NSError *error) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                    [sself reloadData];
+                });
+            }];
+        }];
+        [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+        
+        [deleteActionSheet showFromTabBar:sself.tabBarController.tabBar];
+    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
+        
+    }];
+    
+    [actionSheet showFromTabBar:self.tabBarController.tabBar];
+}
+
+- (void)showTrashPhotosActionSheet {
+    __weak typeof(self) wself = self;
+    [PWPhotoObject getCountFromPhotoObjects:_photos completion:^(NSUInteger countOfPhoto, NSUInteger countOfVideo) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        NSString *itemString = [PWString itemNameFromPhotoCount:countOfPhoto videoCount:countOfVideo];
+        NSString *deleteButton = [NSString stringWithFormat:@"%@を削除", itemString];
+        NSString *cancelButton = @"Cancel";
+        
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
+        [actionSheet bk_setDestructiveButtonWithTitle:deleteButton handler:^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"写真を削除しています", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
+            [indicator startAnimating];
+            [alertView setValue:indicator forKey:@"accessoryView"];
+            [alertView show];
+            
+            NSArray *indexPaths = sself.collectionView.indexPathsForSelectedItems;
+            NSUInteger maxCount = indexPaths.count;
+            __block NSUInteger count = 0;
+            for (NSIndexPath *indexPath in indexPaths) {
+                PWPhotoObject *photo = sself.photos[indexPath.row];
+                [PWPicasaAPI deletePhoto:photo completion:^(NSError *error) {
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    
+                    count++;
+                    if (count == maxCount) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                            [sself reloadData];
+                        });
+                    }
+                    
+                    if (error) {
+                        NSLog(@"%@", error.description);
+                        return;
+                    }
+                }];
+            }
+        }];
+        [actionSheet bk_setCancelButtonWithTitle:cancelButton handler:nil];
+        
+        [actionSheet showFromTabBar:sself.tabBarController.tabBar];
     }];
 }
 

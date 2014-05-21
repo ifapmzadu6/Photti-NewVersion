@@ -12,7 +12,7 @@
 
 #import "PWNavigationController.h"
 #import "PWSearchNavigationController.h"
-#import "PWLocalViewController.h"
+#import "PLAlbumListViewController.h"
 #import "PWAlbumListViewController.h"
 #import "PWAutoUploadViewController.h"
 
@@ -36,7 +36,7 @@ static const CGFloat animationDuration = 0.3f;
 - (id)init {
     self = [super init];
     if (self) {
-        PWLocalViewController *localViewController = [[PWLocalViewController alloc] init];
+        PLAlbumListViewController *localViewController = [[PLAlbumListViewController alloc] init];
         PWNavigationController *localNavigationController = [[PWNavigationController alloc] initWithRootViewController:localViewController];
         
         PWAlbumListViewController *albumListViweController = [[PWAlbumListViewController alloc] init];
@@ -63,7 +63,7 @@ static const CGFloat animationDuration = 0.3f;
         _isActionToolbarHidden = YES;
         
         _actionNavigationBar = [[UINavigationBar alloc] init];
-        _actionNavigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor colorWithWhite:0.7f alpha:1.0f]};
+        _actionNavigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor colorWithWhite:0.8f alpha:1.0f]};
         _actionNavigationBar.barTintColor = [UIColor blackColor];
         _actionNavigationBar.alpha = 0.0f;
         [self.view addSubview:_actionNavigationBar];
@@ -72,7 +72,7 @@ static const CGFloat animationDuration = 0.3f;
 }
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
+    [super viewDidLoad];    
 }
 
 - (void)viewWillLayoutSubviews {

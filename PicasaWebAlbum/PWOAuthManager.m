@@ -16,12 +16,24 @@ static NSString * const PWClientID = @"982107973738-pqihuiltucj69o5413n38hm52lj3
 static NSString * const PWClientSecret = @"5OS58Vf-PA09YGHlFZUc_BtX";
 static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 
+//#define dispatch_main_sync_safe(block) dispatch_sync(dispatch_get_main_queue(), block);
+//
+//#define dispatch_main_async_safe(block) dispatch_async(dispatch_get_main_queue(), block);
+
 #define dispatch_main_sync_safe(block)\
 if ([NSThread isMainThread]) {\
 block();\
 }\
 else {\
 dispatch_sync(dispatch_get_main_queue(), block);\
+}
+
+#define dispatch_main_async_safe(block)\
+if ([NSThread isMainThread]) {\
+block();\
+}\
+else {\
+dispatch_async(dispatch_get_main_queue(), block);\
 }
 
 @interface PWOAuthManager ()
@@ -51,37 +63,27 @@ dispatch_sync(dispatch_get_main_queue(), block);\
     return auth;
 }
 
-+ (void)getAccessTokenWithCompletion:(void (^)(NSString *))completion {
-    dispatch_main_sync_safe(^{
-        GTMOAuth2Authentication *auth = [PWOAuthManager authentication];
-        NSString *accessToken = [auth accessToken];
-        if (accessToken) {
-            if (completion) {
-                completion(accessToken);
-            }
-            return;
-        }
-        
-        if (![auth canAuthorize]) {
-            auth = [PWOAuthManager authenticationWithRefresh:YES];
-        }
++ (void)getAccessTokenWithCompletion:(void (^)(NSString *, NSError *))completion {
+    dispatch_main_async_safe(^{
+        GTMOAuth2Authentication *auth = [PWOAuthManager authenticationWithRefresh:NO];
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
         [auth authorizeRequest:request completionHandler:^(NSError *error) {
             if (error) {
-                NSLog(@"AuthorizeRequest Error!");
-                NSLog(@"%@", error.description);
+                [PWOAuthManager authenticationWithRefresh:YES];
+                [PWOAuthManager getAccessTokenWithCompletion:completion];
                 return;
             }
             
+            NSDictionary *headerFields = request.allHTTPHeaderFields;
             if (completion) {
-                completion([auth accessToken]);
+                completion(headerFields[@"Authorization"], nil);
             }
         }];
     });
 }
 
 + (void)authorizeRequestWithCompletion:(void (^)(NSError *error))completion {
-    dispatch_main_sync_safe(^{
+    dispatch_main_async_safe(^{
         GTMOAuth2Authentication *newAuth = [PWOAuthManager authenticationWithRefresh:YES];
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:newAuth.tokenURL];
         [newAuth authorizeRequest:request completionHandler:completion];
@@ -89,7 +91,7 @@ dispatch_sync(dispatch_get_main_queue(), block);\
 }
 
 + (void)logout {
-    dispatch_main_sync_safe(^{
+    dispatch_main_async_safe(^{
         [GTMOAuth2ViewControllerTouch removeAuthFromKeychainForName:PWKeyChainItemName];
         [GTMOAuth2ViewControllerTouch revokeTokenForGoogleAuthentication:[PWOAuthManager authentication]];
     });

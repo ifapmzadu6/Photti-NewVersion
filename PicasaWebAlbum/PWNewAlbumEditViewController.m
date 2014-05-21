@@ -28,8 +28,6 @@
     
     self.timestamp = [NSString stringWithFormat:@"%lld", (long long)([[NSDate date] timeIntervalSince1970])*1000];
     
-    self.accessDisplayString = NSLocalizedString(@"非公開", nil);
-    
     UIBarButtonItem *createBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"作成" style:UIBarButtonItemStylePlain target:self action:@selector(createBarButtonAction)];
     [createBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
     self.navigationItem.rightBarButtonItem = createBarButtonItem;
@@ -57,35 +55,6 @@
     return textField;
 }
 
-- (UIViewController *)viewControllerSelectItemViewController:(UILabel *)label {
-    NSArray *items = [self arrayOfAccessItem];
-    NSUInteger index = NSUIntegerMax;
-    for (NSString *item in items) {
-        if ([item isEqualToString:self.accessDisplayString]) {
-            index = [items indexOfObject:item];
-        }
-    }
-    PWSelectItemFromArrayViewController *viewController = [[PWSelectItemFromArrayViewController alloc] initWithItems:items defaultIndex:index];
-    viewController.disableIndex = 1;
-    viewController.title = NSLocalizedString(@"共有", nil);
-    __weak typeof(self) wself = self;
-    [viewController setDoneBlock:^(NSString *selectedItem) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        sself.accessDisplayString = selectedItem;
-        
-        label.text = (NSString *)selectedItem;
-    }];
-    
-    return viewController;
-}
-
-- (NSArray *)arrayOfAccessItem {
-    NSArray *items = @[NSLocalizedString(@"すべての人に公開", nil), [NSString stringWithFormat:@"%@(%@)", NSLocalizedString(@"リンクを知っている人に公開", nil), NSLocalizedString(@"後で設定可能",nil)], NSLocalizedString(@"非公開", nil)];
-    return items;
-}
-
 #pragma mark UIBarButtonItem
 - (void)createBarButtonAction {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"アルバムを作成しています", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
@@ -94,11 +63,6 @@
     [indicator startAnimating];
     [alertView setValue:indicator forKey:@"accessoryView"];
     [alertView show];
-    
-    NSString *access = kPWPicasaAPIGphotoAccessPrivate;
-    if ([self.accessDisplayString isEqualToString:NSLocalizedString(@"すべての人に公開", nil)]) {
-        access = kPWPicasaAPIGphotoAccessPublic;
-    }
     
     NSString *albumTitle = nil;
     UITextField *textField = self.textField;
@@ -115,7 +79,7 @@
     [PWPicasaAPI postCreatingNewAlbumRequestWithTitle:albumTitle
                                      summary:nil
                                     location:nil
-                                      access:access
+                                      access:kPWPicasaAPIGphotoAccessProtected
                                    timestamp:self.timestamp
                                     keywords:nil
                                   completion:^(NSError *error) {

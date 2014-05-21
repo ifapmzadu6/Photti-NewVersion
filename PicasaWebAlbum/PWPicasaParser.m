@@ -53,7 +53,7 @@
     
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"%K = %@", @"id_str", id_str];
+    request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
     NSError *error;
     NSArray *albums = [context executeFetchRequest:request error:&error];
     for (PWAlbumObject *object in albums) {
@@ -165,7 +165,7 @@
     
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"%K = %@", @"id_str", id_str];
+    request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
     NSError *error;
     NSArray *photos = [context executeFetchRequest:request error:&error];
     for (PWPhotoObject *object in photos) {

@@ -15,6 +15,10 @@
 
 + (NSArray *)parseListOfAlbumFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context;
 
++ (PWAlbumObject *)albumFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context;
+
 + (NSArray *)parseListOfPhotoFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context;
+
++ (PWPhotoLinkObject *)linkFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context;
 
 @end

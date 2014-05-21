@@ -31,4 +31,11 @@
 
 + (void)deleteAlbumWithID:(NSString *)albumID completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion;
 
+
+
+
++ (void)deletePhotoWithAlbumID:(NSString *)albumID photoID:(NSString *)photoID completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion;
+
+
+
 @end
