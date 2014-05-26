@@ -23,7 +23,7 @@
 @implementation PWPhotoPageViewController
 
 - (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index {
-    NSDictionary *option = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithFloat:40.0f], UIPageViewControllerOptionInterPageSpacingKey, nil];
+    NSDictionary *option = [NSDictionary dictionaryWithObjectsAndKeys:@(40.0f), UIPageViewControllerOptionInterPageSpacingKey, nil];
     self = [self initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:option];
     if (self) {
         _photos = photos;
@@ -79,7 +79,7 @@
     
 }
 
-#pragma mark UIPageViewController
+#pragma mark UIPageViewControllerDataSource
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
     PWPhotoViewController *photoViewController = (PWPhotoViewController *)viewController;
     NSInteger index = [_photos indexOfObject:photoViewController.photo];

@@ -10,8 +10,76 @@
 
 #import "PWColors.h"
 
+#import "PWModelObject.h"
+#import "PWCoreDataAPI.h"
+#import "PWPicasaAPI.h"
+#import "PLModelObject.h"
+#import "PLCoreDataAPI.h"
+#import "PLAssetsManager.h"
+#import "PWSearchTableViewWebAlbumCell.h"
+#import "PWSearchTableViewLocalAlbumCell.h"
+
 #import "UIView+ScreenCapture.h"
 #import "UIImage+ImageEffects.h"
+
+#import "PWPhotoListViewController.h"
+#import "PLPhotoListViewController.h"
+
+
+
+typedef enum _PWSearchNavigationControllerItemType {
+    PWSearchNavigationControllerItemTypeHistory = (1 << 0),
+    PWSearchNavigationControllerItemTypeLocalAlbum = (1 << 1),
+    PWSearchNavigationControllerItemTypeWebAlbum = (1 << 2),
+    PWSearchNavigationControllerItemTypeLocalPhoto = (1 << 3),
+    PWSearchNavigationControllerItemTypeWebPhoto = (1 << 4)
+} PWSearchNavigationControllerItemType;
+
+@interface PWSearchNavigationControllerItem : NSObject
+
+@property (nonatomic) PWSearchNavigationControllerItemType type;
+@property (strong, nonatomic) NSArray *item;
+@property (strong, nonatomic) NSDate *updateUsingByHistorySort;
+
+@end
+
+@implementation PWSearchNavigationControllerItem
+
+@end
+
+
+@interface PWSearchNavigationControllerHistoryItem : NSObject <NSCoding>
+
+@property (nonatomic) PWSearchNavigationControllerItemType type;
+@property (nonatomic) NSString *identifier;
+@property (nonatomic) NSDate *update;
+
+@end
+
+@implementation PWSearchNavigationControllerHistoryItem
+
+static NSString * const PWSearchNavigationControllerHistoryItemTypeKey = @"PWSNCHITK1";
+static NSString * const PWSearchNavigationControllerHistoryItemIdentifierKey = @"PWSNCHIIK2";
+static NSString * const PWSearchNavigationControllerHistoryItemUpdateKey = @"PWSNCHIUK3";
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super init];
+    if (self) {
+        _type = (PWSearchNavigationControllerItemType)[aDecoder decodeIntegerForKey:PWSearchNavigationControllerHistoryItemTypeKey];
+        _identifier = [aDecoder decodeObjectForKey:PWSearchNavigationControllerHistoryItemIdentifierKey];
+        _update = [aDecoder decodeObjectForKey:PWSearchNavigationControllerHistoryItemUpdateKey];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeInteger:_type forKey:PWSearchNavigationControllerHistoryItemTypeKey];
+    [aCoder encodeObject:_identifier forKey:PWSearchNavigationControllerHistoryItemIdentifierKey];
+    [aCoder encodeObject:_update forKey:PWSearchNavigationControllerHistoryItemUpdateKey];
+}
+
+@end
+
 
 @interface PWSearchNavigationController ()
 
@@ -22,13 +90,21 @@
 
 @property (nonatomic) BOOL isSearchBarOpen;
 @property (nonatomic) BOOL isAnimation;
-@property (strong, nonatomic) NSArray *predicates;
-@property (strong, nonatomic) NSArray *(^predicate)(NSString *);
-@property (strong, nonatomic) UIViewController *(^completion)(NSString *);
+@property (nonatomic) BOOL isShowHistory;
+@property (nonatomic) NSUInteger searchedTextHash;
+@property (strong, nonatomic) void (^cancelBlock)();
+
+@property (strong, nonatomic) NSArray *items;
 
 @end
 
 @implementation PWSearchNavigationController
+
+static NSString * const PWSearchNavigationControllerHistoryKey = @"PWNCH";
+static NSString * const PWSearchNavigationControllerWebAlbumCell = @"PWSNCWAC1";
+static NSString * const PWSearchNavigationControllerLocalAlbumCell = @"PWSNCLAC2";
+static NSString * const PWSearchNavigationControllerWebPhotoCell = @"PWSNCWPC3";
+static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4";
 
 - (id)init {
     self = [super init];
@@ -47,8 +123,7 @@
 }
 
 - (void)initialization {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardWillChange:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    _items = @[].mutableCopy;
     
     _searchBarBackgroundView = [[UIView alloc] init];
     _searchBarBackgroundView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
@@ -63,17 +138,18 @@
     [_searchBarBackgroundView addSubview:_searchBar];
     
     _backbroundView = [[UIImageView alloc] init];
-    _backbroundView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.4f];
     _backbroundView.alpha = 0.0;
     _backbroundView.userInteractionEnabled = YES;
     [self.view addSubview:_backbroundView];
     
-    _tableView = [[UITableView alloc] init];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
     _tableView.scrollsToTop = NO;
-    [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
     _tableView.backgroundColor = [UIColor clearColor];
+    _tableView.separatorColor = [UIColor colorWithWhite:0.0f alpha:0.15f];
+    [_tableView registerClass:[PWSearchTableViewWebAlbumCell class] forCellReuseIdentifier:PWSearchNavigationControllerWebAlbumCell];
+    [_tableView registerClass:[PWSearchTableViewLocalAlbumCell class] forCellReuseIdentifier:PWSearchNavigationControllerLocalAlbumCell];
     [_backbroundView addSubview:_tableView];
 }
 
@@ -107,48 +183,32 @@
     [super didReceiveMemoryWarning];
 }
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
-}
-
-#pragma mark Notification
-- (void)keyboardWillShow:(NSNotification *)notification {
-	CGRect keyboardRect = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
-        keyboardRect = CGRectMake(0.0f, 0.0f, keyboardRect.size.height, keyboardRect.size.width);
-    }
-    _tableView.contentInset = UIEdgeInsetsMake(_tableView.contentInset.top, 0.0f, keyboardRect.size.height, 0.0f);
-    _tableView.scrollIndicatorInsets = _tableView.contentInset;
-}
-
-- (void)keyBoardWillChange:(NSNotification *)notification {
-    CGRect keyboardRect = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
-        keyboardRect = CGRectMake(0.0f, 0.0f, keyboardRect.size.height, keyboardRect.size.width);
-    }
-    _tableView.contentInset = UIEdgeInsetsMake(_tableView.contentInset.top, 0.0f, keyboardRect.size.height, 0.0f);
-    _tableView.scrollIndicatorInsets = _tableView.contentInset;
-}
-
 #pragma mark UISearchBarDelegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    _predicates = _predicate(searchText);
-    [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationAutomatic];
+    if (!searchText) {
+        NSLog(@"nil");
+    }
+    NSLog(@"%@", searchText);
+    if (!searchText || [searchText isEqualToString:@""]) {
+        _isShowHistory = YES;
+        _items = @[];
+        [_tableView reloadData];
+        
+        [self getHistory];
+    }
+    else {
+        if (_isShowHistory) {
+            _items = @[];
+            [_tableView reloadData];
+            _isShowHistory = NO;
+        }
+        
+        [self reloadTableViewWithSearchText:searchText];
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    if (_completion) {
-        NSString *searchText = searchBar.text;
-        UIViewController *viewController = _completion(searchText);
-        
-        __weak typeof(self) wself = self;
-        [self closeSearchBarWithCompletion:^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            [sself pushViewController:viewController animated:YES];
-        }];
-    }
+    [searchBar resignFirstResponder];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
@@ -156,13 +216,12 @@
 }
 
 #pragma mark OpenSearchBar
-- (void)openSearchBarWithPredicate:(NSArray *(^)(NSString *))predicate completion:(UIViewController *(^)(NSString *))completion {
+- (void)openSearchBarWithCancelBlock:(void (^)())cancelBlock {
     if (_isSearchBarOpen || _isAnimation) return;
     _isSearchBarOpen = YES;
     _isAnimation = YES;
     
-    _predicate = predicate;
-    _completion = completion;
+    _cancelBlock = cancelBlock;
     
     UIImage *backgroundImage = [self.view screenCapture];
     _backbroundView.image = [backgroundImage applyLightEffect];
@@ -171,6 +230,13 @@
     [self.view bringSubviewToFront:_tableView];
     [self.view bringSubviewToFront:_searchBarBackgroundView];
     [_searchBar becomeFirstResponder];
+    if (!_searchBar.text || [_searchBar.text isEqualToString:@""]) {
+        _isShowHistory = YES;
+        _items = @[];
+        [_tableView reloadData];
+        
+        [self getHistory];
+    }
     
     [UIView animateWithDuration:0.3f delay:0.0f options:(7 << 16) animations:^{
         _backbroundView.alpha = 1.0f;
@@ -184,6 +250,11 @@
     if (!_isSearchBarOpen || _isAnimation) return;
     _isSearchBarOpen = NO;
     _isAnimation = YES;
+    
+    if (_cancelBlock) {
+        _cancelBlock();
+        _cancelBlock = nil;
+    }
     
     [_searchBar resignFirstResponder];
     
@@ -201,21 +272,385 @@
 
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    if (_isShowHistory) {
+        return 1;
+    }
+    return _items.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _predicates.count;
+    if (_isShowHistory) {
+        return _items.count;
+    }
+    PWSearchNavigationControllerItem *sectionItem = _items[section];
+    return sectionItem.item.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    UITableViewCell *cell = nil;
     
-    cell.backgroundColor = [UIColor clearColor];
-    cell.textLabel.text = _predicates[indexPath.row];
-    cell.textLabel.textColor = [UIColor whiteColor];
+    if (_isShowHistory) {
+        PWSearchNavigationControllerItem *rowItem = _items[indexPath.row];
+        if (rowItem.type == PWSearchNavigationControllerItemTypeWebAlbum) {
+            PWSearchTableViewWebAlbumCell *webAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerWebAlbumCell forIndexPath:indexPath];
+            
+            webAlbumCell.album = rowItem.item.firstObject;
+            
+            cell = webAlbumCell;
+        }
+        else if (rowItem.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
+            PWSearchTableViewLocalAlbumCell *localAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerLocalAlbumCell forIndexPath:indexPath];
+            
+            localAlbumCell.album = rowItem.item.firstObject;
+            
+            cell = localAlbumCell;
+        }
+        else if (rowItem.type == PWSearchNavigationControllerItemTypeLocalPhoto) {
+            
+        }
+    }
+    else {
+        PWSearchNavigationControllerItem *sectionItem = _items[indexPath.section];
+        if (sectionItem.type == PWSearchNavigationControllerItemTypeWebAlbum) {
+            PWSearchTableViewWebAlbumCell *webAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerWebAlbumCell forIndexPath:indexPath];
+            
+            PWAlbumObject *album = sectionItem.item[indexPath.row];
+            webAlbumCell.album = album;
+            
+            cell = webAlbumCell;
+        }
+        else if (sectionItem.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
+            PWSearchTableViewLocalAlbumCell *localAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerLocalAlbumCell forIndexPath:indexPath];
+            
+            PLAlbumObject *album = sectionItem.item[indexPath.row];
+            localAlbumCell.album = album;
+            
+            cell = localAlbumCell;
+        }
+        else if (sectionItem.type == PWSearchNavigationControllerItemTypeLocalPhoto) {
+            //        PLPhotoObject *photo = sectionItem.item[indexPath.row];
+        }
+    }
     
+    if (!cell) {
+        cell = [[UITableViewCell alloc] init];
+    }
     return cell;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if (_isShowHistory) {
+        if (_items.count) {
+            return NSLocalizedString(@"履歴", nil);
+        }
+    }
+    else {
+        PWSearchNavigationControllerItem *sectionItem = _items[section];
+        if (sectionItem.type == PWSearchNavigationControllerItemTypeWebAlbum) {
+            return NSLocalizedString(@"ウェブ上のアルバム", nil);
+        }
+        else if (sectionItem.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
+            return NSLocalizedString(@"カメラロールのアルバム", nil);
+        }
+        else if (sectionItem.type == PWSearchNavigationControllerItemTypeLocalPhoto) {
+            return NSLocalizedString(@"カメラロールの写真", nil);
+        }
+    }
+    return nil;
+}
+
+- (void)reloadDataWithItems:(NSArray *)items hash:(NSUInteger)hash {
+    __weak typeof(self) wself = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (sself.searchedTextHash != hash) return;
+        
+        sself.items = items;
+        [sself.tableView reloadData];
+        sself.tableView.contentOffset = CGPointMake(0.0f, -sself.tableView.contentInset.top);
+    });
+}
+
+#pragma mark UITableViewDelegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (!_isShowHistory) {
+        PWSearchNavigationControllerItem *sectionItem = _items[indexPath.section];
+        [self addHistory:sectionItem index:indexPath.row];
+        
+        if (sectionItem.type == PWSearchNavigationControllerItemTypeWebAlbum) {
+            PWAlbumObject *album = sectionItem.item[indexPath.row];
+            
+            __weak typeof(self) wself = self;
+            [self closeSearchBarWithCompletion:^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                PWPhotoListViewController *viewController = [[PWPhotoListViewController alloc] initWithAlbum:album];
+                [sself pushViewController:viewController animated:YES];
+            }];
+        }
+        else if (sectionItem.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
+            PLAlbumObject *album = sectionItem.item[indexPath.row];
+            
+            __weak typeof(self) wself = self;
+            [self closeSearchBarWithCompletion:^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                PLPhotoListViewController *viewController = [[PLPhotoListViewController alloc] initWithAlbum:album];
+                [sself pushViewController:viewController animated:YES];
+            }];
+        }
+//        else if (sectionItem.type == PWSearchNavigationControllerItemTypeLocalPhoto) {
+//            
+//        }
+    }
+    else {
+        PWSearchNavigationControllerItem *rowItem = _items[indexPath.row];
+        
+        if (rowItem.type == PWSearchNavigationControllerItemTypeWebAlbum) {
+            PWAlbumObject *album = rowItem.item.firstObject;
+            
+            __weak typeof(self) wself = self;
+            [self closeSearchBarWithCompletion:^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                PWPhotoListViewController *viewController = [[PWPhotoListViewController alloc] initWithAlbum:album];
+                [sself pushViewController:viewController animated:YES];
+            }];
+        }
+        else if (rowItem.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
+            PLAlbumObject *album = rowItem.item.firstObject;
+            
+            __weak typeof(self) wself = self;
+            [self closeSearchBarWithCompletion:^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                PLPhotoListViewController *viewController = [[PLPhotoListViewController alloc] initWithAlbum:album];
+                [sself pushViewController:viewController animated:YES];
+            }];
+        }
+//        else if (rowItem.type == PWSearchNavigationControllerItemTypeLocalPhoto) {
+//            
+//        }
+    }
+}
+
+#pragma mark UIScrollViewDelegate
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    [_searchBar resignFirstResponder];
+}
+
+#pragma mark History
+- (void)getHistory {
+    NSData *historyItemData = [[NSUserDefaults standardUserDefaults] objectForKey:PWSearchNavigationControllerHistoryKey];
+    NSMutableArray *historyItems = nil;
+    if (historyItemData) {
+        historyItems = [NSKeyedUnarchiver unarchiveObjectWithData:historyItemData];
+    }
+    else {
+        historyItems = [NSMutableArray array];
+    }
+    
+    [self reloadTableViewWithHistoryItems:historyItems];
+}
+
+- (void)addHistory:(PWSearchNavigationControllerItem *)item index:(NSUInteger)index {
+    NSMutableArray *mutableHistoryItems = nil;
+    NSData *tmpHistoryItemData = [[NSUserDefaults standardUserDefaults] objectForKey:PWSearchNavigationControllerHistoryKey];
+    if (tmpHistoryItemData) {
+        NSMutableArray *historyItems = [NSKeyedUnarchiver unarchiveObjectWithData:tmpHistoryItemData];
+        mutableHistoryItems = historyItems.mutableCopy;
+    }
+    if (!mutableHistoryItems) {
+        mutableHistoryItems = [NSMutableArray array];
+    }
+    
+    PWSearchNavigationControllerHistoryItem *historyItem = [[PWSearchNavigationControllerHistoryItem alloc] init];
+    historyItem.type = item.type;
+    historyItem.update = [NSDate date];
+    if (item.type == PWSearchNavigationControllerItemTypeWebAlbum) {
+        PWAlbumObject *album = item.item[index];
+        historyItem.identifier = album.id_str;
+    }
+    else if (item.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
+        PLAlbumObject *album = item.item[index];
+        historyItem.identifier = album.id_str;
+    }
+    
+    [mutableHistoryItems insertObject:historyItem atIndex:0];
+    if (mutableHistoryItems.count > 10) {
+        [mutableHistoryItems removeObject:mutableHistoryItems.lastObject];
+    }
+    
+    NSData *historyItemData = [NSKeyedArchiver archivedDataWithRootObject:mutableHistoryItems.copy];
+    [[NSUserDefaults standardUserDefaults] setObject:historyItemData forKey:PWSearchNavigationControllerHistoryKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+#pragma mark Model
+- (void)localAlbumsSearchByName:(NSString *)name completion:(void (^)(NSArray *albums, NSError *error))completion {
+    [PLAssetsManager getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
+        NSArray *albums = [allAlbums filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name contains[c] %@", name]];
+        if (completion) {
+            completion(albums, error);
+        }
+    }];
+}
+
+- (void)localAlbumsSearchByID:(NSString *)id_str completion:(void (^)(NSArray *albums, NSError *error))completion {
+    [PLAssetsManager getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
+        NSArray *albums = [allAlbums filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+        if (completion) {
+            completion(albums, error);
+        }
+    }];
+}
+
+- (void)localPhotosSearchByName:(NSString *)name completion:(void (^)(NSArray *photos, NSError *error))completion {
+    [PLAssetsManager getAllPhotosWithCompletion:^(NSArray *allPhotos, NSError *error) {
+        NSArray *photos = [allPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"caption contains[c] %@", name]];
+        if (completion) {
+            completion(photos, error);
+        }
+    }];
+}
+
+- (void)webAlbumsSearchByName:(NSString *)name completion:(void (^)(NSArray *albums, NSError *error))completion {
+    [PWCoreDataAPI performBlockAndWait:^(NSManagedObjectContext *context) {
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        request.predicate = [NSPredicate predicateWithFormat:@"title contains[c] %@", name];
+        NSError *error;
+        NSArray *albums = [context executeFetchRequest:request error:&error];
+        if (completion) {
+            completion(albums, error);
+        }
+    }];
+}
+
+- (void)webAlbumsSearchByID:(NSString *)id_str completion:(void (^)(NSArray *albums, NSError *error))completion {
+    [PWCoreDataAPI performBlockAndWait:^(NSManagedObjectContext *context) {
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+        NSError *error;
+        NSArray *albums = [context executeFetchRequest:request error:&error];
+        if (completion) {
+            completion(albums, error);
+        }
+    }];
+}
+
+- (void)reloadTableViewWithSearchText:(NSString *)searchText {
+    NSUInteger hash = searchText.hash;
+    _searchedTextHash = hash;
+    __block NSMutableArray *items = [NSMutableArray array];
+    __weak typeof(self) wself = self;
+    [self webAlbumsSearchByName:searchText completion:^(NSArray *albums, NSError *error) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (sself.searchedTextHash != hash) return;
+        
+        if (albums.count) {
+            PWSearchNavigationControllerItem *item = [[PWSearchNavigationControllerItem alloc] init];
+            item.type = PWSearchNavigationControllerItemTypeWebAlbum;
+            item.item = albums;
+            [items addObject:item];
+        }
+        [items sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"update" ascending:YES]]];
+        
+        [sself reloadDataWithItems:items hash:hash];
+        
+        [sself localAlbumsSearchByName:searchText completion:^(NSArray *albums, NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (sself.searchedTextHash != hash) return;
+            
+            if (albums.count) {
+                PWSearchNavigationControllerItem *item = [[PWSearchNavigationControllerItem alloc] init];
+                item.type = PWSearchNavigationControllerItemTypeLocalAlbum;
+                item.item = albums;
+                [items addObject:item];
+            }
+            
+            [sself reloadDataWithItems:items hash:hash];
+            
+//            [sself localPhotosSearchByName:searchText completion:^(NSArray *photos, NSError *error) {
+//                typeof(wself) sself = wself;
+//                if (!sself) return;
+//                if (sself.searchedTextHash != hash) return;
+//                
+//                if (photos.count) {
+//                    PWSearchNavigationControllerItem *item = [[PWSearchNavigationControllerItem alloc] init];
+//                    item.type = PWSearchNavigationControllerItemTypeLocalPhoto;
+//                    item.item = photos;
+//                    [items addObject:item];
+//                }
+//                
+//                [sself reloadDataWithItems:items hash:hash];
+//            }];
+        }];
+    }];
+}
+
+- (void)reloadTableViewWithHistoryItems:(NSArray *)historyItems {
+    NSUInteger hash = historyItems.hash;
+    _searchedTextHash = hash;
+    
+    __block NSMutableArray *items = [NSMutableArray array];
+    __weak typeof(self) wself = self;
+    NSArray *webAlbumHistoryItems = [historyItems filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @(PWSearchNavigationControllerItemTypeWebAlbum)]];
+    NSArray *localAlbumHistoryItems = [historyItems filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @(PWSearchNavigationControllerItemTypeLocalAlbum)]];
+//    NSArray *localPhotoHistoryItems = [historyItems filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @(PWSearchNavigationControllerItemTypeLocalPhoto)]];
+    
+    for (PWSearchNavigationControllerHistoryItem *historyItem in webAlbumHistoryItems) {
+        [self webAlbumsSearchByID:historyItem.identifier completion:^(NSArray *albums, NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (sself.searchedTextHash != hash) return;
+            
+            PWSearchNavigationControllerItem *item = [[PWSearchNavigationControllerItem alloc] init];
+            item.type = PWSearchNavigationControllerItemTypeWebAlbum;
+            item.item = @[albums.firstObject];
+            item.updateUsingByHistorySort = historyItem.update;
+            [items addObject:item];
+            
+            if (items.count == webAlbumHistoryItems.count) {
+                if (localAlbumHistoryItems.count == 0) {
+                    [items sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"updateUsingByHistorySort" ascending:NO]]];
+                    [sself reloadDataWithItems:items hash:hash];
+                }
+                else {
+                    for (PWSearchNavigationControllerHistoryItem *historyItem in localAlbumHistoryItems) {
+                        [sself localAlbumsSearchByID:historyItem.identifier completion:^(NSArray *albums, NSError *error) {
+                            typeof(wself) sself = wself;
+                            if (!sself) return;
+                            if (sself.searchedTextHash != hash) return;
+                            
+                            PWSearchNavigationControllerItem *item = [[PWSearchNavigationControllerItem alloc] init];
+                            item.type = PWSearchNavigationControllerItemTypeLocalAlbum;
+                            item.item = @[albums.firstObject];
+                            item.updateUsingByHistorySort = historyItem.update;
+                            [items addObject:item];
+                            
+                            if (items.count == webAlbumHistoryItems.count + localAlbumHistoryItems.count) {
+                                [items sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"updateUsingByHistorySort" ascending:NO]]];
+                                [sself reloadDataWithItems:items hash:hash];
+                            }
+                        }];
+                    }
+                }
+            }
+        }];
+    }
 }
 
 @end

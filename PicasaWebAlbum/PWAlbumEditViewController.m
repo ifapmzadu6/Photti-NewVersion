@@ -145,16 +145,10 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
 }
 
 #pragma mark UIScrollViewDelegate
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     UITextField *textField = _textField;
     if (textField) {
-        CGFloat pointY = scrollView.contentOffset.y + 64.0f;
-        if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
-            pointY -= 12.0f;
-        }
-        if (fabsf(pointY) > 30.0f) {
-            [textField resignFirstResponder];
-        }
+        [textField resignFirstResponder];
     }
 }
 

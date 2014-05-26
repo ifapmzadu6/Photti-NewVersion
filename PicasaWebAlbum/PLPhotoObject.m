@@ -2,7 +2,7 @@
 //  PLPhotoObject.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/05/21.
+//  Created by Keisuke Karijuku on 2014/05/24.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
@@ -12,17 +12,19 @@
 
 @implementation PLPhotoObject
 
-@dynamic url;
-@dynamic width;
+@dynamic date;
 @dynamic filename;
 @dynamic height;
-@dynamic type;
-@dynamic timestamp;
+@dynamic import;
 @dynamic latitude;
 @dynamic longitude;
-@dynamic import;
+@dynamic tag_albumtype;
+@dynamic timestamp;
+@dynamic type;
 @dynamic update;
-@dynamic date;
+@dynamic url;
+@dynamic width;
+@dynamic caption;
 @dynamic albums;
 @dynamic thumbnailed;
 

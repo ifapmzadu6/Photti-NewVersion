@@ -10,4 +10,6 @@
 
 @interface PLAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
+@property (strong, nonatomic) void (^viewDidAppearBlock)();
+
 @end

@@ -10,9 +10,9 @@
 
 #import "PWNavigationController.h"
 
-@interface PWSearchNavigationController : PWNavigationController <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface PWSearchNavigationController : PWNavigationController <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>
 
-- (void)openSearchBarWithPredicate:(NSArray * (^)(NSString *word))predicate completion:(UIViewController * (^)(NSString *searchText))completion;
+- (void)openSearchBarWithCancelBlock:(void (^)())cancelBlock;
 - (void)closeSearchBarWithCompletion:(void (^)())completion;
 
 @end

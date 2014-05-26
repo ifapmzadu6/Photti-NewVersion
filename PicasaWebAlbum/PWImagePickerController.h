@@ -6,10 +6,6 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-@import AssetsLibrary;
-
-@interface PWImagePickerController : UIViewController
-
-@property (strong, nonatomic) ALAssetsLibrary *assetLibrary;
+@interface PWImagePickerController : UITabBarController
 
 @end

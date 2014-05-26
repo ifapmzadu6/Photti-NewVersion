@@ -14,8 +14,13 @@
 
 + (id)sharedManager;
 
-+ (ALAssetsLibrary *)sharedLibrary;
++ (void)groupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;
++ (void)assetForURL:(NSURL *)url resultBlock:(void (^)(ALAsset *asset))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;
 
-- (void)enumurateAssetsWithCompletion:(void (^)(NSArray *albums))completion;
++ (void)getAllPhotosWithCompletion:(void (^)(NSArray *allPhotos, NSError *error))completion;
++ (void)getiCloudPhotosWithCompletion:(void (^)(NSArray *allPhotos, NSError *error))completion;
++ (void)getAllAlbumsWithCompletion:(void (^)(NSArray *allAlbums, NSError *error))completion;
++ (void)getImportedAlbumsWithCompletion:(void (^)(NSArray *importedAlbums, NSError *error))completion;
++ (void)getAutomatticallyCreatedAlbumWithCompletion:(void (^)(NSArray *importedAlbums, NSError *error))completion;
 
 @end

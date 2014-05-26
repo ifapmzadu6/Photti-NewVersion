@@ -2,28 +2,30 @@
 //  PLPhotoObject.h
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/05/21.
+//  Created by Keisuke Karijuku on 2014/05/24.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <CoreData/CoreData.h>
+@import Foundation;
+@import CoreData;
 
 @class PLAlbumObject;
 
 @interface PLPhotoObject : NSManagedObject
 
-@property (nonatomic, retain) NSString * url;
-@property (nonatomic, retain) NSNumber * width;
+@property (nonatomic, retain) NSDate * date;
 @property (nonatomic, retain) NSString * filename;
 @property (nonatomic, retain) NSNumber * height;
-@property (nonatomic, retain) NSString * type;
-@property (nonatomic, retain) NSNumber * timestamp;
+@property (nonatomic, retain) NSDate * import;
 @property (nonatomic, retain) NSNumber * latitude;
 @property (nonatomic, retain) NSNumber * longitude;
-@property (nonatomic, retain) NSDate * import;
+@property (nonatomic, retain) NSNumber * tag_albumtype;
+@property (nonatomic, retain) NSNumber * timestamp;
+@property (nonatomic, retain) NSString * type;
 @property (nonatomic, retain) NSDate * update;
-@property (nonatomic, retain) NSDate * date;
+@property (nonatomic, retain) NSString * url;
+@property (nonatomic, retain) NSNumber * width;
+@property (nonatomic, retain) NSString * caption;
 @property (nonatomic, retain) NSSet *albums;
 @property (nonatomic, retain) PLAlbumObject *thumbnailed;
 @end

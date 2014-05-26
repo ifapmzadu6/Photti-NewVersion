@@ -10,6 +10,7 @@
 
 @interface PWTabBarController : UITabBarController <UITabBarControllerDelegate>
 
+- (UIEdgeInsets)viewInsets;
 - (BOOL)isTabBarHidden;
 - (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
 - (BOOL)isToolbarHideen;

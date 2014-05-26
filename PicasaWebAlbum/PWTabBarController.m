@@ -12,7 +12,7 @@
 
 #import "PWNavigationController.h"
 #import "PWSearchNavigationController.h"
-#import "PLAlbumListViewController.h"
+#import "PLPageViewController.h"
 #import "PWAlbumListViewController.h"
 #import "PWAutoUploadViewController.h"
 
@@ -36,8 +36,8 @@ static const CGFloat animationDuration = 0.3f;
 - (id)init {
     self = [super init];
     if (self) {
-        PLAlbumListViewController *localViewController = [[PLAlbumListViewController alloc] init];
-        PWNavigationController *localNavigationController = [[PWNavigationController alloc] initWithRootViewController:localViewController];
+        PLPageViewController *localPageViewController = [[PLPageViewController alloc] init];
+        PWSearchNavigationController *localNavigationController = [[PWSearchNavigationController alloc] initWithRootViewController:localPageViewController];
         
         PWAlbumListViewController *albumListViweController = [[PWAlbumListViewController alloc] init];
         PWSearchNavigationController *albumNavigationController = [[PWSearchNavigationController alloc] initWithRootViewController:albumListViweController];
@@ -78,17 +78,15 @@ static const CGFloat animationDuration = 0.3f;
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    CGFloat fHeight = screenRect.size.height;
+    CGRect screenRect = self.view.bounds;
     CGFloat tHeight = 44.0f;
     BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
     if(isLandscape) {
-        fHeight = screenRect.size.width;
         tHeight = 32.0f;
     }
     for(UIView *view in self.view.subviews) {
         if([view isKindOfClass:[UITabBar class]]) {
-            [view setFrame:CGRectMake(view.frame.origin.x, fHeight - tHeight, view.frame.size.width, tHeight)];
+            [view setFrame:CGRectMake(view.frame.origin.x, screenRect.size.height - tHeight, view.frame.size.width, tHeight)];
         }
     }
     
@@ -118,6 +116,29 @@ static const CGFloat animationDuration = 0.3f;
     
     [[SDImageCache sharedImageCache] clearMemory];
 }
+
+#pragma methods
+- (UIEdgeInsets)viewInsets {
+    CGFloat tHeight = 44.0f;
+    BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
+    if(isLandscape) {
+        tHeight = 32.0f;
+    }
+    
+    return UIEdgeInsetsMake(tHeight + 20.0f, 0.0f, tHeight, 0.0f);
+}
+
+#pragma mark UITabBarControllerDelegate
+- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
+    [viewController viewWillAppear:NO];
+    
+    return YES;
+}
+
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
+    [viewController viewDidAppear:NO];
+}
+
 
 #pragma mark TabBarHidden
 - (BOOL)isTabBarHidden {

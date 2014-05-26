@@ -21,6 +21,7 @@
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
 
+
 @interface PWAlbumListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
@@ -189,30 +190,16 @@
 
 #pragma mark BarButtonAction
 - (void)searchBarButtonAction {
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setTabBarHidden:YES animated:YES completion:nil];
+    
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
-    [navigationController openSearchBarWithPredicate:^NSArray *(NSString *word) {
-        __block NSArray *titles = nil;
+    __weak typeof(self) wself = self;
+    [navigationController openSearchBarWithCancelBlock:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
         
-        [PWCoreDataAPI performBlockAndWait:^(NSManagedObjectContext *context) {
-            NSFetchRequest *request = [[NSFetchRequest alloc] init];
-            request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
-            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-            if (word) {
-                request.predicate = [NSPredicate predicateWithFormat:@"title contains %@", word];
-            }
-            NSError *error;
-            NSArray *albums = [context executeFetchRequest:request error:&error];
-            NSMutableArray *mutableTitles = [NSMutableArray array];
-            for (PWAlbumObject *album in albums) {
-                [mutableTitles addObject:album.title];
-            }
-            titles = mutableTitles.copy;
-        }];
-        
-        return titles;
-    } completion:^UIViewController *(NSString *searchText) {
-        PWAlbumListViewController *viewController = [[PWAlbumListViewController alloc] initWithSearchText:searchText];
-        return viewController;
+        [tabBarController setTabBarHidden:NO animated:NO completion:nil];
     }];
 }
 

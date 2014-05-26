@@ -12,4 +12,6 @@
 
 + (NSString *)itemNameFromPhotoCount:(NSUInteger)photoCount videoCount:(NSUInteger)videoCount;
 
++ (NSString *)photoAndVideoStringWithPhotoCount:(NSUInteger)photoCount videoCount:(NSUInteger)videoCount;
+
 @end

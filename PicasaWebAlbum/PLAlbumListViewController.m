@@ -11,12 +11,17 @@
 #import "PWColors.h"
 #import "PLAlbumViewCell.h"
 #import "PLAssetsManager.h"
+#import "PWTabBarController.h"
+#import "PLCollectionFooterView.h"
+#import "PLPhotoListViewController.h"
 
 @interface PLAlbumListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
 @property (strong, nonatomic) NSArray *albums;
+
+@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
 @end
 
@@ -25,22 +30,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = @"カメラロール";
-        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
-        
-        UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
-        _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
-        _collectionView.dataSource = self;
-        _collectionView.delegate = self;
-        [_collectionView registerClass:[PLAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
-        _collectionView.alwaysBounceVertical = YES;
-        _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 10.0f, 0.0f);
-        _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
-        _collectionView.clipsToBounds = NO;
-        _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
-        [self.view addSubview:_collectionView];
-        
-        _albums = @[];
+        self.title = NSLocalizedString(@"アルバム", nil);
     }
     return self;
 }
@@ -48,22 +38,65 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
+    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
+    _collectionView.dataSource = self;
+    _collectionView.delegate = self;
+    [_collectionView registerClass:[PLAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
+    [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
+    _collectionView.alwaysBounceVertical = YES;
+    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 0.0f, 0.0f);
+    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
+    _collectionView.scrollsToTop = NO;
+    _collectionView.clipsToBounds = NO;
+    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    [self.view addSubview:_collectionView];
+    
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    
+    __weak typeof(self) wself = self;
+    [PLAssetsManager getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        sself.albums = allAlbums;
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [sself.indicatorView removeFromSuperview];
+            sself.indicatorView = nil;
+            
+            [sself.collectionView reloadData];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:sself.albums.count-1 inSection:0];
+            [sself.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+        });
+    }];
+    
+    _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    [self.view addSubview:_indicatorView];
+    [_indicatorView startAnimating];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     
-    __weak typeof(self) wself = self;
-    [[PLAssetsManager sharedManager] enumurateAssetsWithCompletion:^(NSArray *albums) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        sself.albums = albums;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.collectionView reloadData];
-        });
-    }];
+    if (_viewDidAppearBlock) {
+        _viewDidAppearBlock();
+    }
+    
+    _collectionView.scrollsToTop = YES;
+    
+    for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
+        [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    _collectionView.scrollsToTop = NO;    
 }
 
 - (void)viewWillLayoutSubviews {
@@ -74,6 +107,15 @@
     _collectionView.frame = CGRectMake(10.0f, 0.0f, rect.size.width - 20.0f, rect.size.height);
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
+    
+    PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
+    UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
+    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 0.0f, viewInsets.bottom, 0.0f);
+    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, -10.0f);
+    
+    if (_indicatorView) {
+        _indicatorView.center = self.view.center;
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -86,6 +128,9 @@
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    if (!_albums) {
+        return 0;
+    }
     return _albums.count;
 }
 
@@ -97,8 +142,29 @@
     return cell;
 }
 
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+    if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
+        return nil;
+    }
+    
+    
+    PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
+    
+    if (_albums) {
+        NSString *localizedString = NSLocalizedString(@"%lu個のアルバム", nil);
+        NSString *albumCountString = [NSString stringWithFormat:localizedString, (unsigned long)_albums.count];
+        [footerView setText:albumCountString];
+    }
+    
+    return footerView;
+}
+
 #pragma mark UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (!_albums) {
+        return CGSizeZero;
+    }
+    
     if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
         return CGSizeMake(177.0f, ceilf(177.0f * 3.0f / 4.0f) + 40.0f);
     }
@@ -115,9 +181,14 @@
     return 8.0f;
 }
 
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    return CGSizeMake(0.0f, 60.0f);
+}
+
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    
+    PLPhotoListViewController *viewController = [[PLPhotoListViewController alloc] initWithAlbum:_albums[indexPath.row]];
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 @end

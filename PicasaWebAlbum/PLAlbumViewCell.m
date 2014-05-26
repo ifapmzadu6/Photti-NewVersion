@@ -11,6 +11,7 @@
 #import "PWColors.h"
 #import "PWIcons.h"
 #import "PLModelObject.h"
+#import "PLCoreDataAPI.h"
 #import "PLAssetsManager.h"
 #import "UIButton+HitEdgeInsets.h"
 
@@ -127,43 +128,67 @@
 - (void)setAlbum:(PLAlbumObject *)album {
     _album = album;
     
-    _titleLabel.text = album.name;
-    
-    _numPhotosLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)album.photos.count];
-    
-    _imageView.image = nil;
-    
     NSUInteger hash = album.hash;
     _albumHash = hash;
-    if (album.photos.count) {
-        __weak typeof(self) wself = self;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    
+    _titleLabel.text = nil;
+    _numPhotosLabel.text = nil;
+    _imageView.image = nil;
+    [_activityIndicatorView startAnimating];
+    
+    __weak typeof(self) wself = self;
+    [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (sself.albumHash != hash) return;
+        
+        dispatch_sync(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;
+            if (sself.albumHash != hash) return;
+            
+            sself.titleLabel.text = album.name;
+            sself.numPhotosLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)album.photos.count];
+        });
+        
+        if (album.photos.count) {
             if (sself.albumHash != hash) return;
             
             PLPhotoObject *thumbnail = album.thumbnail;
             if (!thumbnail) {
                 thumbnail = album.photos.firstObject;
             }
-            NSURL *url = [NSURL URLWithString:thumbnail.url];
-            [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
+            if (thumbnail) {
+                NSURL *url = [NSURL URLWithString:thumbnail.url];
+                [PLAssetsManager assetForURL:url resultBlock:^(ALAsset *asset) {
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    if (sself.albumHash != hash) return;
+                    
+                    UIImage *image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
+                    dispatch_sync(dispatch_get_main_queue(), ^{
+                        typeof(wself) sself = wself;
+                        if (!sself) return;
+                        if (sself.albumHash != hash) return;
+                        
+                        [sself.activityIndicatorView stopAnimating];
+                        sself.imageView.image = image;
+                    });
+                } failureBlock:^(NSError *error) {
+                    
+                }];
+            }
+        }
+        else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (sself.albumHash != hash) return;
                 
-                UIImage *image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    typeof(wself) sself = wself;
-                    if (!sself) return;
-                    if (sself.albumHash != hash) return;
-                    sself.imageView.image = image;
-                });
-            } failureBlock:^(NSError *error) {
-                
-            }];
-        });
-    }
+                [_activityIndicatorView stopAnimating];
+            });
+        }
+    }];
 }
 
 #pragma mark Action
