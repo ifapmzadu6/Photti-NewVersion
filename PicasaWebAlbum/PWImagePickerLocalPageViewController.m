@@ -8,42 +8,181 @@
 
 #import "PWImagePickerLocalPageViewController.h"
 
+#import "PWColors.h"
+#import "PLParallelNavigationTitleView.h"
+#import "PWImagePickerController.h"
+
+#import "PWImagePickerLocalAllPhotoViewController.h"
+#import "PWImagePickerLocalAlbumListViewController.h"
+#import "PWImagePickerLocaliCloudViewController.h"
+
 @interface PWImagePickerLocalPageViewController ()
+
+@property (strong, nonatomic) NSArray *myViewControllers;
+
+@property (strong, nonatomic) PLParallelNavigationTitleView *titleView;
 
 @end
 
 @implementation PWImagePickerLocalPageViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
+
+- (id)init {
+    NSDictionary *option = [NSDictionary dictionaryWithObjectsAndKeys:@(PageViewControllerOptionInterPageSpacingValue), UIPageViewControllerOptionInterPageSpacingKey, nil];
+    self = [self initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:option];
     if (self) {
-        // Custom initialization
+        NSString *title = NSLocalizedString(@"カメラロール", nil);
+        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
+        
+        self.automaticallyAdjustsScrollViewInsets = NO;
+        self.edgesForExtendedLayout = UIRectEdgeAll;
+        
+        self.delegate = self;
+        self.dataSource = self;
     }
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    _myViewControllers = [self makeViewControllers];
+    [self setViewControllers:@[_myViewControllers[1]]
+                   direction:UIPageViewControllerNavigationDirectionForward
+                    animated:NO
+                  completion:nil];
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+    UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = cancelBarButtonitem;
+    
+    UIBarButtonItem *doneBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
+    self.navigationItem.rightBarButtonItem = doneBarButtonitem;
+    
+    //ScrollViewDelegate
+    [self.view.subviews.firstObject setDelegate:self];
+    
+    _titleView = [[PLParallelNavigationTitleView alloc] init];
+    _titleView.frame = CGRectMake(0.0f, 0.0f, 200.0f, 44.0f);
+    __weak typeof(self) wself = self;
+    [_titleView setTitleBeforeCurrentTitle:^NSString *(NSString *presentTitle) {
+        typeof(wself) sself = wself;
+        if (!sself) return nil;
+        
+        NSUInteger index = 0;
+        for (UIViewController *viewController in sself.myViewControllers) {
+            if ([viewController.title isEqualToString:presentTitle]) {
+                index = [sself.myViewControllers indexOfObject:viewController];
+            }
+        }
+        if (index == 0) {
+            return nil;
+        }
+        
+        UIViewController *beforeViewController = [sself.myViewControllers objectAtIndex:index - 1];
+        return beforeViewController.title;
+    }];
+    [_titleView setTitleAfterCurrentTitle:^NSString *(NSString *presentTitle) {
+        typeof(wself) sself = wself;
+        if (!sself) return nil;
+        
+        NSUInteger index = 0;
+        for (UIViewController *viewController in sself.myViewControllers) {
+            if ([viewController.title isEqualToString:presentTitle]) {
+                index = [sself.myViewControllers indexOfObject:viewController];
+            }
+        }
+        if (index == sself.myViewControllers.count - 1) {
+            return nil;
+        }
+        
+        UIViewController *afterViewController = [sself.myViewControllers objectAtIndex:index + 1];
+        return afterViewController.title;
+    }];
+    [_titleView setNumberOfPages:_myViewControllers.count];
+    NSUInteger defaultIndex = 1;
+    [_titleView setCurrentIndex:defaultIndex];
+    UIViewController *viewController = _myViewControllers[defaultIndex];
+    [_titleView setCurrentTitle:viewController.title];
+    [self.navigationItem setTitleView:_titleView];
 }
 
-- (void)didReceiveMemoryWarning
-{
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+}
+
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+#pragma mark UIBarButtonAction
+- (void)doneBarButtonAction {
+    PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+    [tabBarController doneBarButtonAction];
 }
-*/
+
+- (void)cancelBarButtonAction {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark UIScrollViewDelegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    CGFloat width = scrollView.bounds.size.width;
+    [_titleView setScrollRate:(scrollView.contentOffset.x - width) / width];
+}
+
+#pragma mark UIPageViewControllerDataSource
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
+    NSInteger index = [_myViewControllers indexOfObject:viewController];
+    if (index == 0) {
+        return nil;
+    }
+    
+    return [_myViewControllers objectAtIndex:index - 1];
+}
+
+- (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController {
+    NSInteger index = [_myViewControllers indexOfObject:viewController];
+    if (index == _myViewControllers.count - 1) {
+        return nil;
+    }
+    return [_myViewControllers objectAtIndex:index + 1];
+}
+
+#pragma mark UIPageViewControllerDataSourceOption
+- (NSArray *)makeViewControllers {
+    __weak typeof(self) wself = self;
+    
+    PWImagePickerLocalAllPhotoViewController *allPhotosViewController = [[PWImagePickerLocalAllPhotoViewController alloc] init];
+    NSString *allPhotosViewControllerTitle = allPhotosViewController.title;
+    [allPhotosViewController setViewDidAppearBlock:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself.titleView setCurrentIndex:0];
+        [sself.titleView setCurrentTitle:allPhotosViewControllerTitle];
+    }];
+    PWImagePickerLocalAlbumListViewController *albumListViewController = [[PWImagePickerLocalAlbumListViewController alloc] init];
+    NSString *albumListViewControllerTitle = albumListViewController.title;
+    [albumListViewController setViewDidAppearBlock:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself.titleView setCurrentIndex:1];
+        [sself.titleView setCurrentTitle:albumListViewControllerTitle];
+    }];
+    PWImagePickerLocaliCloudViewController *iCloudViewController = [[PWImagePickerLocaliCloudViewController alloc] init];
+    NSString *iCloudViewControllerTitle = iCloudViewController.title;
+    [iCloudViewController setViewDidAppearBlock:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself.titleView setCurrentIndex:2];
+        [sself.titleView setCurrentTitle:iCloudViewControllerTitle];
+    }];
+    
+    return @[allPhotosViewController, albumListViewController, iCloudViewController];
+}
 
 @end

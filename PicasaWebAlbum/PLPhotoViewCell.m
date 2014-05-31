@@ -65,7 +65,7 @@
     
     if (selected) {
         if (_isSelectWithCheckMark) {
-            _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.25f];
+            _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.5f];
             _checkMark.alpha = 1.0f;
         }
         else {
@@ -85,7 +85,7 @@
     
     if (highlighted) {
         if (_isSelectWithCheckMark) {
-            _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.25f];
+            _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.5f];
         }
         else {
             _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.25f];
@@ -108,6 +108,12 @@
     _overrayView.frame = rect;
     
     _checkMark.frame = CGRectMake(CGRectGetMaxX(rect) - 32.0f, CGRectGetMaxY(rect) - 32.0f, 28.0f, 28.0f);
+}
+
+- (void)setIsSelectWithCheckMark:(BOOL)isSelectWithCheckMark {
+    _isSelectWithCheckMark = isSelectWithCheckMark;
+    
+    [self setSelected:self.isSelected];
 }
 
 - (void)setPhoto:(PLPhotoObject *)photo {

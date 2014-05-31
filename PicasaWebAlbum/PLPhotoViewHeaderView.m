@@ -17,6 +17,8 @@
 @property (strong, nonatomic) UILabel *detailLabel;
 @property (strong, nonatomic) UIButton *selectButton;
 
+@property (nonatomic) BOOL isDeselectButton;
+
 @end
 
 @implementation PLPhotoViewHeaderView
@@ -52,13 +54,15 @@
     [self addSubview:_detailLabel];
     
     _selectButton = [[UIButton alloc] init];
-    [_selectButton addTarget:self action:nil forControlEvents:UIControlEventTouchUpInside];
+    [_selectButton addTarget:self action:@selector(selectButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _selectButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
     [_selectButton setTitle:NSLocalizedString(@"選択", nil) forState:UIControlStateNormal];
     [_selectButton setTitleColor:_selectButton.tintColor forState:UIControlStateNormal];
     [_selectButton setTitleColor:[_selectButton.tintColor colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
     _selectButton.hitEdgeInsets = UIEdgeInsetsMake(0.0f, -30.0f, 0.0f, 0.0f);
     [self addSubview:_selectButton];
+    
+    _isDeselectButton = NO;
 }
 
 - (void)layoutSubviews {
@@ -84,6 +88,44 @@
 - (void)setDetail:(NSString *)detail {
     _detailLabel.text = detail;
     [self setNeedsLayout];
+}
+
+- (void)setSelectButtonIsDeselect:(BOOL)isDeselect {
+    if (isDeselect) {
+        [_selectButton setTitle:NSLocalizedString(@"選択解除", nil) forState:UIControlStateNormal];
+        _isDeselectButton = YES;
+    }
+    else {
+        [_selectButton setTitle:NSLocalizedString(@"選択", nil) forState:UIControlStateNormal];
+        _isDeselectButton = NO;
+    }
+    
+    CGSize size = self.bounds.size;
+    CGSize selectButtonSize = [_selectButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    _selectButton.frame = CGRectMake(size.width - selectButtonSize.width - 12.0f, 17.0f, selectButtonSize.width, size.height - 17.0f - 11.0f);
+}
+
+- (void)selectButtonAction {
+    if (_isDeselectButton) {
+        if (_deselectButtonActionBlock) {
+            _deselectButtonActionBlock();
+        }
+        
+        [_selectButton setTitle:NSLocalizedString(@"選択", nil) forState:UIControlStateNormal];
+        _isDeselectButton = NO;
+    }
+    else {
+        if (_selectButtonActionBlock) {
+            _selectButtonActionBlock();
+        }
+        
+        [_selectButton setTitle:NSLocalizedString(@"選択解除", nil) forState:UIControlStateNormal];
+        _isDeselectButton = YES;
+    }
+    
+    CGSize size = self.bounds.size;
+    CGSize selectButtonSize = [_selectButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    _selectButton.frame = CGRectMake(size.width - selectButtonSize.width - 12.0f, 17.0f, selectButtonSize.width, size.height - 17.0f - 11.0f);
 }
 
 

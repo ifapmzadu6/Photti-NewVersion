@@ -8,6 +8,8 @@
 
 @import UIKit;
 
-@interface PWImagePickerLocalAlbumListViewController : UIViewController
+@interface PWImagePickerLocalAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate>
+
+@property (strong, nonatomic) void (^viewDidAppearBlock)();
 
 @end

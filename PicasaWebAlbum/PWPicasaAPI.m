@@ -25,72 +25,76 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
     }
     NSInteger apiIndex = index + 1;
     
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
     [PWPicasaGETRequest getListOfAlbumsWithIndex:apiIndex completion:^(NSData *data, NSURLResponse *response, NSError *error) {
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        
         if (error) {
             if (completion) {
                 completion(nil, index, error);
             }
             return;
         }
-        else {
-            if (data) {
-//                NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-                
-                NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
-                //            NSLog(@"%@", json.description);
-                
-                [PWCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
-                    NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
-                    NSDictionary *startIndexDic = NULL_TO_NIL(feed[@"openSearch:startIndex"]);
-                    NSDictionary *totalResultsDic = NULL_TO_NIL(feed[@"openSearch:totalResults"]);
-                    if (totalResultsDic && startIndexDic) {
-                        NSString *startIndex = NULL_TO_NIL(startIndexDic[@"text"]);
-                        if ([startIndex longLongValue] != apiIndex) {
-                            if (completion) {
-                                completion(nil, 0, [PWPicasaAPI parserError]);
-                            }
-                        }
-                        else {
-                            NSFetchRequest *request = [[NSFetchRequest alloc] init];
-                            request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
-                            NSError *error;
-                            NSArray *deleteAlbums = [context executeFetchRequest:request error:&error];
-                            for (PWAlbumObject *object in deleteAlbums) {
-                                [context deleteObject:object];
-                            }
-                            
-                            NSArray *albums = nil;
-                            NSString *totalResults = NULL_TO_NIL(totalResultsDic[@"text"]);
-                            if ([totalResults longLongValue] > 0) {
-                                albums = [PWPicasaParser parseListOfAlbumFromJson:json context:context];
-                                if (!albums) {
-                                    if (completion) {
-                                        completion(nil, 0, [PWPicasaAPI parserError]);
-                                    }
-                                    return;
-                                }
-                                else {
-                                    for (PWAlbumObject *album in albums) {
-                                        album.sortIndex = @([startIndex integerValue] + [albums indexOfObject:album]);
-                                    }
-                                    
-                                }
-                            }
-                            
-                            if (completion) {
-                                completion(albums, index + [totalResults integerValue], nil);
-                            }
-                            NSError *coreDataError = nil;
-                            [context save:&coreDataError];
-                        }
-                    }
-                    else {
+        
+        if (data) {
+            //                NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+            
+            NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+            //            NSLog(@"%@", json.description);
+            
+            [PWCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
+                NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
+                NSDictionary *startIndexDic = NULL_TO_NIL(feed[@"openSearch:startIndex"]);
+                NSDictionary *totalResultsDic = NULL_TO_NIL(feed[@"openSearch:totalResults"]);
+                if (totalResultsDic && startIndexDic) {
+                    NSString *startIndex = NULL_TO_NIL(startIndexDic[@"text"]);
+                    if ([startIndex longLongValue] != apiIndex) {
                         if (completion) {
                             completion(nil, 0, [PWPicasaAPI parserError]);
                         }
                     }
-                }];
-            }
+                    else {
+                        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+                        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+                        NSError *error;
+                        NSArray *deleteAlbums = [context executeFetchRequest:request error:&error];
+                        for (PWAlbumObject *object in deleteAlbums) {
+                            [context deleteObject:object];
+                        }
+                        
+                        NSArray *albums = nil;
+                        NSString *totalResults = NULL_TO_NIL(totalResultsDic[@"text"]);
+                        if ([totalResults longLongValue] > 0) {
+                            albums = [PWPicasaParser parseListOfAlbumFromJson:json context:context];
+                            if (!albums) {
+                                if (completion) {
+                                    completion(nil, 0, [PWPicasaAPI parserError]);
+                                }
+                                return;
+                            }
+                            else {
+                                for (PWAlbumObject *album in albums) {
+                                    album.sortIndex = @([startIndex integerValue] + [albums indexOfObject:album]);
+                                }
+                                
+                            }
+                        }
+                        
+                        if (completion) {
+                            completion(albums, index + [totalResults integerValue], nil);
+                        }
+                        
+                        NSError *coreDataError = nil;
+                        [context save:&coreDataError];
+                    }
+                }
+                else {
+                    if (completion) {
+                        completion(nil, 0, [PWPicasaAPI parserError]);
+                    }
+                }
+            }];
         }
     }];
 }
@@ -101,7 +105,11 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
     }
     NSInteger apiIndex = index + 1;
     
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
     [PWPicasaGETRequest getListOfPhotosInAlbumWithAlbumID:albumID index:apiIndex completion:^(NSData *data, NSURLResponse *response, NSError *error) {
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        
         if (error) {
             if (completion) {
                 completion(nil, index, error);
@@ -113,7 +121,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
             NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
             //            NSLog(@"%@", json.description);
             
-            [PWCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+            [PWCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
                 NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
                 NSDictionary *startIndexDic = NULL_TO_NIL(feed[@"openSearch:startIndex"]);
                 NSDictionary *totalResultsDic = NULL_TO_NIL(feed[@"openSearch:totalResults"]);
@@ -129,6 +137,16 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                     NSString *totalResults = NULL_TO_NIL(totalResultsDic[@"text"]);
                     NSArray *photos = nil;
                     if ([totalResults longLongValue] > 0) {
+                        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+                        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+                        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", albumID];
+                        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+                        NSError *error;
+                        NSArray *deletePhotos = [context executeFetchRequest:request error:&error];
+                        for (PWPhotoObject *photo in deletePhotos) {
+                            [context deleteObject:photo];
+                        }
+                        
                         photos = [PWPicasaParser parseListOfPhotoFromJson:json context:context];
                         if (!photos) {
                             if (completion) {
@@ -165,6 +183,8 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                           timestamp:(NSString *)timestamp
                            keywords:(NSString *)keywords
                          completion:(void (^)(NSError *error))completion {
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
     [PWPicasaPOSTRequest postCreatingNewAlbumRequestWithTitle:title
                                              summary:summary
                                             location:location
@@ -172,6 +192,8 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                                            timestamp:timestamp
                                             keywords:keywords
                                           completion:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                              [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                                              
                                               if (error) {
                                                   if (completion) {
                                                       completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]);
@@ -202,7 +224,11 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                        keywords:(NSString *)keywords
                      completion:(void (^)(NSString *, NSSet *, NSError *))completion {
     
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
     void (^requestCompletion)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        
         if (error) {
             if (completion) {
                 completion(nil, nil, [NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]);
@@ -218,7 +244,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
             return;
         }
         
-        [PWCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+        [PWCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
             NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
             NSDictionary *entries = NULL_TO_NIL(json[@"entry"]);
             if (!entries) {
@@ -255,7 +281,11 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
 }
 
 + (void)deleteAlbum:(PWAlbumObject *)album completion:(void (^)(NSError *error))completion {
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
     [PWPicasaPOSTRequest deleteAlbumWithID:album.id_str completion:^(NSData *data, NSURLResponse *response, NSError *error) {
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        
         if (error) {
             if (completion) {
                 completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]);
@@ -279,7 +309,11 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
 
 
 + (void)deletePhoto:(PWPhotoObject *)photo completion:(void (^)(NSError *error))completion {
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
     [PWPicasaPOSTRequest deletePhotoWithAlbumID:photo.albumid photoID:photo.id_str completion:^(NSData *data, NSURLResponse *response, NSError *error) {
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        
         if (error) {
             if (completion) {
                 completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]);
@@ -301,10 +335,16 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
     }];
 }
 
-
-
 + (void)getAuthorizedURLRequest:(NSURL *)url completion:(void (^)(NSMutableURLRequest *, NSError *))completion {
-    [PWPicasaGETRequest getAuthorizedURLRequest:url completion:completion];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
+    [PWPicasaGETRequest getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        
+        if (completion) {
+            completion(request, error);
+        }
+    }];
 }
 
 + (NSError *)parserError {

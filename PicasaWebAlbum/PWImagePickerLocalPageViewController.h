@@ -8,6 +8,6 @@
 
 @import UIKit;
 
-@interface PWImagePickerLocalPageViewController : UIViewController
+@interface PWImagePickerLocalPageViewController : UIPageViewController <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate>
 
 @end

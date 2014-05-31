@@ -138,6 +138,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     [_searchBarBackgroundView addSubview:_searchBar];
     
     _backbroundView = [[UIImageView alloc] init];
+    _backbroundView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
     _backbroundView.alpha = 0.0;
     _backbroundView.userInteractionEnabled = YES;
     [self.view addSubview:_backbroundView];
@@ -294,7 +295,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         if (rowItem.type == PWSearchNavigationControllerItemTypeWebAlbum) {
             PWSearchTableViewWebAlbumCell *webAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerWebAlbumCell forIndexPath:indexPath];
             
-            webAlbumCell.album = rowItem.item.firstObject;
+            [webAlbumCell setAlbum:rowItem.item.firstObject isNowLoading:NO];
             
             cell = webAlbumCell;
         }
@@ -315,7 +316,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
             PWSearchTableViewWebAlbumCell *webAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerWebAlbumCell forIndexPath:indexPath];
             
             PWAlbumObject *album = sectionItem.item[indexPath.row];
-            webAlbumCell.album = album;
+            [webAlbumCell setAlbum:album isNowLoading:NO];
             
             cell = webAlbumCell;
         }
@@ -474,15 +475,21 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     PWSearchNavigationControllerHistoryItem *historyItem = [[PWSearchNavigationControllerHistoryItem alloc] init];
     historyItem.type = item.type;
     historyItem.update = [NSDate date];
+    NSString *identifier = nil;
     if (item.type == PWSearchNavigationControllerItemTypeWebAlbum) {
         PWAlbumObject *album = item.item[index];
-        historyItem.identifier = album.id_str;
+        identifier = album.id_str;
     }
     else if (item.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
         PLAlbumObject *album = item.item[index];
-        historyItem.identifier = album.id_str;
+        identifier = album.id_str;
     }
+    historyItem.identifier = identifier;
     
+    NSArray *filteredHistoryItems = [mutableHistoryItems filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"identifier = %@", identifier]];
+    if (filteredHistoryItems.count) {
+        [mutableHistoryItems removeObject:filteredHistoryItems.firstObject];
+    }
     [mutableHistoryItems insertObject:historyItem atIndex:0];
     if (mutableHistoryItems.count > 10) {
         [mutableHistoryItems removeObject:mutableHistoryItems.lastObject];
@@ -522,7 +529,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 }
 
 - (void)webAlbumsSearchByName:(NSString *)name completion:(void (^)(NSArray *albums, NSError *error))completion {
-    [PWCoreDataAPI performBlockAndWait:^(NSManagedObjectContext *context) {
+    [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
@@ -536,7 +543,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 }
 
 - (void)webAlbumsSearchByID:(NSString *)id_str completion:(void (^)(NSArray *albums, NSError *error))completion {
-    [PWCoreDataAPI performBlockAndWait:^(NSManagedObjectContext *context) {
+    [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];

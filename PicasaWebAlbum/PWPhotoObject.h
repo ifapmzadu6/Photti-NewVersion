@@ -2,7 +2,7 @@
 //  PWPhotoObject.h
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/05/05.
+//  Created by Keisuke Karijuku on 2014/05/30.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
@@ -27,17 +27,23 @@
 @property (nonatomic, retain) NSString * summary;
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSString * updated;
+@property (nonatomic, retain) NSString * tag_thumbnail_url;
 @property (nonatomic, retain) PWPhotoExitObject *exif;
 @property (nonatomic, retain) PWGPhotoObject *gphoto;
-@property (nonatomic, retain) NSSet *link;
+@property (nonatomic, retain) NSOrderedSet *link;
 @property (nonatomic, retain) PWPhotoMediaObject *media;
 @end
 
 @interface PWPhotoObject (CoreDataGeneratedAccessors)
 
+- (void)insertObject:(PWPhotoLinkObject *)value inLinkAtIndex:(NSUInteger)idx;
+- (void)removeObjectFromLinkAtIndex:(NSUInteger)idx;
+- (void)insertLink:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
+- (void)removeLinkAtIndexes:(NSIndexSet *)indexes;
+- (void)replaceObjectInLinkAtIndex:(NSUInteger)idx withObject:(PWPhotoLinkObject *)value;
+- (void)replaceLinkAtIndexes:(NSIndexSet *)indexes withLink:(NSArray *)values;
 - (void)addLinkObject:(PWPhotoLinkObject *)value;
 - (void)removeLinkObject:(PWPhotoLinkObject *)value;
-- (void)addLink:(NSSet *)values;
-- (void)removeLink:(NSSet *)values;
-
+- (void)addLink:(NSOrderedSet *)values;
+- (void)removeLink:(NSOrderedSet *)values;
 @end

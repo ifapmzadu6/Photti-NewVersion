@@ -17,7 +17,7 @@
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UIImageView *thumbnailImageView;
 
-@property (nonatomic) NSUInteger urlHash;
+@property (nonatomic) NSUInteger albumHash;
 @property (strong, nonatomic) NSURLSessionDataTask *task;
 
 @end
@@ -76,102 +76,103 @@
     [super setSelected:selected animated:animated];
 }
 
-- (void)setAlbum:(PWAlbumObject *)album {
+- (void)setAlbum:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading {
     _album = album;
     
-    NSArray *thumbnails = album.media.thumbnail.allObjects;
-    thumbnails = [thumbnails sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        PWPhotoMediaThumbnailObject *thumbnail1 = (PWPhotoMediaThumbnailObject *)obj1;
-        PWPhotoMediaThumbnailObject *thumbnail2 = (PWPhotoMediaThumbnailObject *)obj2;
-        return MAX(thumbnail1.width.integerValue, thumbnail1.height.integerValue) > MAX(thumbnail2.width.integerValue, thumbnail2.height.integerValue);
-    }];
-    PWPhotoMediaThumbnailObject *thumbnail = thumbnails.firstObject;
-    if (!thumbnail) {
-        //imageviewの初期化がここに
-        
-        _urlHash = 0;
-    }
-    else {
-        //imageviewの初期化がここに
-        
-        NSUInteger hash = thumbnail.url.hash;
-        _urlHash = hash;
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSString *urlString = thumbnail.url;
-            SDImageCache *imageCache = [SDImageCache sharedImageCache];
-            UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
-            if (memoryCachedImage) {
-                UIImage *thumbnailImage = [self createThumbnail:memoryCachedImage size:CGSizeMake(45.0f, 45.0f)];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (_urlHash == hash) {
-                        _thumbnailImageView.image = thumbnailImage;
-                    }
-                });
-            }
-            else {
-                if ([imageCache diskImageExistsWithKey:urlString]) {
-                    if (_urlHash == hash) {
-                        UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
-                        UIImage *thumbnailImage = [self createThumbnail:diskCachedImage size:CGSizeMake(45.0f, 45.0f)];
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if (_urlHash == hash) {
-                                _thumbnailImageView.image = thumbnailImage;
-                            }
-                        });
-                    }
-                }
-                else {
-                    __weak typeof(self) wself = self;
-                    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
-                        if (error) {
-                            NSLog(@"%@", error.description);
-                            return;
-                        }
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                            typeof(wself) sself = wself;
-                            if (!sself) return;
-                            if (sself.urlHash != hash) return;
-                            
-                            if (sself.task) {
-                                [sself.task cancel];
-                                sself.task = nil;
-                            }
-                            
-                            request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
-                            sself.task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                                if (error) {
-                                    NSLog(@"%@", error.description);
-                                    return;
-                                }
-                                typeof(wself) sself = wself;
-                                if (!sself) return;
-                                if (sself.urlHash == hash) {
-                                    UIImage *image = [UIImage imageWithData:data];
-                                    UIImage *thumbnailImage = [sself createThumbnail:image size:CGSizeMake(45.0f, 45.0f)];
-                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                        typeof(wself) sself = wself;
-                                        if (!sself) return;
-                                        if (sself.urlHash == hash) {
-                                            sself.thumbnailImageView.image = thumbnailImage;
-                                        }
-                                    });
-                                    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-                                    [imageCache storeImage:image forKey:urlString toDisk:YES];
-                                }
-                            }];
-                            [sself.task resume];
-                        });
-                    }];
-                }
-            }
-        });
+    NSString *urlString = album.tag_thumbnail_url;
+    if (!urlString) {
+        return;
     }
     
     _titleLabel.text = album.title;
+    
+    NSUInteger hash = album.hash;
+    _albumHash = hash;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        SDImageCache *imageCache = [SDImageCache sharedImageCache];
+        UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+        if (memoryCachedImage) {
+            UIImage *thumbnailImage = [PWSearchTableViewWebAlbumCell createThumbnail:memoryCachedImage size:self.bounds.size];
+            [self setImage:thumbnailImage hash:hash];
+            
+            return;
+        }
+        
+        if ([imageCache diskImageExistsWithKey:urlString]) {
+            if (_albumHash != hash) return;
+            
+            UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
+            UIImage *thumbnailImage = [PWSearchTableViewWebAlbumCell createThumbnail:diskCachedImage size:self.bounds.size];
+            [self setImage:thumbnailImage hash:hash];
+            
+            return;
+        }
+        
+        NSURLSessionDataTask *beforeTask = _task;
+        if (beforeTask) {
+            [beforeTask cancel];
+        }
+        
+        if (isNowLoading) {
+            return;
+        }
+        
+        __weak typeof(self) wself = self;
+        [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+            if (error) {
+                NSLog(@"%@", error.description);
+                return;
+            }
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                if (sself.albumHash != hash) return;
+                
+                request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
+                NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    if (error) {
+                        NSLog(@"%@", error.description);
+                        return;
+                    }
+                    
+                    UIImage *image = [UIImage imageWithData:data];
+                    if (sself.albumHash == hash) {
+                        UIImage *thumbnailImage = [PWSearchTableViewWebAlbumCell createThumbnail:image size:sself.bounds.size];
+                        [sself setImage:thumbnailImage hash:hash];
+                    }
+                    
+                    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+                    [imageCache storeImage:image forKey:urlString toDisk:YES];
+                }];
+                [task resume];
+                
+                sself.task = task;
+            });
+        }];
+    });
 }
 
-- (UIImage *)createThumbnail:(UIImage *)image size:(CGSize)size {
+- (void)setImage:(UIImage *)image hash:(NSUInteger)hash {
+    if (_albumHash != hash) {
+        return;
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (_albumHash != hash) {
+            return;
+        }
+        
+        _thumbnailImageView.image = image;
+        [UIView animateWithDuration:0.1f animations:^{
+            _thumbnailImageView.alpha = 1.0f;
+        }];
+    });
+}
+
++ (UIImage *)createThumbnail:(UIImage *)image size:(CGSize)size {
 	CGFloat imageWidth = image.size.width;
 	CGFloat imageHeight = image.size.height;
 	

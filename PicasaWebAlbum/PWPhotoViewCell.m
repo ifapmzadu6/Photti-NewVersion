@@ -8,7 +8,6 @@
 
 #import "PWPhotoViewCell.h"
 
-#import "PWModelObject.h"
 #import "UIImageView+AFNetworking.h"
 #import "PWPicasaAPI.h"
 #import "PWColors.h"
@@ -22,12 +21,14 @@
 @property (strong, nonatomic) UIView *overrayView;
 @property (strong, nonatomic) UIImageView *checkMark;
 
-@property (nonatomic) NSUInteger requestHash;
-@property (strong, nonatomic) NSURLSessionDataTask *task;
+@property (nonatomic) NSUInteger photoHash;
+@property (weak, nonatomic) NSURLSessionDataTask *task;
 
 @end
 
 @implementation PWPhotoViewCell
+
+
 
 - (id)init {
     self = [super init];
@@ -66,12 +67,19 @@
     [self.contentView addSubview:_checkMark];
 }
 
+- (void)dealloc {
+    NSURLSessionDataTask *task = _task;
+    if (task) {
+        [task cancel];
+    }
+}
+
 - (void)setSelected:(BOOL)selected {
     [super setSelected:selected];
     
     if (selected) {
         if (_isSelectWithCheckMark) {
-            _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.25f];
+            _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.5f];
             _checkMark.alpha = 1.0f;
         }
         else {
@@ -91,7 +99,7 @@
     
     if (highlighted) {
         if (_isSelectWithCheckMark) {
-            _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.25f];
+            _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.5f];
         }
         else {
             _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.25f];
@@ -116,115 +124,114 @@
     _checkMark.frame = CGRectMake(CGRectGetMaxX(rect) - 32.0f, CGRectGetMaxY(rect) - 32.0f, 28.0f, 28.0f);
 }
 
-- (void)setPhoto:(PWPhotoObject *)photo {
-    _photo = photo;
+- (void)setIsSelectWithCheckMark:(BOOL)isSelectWithCheckMark {
+    _isSelectWithCheckMark = isSelectWithCheckMark;
     
-    NSArray *thumbnails = photo.media.thumbnail.allObjects;
-    thumbnails = [thumbnails sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        PWPhotoMediaThumbnailObject *thumbnail1 = (PWPhotoMediaThumbnailObject *)obj1;
-        PWPhotoMediaThumbnailObject *thumbnail2 = (PWPhotoMediaThumbnailObject *)obj2;
-        return MAX(thumbnail1.width.integerValue, thumbnail1.height.integerValue) > MAX(thumbnail2.width.integerValue, thumbnail2.height.integerValue);
-    }];
-    PWPhotoMediaThumbnailObject *thumbnail = thumbnails.firstObject;
-    if (!thumbnail) {
-        [_activityIndicatorView stopAnimating];
-        _imageView.alpha = 0.0f;
-        _requestHash = 0;
-    }
-    else {
-        _imageView.alpha = 0.0f;
-        if (!_activityIndicatorView.isAnimating) {
-            [_activityIndicatorView startAnimating];
-        }
-        
-        NSUInteger hash = thumbnail.url.hash;
-        _requestHash = hash;
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSString *urlString = thumbnail.url;
-            SDImageCache *imageCache = [SDImageCache sharedImageCache];
-            UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
-            if (memoryCachedImage) {
-                UIImage *thumbnailImage = [self createThumbnail:memoryCachedImage size:self.bounds.size];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (_requestHash == hash) {
-                        [_activityIndicatorView stopAnimating];
-                        _imageView.image = thumbnailImage;
-                        [UIView animateWithDuration:0.1f animations:^{
-                            _imageView.alpha = 1.0f;
-                        }];
-                    }
-                });
-            }
-            else {
-                if ([imageCache diskImageExistsWithKey:urlString]) {
-                    if (_requestHash == hash) {
-                        UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
-                        UIImage *thumbnailImage = [self createThumbnail:diskCachedImage size:self.bounds.size];
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if (_requestHash == hash) {
-                                [_activityIndicatorView stopAnimating];
-                                _imageView.image = thumbnailImage;
-                                [UIView animateWithDuration:0.1f animations:^{
-                                    _imageView.alpha = 1.0f;
-                                }];
-                            }
-                        });
-                    }
-                }
-                else {
-                    __weak typeof(self) wself = self;
-                    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
-                        if (error) {
-                            NSLog(@"%@", error.description);
-                            return;
-                        }
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                            typeof(wself) sself = wself;
-                            if (!sself) return;
-                            if (sself.requestHash != hash) return;
-                            
-                            if (sself.task) {
-                                [sself.task cancel];
-                                sself.task = nil;
-                            }
-                            
-                            request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
-                            sself.task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                                if (error) {
-                                    NSLog(@"%@", error.description);
-                                    return;
-                                }
-                                typeof(wself) sself = wself;
-                                if (!sself) return;
-                                if (sself.requestHash == hash) {
-                                    UIImage *image = [UIImage imageWithData:data];
-                                    UIImage *thumbnailImage = [sself createThumbnail:image size:sself.bounds.size];
-                                    dispatch_sync(dispatch_get_main_queue(), ^{
-                                        typeof(wself) sself = wself;
-                                        if (!sself) return;
-                                        if (sself.requestHash == hash) {
-                                            [sself.activityIndicatorView stopAnimating];
-                                            sself.imageView.image = thumbnailImage;
-                                            [UIView animateWithDuration:0.1f animations:^{
-                                                sself.imageView.alpha = 1.0f;
-                                            }];
-                                        }
-                                    });
-                                    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-                                    [imageCache storeImage:image forKey:urlString toDisk:YES];
-                                }
-                            }];
-                            [sself.task resume];
-                        });
-                    }];
-                }
-            }
-        });
-    }
+    [self setSelected:self.isSelected];
 }
 
-- (UIImage *)createThumbnail:(UIImage *)image size:(CGSize)size {
+- (void)setPhoto:(PWPhotoObject *)photo isNowLoading:(BOOL)isNowLoading {
+    _photo = photo;
+    
+    NSUInteger hash = photo.hash;
+    _photoHash = hash;
+    
+    _imageView.alpha = 0.0f;
+    [_activityIndicatorView startAnimating];
+    
+    if (!photo) {
+        return;
+    }
+    
+    NSString *urlString = photo.tag_thumbnail_url;
+    if (!urlString) return;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        if (_photoHash != hash) return;
+        
+        SDImageCache *imageCache = [SDImageCache sharedImageCache];
+        UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+        if (memoryCachedImage) {
+            UIImage *thumbnailImage = [PWPhotoViewCell createThumbnail:memoryCachedImage size:self.bounds.size];
+            [self setImage:thumbnailImage hash:hash];
+            
+            return;
+        }
+        
+        if ([imageCache diskImageExistsWithKey:urlString]) {
+            if (_photoHash != hash) return;
+            
+            UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
+            UIImage *thumbnailImage = [PWPhotoViewCell createThumbnail:diskCachedImage size:self.bounds.size];
+            [self setImage:thumbnailImage hash:hash];
+            
+            return;
+        }
+        
+        NSURLSessionDataTask *task = _task;
+        if (task) {
+            [task cancel];
+        }
+        
+        if (isNowLoading) {
+            return;
+        }
+        
+        __weak typeof(self) wself = self;
+        [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+            if (error) {
+                NSLog(@"%@", error.description);
+                return;
+            }
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                if (sself.photoHash != hash) return;
+                
+                request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
+                NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                    if (error) {
+                        NSLog(@"%@", error.description);
+                        return;
+                    }
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    UIImage *image = [UIImage imageWithData:data];
+                    
+                    if (sself.photoHash == hash) {
+                        UIImage *thumbnailImage = [PWPhotoViewCell createThumbnail:image size:sself.bounds.size];
+                        [sself setImage:thumbnailImage hash:hash];
+                    }
+                    
+                    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+                    [imageCache storeImage:image forKey:urlString toDisk:YES];
+                }];
+                [task resume];
+                
+                sself.task = task;
+            });
+        }];
+    });
+}
+
+- (void)setImage:(UIImage *)image hash:(NSUInteger)hash {
+    if (_photoHash != hash) {
+        return;
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (_photoHash != hash) {
+            return;
+        }
+        
+        [_activityIndicatorView stopAnimating];
+        _imageView.image = image;
+        [UIView animateWithDuration:0.1f animations:^{
+            _imageView.alpha = 1.0f;
+        }];
+    });
+}
+
++ (UIImage *)createThumbnail:(UIImage *)image size:(CGSize)size {
 	CGFloat imageWidth = image.size.width;
 	CGFloat imageHeight = image.size.height;
 	

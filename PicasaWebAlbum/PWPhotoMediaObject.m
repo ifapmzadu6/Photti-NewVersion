@@ -2,11 +2,12 @@
 //  PWPhotoMediaObject.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/05/05.
+//  Created by Keisuke Karijuku on 2014/05/30.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
 #import "PWPhotoMediaObject.h"
+#import "PWAlbumObject.h"
 #import "PWPhotoMediaContentObject.h"
 #import "PWPhotoMediaThumbnailObject.h"
 #import "PWPhotoObject.h"
@@ -18,20 +19,21 @@
 @dynamic description_text;
 @dynamic keywords;
 @dynamic title;
+@dynamic album;
 @dynamic content;
 @dynamic photo;
 @dynamic thumbnail;
 
 - (void)addContentObject:(PWPhotoMediaContentObject *)value {
-    NSMutableSet *tempSet = [NSMutableSet setWithSet:self.content];
-    [tempSet addObject:value];
-    self.content = tempSet;
+    NSMutableOrderedSet *tmpSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.content];
+    [tmpSet addObject:value];
+    self.content = tmpSet.copy;
 }
 
 - (void)addThumbnailObject:(PWPhotoMediaThumbnailObject *)value {
-    NSMutableSet *tempSet = [NSMutableSet setWithSet:self.thumbnail];
-    [tempSet addObject:value];
-    self.thumbnail = tempSet;
+    NSMutableOrderedSet *tmpSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.thumbnail];
+    [tmpSet addObject:value];
+    self.thumbnail = tmpSet.copy;
 }
 
 @end

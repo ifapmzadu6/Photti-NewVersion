@@ -1,27 +1,20 @@
 //
-//  PWAlbumViewController.m
+//  PWImagePickerWebAlbumListViewController.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/05/06.
+//  Created by Keisuke Karijuku on 2014/05/26.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWAlbumListViewController.h"
+#import "PWImagePickerWebAlbumListViewController.h"
 
 #import "PWColors.h"
-#import "PWPicasaAPI.h"
-#import "PWAlbumViewCell.h"
 #import "PWRefreshControl.h"
-#import "BlocksKit+UIKit.h"
+#import "PWAlbumViewCell.h"
+#import "PWImagePickerWebPhotoListViewController.h"
+#import "PWImagePickerController.h"
 
-#import "PWPhotoListViewController.h"
-#import "PWSearchNavigationController.h"
-#import "PWTabBarController.h"
-#import "PWAlbumEditViewController.h"
-#import "PWNewAlbumEditViewController.h"
-#import "PWAlbumShareViewController.h"
-
-@interface PWAlbumListViewController ()
+@interface PWImagePickerWebAlbumListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
@@ -29,20 +22,19 @@
 
 @property (nonatomic) NSUInteger requestIndex;
 @property (nonatomic) BOOL isNowRequesting;
+@property (strong, nonatomic) NSString *searchText;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
 @end
 
-@implementation PWAlbumListViewController
-
-static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
+@implementation PWImagePickerWebAlbumListViewController
 
 - (id)init {
     self = [super init];
     if (self) {
         self.title = @"ウェブアルバム";
-        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];
+        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];        
     }
     return self;
 }
@@ -50,39 +42,32 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //255,160,122
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:255.0f/255.0f green:160.0f/255.0f blue:122.0f/255.0f alpha:1.0f];
-    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-    
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
-    
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
     [_collectionView registerClass:[PWAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 10.0f, 0.0f);
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
+    _collectionView.contentInset = UIEdgeInsetsMake(-10.0f, 0.0f, 10.0f, 0.0f);
+    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, -10.0f);
     _collectionView.clipsToBounds = NO;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
-    _refreshControl.myContentInsetTop = 10.0f;
+    _refreshControl.myContentInsetTop = 5.0f;
     [_collectionView addSubview:_refreshControl];
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_activityIndicatorView];
     
-    UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
-    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
-    self.navigationItem.rightBarButtonItems = @[addBarButtonItem, searchBarButtonItem];
+    UIBarButtonItem *doneBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
+    self.navigationItem.rightBarButtonItem = doneBarButtonitem;
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
+    UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = cancelBarButtonitem;
     
-    [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];
     
     __weak typeof(self) wself = self;
@@ -93,6 +78,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        NSString *searchText = sself.searchText;
+        if (searchText) {
+            request.predicate = [NSPredicate predicateWithFormat:@"title contains %@", searchText];
+        }
         sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
         NSError *error = nil;
         [sself.fetchedResultsController performFetch:&error];
@@ -120,14 +109,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     for (NSIndexPath *indexPath in indexPaths) {
         [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
-    
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
-    [tabBarController setTabBarHidden:NO animated:NO completion:nil];
-    [tabBarController setToolbarHidden:YES animated:animated completion:nil];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -146,8 +127,14 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [super didReceiveMemoryWarning];
 }
 
-#pragma mark UIBarButtonItem - Depricated
-- (void)actionBarButtonAction {
+#pragma mark UIBarButtonAction
+- (void)doneBarButtonAction {
+    PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+    [tabBarController doneBarButtonAction];
+}
+
+- (void)cancelBarButtonAction {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark UICollectionViewDataSource
@@ -164,13 +151,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
     [cell setAlbum:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];
-    __weak typeof(self) wself = self;
-    [cell setActionButtonActionBlock:^(PWAlbumObject *album) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        [sself showAlbumActionSheet:album];
-    }];
     
     return cell;
 }
@@ -196,7 +176,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    PWPhotoListViewController *viewController = [[PWPhotoListViewController alloc] initWithAlbum:album];
+    PWImagePickerWebPhotoListViewController *viewController = [[PWImagePickerWebPhotoListViewController alloc] initWithAlbum:album];
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
@@ -205,34 +185,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     if (!_isNowRequesting) {
         [self reloadData];
     }
-}
-
-#pragma mark BarButtonAction
-- (void)searchBarButtonAction {
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
-    [tabBarController setTabBarHidden:YES animated:YES completion:nil];
-    
-    PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
-    __weak typeof(self) wself = self;
-    [navigationController openSearchBarWithCancelBlock:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        [tabBarController setTabBarHidden:NO animated:NO completion:nil];
-    }];
-}
-
-- (void)addBarButtonAction {
-    PWNewAlbumEditViewController *viewController = [[PWNewAlbumEditViewController alloc] init];
-    __weak typeof(self) wself = self;
-    [viewController setSuccessBlock:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        [sself reloadData];
-    }];
-    PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
-    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
 #pragma mark LoadData
@@ -316,79 +268,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         
         [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
     });
-}
-
-#pragma mark UIActionSheet
-- (void)showAlbumActionSheet:(PWAlbumObject *)album {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.title];
-    __weak typeof(self) wself = self;
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"情報", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        PWAlbumEditViewController *viewController = [[PWAlbumEditViewController alloc] initWithAlbum:album];
-        [viewController setSuccessBlock:^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself reloadData];
-        }];
-        PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
-        [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
-    }];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"共有", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        PWAlbumShareViewController *viewController = [[PWAlbumShareViewController alloc] initWithAlbum:album];
-        [viewController setChangedAlbumBlock:^(NSString *retAccess, NSSet *link) {
-            album.link = link;
-            album.gphoto.access = retAccess;
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
-            });
-        }];
-        PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
-        [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
-    }];
-    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"本当に削除しますか？アルバム内の写真はすべて削除されます。", nil)];
-        [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除する", nil) handler:^{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"アルバムを削除しています", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
-            [indicator startAnimating];
-            [alertView setValue:indicator forKey:@"accessoryView"];
-            [alertView show];
-            
-            [PWPicasaAPI deleteAlbum:album completion:^(NSError *error) {
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                
-                if (error) {
-                    NSLog(@"%@", error.description);
-                    return;
-                }
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                    [sself reloadData];
-                });
-            }];
-        }];
-        [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-        
-        [deleteActionSheet showFromTabBar:sself.tabBarController.tabBar];
-    }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
-        
-    }];
-    
-    [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }
 
 @end

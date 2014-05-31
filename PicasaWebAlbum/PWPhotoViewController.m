@@ -62,12 +62,7 @@
 
 #pragma mark LoadImage
 - (void)loadImage {
-    NSArray *thumbnails = _photo.media.thumbnail.allObjects;
-    thumbnails = [thumbnails sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        PWPhotoMediaThumbnailObject *thumbnail1 = (PWPhotoMediaThumbnailObject *)obj1;
-        PWPhotoMediaThumbnailObject *thumbnail2 = (PWPhotoMediaThumbnailObject *)obj2;
-        return MAX(thumbnail1.width.integerValue, thumbnail1.height.integerValue) > MAX(thumbnail2.width.integerValue, thumbnail2.height.integerValue);
-    }];
+    NSArray *thumbnails = _photo.media.thumbnail.array;
     PWPhotoMediaThumbnailObject *thumbnail = thumbnails.firstObject;
     NSString *urlString = thumbnail.url;
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
@@ -124,7 +119,7 @@
 }
 
 - (void)loadhighResolutionImage {
-    NSArray *contents = _photo.media.content.allObjects;
+    NSArray *contents = _photo.media.content.array;
     contents = [contents sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         PWPhotoMediaContentObject *content1 = (PWPhotoMediaContentObject *)obj1;
         PWPhotoMediaContentObject *content2 = (PWPhotoMediaContentObject *)obj2;

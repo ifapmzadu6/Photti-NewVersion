@@ -48,6 +48,10 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:135.0f/255.0f green:206.0f/255.0f blue:235.0f/255.0f alpha:1.0f];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    //135,206,235
+    
     _myViewControllers = [self makeViewControllers];
     [self setViewControllers:@[_myViewControllers[1]]
                    direction:UIPageViewControllerNavigationDirectionForward
@@ -118,8 +122,16 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [tabBarController setToolbarHidden:YES animated:animated completion:nil];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    [_titleView setNeedsLayout];
+}
+
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
+    
+    [_titleView setNeedsLayout];
 }
 
 - (void)didReceiveMemoryWarning {

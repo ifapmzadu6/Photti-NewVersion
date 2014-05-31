@@ -77,6 +77,10 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
+        [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -87,10 +91,6 @@
     }
     
     _collectionView.scrollsToTop = YES;
-    
-    for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
-        [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
-    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

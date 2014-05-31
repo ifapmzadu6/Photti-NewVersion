@@ -40,54 +40,60 @@
 }
 
 - (void)initialization {
-    self.clipsToBounds = YES;
-    self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    
     _clipBackgroundView = [[UIView alloc] init];
     _clipBackgroundView.clipsToBounds = YES;
     [self addSubview:_clipBackgroundView];
     
     _beforeTitleLabel = [[UILabel alloc] init];
     _beforeTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-    _beforeTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+//    _beforeTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+    _beforeTitleLabel.textColor = [UIColor whiteColor];
     _beforeTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_beforeTitleLabel];
     
     _currentTitleLabel = [[UILabel alloc] init];
     _currentTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-    _currentTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+//    _currentTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+    _currentTitleLabel.textColor = [UIColor whiteColor];
     _currentTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_currentTitleLabel];
     
     _afterTitleLabel = [[UILabel alloc] init];
     _afterTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-    _afterTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+//    _afterTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+    _afterTitleLabel.textColor = [UIColor whiteColor];
     _afterTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_afterTitleLabel];
     
     _pageControll = [[UIPageControl alloc] init];
-    _pageControll.currentPageIndicatorTintColor = [UIColor colorWithWhite:0.666f alpha:1.0f];
-    _pageControll.pageIndicatorTintColor = [UIColor colorWithWhite:0.85f alpha:1.0f];
+//    _pageControll.currentPageIndicatorTintColor = [UIColor colorWithWhite:0.666f alpha:1.0f];
+//    _pageControll.pageIndicatorTintColor = [UIColor colorWithWhite:0.85f alpha:1.0f];
     [_clipBackgroundView addSubview:_pageControll];
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    
+        
     CGRect superViewRect = self.superview.bounds;
     
     CGFloat halfwidth = CGRectGetMaxX(self.frame) - CGRectGetWidth(superViewRect) / 2.0f;
     
-    _clipBackgroundView.frame = CGRectMake(CGRectGetWidth(superViewRect) / 2.0f - halfwidth - self.frame.origin.x, 0.0f, halfwidth * 2.0f, 44.0f);
+    BOOL isLandScape = UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
+    CGFloat tHeight = 44.0f;
+    if (isLandScape) {
+        tHeight = 32.0f;
+    }
+    
+    _clipBackgroundView.frame = CGRectMake(CGRectGetWidth(superViewRect) / 2.0f - halfwidth - self.frame.origin.x, CGRectGetMaxY(superViewRect) - tHeight - self.frame.origin.y, halfwidth * 2.0f, tHeight);
     
     CGRect rect = _clipBackgroundView.bounds;
     CGSize size = rect.size;
     
     CGFloat labelY = 10.0f;
     CGFloat pageControlY = size.height - 18.0f;
-    if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
-        labelY = 5.0f;
-        pageControlY = size.height - 27.0f;
+    if (isLandScape) {
+        labelY = 2.0f;
+        pageControlY = size.height - 16.0f;
     }
     
     _beforeTitleLabel.frame = CGRectMake(-size.width * 0.5f, labelY, size.width, 17.0f);

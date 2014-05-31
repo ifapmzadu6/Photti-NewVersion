@@ -333,6 +333,8 @@ static dispatch_queue_t assets_manager_queue() {
                 photo.import = enumurateDate;
                 
                 photo.tag_albumtype = album.type;
+                NSURL *urlWithString = [NSURL URLWithString:url];
+                photo.id_str = urlWithString.query;
                 [album addPhotosObject:photo];
             }];
         };

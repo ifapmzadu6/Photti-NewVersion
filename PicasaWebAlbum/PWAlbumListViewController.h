@@ -10,6 +10,4 @@
 
 @interface PWAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
-- (id)initWithSearchText:(NSString *)searchText;
-
 @end

@@ -8,6 +8,8 @@
 
 #import "PWCoreDataAPI.h"
 
+#import "DDLog.h"
+
 @interface PWCoreDataAPI ()
 
 @property (strong, nonatomic) NSManagedObjectModel *managedObjectModel;
@@ -17,6 +19,15 @@
 @end
 
 @implementation PWCoreDataAPI
+
+static dispatch_queue_t pw_coredata_queue() {
+    static dispatch_queue_t pw_coredata_queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        pw_coredata_queue = dispatch_queue_create("com.photti.pwcoredata", DISPATCH_QUEUE_CONCURRENT);
+    });
+    return pw_coredata_queue;
+}
 
 + (id)sharedManager {
     static dispatch_once_t once;
@@ -29,22 +40,22 @@
     self = [super init];
     if (self) {
         NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PWModel" withExtension:@"momd"];
-        _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+        self.managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
         
-        NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"PicasaWebAlbum.sqlite"];
+        NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"PWModel.sqlite"];
         
         NSError *error = nil;
-        _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:_managedObjectModel];
-        if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+        self.persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:_managedObjectModel];
+        if (![self.persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
             
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
         }
         
-        NSPersistentStoreCoordinator *coordinator = _persistentStoreCoordinator;
+        NSPersistentStoreCoordinator *coordinator = self.persistentStoreCoordinator;
         if (coordinator != nil) {
-            _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-            _managedObjectContext.persistentStoreCoordinator = coordinator;
+            self.managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
+            self.managedObjectContext.persistentStoreCoordinator = coordinator;
         }
     }
     return self;
@@ -53,36 +64,25 @@
 + (NSManagedObjectContext *)context {
     NSManagedObjectContext *context = [[PWCoreDataAPI sharedManager] managedObjectContext];
     if (!context) {
-//        DDLogError(@"%s", __func__);
-        return nil;
+        
     }
     return context;
 }
 
-+ (void)performBlock:(void (^)(NSManagedObjectContext *))block {
-    NSManagedObjectContext *context = [[PWCoreDataAPI sharedManager] managedObjectContext];
-    if (!context) {
-//        DDLogError(@"%s", __func__);
-        return;
-    }
-    [context performBlock:^{
++ (void)barrierSyncBlock:(void (^)(NSManagedObjectContext *))block {
+    dispatch_barrier_sync(pw_coredata_queue(), ^{
         if (block) {
-            block(context);
+            block([PWCoreDataAPI context]);
         }
-    }];
+    });
 }
 
-+ (void)performBlockAndWait:(void (^)(NSManagedObjectContext *))block {
-    NSManagedObjectContext *context = [[PWCoreDataAPI sharedManager] managedObjectContext];
-    if (!context) {
-//        DDLogError(@"%s", __func__);
-        return;
-    }
-    [context performBlockAndWait:^{
++ (void)asyncBlock:(void (^)(NSManagedObjectContext *))block {
+    dispatch_async(pw_coredata_queue(), ^{
         if (block) {
-            block(context);
+            block([PWCoreDataAPI context]);
         }
-    }];
+    });
 }
 
 #pragma mark - Application's Documents directory

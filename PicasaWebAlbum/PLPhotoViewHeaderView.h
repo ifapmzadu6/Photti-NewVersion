@@ -10,7 +10,11 @@
 
 @interface PLPhotoViewHeaderView : UICollectionReusableView
 
+@property (strong, nonatomic) void (^selectButtonActionBlock)();
+@property (strong, nonatomic) void (^deselectButtonActionBlock)();
+
 - (void)setText:(NSString *)text;
 - (void)setDetail:(NSString *)detail;
+- (void)setSelectButtonIsDeselect:(BOOL)isDeselect;
 
 @end

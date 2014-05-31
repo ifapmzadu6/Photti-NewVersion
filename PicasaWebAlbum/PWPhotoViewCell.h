@@ -12,7 +12,9 @@
 
 @interface PWPhotoViewCell : UICollectionViewCell
 
-@property (strong, nonatomic) PWPhotoObject *photo;
+@property (strong, nonatomic, readonly) PWPhotoObject *photo;
 @property (nonatomic) BOOL isSelectWithCheckMark;
+
+- (void)setPhoto:(PWPhotoObject *)photo isNowLoading:(BOOL)isNowLoading;
 
 @end

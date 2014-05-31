@@ -72,7 +72,10 @@ static const CGFloat animationDuration = 0.3f;
 }
 
 - (void)viewDidLoad {
-    [super viewDidLoad];    
+    [super viewDidLoad];
+    
+    self.tabBar.barTintColor = [UIColor colorWithWhite:0.95f alpha:1.0f];
+    self.tabBar.tintColor = [UIColor colorWithRed:255.0f/255.0f green:160.0f/255.0f blue:122.0f/255.0f alpha:1.0f];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -137,6 +140,14 @@ static const CGFloat animationDuration = 0.3f;
 
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
     [viewController viewDidAppear:NO];
+    
+    NSUInteger index = [self.viewControllers indexOfObject:viewController];
+    if (index == 0) {
+        self.tabBar.tintColor = [UIColor colorWithRed:135.0f/255.0f green:206.0f/255.0f blue:235.0f/255.0f alpha:1.0f];
+    }
+    else if (index == 1) {
+        self.tabBar.tintColor = [UIColor colorWithRed:255.0f/255.0f green:160.0f/255.0f blue:122.0f/255.0f alpha:1.0f];
+    }
 }
 
 

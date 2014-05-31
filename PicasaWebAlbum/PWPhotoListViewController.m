@@ -21,6 +21,7 @@
 #import "PWAlbumEditViewController.h"
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
+#import "PWImagePickerController.h"
 
 @interface PWPhotoListViewController ()
 
@@ -34,10 +35,12 @@
 @property (strong, nonatomic) UIBarButtonItem *trashBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *moveBarButtonItem;
 
-@property (strong, nonatomic) NSMutableArray *photos;
 @property (nonatomic) NSUInteger requestIndex;
-@property (nonatomic) BOOL isDisplayed;
+@property (nonatomic) BOOL isNowRequesting;
 @property (nonatomic) BOOL isSelectMode;
+
+@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+@property (strong, nonatomic) NSMutableArray *selectedPhotoIDs;
 
 @end
 
@@ -48,9 +51,9 @@
     if (self) {
         _album = album;
         
-        _photos = [NSMutableArray array];
-        
         self.title = album.title;
+        
+        _selectedPhotoIDs = @[].mutableCopy;
     }
     return self;
 }
@@ -70,7 +73,7 @@
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
-    [_refreshControl addTarget:self action:@selector(reloadData) forControlEvents:UIControlEventValueChanged];
+    [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
     [_collectionView addSubview:_refreshControl];
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -80,7 +83,34 @@
 //    self.navigationItem.rightBarButtonItem = mapBarButtonItem;
     
     [_refreshControl beginRefreshing];
-    [self loadLocalData];
+    [_activityIndicatorView startAnimating];
+    
+    __weak typeof(self) wself = self;
+    [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", sself.album.id_str];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        
+        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        [sself.fetchedResultsController performFetch:nil];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            if (sself.fetchedResultsController.fetchedObjects.count) {
+                [sself.activityIndicatorView stopAnimating];
+            }
+            
+            [sself.collectionView reloadData];
+            
+            [sself reloadData];
+        });
+    }];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -134,17 +164,19 @@
 }
 
 #pragma mark UIBarButtonAction
-- (void)mapBarButtonAction {
-    
-}
+//- (void)mapBarButtonAction {
+//    
+//}
 
 - (void)actionBarButtonAction {
     [self showAlbumActionSheet:_album];
 }
 
 - (void)addBarButtonAction {
-    UIImagePickerController *pickerController = [[UIImagePickerController alloc] init];
-    [self.tabBarController presentViewController:pickerController animated:YES completion:nil];
+    PWImagePickerController *viewController = [[PWImagePickerController alloc] initWithAlbumTitle:_album.title completion:^(NSArray *selectedPhotos) {
+        
+    }];
+    [self presentViewController:viewController animated:YES completion:nil];
 }
 
 - (void)selectBarButtonAction {
@@ -167,21 +199,27 @@
     
 }
 
+#pragma mark UIRefreshControl
+- (void)refreshControlAction {
+    if (!_isNowRequesting) {
+        [self reloadData];
+    }
+}
+
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
+    return [[_fetchedResultsController sections] count];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return _photos.count;
+    id<NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
+    return [sectionInfo numberOfObjects];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    _isDisplayed = YES;
-    
     PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-    cell.photo = _photos[indexPath.row];
     cell.isSelectWithCheckMark = _isSelectMode;
+    [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];;
     
     return cell;
 }
@@ -210,9 +248,13 @@
         _selectActionBarButton.enabled = YES;
         _trashBarButtonItem.enabled = YES;
         _moveBarButtonItem.enabled = YES;
+        
+        PWPhotoObject *photo = [_fetchedResultsController objectAtIndexPath:indexPath];
+        [_selectedPhotoIDs addObject:photo.id_str];
     }
     else {
-        PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:_photos index:indexPath.row];
+        NSArray *photos = [_fetchedResultsController fetchedObjects];
+        PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row];
         [self.navigationController pushViewController:viewController animated:YES];
     }
 }
@@ -224,6 +266,9 @@
             _trashBarButtonItem.enabled = NO;
             _moveBarButtonItem.enabled = NO;
         }
+        
+        PWPhotoObject *photo = [_fetchedResultsController objectAtIndexPath:indexPath];
+        [_selectedPhotoIDs removeObject:photo.id_str];
     }
 }
 
@@ -233,6 +278,7 @@
         return;
     }
     _isSelectMode = YES;
+    _selectedPhotoIDs = @[].mutableCopy;
     
     _collectionView.allowsMultipleSelection = YES;
     for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
@@ -281,6 +327,7 @@
         return;
     }
     _isSelectMode = NO;
+    _selectedPhotoIDs = @[].mutableCopy;
     
     _collectionView.allowsMultipleSelection = YES;
     for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
@@ -314,18 +361,13 @@
         
         if (error) {
             NSLog(@"%@", error);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [sself.activityIndicatorView stopAnimating];
-                UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
-                    [sself loadDataWithStartIndex:index];
-                }];
-                [sself presentViewController:viewController animated:YES completion:nil];
-            });
+            if (error.code == 401) {
+                [sself openLoginviewController];
+            }
             return;
         }
         
         sself.requestIndex = nextIndex;
-        [sself.photos addObjectsFromArray:photos];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [sself.collectionView reloadData];
@@ -334,6 +376,8 @@
 }
 
 - (void)reloadData {
+    _isNowRequesting = YES;
+    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:0 completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
@@ -342,76 +386,50 @@
         if (error) {
             NSLog(@"%@", error);
             if (error.code == 401) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [sself.refreshControl endRefreshing];
-                    UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
-                        [sself reloadData];
-                    }];
-                    [sself presentViewController:viewController animated:YES completion:nil];
-                });
+                [sself openLoginviewController];
             }
             return;
         }
         
         sself.requestIndex = nextIndex;
-        sself.photos = photos.mutableCopy;
+        [sself.fetchedResultsController performFetch:nil];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.activityIndicatorView stopAnimating];
             [sself.refreshControl endRefreshing];
-            NSArray *indexPathsForSelectedItems = sself.collectionView.indexPathsForSelectedItems;
+            [sself.activityIndicatorView stopAnimating];
+            
+            sself.isNowRequesting = NO;
             [sself.collectionView reloadData];
-            for (NSIndexPath *indexPath in indexPathsForSelectedItems) {
-                [sself.collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+            
+            NSArray *photos = sself.fetchedResultsController.fetchedObjects;
+            for (NSString *id_str in sself.selectedPhotoIDs) {
+                NSArray *searched = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+                for (PWPhotoObject *photo in searched) {
+                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[photos indexOfObject:photo] inSection:0];
+                    [sself.collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+                }
             }
         });
-        
-        NSMutableArray *deletePhotos = photos.mutableCopy;
-        for (PWPhotoObject *photo in photos) {
-            for (PWPhotoObject *deletePhoto in deletePhotos) {
-                if ([photo.id_str isEqualToString:deletePhoto.id_str]) {
-                    [deletePhotos removeObject:deletePhoto];
-                    break;
-                }
-            }
-        }
-        if (deletePhotos.count > 0) {
-            [PWCoreDataAPI performBlockAndWait:^(NSManagedObjectContext *context) {
-                for (PWPhotoObject *photo in deletePhotos) {
-                    [context deleteObject:photo];
-                }
-                [context save:nil];
-            }];
-        }
     }];
 }
 
-- (void)loadLocalData {
-    [_activityIndicatorView startAnimating];
-    
+- (void)openLoginviewController {
     __weak typeof(self) wself = self;
-    [PWCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+    dispatch_async(dispatch_get_main_queue(), ^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
-        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", sself.album.id_str];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-        NSError *error;
-        NSArray *photos = [context executeFetchRequest:request error:&error];
+        [sself.refreshControl endRefreshing];
         
-        sself.photos = photos.mutableCopy;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (sself.photos.count > 0) {
-                [sself.activityIndicatorView stopAnimating];
-                if (!sself.isDisplayed) {
-                    [sself.collectionView reloadData];
-                }
-            }
+        UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
             [sself reloadData];
-        });
-    }];
+        }];
+        
+        [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
+    });
 }
 
 #pragma mark Action
@@ -489,7 +507,8 @@
 
 - (void)showTrashPhotosActionSheet {
     __weak typeof(self) wself = self;
-    [PWPhotoObject getCountFromPhotoObjects:_photos completion:^(NSUInteger countOfPhoto, NSUInteger countOfVideo) {
+    NSArray *photos = [_fetchedResultsController fetchedObjects];
+    [PWPhotoObject getCountFromPhotoObjects:photos completion:^(NSUInteger countOfPhoto, NSUInteger countOfVideo) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -513,7 +532,7 @@
             NSUInteger maxCount = indexPaths.count;
             __block NSUInteger count = 0;
             for (NSIndexPath *indexPath in indexPaths) {
-                PWPhotoObject *photo = sself.photos[indexPath.row];
+                PWPhotoObject *photo = [sself.fetchedResultsController objectAtIndexPath:indexPath];
                 [PWPicasaAPI deletePhoto:photo completion:^(NSError *error) {
                     typeof(wself) sself = wself;
                     if (!sself) return;

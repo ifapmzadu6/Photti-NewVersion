@@ -131,6 +131,14 @@
         album.media = [PWPicasaParser mediaFromJson:media context:context];
     }
     
+    if (album.gphoto) {
+        album.tag_numphotos = album.gphoto.numphotos;
+    }
+    if (album.media) {
+        PWPhotoMediaThumbnailObject *thumbnail = album.media.thumbnail.firstObject;
+        album.tag_thumbnail_url = thumbnail.url;
+    }
+    
     return album;
 }
 
@@ -143,13 +151,13 @@
     NSMutableArray *photos = [NSMutableArray array];
     if ([entries isKindOfClass:[NSArray class]]) {
         for (NSDictionary *entry in entries) {
-            PWPhotoObject *album = [PWPicasaParser photoFromJson:entry context:context];
-            [photos addObject:album];
+            PWPhotoObject *photo = [PWPicasaParser photoFromJson:entry context:context];
+            [photos addObject:photo];
         }
     }
     else if ([entries isKindOfClass:[NSDictionary class]]) {
-        PWPhotoObject *album = [PWPicasaParser photoFromJson:entries context:context];
-        [photos addObject:album];
+        PWPhotoObject *photo = [PWPicasaParser photoFromJson:entries context:context];
+        [photos addObject:photo];
     }
     
     return photos;
@@ -163,14 +171,6 @@
     NSString *id_str = NULL_TO_NIL(gphotoid[@"text"]);
     if (!id_str) return nil;
     
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-    NSError *error;
-    NSArray *photos = [context executeFetchRequest:request error:&error];
-    for (PWPhotoObject *object in photos) {
-        [context deleteObject:object];
-    }
     PWPhotoObject *photo = [NSEntityDescription insertNewObjectForEntityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
     
     NSDictionary *albumid = NULL_TO_NIL(json[@"gphoto:albumid"]);
@@ -226,6 +226,7 @@
 #endif
     }
     id links = NULL_TO_NIL(json[@"link"]);
+    photo.link = [NSOrderedSet orderedSet];
     if ([links isKindOfClass:[NSArray class]]) {
         for (NSDictionary *linkJson in links) {
             PWPhotoLinkObject *link = [PWPicasaParser linkFromJson:linkJson context:context];
@@ -267,6 +268,11 @@
 #ifdef DEBUG_LOCAL
         NSLog(@"photo.updated = %@", photo.updated);
 #endif
+    }
+    
+    if (photo.media) {
+        PWPhotoMediaThumbnailObject *thumbnailObject = photo.media.thumbnail.array.firstObject;
+        photo.tag_thumbnail_url = thumbnailObject.url;
     }
     
     return photo;
@@ -424,12 +430,12 @@
     PWPhotoMediaContentObject *content = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaContentManagedObjectName inManagedObjectContext:context];
     
     NSString *height = NULL_TO_NIL(json[@"height"]);
-    content.height = [NSNumber numberWithInteger:[height integerValue]];
+    content.height = @([height integerValue]);
     content.medium = NULL_TO_NIL(json[@"medium"]);
     content.type = NULL_TO_NIL(json[@"type"]);
     content.url = NULL_TO_NIL(json[@"url"]);
     NSString *width = NULL_TO_NIL(json[@"width"]);
-    content.width = [NSNumber numberWithInteger:[width integerValue]];
+    content.width = @([width integerValue]);
     
 #ifdef DEBUG_LOCAL
     NSLog(@"content.height = %@", content.height);

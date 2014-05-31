@@ -2,7 +2,7 @@
 //  PWPhotoObject.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/05/05.
+//  Created by Keisuke Karijuku on 2014/05/30.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
@@ -29,15 +29,16 @@
 @dynamic summary;
 @dynamic title;
 @dynamic updated;
+@dynamic tag_thumbnail_url;
 @dynamic exif;
 @dynamic gphoto;
 @dynamic link;
 @dynamic media;
 
 - (void)addLinkObject:(PWPhotoLinkObject *)value {
-    NSMutableSet *tempSet = [NSMutableSet setWithSet:self.link];
-    [tempSet addObject:value];
-    self.link = tempSet;
+    NSMutableOrderedSet *tmpSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.link];
+    [tmpSet addObject:value];
+    self.link = tmpSet.copy;
 }
 
 @end

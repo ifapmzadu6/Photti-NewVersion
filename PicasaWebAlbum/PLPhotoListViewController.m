@@ -128,9 +128,9 @@
     
 }
 
-//- (void)trashBarButtonAction {
+- (void)trashBarButtonAction {
 //    [self showTrashPhotosActionSheet];
-//}
+}
 
 - (void)moveBarButtonAction {
     
