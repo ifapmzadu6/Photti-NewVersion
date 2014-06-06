@@ -50,11 +50,8 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //255,160,122
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:255.0f/255.0f green:160.0f/255.0f blue:122.0f/255.0f alpha:1.0f];
-    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-    
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
@@ -71,6 +68,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
     _refreshControl.myContentInsetTop = 10.0f;
+    _refreshControl.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -80,7 +78,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
     self.navigationItem.rightBarButtonItems = @[addBarButtonItem, searchBarButtonItem];
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(actionBarButtonAction)];
     
     [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];
@@ -124,6 +122,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
     [tabBarController setToolbarHidden:YES animated:animated completion:nil];
+    
+    if (!_isNowRequesting) {
+        [_refreshControl endRefreshing];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -136,8 +138,19 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     CGRect rect = self.view.bounds;
     
     _collectionView.frame = CGRectMake(10.0f, 0.0f, rect.size.width - 20.0f, rect.size.height);
+
+    NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
+    NSIndexPath *indexPath = nil;
+    if (indexPaths.count) {
+        indexPath = indexPaths[indexPaths.count / 2];
+    }
+    
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
+    
+    if (indexPath) {
+        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+    }
     
     _activityIndicatorView.center = self.view.center;
 }
@@ -283,39 +296,47 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         }
         
         sself.requestIndex = nextIndex;
-        NSError *coredataError = nil;
-        [sself.fetchedResultsController performFetch:&coredataError];
-        if (coredataError) {
-            NSLog(@"%@", coredataError.description);
-        }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.refreshControl endRefreshing];
-            [sself.activityIndicatorView stopAnimating];
+        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
             
-            sself.isNowRequesting = NO;
-            [sself.collectionView reloadData];
-        });
+            NSError *coredataError = nil;
+            [sself.fetchedResultsController performFetch:&coredataError];
+            if (coredataError) {
+                NSLog(@"%@", coredataError.description);
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [sself.refreshControl endRefreshing];
+                [sself.activityIndicatorView stopAnimating];
+                
+                sself.isNowRequesting = NO;
+                [sself.collectionView reloadData];
+            });
+        }];
     }];
 }
 
 - (void)openLoginviewController {
     __weak typeof(self) wself = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
+    [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            [sself.refreshControl endRefreshing];
+            [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+        });
         
-        [sself.refreshControl endRefreshing];
-        
-        UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
+    } finish:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
             [sself reloadData];
-        }];
-        
-        [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
-    });
+        });
+    }];
 }
 
 #pragma mark UIActionSheet

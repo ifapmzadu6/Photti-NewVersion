@@ -10,13 +10,13 @@
 
 @implementation PWIcons
 
-+ (UIImage *)albumActionButtonIcon {
-	static UIImage *defaultImage = nil;
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
++ (UIImage *)albumActionButtonIconWithColor:(UIColor *)color {
+    UIImage *defaultImage = nil;
+//	static dispatch_once_t onceToken;
+//	dispatch_once(&onceToken, ^{
 		UIGraphicsBeginImageContextWithOptions(CGSizeMake(20.0f, 30.0f), NO, 0.0f);
 		
-		[[UIColor colorWithWhite:0.9f alpha:1.0f] setFill];
+		[[color colorWithAlphaComponent:0.4f] setFill];
 		[[UIBezierPath bezierPathWithRect:CGRectMake(8.0f, 5.0f, 4.0f, 4.0f)] fill];
 		[[UIBezierPath bezierPathWithRect:CGRectMake(8.0f, 12.0f, 4.0f, 4.0f)] fill];
 		[[UIBezierPath bezierPathWithRect:CGRectMake(8.0f, 19.0f, 4.0f, 4.0f)] fill];
@@ -24,7 +24,7 @@
 		defaultImage = UIGraphicsGetImageFromCurrentImageContext();
 		UIGraphicsEndImageContext();
         
-	});
+//	});
     return defaultImage;
 }
 

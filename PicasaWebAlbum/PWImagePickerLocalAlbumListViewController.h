@@ -10,6 +10,6 @@
 
 @interface PWImagePickerLocalAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate>
 
-@property (strong, nonatomic) void (^viewDidAppearBlock)();
+@property (copy, nonatomic) void (^viewDidAppearBlock)();
 
 @end

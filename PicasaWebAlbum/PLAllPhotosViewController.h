@@ -10,6 +10,12 @@
 
 @interface PLAllPhotosViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate>
 
-@property (strong, nonatomic) void (^viewDidAppearBlock)();
+@property (copy, nonatomic) void (^viewDidAppearBlock)();
+@property (copy, nonatomic) void (^headerViewDidTapBlock)(BOOL isSelectMode);
+@property (copy, nonatomic) void (^photoDidSelectedInSelectModeBlock)(NSArray *photos);
+
+
+@property (nonatomic, readonly) BOOL isSelectMode;
+- (void)setIsSelectMode:(BOOL)isSelectMode withSelectIndexPaths:(NSArray *)selectIndexPaths;
 
 @end

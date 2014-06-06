@@ -65,7 +65,7 @@
     _titleLabel.font = [UIFont systemFontOfSize:14.0f];
     _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
     [self.contentView addSubview:_titleLabel];
-    
+        
     _numPhotosLabel = [[UILabel alloc] init];
     _numPhotosLabel.font = [UIFont systemFontOfSize:12.0f];
     _numPhotosLabel.textAlignment = NSTextAlignmentCenter;
@@ -76,7 +76,7 @@
     _actionButton = [[UIButton alloc] init];
     [_actionButton addTarget:self action:@selector(actionButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _actionButton.hitEdgeInsets = UIEdgeInsetsMake(-4.0f, -10.0f, -4.0f, 0.0f);
-    [_actionButton setImage:[PWIcons albumActionButtonIcon] forState:UIControlStateNormal];
+    [_actionButton setImage:[PWIcons albumActionButtonIconWithColor:[PWColors getColor:PWColorsTypeTintWebColor]] forState:UIControlStateNormal];
     [_actionButton setBackgroundImage:[PWIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.05f]] forState:UIControlStateHighlighted];
     [self.contentView addSubview:_actionButton];
     
@@ -126,7 +126,7 @@
     
     _activityIndicatorView.center = _imageView.center;
     
-    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 4.0f, rect.size.width - 16.0f, 14.0f);
+    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 4.0f, rect.size.width - 20.0f - 4.0f, 14.0f);
     
     _numPhotosLabel.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 40.0f, CGRectGetMaxY(_imageView.frame) - 20.0f, 36.0f, 16.0f);
     
@@ -178,11 +178,15 @@
         NSURLSessionDataTask *beforeTask = _task;
         if (beforeTask) {
             [beforeTask cancel];
+            _task = nil;
         }
         
         if (isNowLoading) {
             return;
         }
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        });
         
         __weak typeof(self) wself = self;
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
@@ -197,6 +201,10 @@
                 
                 request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
                 NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                    });
+                    
                     typeof(wself) sself = wself;
                     if (!sself) return;
                     if (error) {

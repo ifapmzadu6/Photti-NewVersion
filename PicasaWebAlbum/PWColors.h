@@ -14,8 +14,9 @@ typedef enum _PWColorsTheme {
 } PWColorsTheme;
 
 typedef enum _PWColorsType {
-	PWColorsTypeMainTintColor,
-	PWColorsTypeSubTintColor,
+	PWColorsTypeTintWebColor,
+	PWColorsTypeTintLocalColor,
+    PWColorsTypeTintUploadColor,
 	PWColorsTypeBackgroundColor,
 	PWColorsTypeBackgroundLightColor,
 	PWColorsTypeBackgroundDarkColor,
@@ -23,9 +24,6 @@ typedef enum _PWColorsType {
 	PWColorsTypeTextDarkColor,
 	PWColorsTypeTextLightColor,
 	PWColorsTypeTextLightSubColor,
-    
-    //BarColors
-    PWColorsTypeBarColor
 } PWColorsType;
 
 @interface PWColors : NSObject

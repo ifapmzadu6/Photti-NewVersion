@@ -49,6 +49,7 @@ static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/
         }
         else {
             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+            request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
             request.allHTTPHeaderFields = headerFields;
             if (completion) {
                 completion(request, nil);
@@ -66,6 +67,7 @@ static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/
         }
         else {
             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+            request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
             request.allHTTPHeaderFields = headerFields;
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
             [task resume];
@@ -100,8 +102,6 @@ static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/
             }
         }
         else {
-//            NSString *tokenHeaderFieldValue = [NSString stringWithFormat:@"Bearer %@", accessToken];
-//            NSDictionary *headerFields = @{@"GData-Version": @"2", @"Authorization": tokenHeaderFieldValue};
             NSDictionary *headerFields = @{@"GData-Version": @"2", @"Authorization": accessToken};
             if (completion) {
                 completion(headerFields, nil);

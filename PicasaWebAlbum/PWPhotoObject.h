@@ -6,8 +6,8 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <CoreData/CoreData.h>
+@import Foundation;
+@import CoreData;
 
 @class PWGPhotoObject, PWPhotoExitObject, PWPhotoLinkObject, PWPhotoMediaObject;
 
@@ -27,6 +27,8 @@
 @property (nonatomic, retain) NSString * summary;
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSString * updated;
+@property (nonatomic, retain) NSString * tag_originalimage_url;
+@property (nonatomic, retain) NSString * tag_screenimage_url;
 @property (nonatomic, retain) NSString * tag_thumbnail_url;
 @property (nonatomic, retain) PWPhotoExitObject *exif;
 @property (nonatomic, retain) PWGPhotoObject *gphoto;

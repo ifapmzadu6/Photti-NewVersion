@@ -55,14 +55,6 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                         }
                     }
                     else {
-                        NSFetchRequest *request = [[NSFetchRequest alloc] init];
-                        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
-                        NSError *error;
-                        NSArray *deleteAlbums = [context executeFetchRequest:request error:&error];
-                        for (PWAlbumObject *object in deleteAlbums) {
-                            [context deleteObject:object];
-                        }
-                        
                         NSArray *albums = nil;
                         NSString *totalResults = NULL_TO_NIL(totalResultsDic[@"text"]);
                         if ([totalResults longLongValue] > 0) {
@@ -141,10 +133,12 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                         request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
                         request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", albumID];
                         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+                        request.includesPropertyValues = NO;
                         NSError *error;
                         NSArray *deletePhotos = [context executeFetchRequest:request error:&error];
                         for (PWPhotoObject *photo in deletePhotos) {
                             [context deleteObject:photo];
+                            [context refreshObject:photo mergeChanges:YES];
                         }
                         
                         photos = [PWPicasaParser parseListOfPhotoFromJson:json context:context];
@@ -336,13 +330,17 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
 }
 
 + (void)getAuthorizedURLRequest:(NSURL *)url completion:(void (^)(NSMutableURLRequest *, NSError *))completion {
+    [PWPicasaGETRequest getAuthorizedURLRequest:url completion:completion];
+}
+
++ (void)authorizedURLRequest:(NSURL *)url completion:(void (^)(NSData *, NSURLResponse *, NSError *))completion {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
-    [PWPicasaGETRequest getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
+    [PWPicasaGETRequest authorizedGETRequestWithURL:url completion:^(NSData *data, NSURLResponse *response, NSError *error) {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         
         if (completion) {
-            completion(request, error);
+            completion(data, response, error);
         }
     }];
 }

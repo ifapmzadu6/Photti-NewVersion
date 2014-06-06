@@ -23,6 +23,12 @@
 #import "PWAlbumShareViewController.h"
 #import "PWImagePickerController.h"
 
+////test
+//#import "PDTaskManager.h"
+//#import "PLCoreDataAPI.h"
+//#import "PLModelObject.h"
+//#import "PLAssetsManager.h"
+
 @interface PWPhotoListViewController ()
 
 @property (strong, nonatomic) PWAlbumObject *album;
@@ -38,9 +44,12 @@
 @property (nonatomic) NSUInteger requestIndex;
 @property (nonatomic) BOOL isNowRequesting;
 @property (nonatomic) BOOL isSelectMode;
+@property (nonatomic) CGPoint scrollPositionBeforeRotation;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSMutableArray *selectedPhotoIDs;
+
+@property (weak, nonatomic) PWPhotoPageViewController *photoPageViewController;
 
 @end
 
@@ -61,6 +70,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
+    
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
@@ -74,6 +86,7 @@
     
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
+    _refreshControl.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -84,40 +97,23 @@
     
     [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];
-    
-    __weak typeof(self) wself = self;
-    [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
-        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", sself.album.id_str];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-        
-        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-        [sself.fetchedResultsController performFetch:nil];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            if (sself.fetchedResultsController.fetchedObjects.count) {
-                [sself.activityIndicatorView stopAnimating];
-            }
-            
-            [sself.collectionView reloadData];
-            
-            [sself reloadData];
-        });
-    }];
 }
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
+    NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
+    NSIndexPath *indexPath = nil;
+    if (indexPaths.count) {
+        indexPath = indexPaths[indexPaths.count / 2];
+    }
+    
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
+    
+    if (indexPath) {
+        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+    }
     
     _activityIndicatorView.center = self.view.center;
 }
@@ -148,6 +144,39 @@
     }
     else {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
+    }
+    
+    if (!_isNowRequesting) {
+        __weak typeof(self) wself = self;
+        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            NSFetchRequest *request = [[NSFetchRequest alloc] init];
+            request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+            request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", sself.album.id_str];
+            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+            
+            sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+            [sself.fetchedResultsController performFetch:nil];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                if (sself.fetchedResultsController.fetchedObjects.count) {
+                    [sself.activityIndicatorView stopAnimating];
+                }
+                
+                [sself.collectionView reloadData];
+                
+                [sself reloadData];
+            });
+        }];
+    }
+    
+    if (!_isNowRequesting) {
+        [_refreshControl endRefreshing];
     }
 }
 
@@ -188,7 +217,6 @@
 }
 
 - (void)selectActionBarButtonAction {
-    
 }
 
 - (void)trashBarButtonAction {
@@ -256,6 +284,8 @@
         NSArray *photos = [_fetchedResultsController fetchedObjects];
         PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row];
         [self.navigationController pushViewController:viewController animated:YES];
+        
+        _photoPageViewController = viewController;
     }
 }
 
@@ -295,6 +325,7 @@
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _moveBarButtonItem, flexibleSpace, _trashBarButtonItem];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
+    [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
@@ -309,6 +340,7 @@
     UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:@"項目を選択"];
     [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
+    [tabBarController setActionNavigationTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
     [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
@@ -392,44 +424,61 @@
         }
         
         sself.requestIndex = nextIndex;
-        [sself.fetchedResultsController performFetch:nil];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.refreshControl endRefreshing];
-            [sself.activityIndicatorView stopAnimating];
+        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
             
-            sself.isNowRequesting = NO;
-            [sself.collectionView reloadData];
+            NSError *coredataError = nil;
+            [sself.fetchedResultsController performFetch:&coredataError];
             
-            NSArray *photos = sself.fetchedResultsController.fetchedObjects;
-            for (NSString *id_str in sself.selectedPhotoIDs) {
-                NSArray *searched = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
-                for (PWPhotoObject *photo in searched) {
-                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[photos indexOfObject:photo] inSection:0];
-                    [sself.collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                [sself.refreshControl endRefreshing];
+                [sself.activityIndicatorView stopAnimating];
+                
+                sself.isNowRequesting = NO;
+                [sself.collectionView reloadData];
+                
+                NSArray *photos = sself.fetchedResultsController.fetchedObjects;
+                for (NSString *id_str in sself.selectedPhotoIDs) {
+                    NSArray *searched = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+                    for (PWPhotoObject *photo in searched) {
+                        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[photos indexOfObject:photo] inSection:0];
+                        [sself.collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+                    }
                 }
-            }
-        });
+                
+                PWPhotoPageViewController *photoPageViewController = sself.photoPageViewController;
+                if (photoPageViewController) {
+                    [photoPageViewController changePhotos:photos];
+                }
+            });
+        }];
     }];
 }
 
 - (void)openLoginviewController {
     __weak typeof(self) wself = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
+    [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            [sself.refreshControl endRefreshing];
+            [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+        });
         
-        [sself.refreshControl endRefreshing];
-        
-        UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
+    } finish:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
             [sself reloadData];
-        }];
-        
-        [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
-    });
+        });
+    }];
 }
 
 #pragma mark Action

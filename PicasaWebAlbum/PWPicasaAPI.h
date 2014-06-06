@@ -28,6 +28,8 @@ static NSString * const kPWPicasaAPILinkRelShare = @"alternate";
 
 + (void)getAuthorizedURLRequest:(NSURL *)url completion:(void (^)(NSMutableURLRequest *request, NSError *error))completion;
 
++ (void)authorizedURLRequest:(NSURL *)url completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion;
+
 + (void)postCreatingNewAlbumRequestWithTitle:(NSString *)title
                             summary:(NSString *)summary
                            location:(NSString *)location

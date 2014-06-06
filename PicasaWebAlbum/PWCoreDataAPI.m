@@ -77,6 +77,14 @@ static dispatch_queue_t pw_coredata_queue() {
     });
 }
 
++ (void)syncBlock:(void (^)(NSManagedObjectContext *))block {
+    dispatch_sync(pw_coredata_queue(), ^{
+        if (block) {
+            block([PWCoreDataAPI context]);
+        }
+    });
+}
+
 + (void)asyncBlock:(void (^)(NSManagedObjectContext *))block {
     dispatch_async(pw_coredata_queue(), ^{
         if (block) {

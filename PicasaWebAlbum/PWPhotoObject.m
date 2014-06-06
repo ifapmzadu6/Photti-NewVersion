@@ -29,6 +29,8 @@
 @dynamic summary;
 @dynamic title;
 @dynamic updated;
+@dynamic tag_originalimage_url;
+@dynamic tag_screenimage_url;
 @dynamic tag_thumbnail_url;
 @dynamic exif;
 @dynamic gphoto;

@@ -10,8 +10,8 @@
 
 @interface PWSelectItemFromArrayViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
-@property (strong, nonatomic) void (^doneBlock)(NSString *selectedItem);
-@property (strong, nonatomic) void (^changeValueBlock)(NSString *selectedItem);
+@property (copy, nonatomic) void (^doneBlock)(NSString *selectedItem);
+@property (copy, nonatomic) void (^changeValueBlock)(NSString *selectedItem);
 @property (nonatomic) NSUInteger disableIndex;
 
 - (id)initWithItems:(NSArray *)items defaultIndex:(NSUInteger)defaultIndex;

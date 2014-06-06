@@ -13,6 +13,8 @@
 #import "PLAlbumViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PWImagePickerController.h"
+#import "BlocksKit+UIKit.h"
+#import "PLModelObject.h"
 
 #import "PWImagePickerLocalPhotoListViewController.h"
 
@@ -106,13 +108,24 @@
     CGRect rect = self.view.bounds;
     
     _collectionView.frame = CGRectMake(10.0f, 0.0f, rect.size.width - 20.0f, rect.size.height);
+    
+    NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
+    NSIndexPath *indexPath = nil;
+    if (indexPaths.count) {
+        indexPath = indexPaths[indexPaths.count / 2];
+    }
+    
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
     
+    if (indexPath) {
+        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+    }
+    
     PWImagePickerController *tabBarViewController = (PWImagePickerController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
-    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 40.0f, 0.0f, viewInsets.bottom, 0.0f);
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top + 30.0f, 0.0f, viewInsets.bottom, -10.0f);
+    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 0.0f, viewInsets.bottom, 0.0f);
+    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, -10.0f);
     
     if (_indicatorView) {
         _indicatorView.center = self.view.center;
@@ -192,6 +205,7 @@
     PWImagePickerLocalPhotoListViewController *viewController = [[PWImagePickerLocalPhotoListViewController alloc] initWithAlbum:_albums[indexPath.row]];
     [self.navigationController pushViewController:viewController animated:YES];
 }
+
 
 
 @end

@@ -12,7 +12,7 @@
 
 @interface PLAlbumViewCell : UICollectionViewCell
 
-@property (strong, nonatomic) void (^actionButtonActionBlock)(PLAlbumObject *album);
+@property (copy, nonatomic) void (^actionButtonActionBlock)(PLAlbumObject *album);
 
 @property (strong, nonatomic) PLAlbumObject *album;
 

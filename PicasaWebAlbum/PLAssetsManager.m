@@ -65,6 +65,12 @@ static dispatch_queue_t assets_manager_queue() {
     });
 }
 
++ (void)writeImageDataToSavedPhotosAlbum:(NSData *)data metadata:(NSDictionary *)metadata completionBlock:(void (^)(NSURL *, NSError *))completionBlock {
+    dispatch_barrier_async(assets_manager_queue(), ^{
+        [[PLAssetsManager sharedLibrary] writeImageDataToSavedPhotosAlbum:data metadata:metadata completionBlock:completionBlock];
+    });
+}
+
 + (void)getAllPhotosWithCompletion:(void (^)(NSArray *, NSError *))completion {
     dispatch_async(assets_manager_queue(), ^{
         [[PLAssetsManager sharedManager] getAllPhotosWithCompletion:completion];
@@ -338,6 +344,7 @@ static dispatch_queue_t assets_manager_queue() {
                 [album addPhotosObject:photo];
             }];
         };
+        groupEnumurateBlock = [groupEnumurateBlock copy];
         
         // PhotoStreamはiCloud
         ALAssetsGroupType assetsGroupType = ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces | ALAssetsGroupLibrary | ALAssetsGroupSavedPhotos;
@@ -387,7 +394,7 @@ static dispatch_queue_t assets_manager_queue() {
                     for (PLPhotoObject *photo in outdatedPhotos) {
                         [context deleteObject:photo];
                     }
-                    NSLog(@"removed = %lu", (unsigned long)outdatedPhotos.count);
+//                    NSLog(@"removed = %lu", (unsigned long)outdatedPhotos.count);
                     
                     //今回の読み込みで追加された新規写真
                     NSFetchRequest *newPhotoRequest = [[NSFetchRequest alloc] init];
@@ -395,7 +402,7 @@ static dispatch_queue_t assets_manager_queue() {
                     newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (import = %@)", @(ALAssetsGroupPhotoStream), enumurateDate];
                     error = nil;
                     NSArray *newPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
-                    NSLog(@"new = %lu", (unsigned long)newPhotos.count);
+//                    NSLog(@"new = %lu", (unsigned long)newPhotos.count);
                     
                     if (newPhotos.count) {
                         //新規写真は振り分けをしなければならない
@@ -419,7 +426,7 @@ static dispatch_queue_t assets_manager_queue() {
                                 //自動作成版アルバムを作る
                                 PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
                                 album.id_str = [PWSnowFlake generateUniqueIDString];
-                                album.name = [[PLDateFormatter mmmddFormatter] stringFromDate:adjustedDate];
+                                album.name = NSLocalizedString(@"新規アルバム", nil);
                                 album.tag_date = adjustedDate;
                                 album.timestamp = @((unsigned long)([adjustedDate timeIntervalSince1970]) * 1000);
                                 album.import = enumurateDate;
@@ -434,7 +441,6 @@ static dispatch_queue_t assets_manager_queue() {
                     }
                     
                     [context save:&error];
-                    NSLog(@"saved.");
                     
                     if (completion) {
                         completion(error);

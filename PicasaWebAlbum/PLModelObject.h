@@ -13,7 +13,8 @@ static NSString * const kPLAlbumObjectName = @"PLAlbumObject";
 static NSString * const kPLPhotoObjectName = @"PLPhotoObject";
 typedef enum _PLAlbumObjectTagType {
     PLAlbumObjectTagTypeImported = (1 << 0),
-    PLAlbumObjectTagTypeAutomatically = (1 << 1)
+    PLAlbumObjectTagTypeAutomatically = (1 << 1),
+    PLAlbumObjectTagTypeMyself = (1 << 2)
 } PLAlbumObjectTagType;
 
 #import "PLAlbumObject.h"

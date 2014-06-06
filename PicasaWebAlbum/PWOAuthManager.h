@@ -6,16 +6,16 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 #import <GTMOAuth2Authentication.h>
 #import <GTMOAuth2ViewControllerTouch.h>
 
 @interface PWOAuthManager : NSObject
 
-+ (GTMOAuth2Authentication *)authentication;
-+ (void)getAccessTokenWithCompletion:(void (^)(NSString *accessToken, NSError *error))completion;
++ (void)getAuthWithCompletion:(void (^)(GTMOAuth2Authentication *auth))completion;
++ (void)getAccessTokenWithCompletion:(void (^)(NSString *, NSError *))completion;
 + (void)logout;
-+ (UINavigationController *)loginViewControllerWithCompletion:(void (^)())completion;
++ (void)loginViewControllerWithCompletion:(void (^)(UINavigationController *))completion finish:(void (^)())finish;
 
 @end

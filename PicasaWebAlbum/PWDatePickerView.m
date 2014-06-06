@@ -81,4 +81,11 @@
     }
 }
 
+#pragma mark Method
+- (void)setTintColor:(UIColor *)tintColor {
+    [super setTintColor:tintColor];
+    
+    _toolbar.tintColor = tintColor;
+}
+
 @end

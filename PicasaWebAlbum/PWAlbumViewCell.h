@@ -6,13 +6,13 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 
 #import "PWPicasaAPI.h"
 
 @interface PWAlbumViewCell : UICollectionViewCell
 
-@property (strong, nonatomic) void (^actionButtonActionBlock)(PWAlbumObject *album);
+@property (copy, nonatomic) void (^actionButtonActionBlock)(PWAlbumObject *album);
 
 @property (strong, nonatomic, readonly) PWAlbumObject *album;
 

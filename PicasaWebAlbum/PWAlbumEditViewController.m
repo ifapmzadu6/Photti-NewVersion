@@ -57,6 +57,10 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     UIBarButtonItem *createBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"保存", nil) style:UIBarButtonItemStylePlain target:self action:@selector(createBarButtonAction)];
     [createBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
     self.navigationItem.rightBarButtonItem = createBarButtonItem;
+    
+    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    [[UITextField appearance] setTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
+    
 }
 
 - (void)viewWillLayoutSubviews {
@@ -221,6 +225,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:_timestamp.longLongValue / 1000];
     _datePickerView = [[PWDatePickerView alloc] initWithDate:date];
+    _datePickerView.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     CGRect rect = self.view.bounds;
     CGFloat dHeight = 216.0f + 44.0f;
     if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {

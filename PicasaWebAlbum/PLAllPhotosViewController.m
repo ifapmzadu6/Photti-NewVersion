@@ -17,6 +17,7 @@
 #import "PLAssetsManager.h"
 #import "PLDateFormatter.h"
 #import "PWString.h"
+#import "PLPhotoPageViewController.h"
 
 
 @interface PLSection : NSObject
@@ -44,7 +45,9 @@
 @interface PLAllPhotosViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
+@property (strong, nonatomic) NSMutableArray *headers;
 
+@property (strong, nonatomic) NSArray *allPhotos;
 @property (strong, nonatomic) NSArray *sections;
 @property (nonatomic) NSUInteger photosCount;
 @property (nonatomic) NSUInteger videosCount;
@@ -57,6 +60,8 @@
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"すべての写真", nil);
+        
+        _headers = [NSMutableArray array];
     }
     return self;
 }
@@ -82,8 +87,12 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
+        sself.allPhotos = allPhotos;
         sself.sections = [sself devidedPhotosByDate:allPhotos];
         dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
             [sself.collectionView reloadData];
             PLSection *section = sself.sections.lastObject;
             NSArray *photos = section.photos;
@@ -97,6 +106,10 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
+        [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -121,8 +134,19 @@
     CGRect rect = self.view.bounds;
     
     _collectionView.frame = rect;
+    
+    NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
+    NSIndexPath *indexPath = nil;
+    if (indexPaths.count) {
+        indexPath = indexPaths[indexPaths.count / 2];
+    }
+    
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
+    
+    if (indexPath) {
+        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+    }
     
     PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
@@ -132,6 +156,30 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+#pragma mark Methods
+- (void)setIsSelectMode:(BOOL)isSelectMode withSelectIndexPaths:(NSArray *)selectIndexPaths {
+    _isSelectMode = isSelectMode;
+    
+    _collectionView.allowsMultipleSelection = isSelectMode;
+    for (PLPhotoViewCell *cell in _collectionView.visibleCells) {
+        cell.isSelectWithCheckMark = isSelectMode;
+    }
+    if (isSelectMode) {
+        for (NSIndexPath *indexPath in selectIndexPaths) {
+            [_collectionView selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+        }
+    }
+    if (!isSelectMode) {
+        for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
+            [_collectionView deselectItemAtIndexPath:indexPath animated:NO];
+        }
+        
+        for (PLPhotoViewHeaderView *headerView in _headers) {
+            [headerView setSelectButtonIsDeselect:NO];
+        }
+    }
 }
 
 #pragma mark UICollectionViewDataSource
@@ -149,6 +197,7 @@
     
     PLSection *section = _sections[indexPath.section];
     cell.photo = section.photos[indexPath.row];
+    cell.isSelectWithCheckMark = _isSelectMode;
     
     return cell;
 }
@@ -162,14 +211,45 @@
         NSString *string = [[PLDateFormatter formatter] stringFromDate:section.date];
         [headerView setText:string];
         [headerView setDetail:[PWString photoAndVideoStringWithPhotoCount:section.photoCount videoCount:section.videoCount]];
+        __weak typeof(self) wself = self;
+        [headerView setSelectButtonActionBlock:^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            NSMutableArray *indexPaths = [NSMutableArray array];
+            for (size_t i=0; i<section.photos.count; i++) {
+                NSIndexPath *tmpIndexPath = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
+                [indexPaths addObject:tmpIndexPath];
+            }
+            [sself setIsSelectMode:YES withSelectIndexPaths:indexPaths];
+            
+            if (sself.headerViewDidTapBlock) {
+                sself.headerViewDidTapBlock(YES);
+            }
+            
+            if (sself.photoDidSelectedInSelectModeBlock) {
+                sself.photoDidSelectedInSelectModeBlock(indexPaths);
+            }
+        }];
+        [headerView setDeselectButtonActionBlock:^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            for (size_t i=0; i<section.photos.count; i++) {
+                NSIndexPath *tmpIndexPath = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
+                [sself.collectionView deselectItemAtIndexPath:tmpIndexPath animated:YES];
+            }
+        }];
         
         reusableView = headerView;
+        
+        [_headers addObject:headerView];
     }
     else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
         if (indexPath.section == _sections.count - 1) {
             PLCollectionFooterView *footer = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
             
-            NSString *localizedString = NSLocalizedString(@"すべての写真: %lu枚、すべてのビデオ: %lu本", nil);
+            NSString *localizedString = NSLocalizedString(@"すべての写真%lu枚、すべてのビデオ%lu本", nil);
             [footer setText:[NSString stringWithFormat:localizedString, _photosCount, _videosCount]];
             
             reusableView = footer;
@@ -177,6 +257,12 @@
     }
     
     return reusableView;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingSupplementaryView:(UICollectionReusableView *)view forElementOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath {
+    if ([elementKind isEqualToString:UICollectionElementKindSectionHeader]) {
+        [_headers removeObject:view];
+    }
 }
 
 #pragma mark UICollectionViewDelegateFlowLayout
@@ -201,12 +287,28 @@
         return CGSizeZero;
     }
     
-    return CGSizeMake(0.0f, 60.0f);
+    return CGSizeMake(0.0f, 50.0f);
 }
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (_isSelectMode) {
+        return;
+    }
     
+    __block NSUInteger index = 0;
+    [_sections enumerateObjectsUsingBlock:^(PLSection *obj, NSUInteger idx, BOOL *stop) {
+        if (idx == indexPath.section) {
+            *stop = YES;
+            return;
+        }
+        
+        index += obj.photos.count;
+    }];
+    index += indexPath.row;
+    
+    PLPhotoPageViewController *viewController = [[PLPhotoPageViewController alloc] initWithPhotos:_allPhotos index:index];
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 #pragma mark Data

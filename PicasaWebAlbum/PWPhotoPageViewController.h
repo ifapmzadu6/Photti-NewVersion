@@ -12,4 +12,6 @@
 
 - (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index;
 
+- (void)changePhotos:(NSArray *)photos;
+
 @end

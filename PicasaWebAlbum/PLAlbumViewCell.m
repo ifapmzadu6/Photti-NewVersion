@@ -10,6 +10,7 @@
 
 #import "PWColors.h"
 #import "PWIcons.h"
+#import "PLDateFormatter.h"
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
 #import "PLAssetsManager.h"
@@ -20,6 +21,7 @@
 @property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UILabel *titleLabel;
+@property (strong, nonatomic) UILabel *dateLabel;
 @property (strong, nonatomic) UILabel *numPhotosLabel;
 @property (strong, nonatomic) UIButton *actionButton;
 @property (strong, nonatomic) UIView *overrayView;
@@ -63,6 +65,11 @@
     _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
     [self.contentView addSubview:_titleLabel];
     
+    _dateLabel = [[UILabel alloc] init];
+    _dateLabel.font = [UIFont systemFontOfSize:14.0f];
+    _dateLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
+    [self.contentView addSubview:_dateLabel];
+    
     _numPhotosLabel = [[UILabel alloc] init];
     _numPhotosLabel.font = [UIFont systemFontOfSize:12.0f];
     _numPhotosLabel.textAlignment = NSTextAlignmentCenter;
@@ -73,7 +80,7 @@
     _actionButton = [[UIButton alloc] init];
     [_actionButton addTarget:self action:@selector(actionButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _actionButton.hitEdgeInsets = UIEdgeInsetsMake(-4.0f, -10.0f, -4.0f, 0.0f);
-    [_actionButton setImage:[PWIcons albumActionButtonIcon] forState:UIControlStateNormal];
+    [_actionButton setImage:[PWIcons albumActionButtonIconWithColor:[PWColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateNormal];
     [_actionButton setBackgroundImage:[PWIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.05f]] forState:UIControlStateHighlighted];
     [self.contentView addSubview:_actionButton];
     
@@ -116,7 +123,9 @@
     
     _activityIndicatorView.center = _imageView.center;
     
-    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 4.0f, rect.size.width - 16.0f, 14.0f);
+    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 4.0f, rect.size.width - 20.0f - 4.0f, 14.0f);
+    
+    _dateLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 4.0f + 14.0f + 4.0f, rect.size.width - 20.0f - 4.0f, 14.0f);
     
     _numPhotosLabel.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 40.0f, CGRectGetMaxY(_imageView.frame) - 20.0f, 36.0f, 16.0f);
     
@@ -132,6 +141,7 @@
     _albumHash = hash;
     
     _titleLabel.text = nil;
+    _dateLabel.text = nil;
     _numPhotosLabel.text = nil;
     _imageView.image = nil;
     [_activityIndicatorView startAnimating];
@@ -148,6 +158,11 @@
             if (sself.albumHash != hash) return;
             
             sself.titleLabel.text = album.name;
+            NSString *date = [[PLDateFormatter mmmddFormatter] stringFromDate:album.tag_date];
+            if (album.tag_enddate) {
+                date = [date stringByAppendingString:[[PLDateFormatter mmmddFormatter] stringFromDate:album.tag_enddate]];
+            }
+            sself.dateLabel.text = date;
             sself.numPhotosLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)album.photos.count];
         });
         
@@ -185,7 +200,7 @@
                 if (!sself) return;
                 if (sself.albumHash != hash) return;
                 
-                [_activityIndicatorView stopAnimating];
+                [sself.activityIndicatorView stopAnimating];
             });
         }
     }];

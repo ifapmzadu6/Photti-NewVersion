@@ -175,6 +175,9 @@
         if (isNowLoading) {
             return;
         }
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        });
         
         __weak typeof(self) wself = self;
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
@@ -189,6 +192,10 @@
                 
                 request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
                 NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                    });
+                    
                     if (error) {
                         NSLog(@"%@", error.description);
                         return;

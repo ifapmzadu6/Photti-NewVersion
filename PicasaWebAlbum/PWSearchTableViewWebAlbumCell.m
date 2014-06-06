@@ -52,7 +52,7 @@
     self.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.1f];
     
     _titleLabel = [[UILabel alloc] init];
-    _titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    _titleLabel.font = [UIFont systemFontOfSize:15.0f];
     _titleLabel.textColor = [UIColor whiteColor];
     [self.contentView addSubview:_titleLabel];
     
@@ -90,11 +90,14 @@
     _albumHash = hash;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        if (_albumHash != hash) return;
+        
         SDImageCache *imageCache = [SDImageCache sharedImageCache];
         UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
         if (memoryCachedImage) {
-            UIImage *thumbnailImage = [PWSearchTableViewWebAlbumCell createThumbnail:memoryCachedImage size:self.bounds.size];
-            [self setImage:thumbnailImage hash:hash];
+            if (_albumHash != hash) return;
+            
+            [self setImage:memoryCachedImage hash:hash];
             
             return;
         }
@@ -103,8 +106,7 @@
             if (_albumHash != hash) return;
             
             UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
-            UIImage *thumbnailImage = [PWSearchTableViewWebAlbumCell createThumbnail:diskCachedImage size:self.bounds.size];
-            [self setImage:thumbnailImage hash:hash];
+            [self setImage:diskCachedImage hash:hash];
             
             return;
         }
@@ -140,8 +142,7 @@
                     
                     UIImage *image = [UIImage imageWithData:data];
                     if (sself.albumHash == hash) {
-                        UIImage *thumbnailImage = [PWSearchTableViewWebAlbumCell createThumbnail:image size:sself.bounds.size];
-                        [sself setImage:thumbnailImage hash:hash];
+                        [sself setImage:image hash:hash];
                     }
                     
                     SDImageCache *imageCache = [SDImageCache sharedImageCache];
@@ -173,29 +174,8 @@
 }
 
 + (UIImage *)createThumbnail:(UIImage *)image size:(CGSize)size {
-	CGFloat imageWidth = image.size.width;
-	CGFloat imageHeight = image.size.height;
-	
-	CGRect cropRect;
-	if (imageWidth >= imageHeight) {
-		cropRect.size.width = imageHeight;
-		cropRect.size.height = imageHeight;
-		cropRect.origin.x = imageWidth / 2.0f - cropRect.size.width / 2.0f;
-		cropRect.origin.y = 0.0f;
-	}
-	else {
-		cropRect.size.width = imageWidth;
-		cropRect.size.height = imageWidth;
-		cropRect.origin.x = 0.0f;
-		cropRect.origin.y = imageHeight / 2.0f - cropRect.size.height / 2.0f;
-	}
-	
-	CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, cropRect);
-	UIImage *croppedImage = [UIImage imageWithCGImage:imageRef scale:2.0f orientation:UIImageOrientationUp];
-	CGImageRelease(imageRef);
-    
     UIGraphicsBeginImageContextWithOptions(size, YES, 0.0f);
-    [croppedImage drawInRect:(CGRect){.origin = CGPointZero, .size = size}];
+    [image drawInRect:(CGRect){.origin = CGPointZero, .size = size}];
     UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
 	

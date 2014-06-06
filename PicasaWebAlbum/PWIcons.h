@@ -10,8 +10,7 @@
 
 @interface PWIcons : NSObject
 
-+ (UIImage *)albumActionButtonIcon;
-
++ (UIImage *)albumActionButtonIconWithColor:(UIColor *)color;
 + (UIImage *)imageWithColor:(UIColor *)color;
 
 @end

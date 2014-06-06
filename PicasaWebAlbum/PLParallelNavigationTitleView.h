@@ -10,8 +10,9 @@
 
 @interface PLParallelNavigationTitleView : UIView
 
-@property (strong, nonatomic) NSString *(^titleBeforeCurrentTitle)(NSString *currentTitle);
-@property (strong, nonatomic) NSString *(^titleAfterCurrentTitle)(NSString *currentTitle);
+@property (copy, nonatomic) NSString *(^titleBeforeCurrentTitle)(NSString *currentTitle);
+@property (copy, nonatomic) NSString *(^titleAfterCurrentTitle)(NSString *currentTitle);
+@property (nonatomic) BOOL isDisableLayoutSubViews;
 
 - (void)setScrollRate:(CGFloat)rate;
 - (void)setNumberOfPages:(NSUInteger)numberOfPages;

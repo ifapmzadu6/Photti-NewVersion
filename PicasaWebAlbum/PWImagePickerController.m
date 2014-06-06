@@ -28,7 +28,7 @@
 @property (nonatomic) NSUInteger countOfSelectedWebPhoto;
 @property (nonatomic) NSUInteger countOfSelectedLocalPhoto;
 
-@property (strong, nonatomic) void (^completion)();
+@property (copy, nonatomic) void (^completion)();
 
 @end
 
@@ -65,6 +65,7 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     
     _toolbar = [[UIToolbar alloc] init];
     [self.view insertSubview:_toolbar belowSubview:self.tabBar];
@@ -106,15 +107,36 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark UITabBarControllerDelegate
+- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
+    [viewController viewWillAppear:NO];
+    
+    return YES;
+}
+
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
+    [viewController viewDidAppear:NO];
+    
+    NSUInteger index = [self.viewControllers indexOfObject:viewController];
+    if (index == 0) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    }
+    else if (index == 1) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    }
+}
+
 #pragma methods
 - (UIEdgeInsets)viewInsets {
+    CGFloat nHeight = 44.0f + 30.0f;
     CGFloat tHeight = 44.0f;
     BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
     if(isLandscape) {
+        nHeight = 32.0f + 22.0f;
         tHeight = 32.0f;
     }
     
-    return UIEdgeInsetsMake(tHeight + 20.0f, 0.0f, tHeight, 0.0f);
+    return UIEdgeInsetsMake(nHeight + 20.0f, 0.0f, tHeight, 0.0f);
 }
 
 - (void)addSelectedPhoto:(id)photo {
@@ -124,6 +146,10 @@
     
     if ([photo isKindOfClass:[PLPhotoObject class]]) {
         NSString *id_str = ((PLPhotoObject *)photo).id_str;
+        if ([_selectedPhotoIDs containsObject:id_str]) {
+            return;
+        }
+        
         _selectedPhotoIDs = [_selectedPhotoIDs arrayByAddingObject:id_str];
         
         _countOfSelectedLocalPhoto++;
@@ -132,6 +158,10 @@
     }
     else if ([photo isKindOfClass:[PWPhotoObject class]]) {
         NSString *id_str = ((PWPhotoObject *)photo).id_str;
+        if ([_selectedPhotoIDs containsObject:id_str]) {
+            return;
+        }
+        
         _selectedPhotoIDs = [_selectedPhotoIDs arrayByAddingObject:id_str];
         
         _countOfSelectedWebPhoto++;

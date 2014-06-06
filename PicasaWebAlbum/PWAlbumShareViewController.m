@@ -50,6 +50,8 @@
     UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"完了", nil) style:UIBarButtonItemStylePlain target:self action:@selector(doneBarButtonAction)];
     [doneBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
     self.navigationItem.leftBarButtonItem = doneBarButtonItem;
+    
+    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -80,6 +82,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
+        cell.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     }
     cell.textLabel.font = [UIFont boldSystemFontOfSize:15.0f];
     cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
@@ -131,7 +134,7 @@
                 }
             }
             if (link) {
-                cell.textLabel.textColor = cell.textLabel.tintColor;
+                cell.textLabel.textColor = cell.tintColor;
             }
             else {
                 cell.textLabel.textColor = [[PWColors getColor:PWColorsTypeTextColor] colorWithAlphaComponent:0.5f];

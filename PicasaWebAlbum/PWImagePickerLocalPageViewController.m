@@ -108,6 +108,19 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [self.navigationItem setTitleView:_titleView];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    _titleView.isDisableLayoutSubViews = YES;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    _titleView.isDisableLayoutSubViews = NO;
+    [_titleView setNeedsLayout];
+}
+
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
 }

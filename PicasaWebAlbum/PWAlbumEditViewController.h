@@ -16,7 +16,7 @@
 
 - (id)initWithAlbum:(PWAlbumObject *)album;
 
-@property (strong, nonatomic) void (^successBlock)();
+@property (copy, nonatomic) void (^successBlock)();
 
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIView *backgroundView;

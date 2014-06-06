@@ -12,8 +12,6 @@
 
 @interface PWImagePickerNavigationController ()
 
-@property (strong, nonatomic) UILabel *titleOnNavigationBarLabel;
-
 @end
 
 @implementation PWImagePickerNavigationController
@@ -22,34 +20,12 @@
     [super viewDidLoad];
     
     self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
-    
-    _titleOnNavigationBarLabel = [[UILabel alloc] init];
-    _titleOnNavigationBarLabel.font = [UIFont systemFontOfSize:13.0f];
-    _titleOnNavigationBarLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
-    _titleOnNavigationBarLabel.textAlignment = NSTextAlignmentCenter;
-    [self.navigationBar addSubview:_titleOnNavigationBarLabel];
+    self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
 }
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-    
-    CGRect rect = self.view.bounds;
-    
-    BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    
-    CGFloat navigationBarHeight = 20.0f + 44.0f + 30.0f;
-    if (isLandscape) {
-        navigationBarHeight = 20.0f + 32.0f + 22.0f;
-    }
-    
-    self.navigationBar.frame = CGRectMake(0.0f, 0.0f, rect.size.width, navigationBarHeight);
-    
-    CGFloat navigationBarLabelHeight = navigationBarHeight - 44.0f - 16.0f;
-    if (isLandscape) {
-        navigationBarLabelHeight = navigationBarHeight - 32.0f - 19.0f;
-    }
-    _titleOnNavigationBarLabel.frame = CGRectMake(0.0f, navigationBarLabelHeight, rect.size.width, 13.0f);
-    
+        
     UINavigationItem *item = self.navigationBar.items.lastObject;
     [item.titleView setNeedsLayout];
 }
@@ -61,7 +37,9 @@
 - (void)setTitleOnNavigationBar:(NSString *)titleOnNavigationBar {
     _titleOnNavigationBar = titleOnNavigationBar;
     
-    _titleOnNavigationBarLabel.text = titleOnNavigationBar;
+    for (UIViewController *viewController in self.viewControllers) {
+        viewController.navigationItem.prompt = titleOnNavigationBar;
+    }
 }
 
 - (void)setSelectedPhotosThumbnailImage:(UIImage *)image {
@@ -74,6 +52,12 @@
 
 - (void)setSelectedPhotosCount:(NSUInteger)count {
     
+}
+
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    [super pushViewController:viewController animated:animated];
+    
+    viewController.navigationItem.prompt = _titleOnNavigationBar;
 }
 
 @end

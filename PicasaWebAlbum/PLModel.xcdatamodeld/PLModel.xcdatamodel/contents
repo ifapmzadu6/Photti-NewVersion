@@ -34,7 +34,7 @@
         <relationship name="thumbnailed" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PLAlbumObject" inverseName="thumbnail" inverseEntity="PLAlbumObject" syncable="YES"/>
     </entity>
     <elements>
-        <element name="PLAlbumObject" positionX="-54" positionY="-9" width="128" height="238"/>
+        <element name="PLAlbumObject" positionX="-54" positionY="-9" width="128" height="240"/>
         <element name="PLPhotoObject" positionX="-461" positionY="-133" width="128" height="285"/>
     </elements>
 </model>

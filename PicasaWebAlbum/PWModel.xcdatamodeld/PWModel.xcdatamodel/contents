@@ -92,7 +92,7 @@
         <attribute name="height" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="width" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="media" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PWMediaManagedObject" inverseName="thumbnail" inverseEntity="PWMediaManagedObject" syncable="YES"/>
+        <relationship name="media" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWMediaManagedObject" inverseName="thumbnail" inverseEntity="PWMediaManagedObject" syncable="YES"/>
     </entity>
     <entity name="PWPhotoExitManagedObject" representedClassName="PWPhotoExitObject" syncable="YES">
         <attribute name="distance" optional="YES" attributeType="String" syncable="YES"/>
@@ -120,6 +120,8 @@
         <attribute name="rights" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="sortIndex" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="summary" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tag_originalimage_url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tag_screenimage_url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="tag_thumbnail_url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="updated" optional="YES" attributeType="String" syncable="YES"/>
@@ -134,8 +136,8 @@
         <element name="PWLinkManagedObject" positionX="0" positionY="171" width="128" height="118"/>
         <element name="PWMediaContentManagedObject" positionX="-45" positionY="36" width="128" height="135"/>
         <element name="PWMediaManagedObject" positionX="-36" positionY="81" width="128" height="165"/>
-        <element name="PWMediaThumbnailManagedObject" positionX="-27" positionY="72" width="128" height="103"/>
+        <element name="PWMediaThumbnailManagedObject" positionX="-27" positionY="72" width="128" height="105"/>
         <element name="PWPhotoExitManagedObject" positionX="18" positionY="180" width="128" height="208"/>
-        <element name="PWPhotoManagedObject" positionX="-54" positionY="45" width="128" height="330"/>
+        <element name="PWPhotoManagedObject" positionX="-54" positionY="45" width="128" height="360"/>
     </elements>
 </model>

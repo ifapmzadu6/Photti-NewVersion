@@ -23,16 +23,18 @@ NSString *const kXMLReaderTextNodeKey = @"text";
 #pragma mark -
 #pragma mark Public methods
 
-+ (NSDictionary *)dictionaryForXMLData:(NSData *)data error:(NSError **)error
-{
-    XMLReader *reader = [[XMLReader alloc] initWithError:error];
-    NSDictionary *rootDictionary = [reader objectWithData:data];
-    [reader release];
++ (NSDictionary *)dictionaryForXMLData:(NSData *)data error:(NSError **)error {
+    NSDictionary *rootDictionary = nil;
+    
+    @autoreleasepool {
+        XMLReader *reader = [[XMLReader alloc] initWithError:error];
+        rootDictionary = [reader objectWithData:data];
+    }
+    
     return rootDictionary;
 }
 
-+ (NSDictionary *)dictionaryForXMLString:(NSString *)string error:(NSError **)error
-{
++ (NSDictionary *)dictionaryForXMLString:(NSString *)string error:(NSError **)error {
     NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
     return [XMLReader dictionaryForXMLData:data error:error];
 }
@@ -42,26 +44,14 @@ NSString *const kXMLReaderTextNodeKey = @"text";
 
 - (id)initWithError:(NSError **)error
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
 //        errorPointer = error;
     }
     return self;
 }
 
-- (void)dealloc
-{
-    [dictionaryStack release];
-    [textInProgress release];
-    [super dealloc];
-}
-
 - (NSDictionary *)objectWithData:(NSData *)data
 {
-    // Clear out any old data
-    [dictionaryStack release];
-    [textInProgress release];
-    
     dictionaryStack = [[NSMutableArray alloc] init];
     textInProgress = [[NSMutableString alloc] init];
     
@@ -74,8 +64,7 @@ NSString *const kXMLReaderTextNodeKey = @"text";
     BOOL success = [parser parse];
     
     // Return the stack's root dictionary on success
-    if (success)
-    {
+    if (success) {
         NSDictionary *resultDict = [dictionaryStack objectAtIndex:0];
         return resultDict;
     }
@@ -139,7 +128,6 @@ NSString *const kXMLReaderTextNodeKey = @"text";
         [dictInProgress setObject:textInProgress forKey:kXMLReaderTextNodeKey];
         
         // Reset the text
-        [textInProgress release];
         textInProgress = [[NSMutableString alloc] init];
     }
     

@@ -6,13 +6,13 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 
 @interface PWDatePickerView : UIView
 
 - (id)initWithDate:(NSDate *)date;
 
-@property (strong, nonatomic) void (^doneBlock)(UIView *datePickerView, NSDate *date);
-@property (strong, nonatomic) void (^cancelBlock)(UIView *datePickerView);
+@property (copy, nonatomic) void (^doneBlock)(UIView *datePickerView, NSDate *date);
+@property (copy, nonatomic) void (^cancelBlock)(UIView *datePickerView);
 
 @end

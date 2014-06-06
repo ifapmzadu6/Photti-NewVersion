@@ -8,6 +8,6 @@
 
 @import UIKit;
 
-@interface PWNavigationController : UINavigationController
+@interface PWNavigationController : UINavigationController <UINavigationBarDelegate>
 
 @end

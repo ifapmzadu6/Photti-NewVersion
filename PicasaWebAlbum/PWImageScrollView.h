@@ -10,6 +10,10 @@
 
 @interface PWImageScrollView : UIScrollView <UIScrollViewDelegate>
 
+@property (copy, nonatomic) void (^handleSingleTapBlock)();
+@property (copy, nonatomic) void (^handleDoubleTapBlock)();
+@property (copy, nonatomic) void (^handleFirstZoomBlock)();
+
 - (void)setImage:(UIImage *)image;
 
 @end

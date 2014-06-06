@@ -10,6 +10,6 @@
 
 @interface PWImagePickerLocaliCloudViewController : UIViewController
 
-@property (strong, nonatomic) void (^viewDidAppearBlock)();
+@property (copy, nonatomic) void (^viewDidAppearBlock)();
 
 @end

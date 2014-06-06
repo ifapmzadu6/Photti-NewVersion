@@ -10,6 +10,8 @@
 
 @interface PLAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
-@property (strong, nonatomic) void (^viewDidAppearBlock)();
+@property (copy, nonatomic) void (^viewDidAppearBlock)();
+
+- (void)reloadData;
 
 @end

@@ -10,6 +10,6 @@
 
 @interface PWImagePickerLocalAllPhotoViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
-@property (strong, nonatomic) void (^viewDidAppearBlock)();
+@property (copy, nonatomic) void (^viewDidAppearBlock)();
 
 @end

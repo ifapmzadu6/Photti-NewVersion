@@ -6,11 +6,10 @@
 //  Copyright (c) 2013 Benoit Caccinolo. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 
-@interface XMLReader : NSObject <NSXMLParserDelegate>
-{
+@interface XMLReader : NSObject <NSXMLParserDelegate> {
     NSMutableArray *dictionaryStack;
     NSMutableString *textInProgress;
 //    NSError **errorPointer;

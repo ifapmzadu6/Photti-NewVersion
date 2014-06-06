@@ -64,12 +64,17 @@
 }
 
 - (NSString *)key:(PWColorsType)type {
-	return [NSString stringWithFormat:@"PWColorsType_%d", type];
+	return [NSString stringWithFormat:@"PWT%d", type];
 }
 
 - (void)setDefaultColors {
-    [self setColor:[UIColor colorWithRed:58.0f/255.0f green:148.0f/255.0f blue:198.0f/255.0f alpha:1.0f]
-              type:PWColorsTypeMainTintColor];
+    [self setColor:[UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:83.0f/255.0f alpha:1.0f]
+              type:PWColorsTypeTintWebColor];
+    [self setColor:[UIColor colorWithRed:115.0f/255.0f green:115.0f/255.0f blue:255.0f/255.0f alpha:1.0f]
+              type:PWColorsTypeTintLocalColor];
+    [self setColor:[UIColor colorWithRed:94.0f/255.0f green:174.0f/255.0f blue:158.0f/255.0f alpha:1.0f]
+              type:PWColorsTypeTintUploadColor];
+    
 	[self setColor:[UIColor colorWithRed:61.0f/255.0f green:67.0f/255.0f blue:71.0f/255.0f alpha:1.0f]
 			  type:PWColorsTypeTextColor];
     [self setColor:[UIColor colorWithRed:0.405f green:0.411f blue:0.431f alpha:1.0f]
@@ -84,10 +89,6 @@
 			  type:PWColorsTypeBackgroundLightColor];
 	[self setColor:[UIColor colorWithWhite:0.8f alpha:1.0f]
 			  type:PWColorsTypeBackgroundDarkColor];
-    
-    //BarColor
-    [self setColor:[UIColor colorWithRed:34.0f/255.0f green:34.0f/255.0f blue:34.0f/255.0f alpha:1.0f]
-              type:PWColorsTypeBarColor];
 }
 
 @end

@@ -6,8 +6,8 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <CoreData/CoreData.h>
+@import Foundation;
+@import CoreData;
 
 @class PWGPhotoObject, PWPhotoLinkObject, PWPhotoMediaObject;
 

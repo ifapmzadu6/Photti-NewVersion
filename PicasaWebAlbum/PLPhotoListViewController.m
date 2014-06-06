@@ -12,6 +12,7 @@
 #import "PLModelObject.h"
 #import "PLPhotoViewCell.h"
 #import "PWTabBarController.h"
+#import "PLPhotoPageViewController.h"
 
 @interface PLPhotoListViewController ()
 
@@ -41,6 +42,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
@@ -67,6 +70,7 @@
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
+        [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
         __weak typeof(self) wself = self;
         [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
             typeof(wself) sself = wself;
@@ -94,8 +98,19 @@
     CGRect rect = self.view.bounds;
     
     _collectionView.frame = rect;
+    
+    NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
+    NSIndexPath *indexPath = nil;
+    if (indexPaths.count) {
+        indexPath = indexPaths[indexPaths.count / 2];
+    }
+    
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
+    
+    if (indexPath) {
+        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -108,7 +123,6 @@
 }
 
 - (void)actionBarButtonAction {
-//    [self showAlbumActionSheet:_album];
 }
 
 - (void)addBarButtonAction {
@@ -168,24 +182,25 @@
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-//    if (_isSelectMode) {
-//        _selectActionBarButton.enabled = YES;
-//        _trashBarButtonItem.enabled = YES;
-//        _moveBarButtonItem.enabled = YES;
-//    }
-//    else {
-//        
-//    }
+    if (_isSelectMode) {
+        _selectActionBarButton.enabled = YES;
+        _trashBarButtonItem.enabled = YES;
+        _moveBarButtonItem.enabled = YES;
+    }
+    else {
+        PLPhotoPageViewController *viewController = [[PLPhotoPageViewController alloc] initWithPhotos:_photos index:indexPath.row];
+        [self.navigationController pushViewController:viewController animated:YES];
+    }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
-//    if (_isSelectMode) {
-//        if (_collectionView.indexPathsForSelectedItems.count == 0) {
-//            _selectActionBarButton.enabled = NO;
-//            _trashBarButtonItem.enabled = NO;
-//            _moveBarButtonItem.enabled = NO;
-//        }
-//    }
+    if (_isSelectMode) {
+        if (_collectionView.indexPathsForSelectedItems.count == 0) {
+            _selectActionBarButton.enabled = NO;
+            _trashBarButtonItem.enabled = NO;
+            _moveBarButtonItem.enabled = NO;
+        }
+    }
 }
 
 

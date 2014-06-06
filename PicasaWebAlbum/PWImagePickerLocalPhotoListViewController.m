@@ -47,8 +47,6 @@
     [_collectionView registerClass:[PLPhotoViewCell class] forCellWithReuseIdentifier:@"Cell"];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
-    _collectionView.contentInset = UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f);
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f);
     _collectionView.allowsMultipleSelection = YES;
     [self.view addSubview:_collectionView];
     
@@ -76,8 +74,19 @@
     CGRect rect = self.view.bounds;
     
     _collectionView.frame = rect;
+    
+    NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
+    NSIndexPath *indexPath = nil;
+    if (indexPaths.count) {
+        indexPath = indexPaths[indexPaths.count / 2];
+    }
+    
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
+    
+    if (indexPath) {
+        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

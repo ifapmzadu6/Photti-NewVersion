@@ -11,15 +11,14 @@
 #import "PWColors.h"
 #import "PWPicasaAPI.h"
 #import "SDImageCache.h"
-#import "UIImageView+AFNetworking.h"
-
 #import "PWImageScrollView.h"
 
 @interface PWPhotoViewController ()
 
 @property (strong, nonatomic) PWImageScrollView *imageScrollView;
+@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
-@property (strong, nonatomic) NSURLSessionDataTask *task;
+@property (weak, nonatomic) NSURLSessionDataTask *task;
 
 @end
 
@@ -37,9 +36,14 @@
     [super viewDidLoad];
     
     _imageScrollView = [[PWImageScrollView alloc] initWithFrame:self.view.bounds];
-    _imageScrollView.autoresizesSubviews = YES;
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _imageScrollView.handleSingleTapBlock = _handleSingleTapBlock;
     [self.view addSubview:_imageScrollView];
+    
+    _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _indicatorView.center = self.view.center;
+    [self.view addSubview:_indicatorView];
+    [_indicatorView startAnimating];
     
     [self loadImage];
 }
@@ -49,6 +53,13 @@
     
     if (_viewDidAppearBlock) {
         _viewDidAppearBlock();
+    }
+}
+
+- (void)dealloc {    
+    NSURLSessionDataTask *task = _task;
+    if (task) {
+        [task cancel];
     }
 }
 
@@ -62,39 +73,65 @@
 
 #pragma mark LoadImage
 - (void)loadImage {
-    NSArray *thumbnails = _photo.media.thumbnail.array;
-    PWPhotoMediaThumbnailObject *thumbnail = thumbnails.firstObject;
-    NSString *urlString = thumbnail.url;
-    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-    UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
-    if (memoryCachedImage) {
-        [_imageScrollView setImage:memoryCachedImage];
-        [self loadhighResolutionImage];
-    }
-    else {
-        if ([imageCache diskImageExistsWithKey:urlString]) {
-            __weak typeof(self) wself = self;
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    typeof(wself) sself = wself;
-                    if (!sself) return;
-                    [sself.imageScrollView setImage:diskCachedImage];
-                    
-                    [sself loadhighResolutionImage];
-                });
+    NSString *urlString = _photo.tag_thumbnail_url;
+    __weak typeof(self) wself = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        UIImage *memoryCache = [sself.photoViewCache objectForKey:urlString];
+        if (memoryCache) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                [sself.indicatorView stopAnimating];
+                [sself.imageScrollView setImage:memoryCache];
             });
+            return;
         }
-        else {
-            NSURL *url = [NSURL URLWithString:urlString];
-            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-            request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
-            __weak typeof(self) wself = self;
+        
+        SDImageCache *imageCache = [SDImageCache sharedImageCache];
+        UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+        if (memoryCachedImage) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                [sself.indicatorView stopAnimating];
+                [sself.imageScrollView setImage:memoryCachedImage];
+                
+                [sself loadScreenResolutionImage];
+            });
+            return;
+        }
+        
+        if ([imageCache diskImageExistsWithKey:urlString]) {
+            UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                [sself.indicatorView stopAnimating];
+                [sself.imageScrollView setImage:diskCachedImage];
+                
+                [sself loadScreenResolutionImage];
+            });
+            return;
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        });
+        
+        [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+            if (error) {
+                NSLog(@"%@", error.description);
+                return;
+            }
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 
-                [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
+                NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                     if (error) {
                         NSLog(@"%@", error.description);
                         return;
@@ -102,60 +139,63 @@
                     typeof(wself) sself = wself;
                     if (!sself) return;
                     UIImage *image = [UIImage imageWithData:data];
+                    
                     dispatch_async(dispatch_get_main_queue(), ^{
                         typeof(wself) sself = wself;
                         if (!sself) return;
                         
+                        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                        [sself.indicatorView stopAnimating];
                         [sself.imageScrollView setImage:image];
                         
-                        [sself loadhighResolutionImage];
+                        [sself loadScreenResolutionImage];
                     });
+                    
                     SDImageCache *imageCache = [SDImageCache sharedImageCache];
                     [imageCache storeImage:image forKey:urlString toDisk:YES];
-                }] resume];
+                }];
+                [task resume];
+                
+                sself.task = task;
             });
-        }
-    }
+        }];
+    });
 }
 
-- (void)loadhighResolutionImage {
-    NSArray *contents = _photo.media.content.array;
-    contents = [contents sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        PWPhotoMediaContentObject *content1 = (PWPhotoMediaContentObject *)obj1;
-        PWPhotoMediaContentObject *content2 = (PWPhotoMediaContentObject *)obj2;
-        return MAX(content1.width.integerValue, content1.height.integerValue) > MAX(content2.width.integerValue, content2.height.integerValue);
-    }];
-    PWPhotoMediaThumbnailObject *content = contents.firstObject;
-    NSString *urlString = content.url;
+- (void)loadScreenResolutionImage {
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
+    NSString *urlString = _photo.tag_screenimage_url;
     NSURL *url = [NSURL URLWithString:urlString];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-    request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
     __weak typeof(self) wself = self;
     [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
         if (error) {
             NSLog(@"%@", error.description);
             return;
         }
         
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
+        request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
             if (error) {
                 NSLog(@"%@", error.description);
                 return;
             }
-            typeof(wself) sself = wself;
-            if (!sself) return;
+            
             UIImage *image = [UIImage imageWithData:data];
             dispatch_async(dispatch_get_main_queue(), ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 
+                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                
                 [sself.imageScrollView setImage:image];
             });
-            SDImageCache *imageCache = [SDImageCache sharedImageCache];
-            [imageCache storeImage:image forKey:urlString toDisk:YES];
+            
+            [sself.photoViewCache setObject:image forKey:urlString];
         }];
         [task resume];
         sself.task = task;

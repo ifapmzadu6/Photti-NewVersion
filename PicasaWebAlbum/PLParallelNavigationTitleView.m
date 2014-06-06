@@ -40,40 +40,46 @@
 }
 
 - (void)initialization {
+    _isDisableLayoutSubViews = NO;
+    
     _clipBackgroundView = [[UIView alloc] init];
     _clipBackgroundView.clipsToBounds = YES;
     [self addSubview:_clipBackgroundView];
     
     _beforeTitleLabel = [[UILabel alloc] init];
     _beforeTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-//    _beforeTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
-    _beforeTitleLabel.textColor = [UIColor whiteColor];
+    _beforeTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+//    _beforeTitleLabel.textColor = [UIColor whiteColor];
     _beforeTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_beforeTitleLabel];
     
     _currentTitleLabel = [[UILabel alloc] init];
     _currentTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-//    _currentTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
-    _currentTitleLabel.textColor = [UIColor whiteColor];
+    _currentTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+//    _currentTitleLabel.textColor = [UIColor whiteColor];
     _currentTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_currentTitleLabel];
     
     _afterTitleLabel = [[UILabel alloc] init];
     _afterTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-//    _afterTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
-    _afterTitleLabel.textColor = [UIColor whiteColor];
+    _afterTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+//    _afterTitleLabel.textColor = [UIColor whiteColor];
     _afterTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_afterTitleLabel];
     
     _pageControll = [[UIPageControl alloc] init];
-//    _pageControll.currentPageIndicatorTintColor = [UIColor colorWithWhite:0.666f alpha:1.0f];
-//    _pageControll.pageIndicatorTintColor = [UIColor colorWithWhite:0.85f alpha:1.0f];
+    _pageControll.currentPageIndicatorTintColor = [UIColor colorWithWhite:0.666f alpha:1.0f];
+    _pageControll.pageIndicatorTintColor = [UIColor colorWithWhite:0.85f alpha:1.0f];
     [_clipBackgroundView addSubview:_pageControll];
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-        
+    
+    if (_isDisableLayoutSubViews) {
+        return;
+    }
+    
     CGRect superViewRect = self.superview.bounds;
     
     CGFloat halfwidth = CGRectGetMaxX(self.frame) - CGRectGetWidth(superViewRect) / 2.0f;
@@ -92,7 +98,7 @@
     CGFloat labelY = 10.0f;
     CGFloat pageControlY = size.height - 18.0f;
     if (isLandScape) {
-        labelY = 2.0f;
+        labelY = 4.0f;
         pageControlY = size.height - 16.0f;
     }
     
@@ -100,6 +106,17 @@
     _currentTitleLabel.frame = CGRectMake(0.0f, labelY, size.width, 17.0f);
     _afterTitleLabel.frame = CGRectMake(size.width * 0.5f, labelY, size.width, 17.0f);
     _pageControll.frame = CGRectMake(0.0f, pageControlY, size.width, 18.0f);
+    
+    if (isLandScape) {
+        _beforeTitleLabel.font = [UIFont boldSystemFontOfSize:15.0f];
+        _currentTitleLabel.font = [UIFont boldSystemFontOfSize:15.0f];
+        _afterTitleLabel.font = [UIFont boldSystemFontOfSize:15.0f];
+    }
+    else {
+        _beforeTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+        _currentTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+        _afterTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+    }
 }
 
 - (void)setScrollRate:(CGFloat)rate {

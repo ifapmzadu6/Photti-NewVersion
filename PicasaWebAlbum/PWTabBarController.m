@@ -8,15 +8,16 @@
 
 #import "PWTabBarController.h"
 
+#import "PWColors.h"
 #import "SDImageCache.h"
 
 #import "PWNavigationController.h"
 #import "PWSearchNavigationController.h"
 #import "PLPageViewController.h"
 #import "PWAlbumListViewController.h"
-#import "PWAutoUploadViewController.h"
+#import "PDTaskManagerViewController.h"
 
-static const CGFloat animationDuration = 0.3f;
+static const CGFloat animationDuration = 0.25f;
 
 @interface PWTabBarController ()
 
@@ -42,8 +43,8 @@ static const CGFloat animationDuration = 0.3f;
         PWAlbumListViewController *albumListViweController = [[PWAlbumListViewController alloc] init];
         PWSearchNavigationController *albumNavigationController = [[PWSearchNavigationController alloc] initWithRootViewController:albumListViweController];
         
-        PWAutoUploadViewController *autoUploadViewController = [[PWAutoUploadViewController alloc] init];
-        PWNavigationController *autoUploadNavigationController = [[PWNavigationController alloc] initWithRootViewController:autoUploadViewController];
+        PDTaskManagerViewController *taskManagerViewController = [[PDTaskManagerViewController alloc] init];
+        PWNavigationController *autoUploadNavigationController = [[PWNavigationController alloc] initWithRootViewController:taskManagerViewController];
         
         self.viewControllers = @[localNavigationController, albumNavigationController, autoUploadNavigationController];
         self.selectedIndex = 1;
@@ -66,6 +67,7 @@ static const CGFloat animationDuration = 0.3f;
         _actionNavigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor colorWithWhite:0.8f alpha:1.0f]};
         _actionNavigationBar.barTintColor = [UIColor blackColor];
         _actionNavigationBar.alpha = 0.0f;
+        _actionNavigationBar.delegate = self;
         [self.view addSubview:_actionNavigationBar];
     }
     return self;
@@ -75,13 +77,37 @@ static const CGFloat animationDuration = 0.3f;
     [super viewDidLoad];
     
     self.tabBar.barTintColor = [UIColor colorWithWhite:0.95f alpha:1.0f];
-    self.tabBar.tintColor = [UIColor colorWithRed:255.0f/255.0f green:160.0f/255.0f blue:122.0f/255.0f alpha:1.0f];
+    self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    if (_isTabBarHidden) {
+        for(UIView *view in self.view.subviews) {
+            if([view isKindOfClass:[UITabBar class]]) {
+                view.alpha = 0.0f;
+            }
+        }
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    if (_isTabBarHidden) {
+        for(UIView *view in self.view.subviews) {
+            if([view isKindOfClass:[UITabBar class]]) {
+                view.alpha = 0.0f;
+            }
+        }
+    }
 }
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-    CGRect screenRect = self.view.bounds;
+    CGRect rect = self.view.bounds;
     CGFloat tHeight = 44.0f;
     BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
     if(isLandscape) {
@@ -89,11 +115,9 @@ static const CGFloat animationDuration = 0.3f;
     }
     for(UIView *view in self.view.subviews) {
         if([view isKindOfClass:[UITabBar class]]) {
-            [view setFrame:CGRectMake(view.frame.origin.x, screenRect.size.height - tHeight, view.frame.size.width, tHeight)];
+            [view setFrame:CGRectMake(view.frame.origin.x, rect.size.height - tHeight, view.frame.size.width, tHeight)];
         }
     }
-    
-    CGRect rect = self.view.bounds;
     
     CGRect toolbarFrame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
     _toolbar.frame = toolbarFrame;
@@ -120,6 +144,11 @@ static const CGFloat animationDuration = 0.3f;
     [[SDImageCache sharedImageCache] clearMemory];
 }
 
+#pragma mark UINavigationBarDelegate
+- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
+    return UIBarPositionTopAttached;
+}
+
 #pragma methods
 - (UIEdgeInsets)viewInsets {
     CGFloat tHeight = 44.0f;
@@ -143,10 +172,13 @@ static const CGFloat animationDuration = 0.3f;
     
     NSUInteger index = [self.viewControllers indexOfObject:viewController];
     if (index == 0) {
-        self.tabBar.tintColor = [UIColor colorWithRed:135.0f/255.0f green:206.0f/255.0f blue:235.0f/255.0f alpha:1.0f];
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     }
     else if (index == 1) {
-        self.tabBar.tintColor = [UIColor colorWithRed:255.0f/255.0f green:160.0f/255.0f blue:122.0f/255.0f alpha:1.0f];
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    }
+    else if (index == 2) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
     }
 }
 
@@ -214,8 +246,48 @@ static const CGFloat animationDuration = 0.3f;
     }
 }
 
+- (void)setToolbarFadeout:(BOOL)fadeout animated:(BOOL)animated completion:(void (^)(BOOL finished))completion {
+    _isToolbarHidden = fadeout;
+    
+    CGRect rect = self.view.bounds;
+    CGFloat tHeight = 44.0f;
+    BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
+    if(isLandscape) {
+        tHeight = 32.0f;
+    }
+    if (fadeout) {
+        _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
+    }
+    else {
+        _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight + tHeight, rect.size.width, tHeight);
+    }
+    
+    void (^block)() = ^{
+        if (fadeout) {
+            _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight + tHeight, rect.size.width, tHeight);
+        }
+        else {
+            _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
+        }
+    };
+    
+    if (animated) {
+        [UIView animateWithDuration:animationDuration animations:block completion:completion];
+    }
+    else {
+        block();
+        if (completion) {
+            completion(YES);
+        }
+    }
+}
+
 - (void)setToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated {
     [_toolbar setItems:toolbarItems animated:animated];
+}
+
+- (void)setToolbarTintColor:(UIColor *)tintColor {
+    _toolbar.tintColor = tintColor;
 }
 
 - (BOOL)isActionToolbarHidden {
@@ -249,6 +321,10 @@ static const CGFloat animationDuration = 0.3f;
 
 - (void)setActionToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated {
     [_actionToolbar setItems:toolbarItems animated:animated];
+}
+
+- (void)setActionToolbarTintColor:(UIColor *)tintColor {
+    _actionToolbar.tintColor = tintColor;
 }
 
 - (void)setToolbarBarTintColor:(UIColor *)color animated:(BOOL)animated {
@@ -291,6 +367,10 @@ static const CGFloat animationDuration = 0.3f;
 
 - (void)setActionNavigationItem:(UINavigationItem *)item animated:(BOOL)animated {
     [_actionNavigationBar setItems:@[item] animated:animated];
+}
+
+- (void)setActionNavigationTintColor:(UIColor *)tintColor {
+    _actionNavigationBar.tintColor = tintColor;
 }
 
 @end

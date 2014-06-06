@@ -14,6 +14,11 @@
 #import "PWTabBarController.h"
 #import "PLCollectionFooterView.h"
 #import "PLPhotoListViewController.h"
+#import "BlocksKit+UIKit.h"
+#import "PLModelObject.h"
+#import "PLCoreDataAPI.h"
+
+#import "PDTaskManager.h"
 
 @interface PLAlbumListViewController ()
 
@@ -54,25 +59,11 @@
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
-    __weak typeof(self) wself = self;
-    [PLAssetsManager getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        sself.albums = allAlbums;
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            [sself.indicatorView removeFromSuperview];
-            sself.indicatorView = nil;
-            
-            [sself.collectionView reloadData];
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:sself.albums.count-1 inSection:0];
-            [sself.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-        });
-    }];
-    
     _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_indicatorView];
     [_indicatorView startAnimating];
+    
+    [self reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -105,8 +96,19 @@
     CGRect rect = self.view.bounds;
     
     _collectionView.frame = CGRectMake(10.0f, 0.0f, rect.size.width - 20.0f, rect.size.height);
+    
+    NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
+    NSIndexPath *indexPath = nil;
+    if (indexPaths.count) {
+        indexPath = indexPaths[indexPaths.count / 2];
+    }
+    
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
+    
+    if (indexPath) {
+        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+    }
     
     PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
@@ -138,6 +140,13 @@
     PLAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
     cell.album = _albums[indexPath.row];
+    __weak typeof(self) wself = self;
+    [cell setActionButtonActionBlock:^(PLAlbumObject *album) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself showAlbumActionSheet:album];
+    }];
     
     return cell;
 }
@@ -182,13 +191,107 @@
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    return CGSizeMake(0.0f, 60.0f);
+    return CGSizeMake(0.0f, 50.0f);
 }
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PLPhotoListViewController *viewController = [[PLPhotoListViewController alloc] initWithAlbum:_albums[indexPath.row]];
     [self.navigationController pushViewController:viewController animated:YES];
+}
+
+#pragma mark LoadData
+- (void)reloadData {
+    __weak typeof(self) wself = self;
+    [PLAssetsManager getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        sself.albums = allAlbums;
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [sself.indicatorView removeFromSuperview];
+            sself.indicatorView = nil;
+            
+            [sself.collectionView reloadData];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:sself.albums.count-1 inSection:0];
+            [sself.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+        });
+    }];
+}
+
+#pragma mark UIAlertView
+- (void)showAlbumActionSheet:(PLAlbumObject *)album {
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.name];
+    __weak typeof(self) wself = self;
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"アップロード", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+        });
+//        [PDTaskManager addTaskFromWebAlbum:_album toLocalAlbum:album completion:^(NSError *error) {
+//            NSLog(@"addTaskFromWebAlbum is Completion");
+//            if (error) {
+//                NSLog(@"%@", error.description);
+//            }
+//        }];
+        
+    }];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"共有", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself shareAlbum:album];
+    }];
+    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself removeAlbum:album completion:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                [sself reloadData];
+            });
+        }];
+    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
+    }];
+    [actionSheet showFromTabBar:self.tabBarController.tabBar];
+}
+
+#pragma mark HandleModelObject
+- (void)removeAlbum:(PLAlbumObject *)album completion:(void (^)())completion {
+    [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+        [context deleteObject:album];
+        NSError *error = nil;
+        [context save:&error];
+        
+        if (completion) {
+            completion();
+        }
+    }];
+}
+
+- (void)shareAlbum:(PLAlbumObject *)album {
+    NSMutableArray *assets = [NSMutableArray array];
+    for (PLPhotoObject *photo in album.photos) {
+        [PLAssetsManager assetForURL:[NSURL URLWithString:photo.url] resultBlock:^(ALAsset *asset) {
+            if (asset) {
+                [assets addObject:asset];
+            }
+            if (assets.count == album.photos.count) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    UIActivityViewController *viewControlle = [[UIActivityViewController alloc] initWithActivityItems:assets applicationActivities:nil];
+                    [self.tabBarController presentViewController:viewControlle animated:YES completion:nil];
+                });
+            }
+        } failureBlock:^(NSError *error) {
+            
+        }];
+    }
 }
 
 @end

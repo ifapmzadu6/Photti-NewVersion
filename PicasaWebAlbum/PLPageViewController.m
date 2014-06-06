@@ -14,14 +14,21 @@
 #import "PLiCloudViewController.h"
 #import "PWTabBarController.h"
 #import "PWSearchNavigationController.h"
+#import "BlocksKit+UIKit.h"
 
 #import "PWColors.h"
+#import "PLCoreDataAPI.h"
+#import "PLModelObject.h"
+#import "PWSnowFlake.h"
+#import "PLDateFormatter.h"
 
 @interface PLPageViewController ()
 
 @property (strong, nonatomic) NSArray *myViewControllers;
 
 @property (strong, nonatomic) PLParallelNavigationTitleView *titleView;
+
+@property (nonatomic) BOOL isAllPhotoSelectMode;
 
 @end
 
@@ -48,9 +55,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:135.0f/255.0f green:206.0f/255.0f blue:235.0f/255.0f alpha:1.0f];
-    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-    //135,206,235
+    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     
     _myViewControllers = [self makeViewControllers];
     [self setViewControllers:@[_myViewControllers[1]]
@@ -58,13 +63,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
                     animated:NO
                   completion:nil];
     self.view.backgroundColor = [UIColor whiteColor];
-    
-    UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
-    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
-    self.navigationItem.rightBarButtonItems = @[addBarButtonItem, searchBarButtonItem];
-    
-    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
-    [self.navigationItem setLeftBarButtonItem:actionBarButtonItem animated:YES];
     
     //ScrollViewDelegate
     [self.view.subviews.firstObject setDelegate:self];
@@ -122,9 +120,16 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [tabBarController setToolbarHidden:YES animated:animated completion:nil];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    _titleView.isDisableLayoutSubViews = YES;
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
+    _titleView.isDisableLayoutSubViews = NO;
     [_titleView setNeedsLayout];
 }
 
@@ -154,44 +159,82 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 }
 
 - (void)addBarButtonAction {
-    
+    UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"新規アルバム", nil) message:NSLocalizedString(@"アルバム名を入力してください。", nil)];
+    alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+    [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
+        
+    }];
+    __weak UIAlertView *wAlertView = alertView;
+    [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
+        UIAlertView *sAlertView = wAlertView;
+        if (!sAlertView) return;
+        
+        UITextField *textField = [sAlertView textFieldAtIndex:0];
+        NSString *title = textField.text;
+        if (!title || [title isEqualToString:@""]) {
+            title = NSLocalizedString(@"新規アルバム", nil);
+        }
+        
+        __weak typeof(self) wself = self;
+        [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
+            album.id_str = [PWSnowFlake generateUniqueIDString];
+            album.name = NSLocalizedString(@"新規アルバム", nil);
+            NSDate *date = [NSDate date];
+            NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:date];
+            album.tag_date = adjustedDate;
+            album.timestamp = @((unsigned long)([adjustedDate timeIntervalSince1970]) * 1000);
+            album.import = date;
+            album.update = date;
+            album.tag_type = @(PLAlbumObjectTagTypeMyself);
+            
+            NSError *error = nil;
+            [context save:&error];
+            
+            for (UIViewController *viewController in sself.viewControllers) {
+                if ([viewController isKindOfClass:[PLAlbumListViewController class]]) {
+                    PLAlbumListViewController *albumListViewController = (PLAlbumListViewController *)viewController;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [albumListViewController reloadData];
+                    });
+                }
+            }
+        }];
+    }];
+    UITextField *textField = [alertView textFieldAtIndex:0];
+    textField.placeholder = NSLocalizedString(@"新規アルバム", nil);
+    [alertView show];
 }
 
 - (void)actionBarButtonAction {
-    
 }
 
-- (void)selectBarButtonAction {
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
-    UIBarButtonItem *selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
-    UIBarButtonItem *selectAddBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemReply target:self action:@selector(selectAddBarButtonAction)];
-    UIBarButtonItem *selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction)];
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    [tabBarController setActionToolbarItems:@[selectActionBarButtonItem, flexibleSpace, selectAddBarButtonItem, flexibleSpace, selectTrashBarButtonItem] animated:YES];
-    [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
-        PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
-        [tabBarController setToolbarHidden:YES animated:NO completion:nil];
-    }];
-    UIBarButtonItem *selectCancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(selectCancelBarButtonAction)];
-    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:@"項目を選択"];
-    navigationItem.leftBarButtonItem = selectCancelBarButtonItem;
-    [tabBarController setActionNavigationItem:navigationItem animated:NO];
-    __weak typeof(self) wself = self;
-    [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        sself.navigationController.navigationBar.alpha = 0.0f;
-    }];
+- (void)allPhotoSelectBarButtonAction {
+    PLAllPhotosViewController *allPhotoViewController = (PLAllPhotosViewController *)_myViewControllers[0];
+    [allPhotoViewController setIsSelectMode:YES withSelectIndexPaths:nil];
+    [self enableAllPhotoViewControllerSelectMode];
 }
 
 - (void)selectCancelBarButtonAction {
+    if (_isAllPhotoSelectMode) {
+        _isAllPhotoSelectMode = NO;
+        
+        PLAllPhotosViewController *allPhotoViewController = (PLAllPhotosViewController *)_myViewControllers[0];
+        [allPhotoViewController setIsSelectMode:NO withSelectIndexPaths:nil];
+        [self setViewControllers:@[allPhotoViewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    }
+    
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
     
     self.navigationController.navigationBar.alpha = 1.0f;
     [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 - (void)selectActionBarButtonAction {
@@ -214,6 +257,10 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 
 #pragma mark UIPageViewControllerDataSource
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
+    if (_isAllPhotoSelectMode) {
+        return nil;
+    }
+    
     NSInteger index = [_myViewControllers indexOfObject:viewController];
     if (index == 0) {
         return nil;
@@ -223,6 +270,10 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController {
+    if (_isAllPhotoSelectMode) {
+        return nil;
+    }
+    
     NSInteger index = [_myViewControllers indexOfObject:viewController];
     if (index == _myViewControllers.count - 1) {
         return nil;
@@ -243,9 +294,24 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         [sself.titleView setCurrentIndex:0];
         [sself.titleView setCurrentTitle:allPhotosViewControllerTitle];
         
-        UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"選択", nil) style:UIBarButtonItemStylePlain target:sself action:@selector(selectBarButtonAction)];
-        [sself.navigationItem setLeftBarButtonItem:selectBarButtonItem animated:YES];
+        UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
+        [sself.navigationItem setRightBarButtonItems:@[searchBarButtonItem] animated:YES];
+        
+        UIBarButtonItem *allPhotoSelectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"選択", nil) style:UIBarButtonItemStylePlain target:sself action:@selector(allPhotoSelectBarButtonAction)];
+        [sself.navigationItem setLeftBarButtonItem:allPhotoSelectBarButtonItem animated:YES];
     }];
+    [allPhotosViewController setHeaderViewDidTapBlock:^(BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself enableAllPhotoViewControllerSelectMode];
+    }];
+    [allPhotosViewController setPhotoDidSelectedInSelectModeBlock:^(NSArray *indexPaths) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+    }];
+    
     PLAlbumListViewController *albumListViewController = [[PLAlbumListViewController alloc] init];
     NSString *albumListViewControllerTitle = albumListViewController.title;
     [albumListViewController setViewDidAppearBlock:^{
@@ -255,9 +321,14 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         [sself.titleView setCurrentIndex:1];
         [sself.titleView setCurrentTitle:albumListViewControllerTitle];
         
-        UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
+        UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
+        UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
+        [sself.navigationItem setRightBarButtonItems:@[addBarButtonItem, searchBarButtonItem] animated:YES];
+        
+        UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(actionBarButtonAction)];
         [sself.navigationItem setLeftBarButtonItem:actionBarButtonItem animated:YES];
     }];
+    
     PLiCloudViewController *iCloudViewController = [[PLiCloudViewController alloc] init];
     NSString *iCloudViewControllerTitle = iCloudViewController.title;
     [iCloudViewController setViewDidAppearBlock:^{
@@ -267,11 +338,51 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         [sself.titleView setCurrentIndex:2];
         [sself.titleView setCurrentTitle:iCloudViewControllerTitle];
         
-        UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"選択", nil) style:UIBarButtonItemStylePlain target:sself action:@selector(selectBarButtonAction)];
-        [sself.navigationItem setLeftBarButtonItem:selectBarButtonItem animated:YES];
+        UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
+        [sself.navigationItem setRightBarButtonItems:@[searchBarButtonItem] animated:YES];
+        
+//        UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"選択", nil) style:UIBarButtonItemStylePlain target:sself action:@selector(selectBarButtonAction)];
+//        [sself.navigationItem setLeftBarButtonItem:selectBarButtonItem animated:YES];
     }];
     
     return @[allPhotosViewController, albumListViewController, iCloudViewController];
+}
+
+#pragma mark EnableAllPhohoViewSelectMode
+- (void)enableAllPhotoViewControllerSelectMode {
+    _isAllPhotoSelectMode = YES;
+    
+    PLAllPhotosViewController *allPhotoViewController = (PLAllPhotosViewController *)_myViewControllers[0];
+    [self setViewControllers:@[allPhotoViewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    UIBarButtonItem *selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
+    UIBarButtonItem *selectAddBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"移動", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectAddBarButtonAction)];
+    UIBarButtonItem *selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction)];
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    [tabBarController setActionToolbarItems:@[selectActionBarButtonItem, flexibleSpace, selectAddBarButtonItem, flexibleSpace, selectTrashBarButtonItem] animated:YES];
+    [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
+    __weak typeof(self) wself = self;
+    [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
+        [tabBarController setToolbarHidden:YES animated:NO completion:nil];
+    }];
+    UIBarButtonItem *selectCancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(selectCancelBarButtonAction)];
+    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:@"項目を選択"];
+    navigationItem.leftBarButtonItem = selectCancelBarButtonItem;
+    [tabBarController setActionNavigationItem:navigationItem animated:NO];
+    [tabBarController setActionNavigationTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
+    [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        sself.navigationController.navigationBar.alpha = 0.0f;
+    }];
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
 @end

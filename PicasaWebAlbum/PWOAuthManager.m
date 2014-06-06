@@ -16,61 +16,59 @@ static NSString * const PWClientID = @"982107973738-pqihuiltucj69o5413n38hm52lj3
 static NSString * const PWClientSecret = @"5OS58Vf-PA09YGHlFZUc_BtX";
 static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 
-//#define dispatch_main_sync_safe(block) dispatch_sync(dispatch_get_main_queue(), block);
-//
-//#define dispatch_main_async_safe(block) dispatch_async(dispatch_get_main_queue(), block);
-
-#define dispatch_main_sync_safe(block)\
-if ([NSThread isMainThread]) {\
-block();\
-}\
-else {\
-dispatch_sync(dispatch_get_main_queue(), block);\
-}
-
-#define dispatch_main_async_safe(block)\
-if ([NSThread isMainThread]) {\
-block();\
-}\
-else {\
-dispatch_async(dispatch_get_main_queue(), block);\
-}
-
 @interface PWOAuthManager ()
+
+@property (strong, nonatomic) GTMOAuth2Authentication *auth;
 
 @end
 
 @implementation PWOAuthManager
-+ (GTMOAuth2Authentication *)authentication {
-    return [PWOAuthManager authenticationWithRefresh:NO];
+
++ (id)sharedManager {
+    static dispatch_once_t once;
+    static id instance;
+    dispatch_once(&once, ^{instance = self.new;});
+    return instance;
 }
 
-+ (GTMOAuth2Authentication *)authenticationWithRefresh:(BOOL)refresh {
-    static dispatch_once_t once;
-    static id auth;
-    if (refresh) {
-        dispatch_main_sync_safe(^{
-            auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
-        });
+- (id)init {
+    self = [super init];
+    if (self) {
+        [self authRefresh];
     }
-    else {
-        dispatch_once(&once, ^{
-            dispatch_main_sync_safe(^{
-                auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
-            });
-        });
-    }
-    return auth;
+    return self;
+}
+
+- (void)authRefresh {
+    _auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
+}
+
++ (void)getAuthWithCompletion:(void (^)(GTMOAuth2Authentication *auth))completion {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (completion) {
+            completion([[PWOAuthManager sharedManager] auth]);
+        }
+    });
+}
+
++ (void)authRefreshWithCompletion:(void (^)())completion {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[PWOAuthManager sharedManager] authRefresh];
+        if (completion) {
+            completion();
+        }
+    });
 }
 
 + (void)getAccessTokenWithCompletion:(void (^)(NSString *, NSError *))completion {
-    dispatch_main_async_safe(^{
-        GTMOAuth2Authentication *auth = [PWOAuthManager authenticationWithRefresh:NO];
+    [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
+        
         [auth authorizeRequest:request completionHandler:^(NSError *error) {
             if (error) {
-                [PWOAuthManager authenticationWithRefresh:YES];
-                [PWOAuthManager getAccessTokenWithCompletion:completion];
+                if (completion) {
+                    completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:401 userInfo:nil]);
+                }
                 return;
             }
             
@@ -79,35 +77,33 @@ dispatch_async(dispatch_get_main_queue(), block);\
                 completion(headerFields[@"Authorization"], nil);
             }
         }];
-    });
-}
-
-+ (void)authorizeRequestWithCompletion:(void (^)(NSError *error))completion {
-    dispatch_main_async_safe(^{
-        GTMOAuth2Authentication *newAuth = [PWOAuthManager authenticationWithRefresh:YES];
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:newAuth.tokenURL];
-        [newAuth authorizeRequest:request completionHandler:completion];
-    });
+    }];
 }
 
 + (void)logout {
-    dispatch_main_async_safe(^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         [GTMOAuth2ViewControllerTouch removeAuthFromKeychainForName:PWKeyChainItemName];
-        [GTMOAuth2ViewControllerTouch revokeTokenForGoogleAuthentication:[PWOAuthManager authentication]];
+        [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
+            [GTMOAuth2ViewControllerTouch revokeTokenForGoogleAuthentication:auth];
+        }];
     });
 }
 
-+ (UINavigationController *)loginViewControllerWithCompletion:(void (^)())completion {
-    __block UINavigationController *navigationController = nil;
-    dispatch_main_sync_safe(^{
++ (void)loginViewControllerWithCompletion:(void (^)(UINavigationController *))completion finish:(void (^)())finish {
+    dispatch_async(dispatch_get_main_queue(), ^{
         GTMOAuth2ViewControllerTouch *viewController = [GTMOAuth2ViewControllerTouch controllerWithScope:PWScope clientID:PWClientID clientSecret:PWClientSecret keychainItemName:PWKeyChainItemName completionHandler:^(GTMOAuth2ViewControllerTouch *viewController, GTMOAuth2Authentication *auth, NSError *error) {
             [viewController dismissViewControllerAnimated:YES completion:^{
-                [PWOAuthManager authorizeRequestWithCompletion:^(NSError *error) {
-                    if (!error) {
-                        if (completion) {
-                            completion();
-                        }
-                    }
+                [PWOAuthManager authRefreshWithCompletion:^{
+                    [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
+                        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
+                        [auth authorizeRequest:request completionHandler:^(NSError *error) {
+                            if (!error) {
+                                if (finish) {
+                                    finish();
+                                }
+                            }
+                        }];
+                    }];
                 }];
             }];
         }];
@@ -120,11 +116,14 @@ dispatch_async(dispatch_get_main_queue(), block);\
             }
         }
         
-        navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         navigationController.view.backgroundColor = [UIColor whiteColor];
         navigationController.automaticallyAdjustsScrollViewInsets = NO;
+        
+        if (completion) {
+            completion(navigationController);
+        }
     });
-    return navigationController;
 }
 
 @end

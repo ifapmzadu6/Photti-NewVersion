@@ -48,8 +48,8 @@
     _collectionView.delegate = self;
     [_collectionView registerClass:[PWAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.contentInset = UIEdgeInsetsMake(-10.0f, 0.0f, 10.0f, 0.0f);
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, -10.0f);
+    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 10.0f, 0.0f);
+    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
     _collectionView.clipsToBounds = NO;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_collectionView];
@@ -57,6 +57,7 @@
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
     _refreshControl.myContentInsetTop = 5.0f;
+    _refreshControl.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -68,6 +69,7 @@
     UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     self.navigationItem.leftBarButtonItem = cancelBarButtonitem;
     
+    [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];
     
     __weak typeof(self) wself = self;
@@ -109,6 +111,10 @@
     for (NSIndexPath *indexPath in indexPaths) {
         [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
+    
+    if (!_isNowRequesting) {
+        [_refreshControl endRefreshing];
+    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -117,8 +123,19 @@
     CGRect rect = self.view.bounds;
     
     _collectionView.frame = CGRectMake(10.0f, 0.0f, rect.size.width - 20.0f, rect.size.height);
+    
+    NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
+    NSIndexPath *indexPath = nil;
+    if (indexPaths.count) {
+        indexPath = indexPaths[indexPaths.count / 2];
+    }
+    
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
+    
+    if (indexPath) {
+        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+    }
     
     _activityIndicatorView.center = self.view.center;
 }
@@ -253,21 +270,24 @@
 
 - (void)openLoginviewController {
     __weak typeof(self) wself = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
+    [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            [sself.refreshControl endRefreshing];
+            [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+        });
         
-        [sself.refreshControl endRefreshing];
-        
-        UIViewController *viewController = [PWOAuthManager loginViewControllerWithCompletion:^{
+    } finish:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
             [sself reloadData];
-        }];
-        
-        [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
-    });
+        });
+    }];
 }
+
 
 @end
