@@ -7,7 +7,8 @@
 //
 
 @import UIKit;
+@import CoreData;
 
-@interface PDTaskManagerViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface PDTaskManagerViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
 
 @end

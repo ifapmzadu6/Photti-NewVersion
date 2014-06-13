@@ -48,7 +48,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
         NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
         //            NSLog(@"%@", json.description);
         
-        [PWCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
+        [PWCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
             NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
             NSDictionary *startIndexDic = NULL_TO_NIL(feed[@"openSearch:startIndex"]);
             NSDictionary *totalResultsDic = NULL_TO_NIL(feed[@"openSearch:totalResults"]);

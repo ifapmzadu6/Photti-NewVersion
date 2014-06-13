@@ -91,6 +91,34 @@
     
     [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];
+    
+    __weak typeof(self) wself = self;
+    [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", sself.album.id_str];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        sself.fetchedResultsController.delegate = sself;
+        
+        [sself.fetchedResultsController performFetch:nil];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            if (sself.fetchedResultsController.fetchedObjects.count > 0) {
+                [sself.activityIndicatorView stopAnimating];
+            }
+            
+            [sself.collectionView reloadData];
+            
+            [sself reloadData];
+        });
+    }];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -138,35 +166,6 @@
     }
     else {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
-    }
-    
-    if (!_isNowRequesting) {
-        __weak typeof(self) wself = self;
-        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            NSFetchRequest *request = [[NSFetchRequest alloc] init];
-            request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-            request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", sself.album.id_str];
-            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-            
-            sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-            [sself.fetchedResultsController performFetch:nil];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                
-                if (sself.fetchedResultsController.fetchedObjects.count > 0) {
-                    [sself.activityIndicatorView stopAnimating];
-                }
-                
-                [sself.collectionView reloadData];
-                
-                [sself reloadData];
-            });
-        }];
     }
     
     if (!_isNowRequesting) {
@@ -394,10 +393,6 @@
         }
         
         sself.requestIndex = nextIndex;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.collectionView reloadData];
-        });
     }];
 }
 
@@ -418,39 +413,15 @@
         }
         
         sself.requestIndex = nextIndex;
+        sself.isNowRequesting = NO;
         
-        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            NSError *coredataError = nil;
-            [sself.fetchedResultsController performFetch:&coredataError];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                
-                [sself.refreshControl endRefreshing];
-                [sself.activityIndicatorView stopAnimating];
-                
-                sself.isNowRequesting = NO;
-                [sself.collectionView reloadData];
-                
-                NSArray *photos = sself.fetchedResultsController.fetchedObjects;
-                for (NSString *id_str in sself.selectedPhotoIDs) {
-                    NSArray *searched = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
-                    for (PWPhotoObject *photo in searched) {
-                        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[photos indexOfObject:photo] inSection:0];
-                        [sself.collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
-                    }
-                }
-                
-                PWPhotoPageViewController *photoPageViewController = sself.photoPageViewController;
-                if (photoPageViewController) {
-                    [photoPageViewController changePhotos:photos];
-                }
-            });
-        }];
+            [sself.refreshControl endRefreshing];
+            [sself.activityIndicatorView stopAnimating];
+        });
     }];
 }
 
@@ -473,6 +444,31 @@
             [sself reloadData];
         });
     }];
+}
+
+#pragma mark NSFetchedResultsControllerDelegate
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    
+    NSError *coredataError = nil;
+    [_fetchedResultsController performFetch:&coredataError];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+        
+        NSArray *photos = _fetchedResultsController.fetchedObjects;
+        for (NSString *id_str in _selectedPhotoIDs) {
+            NSArray *searched = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+            for (PWPhotoObject *photo in searched) {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[photos indexOfObject:photo] inSection:0];
+                [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+            }
+        }
+        
+        PWPhotoPageViewController *photoPageViewController = _photoPageViewController;
+        if (photoPageViewController) {
+            [photoPageViewController changePhotos:photos];
+        }
+    });
 }
 
 #pragma mark Action

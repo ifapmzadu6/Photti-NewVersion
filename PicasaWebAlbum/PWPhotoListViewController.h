@@ -7,10 +7,11 @@
 //
 
 @import UIKit;
+@import CoreData;
 
 @class PWAlbumObject;
 
-@interface PWPhotoListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface PWPhotoListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 - (id)initWithAlbum:(PWAlbumObject *)album;
 

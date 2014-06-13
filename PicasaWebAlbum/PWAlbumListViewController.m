@@ -95,9 +95,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         if (!sself) return;
         
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
-        request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        sself.fetchedResultsController.delegate = sself;
         NSError *error = nil;
         [sself.fetchedResultsController performFetch:&error];
         if (error) {
@@ -128,14 +129,14 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
     [tabBarController setToolbarHidden:YES animated:animated completion:nil];
-    
-    if (!_isNowRequesting) {
-        [_refreshControl endRefreshing];
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
+    if (!_isNowRequesting) {
+        [_refreshControl endRefreshing];
+    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -270,17 +271,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         }
         
         sself.requestIndex = nextIndex;
-        NSError *coredataError = nil;
-        [sself.fetchedResultsController performFetch:&coredataError];
-        if (coredataError) {
-            NSLog(@"%@", coredataError.description);
-        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [sself.refreshControl endRefreshing];
             [sself.activityIndicatorView stopAnimating];
-            
-            [sself.collectionView reloadData];
         });
     }];
 }
@@ -302,25 +296,12 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         }
         
         sself.requestIndex = nextIndex;
+        sself.isNowRequesting = NO;
         
-        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            NSError *coredataError = nil;
-            [sself.fetchedResultsController performFetch:&coredataError];
-            if (coredataError) {
-                NSLog(@"%@", coredataError.description);
-            }
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [sself.refreshControl endRefreshing];
-                [sself.activityIndicatorView stopAnimating];
-                
-                sself.isNowRequesting = NO;
-                [sself.collectionView reloadData];
-            });
-        }];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sself.refreshControl endRefreshing];
+            [sself.activityIndicatorView stopAnimating];
+        });
     }];
 }
 
@@ -343,6 +324,16 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             [sself reloadData];
         });
     }];
+}
+
+#pragma mark NSFetchedResultsControllerDelegate
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    NSError *error = nil;
+    [_fetchedResultsController performFetch:&error];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+    });
 }
 
 #pragma mark UIActionSheet

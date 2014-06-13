@@ -138,9 +138,6 @@
 - (void)setAlbum:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading {
     _album = album;
     
-    NSUInteger hash = album.hash;
-    _albumHash = hash;
-    
     _titleLabel.text = album.title;
     
     _numPhotosLabel.text = album.tag_numphotos;
@@ -148,7 +145,12 @@
     _imageView.alpha = 0.0f;
     [_activityIndicatorView startAnimating];
     
-    [self setNeedsLayout];
+    [self loadThumbnailImage:album isNowLoading:isNowLoading];
+}
+
+- (void)loadThumbnailImage:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading {
+    NSUInteger hash = album.hash;
+    _albumHash = hash;
     
     NSString *urlString = album.tag_thumbnail_url;
     if (!urlString) {
@@ -184,7 +186,7 @@
         if (isNowLoading) {
             return;
         }
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         });
         

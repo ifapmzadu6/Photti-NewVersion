@@ -27,73 +27,75 @@ static dispatch_queue_t pd_coredata_queue() {
     return pd_coredata_queue;
 }
 
-+ (id)sharedManager {
-    static dispatch_once_t once;
-    static id instance;
-    dispatch_once(&once, ^{instance = self.new;});
-    return instance;
-}
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PDModel" withExtension:@"momd"];
-        self.managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-        
-        NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"PDModel.sqlite"];
-        
-        NSError *error = nil;
-        self.persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:_managedObjectModel];
-        if (![self.persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
-            
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
-        }
-        
-        NSPersistentStoreCoordinator *coordinator = self.persistentStoreCoordinator;
-        if (coordinator != nil) {
-            self.managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
-            self.managedObjectContext.persistentStoreCoordinator = coordinator;
-        }
-    }
-    return self;
-}
-
 + (NSManagedObjectContext *)context {
-    NSManagedObjectContext *context = [[PDCoreDataAPI sharedManager] managedObjectContext];
-    if (!context) {
-        
-    }
+    static NSManagedObjectContext *context;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dispatch_barrier_sync(pd_coredata_queue(), ^{
+            NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PDModel" withExtension:@"momd"];
+            NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+            
+            NSURL *storeURL = [[PDCoreDataAPI applicationDocumentsDirectory] URLByAppendingPathComponent:@"PDModel.sqlite"];
+            
+            NSError *error = nil;
+            NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+            if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+                
+                NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+                abort();
+            }
+            
+            NSPersistentStoreCoordinator *coordinator = persistentStoreCoordinator;
+            if (coordinator != nil) {
+                NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
+                managedObjectContext.persistentStoreCoordinator = coordinator;
+                
+                context = managedObjectContext;
+            }
+        });
+    });
     return context;
 }
 
 + (void)barrierAsyncBlock:(void (^)(NSManagedObjectContext *))block {
+    id context = [PDCoreDataAPI context];
     dispatch_barrier_async(pd_coredata_queue(), ^{
         if (block) {
-            block([PDCoreDataAPI context]);
+            block(context);
         }
     });
 }
 
 + (void)barrierSyncBlock:(void (^)(NSManagedObjectContext *))block {
+    id context = [PDCoreDataAPI context];
     dispatch_barrier_sync(pd_coredata_queue(), ^{
         if (block) {
-            block([PDCoreDataAPI context]);
+            block(context);
         }
     });
 }
 
 + (void)asyncBlock:(void (^)(NSManagedObjectContext *))block {
+    id context = [PDCoreDataAPI context];
     dispatch_async(pd_coredata_queue(), ^{
         if (block) {
-            block([PDCoreDataAPI context]);
+            block(context);
+        }
+    });
+}
+
++ (void)syncBlock:(void (^)(NSManagedObjectContext *))block {
+    id context = [PDCoreDataAPI context];
+    dispatch_sync(pd_coredata_queue(), ^{
+        if (block) {
+            block(context);
         }
     });
 }
 
 #pragma mark - Application's Documents directory
 // Returns the URL to the application's Documents directory.
-- (NSURL *)applicationDocumentsDirectory {
++ (NSURL *)applicationDocumentsDirectory {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 

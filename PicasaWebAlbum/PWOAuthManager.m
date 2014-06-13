@@ -44,21 +44,35 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 }
 
 + (void)getAuthWithCompletion:(void (^)(GTMOAuth2Authentication *auth))completion {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    void (^block)() = ^() {
         GTMOAuth2Authentication *auth = [[PWOAuthManager sharedManager] auth];
         if (completion) {
             completion(auth);
         }
-    });
+    };
+    
+    if ([NSThread isMainThread]) {
+        block();
+    }
+    else {
+        dispatch_async(dispatch_get_main_queue(), block);
+    }
 }
 
 + (void)authRefreshWithCompletion:(void (^)())completion {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    void (^block)() = ^() {
         [[PWOAuthManager sharedManager] authRefresh];
         if (completion) {
             completion();
         }
-    });
+    };
+    
+    if ([NSThread isMainThread]) {
+        block();
+    }
+    else {
+        dispatch_async(dispatch_get_main_queue(), block);
+    }
 }
 
 + (void)getAccessTokenWithCompletion:(void (^)(NSString *, NSError *))completion {
@@ -82,16 +96,23 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 }
 
 + (void)logout {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    void (^block)() = ^() {
         [GTMOAuth2ViewControllerTouch removeAuthFromKeychainForName:PWKeyChainItemName];
         [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
             [GTMOAuth2ViewControllerTouch revokeTokenForGoogleAuthentication:auth];
         }];
-    });
+    };
+    
+    if ([NSThread isMainThread]) {
+        block();
+    }
+    else {
+        dispatch_async(dispatch_get_main_queue(), block);
+    }
 }
 
 + (void)loginViewControllerWithCompletion:(void (^)(UINavigationController *))completion finish:(void (^)())finish {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    void (^block)() = ^() {
         GTMOAuth2ViewControllerTouch *viewController = [GTMOAuth2ViewControllerTouch controllerWithScope:PWScope clientID:PWClientID clientSecret:PWClientSecret keychainItemName:PWKeyChainItemName completionHandler:^(GTMOAuth2ViewControllerTouch *viewController, GTMOAuth2Authentication *auth, NSError *error) {
             [viewController dismissViewControllerAnimated:YES completion:^{
                 [PWOAuthManager authRefreshWithCompletion:^{
@@ -124,7 +145,14 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         if (completion) {
             completion(navigationController);
         }
-    });
+    };
+    
+    if ([NSThread isMainThread]) {
+        block();
+    }
+    else {
+        dispatch_async(dispatch_get_main_queue(), block);
+    }
 }
 
 @end

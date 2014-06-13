@@ -50,12 +50,12 @@
     [_tableView registerClass:[PDTaskTableViewCell class] forCellReuseIdentifier:@"Cell"];
     _tableView.rowHeight = 56.0f;
     [self.view addSubview:_tableView];
+    
+    [self loadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    [self loadData];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -99,7 +99,12 @@
     return cell;
 }
 
-#pragma mark LoadData
+#pragma mark UITableViewDelegate
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return [PDTaskTableViewCell cellHeightForTaskObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
+}
+
+#pragma mark NSFetchedResultsController
 - (void)loadData {
     __weak typeof(self) wself = self;
     [PDCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
@@ -110,6 +115,7 @@
         request.entity = [NSEntityDescription entityForName:kPDBaseTaskObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        sself.fetchedResultsController.delegate = sself;
         
         NSError *error = nil;
         [sself.fetchedResultsController performFetch:&error];
@@ -118,6 +124,16 @@
             [sself.tableView reloadData];
         });
     }];
+}
+
+#pragma NSFetchedResultsControllerDelegate
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    NSError *error = nil;
+    [_fetchedResultsController performFetch:&error];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_tableView reloadData];
+    });
 }
 
 @end

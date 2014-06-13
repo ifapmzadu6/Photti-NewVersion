@@ -194,7 +194,7 @@
         if (!sself) return;
         
         sself.albums = allAlbums;
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             [sself.indicatorView removeFromSuperview];
             sself.indicatorView = nil;
             

@@ -14,4 +14,6 @@
 
 @property (strong, nonatomic) PDBaseTaskObject *taskObject;
 
++ (CGFloat)cellHeightForTaskObject:(PDBaseTaskObject *)taskObject;
+
 @end
