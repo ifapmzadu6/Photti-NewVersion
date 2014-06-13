@@ -1,0 +1,7 @@
+platform :ios, '7.1.1'
+pod 'AFNetworking'
+pod 'BlocksKit'
+pod 'CocoaLumberjack'
+pod 'GData'
+pod 'GPUImage'
+pod 'SDWebImage'

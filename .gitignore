@@ -1,105 +1,31 @@
-PODS:
-  - AFDownloadRequestOperation (2.0.1):
-    - AFNetworking (~> 2.0)
-  - AFNetworking (2.2.3):
-    - AFNetworking/NSURLConnection
-    - AFNetworking/NSURLSession
-    - AFNetworking/Reachability
-    - AFNetworking/Security
-    - AFNetworking/Serialization
-    - AFNetworking/UIKit
-  - AFNetworking/NSURLConnection (2.2.3):
-    - AFNetworking/Reachability
-    - AFNetworking/Security
-    - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.2.3):
-    - AFNetworking/NSURLConnection
-  - AFNetworking/Reachability (2.2.3)
-  - AFNetworking/Security (2.2.3)
-  - AFNetworking/Serialization (2.2.3)
-  - AFNetworking/UIKit (2.2.3):
-    - AFNetworking/NSURLConnection
-    - AFNetworking/NSURLSession
-  - Appirater (2.0.2)
-  - AutoScrollLabel (0.2.1)
-  - BlocksKit (2.2.2):
-    - BlocksKit/All
-  - BlocksKit/All (2.2.2):
-    - BlocksKit/Core
-    - BlocksKit/DynamicDelegate
-    - BlocksKit/MessageUI
-    - BlocksKit/UIKit
-  - BlocksKit/Core (2.2.2)
-  - BlocksKit/DynamicDelegate (2.2.2)
-  - BlocksKit/MessageUI (2.2.2):
-    - BlocksKit/Core
-    - BlocksKit/DynamicDelegate
-  - BlocksKit/UIKit (2.2.2):
-    - BlocksKit/Core
-    - BlocksKit/DynamicDelegate
-  - FMDB (2.2):
-    - FMDB/standard
-  - FMDB/common (2.2)
-  - FMDB/standard (2.2):
-    - FMDB/common
-  - MBProgressHUD (0.8)
-  - MMDrawerController (0.5.5):
-    - MMDrawerController/Core
-    - MMDrawerController/MMDrawerBarButtonItem
-    - MMDrawerController/MMDrawerVisualStates
-    - MMDrawerController/Subclass
-  - MMDrawerController/Core (0.5.5)
-  - MMDrawerController/MMDrawerBarButtonItem (0.5.5):
-    - MMDrawerController/Core
-  - MMDrawerController/MMDrawerVisualStates (0.5.5):
-    - MMDrawerController/Core
-  - MMDrawerController/Subclass (0.5.5):
-    - MMDrawerController/Core
-  - Objective-C-HMTL-Parser (0.0.1)
-  - SBJson (4.0.1)
-  - SDWebImage (3.6):
-    - SDWebImage/Core
-  - SDWebImage/Core (3.6)
-  - SFHFKeychainUtils (0.0.1)
-  - Toast (2.2)
-  - TTTAttributedLabel (1.9.5)
-  - UIDevice-Hardware (0.1.3)
-  - WYPopoverController (0.2.2)
+# Created by http://www.gitignore.io
 
-DEPENDENCIES:
-  - AFDownloadRequestOperation
-  - AFNetworking
-  - Appirater
-  - AutoScrollLabel
-  - BlocksKit
-  - FMDB
-  - MBProgressHUD
-  - MMDrawerController
-  - Objective-C-HMTL-Parser
-  - SBJson
-  - SDWebImage
-  - SFHFKeychainUtils
-  - Toast
-  - TTTAttributedLabel
-  - UIDevice-Hardware
-  - WYPopoverController
+### Objective-C ###
+# Xcode
+#
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.xcworkspace
+!default.xcworkspace
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
 
-SPEC CHECKSUMS:
-  AFDownloadRequestOperation: fcb19dc1010296e05c76d863d340051820ffb326
-  AFNetworking: ae513199cca79e9d7af2708ccabe2ed075550c42
-  Appirater: 32fb9089615b5e542c7ad7b5749741a8aed55290
-  AutoScrollLabel: 4978b57536512a3ebf4705b1b5618354bcf4ac84
-  BlocksKit: 125e4e69a62e3b85bacc5175737dae000b00b9fb
-  FMDB: e0dd09464b4e1a1cd7fa51ea835ae821b5656865
-  MBProgressHUD: 2bbc6f470111daf7f3eaa4eb12b8cbf01c4c0622
-  MMDrawerController: fb6a17a3e2d1cb4f5f4a411915703b3569cdb227
-  Objective-C-HMTL-Parser: f41470bfbac27dff184cbd4dc3059c3d7c15e663
-  SBJson: 9749a0365b005bcb0b7adf74579d79372c11cc4f
-  SDWebImage: 7eb273e54ca8a2e506ad9bd5e80c35b2a4d7c95e
-  SFHFKeychainUtils: d1ae332c4ef51a67d7e6e9292a060b42329316fd
-  Toast: 2b14258cc3122b7f09651d9876908554c58feaae
-  TTTAttributedLabel: 6154fd2407a03fb8d71abfa36f4710fff26a168e
-  UIDevice-Hardware: 32832a484ef6d7cf5be9c8cc48d307c82c8e4713
-  WYPopoverController: bc21a6897fe41524508649c628587ab577b9ef73
-
-COCOAPODS: 0.32.1
+# CocoaPods
+#
+# We recommend against adding the Pods directory to your .gitignore. However
+# you should judge for yourself, the pros and cons are mentioned at:
+# http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control?
+#
+Pods/
