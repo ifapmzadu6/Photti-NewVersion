@@ -8,6 +8,8 @@
 
 #import "PLPhotoViewCell.h"
 
+@import ImageIO;
+
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
@@ -124,33 +126,27 @@
     
     _imageView.image = nil;
     [_activityIndicatorView startAnimating];
-    
+        
     NSURL *url = [NSURL URLWithString:photo.url];
     __weak typeof(self) wself = self;
-    [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+    [PLAssetsManager assetForURL:url resultBlock:^(ALAsset *asset) {
         typeof(wself) sself = wself;
         if (!sself) return;
         if (sself.photoHash != hash) return;
         
-        [PLAssetsManager assetForURL:url resultBlock:^(ALAsset *asset) {
+        UIImage *image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             if (sself.photoHash != hash) return;
             
-            UIImage *image = [UIImage imageWithCGImage:[asset thumbnail]];
-            
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                if (sself.photoHash != hash) return;
-                
-                [sself.activityIndicatorView stopAnimating];
-                sself.imageView.image = image;
-            });
-            
-        } failureBlock:^(NSError *error) {
-            
-        }];
+            [sself.activityIndicatorView stopAnimating];
+            sself.imageView.image = image;
+        });
+        
+    } failureBlock:^(NSError *error) {
+        
     }];
 }
 

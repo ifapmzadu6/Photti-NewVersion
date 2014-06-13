@@ -27,6 +27,7 @@
 @property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSNumber * width;
 @property (nonatomic, retain) NSString * id_str;
+@property (nonatomic, retain) NSNumber * tag_sort_index;
 @property (nonatomic, retain) NSSet *albums;
 @property (nonatomic, retain) PLAlbumObject *thumbnailed;
 @end

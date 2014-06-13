@@ -13,6 +13,7 @@
 
 @interface PDBasePhotoObject : NSManagedObject
 
+@property (nonatomic, retain) NSNumber * tag_sort_index;
 @property (nonatomic, retain) PDBaseTaskObject *task;
 
 @end

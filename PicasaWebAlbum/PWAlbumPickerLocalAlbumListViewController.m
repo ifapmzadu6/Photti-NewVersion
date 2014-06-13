@@ -1,24 +1,21 @@
 //
-//  PWImagePickerLocalAlbumListViewController.m
+//  PWAlbumPickerLocalAlbumListViewController.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/05/26.
+//  Created by Keisuke Karijuku on 2014/06/07.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWImagePickerLocalAlbumListViewController.h"
+#import "PWAlbumPickerLocalAlbumListViewController.h"
 
 #import "PWColors.h"
 #import "PLAssetsManager.h"
 #import "PLAlbumViewCell.h"
+#import "PLCreateNewAlbumViewCell.h"
 #import "PLCollectionFooterView.h"
-#import "PWImagePickerController.h"
-#import "BlocksKit+UIKit.h"
 #import "PLModelObject.h"
 
-#import "PWImagePickerLocalPhotoListViewController.h"
-
-@interface PWImagePickerLocalAlbumListViewController ()
+@interface PWAlbumPickerLocalAlbumListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
@@ -27,12 +24,15 @@
 
 @end
 
-@implementation PWImagePickerLocalAlbumListViewController
+@implementation PWAlbumPickerLocalAlbumListViewController
 
 - (id)init {
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"アルバム", nil);
+        
+        NSString *tabBarTitle = NSLocalizedString(@"カメラロール", nil);
+        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:tabBarTitle image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
     }
     return self;
 }
@@ -40,51 +40,30 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
     [_collectionView registerClass:[PLAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
+    [_collectionView registerClass:[PLCreateNewAlbumViewCell class] forCellWithReuseIdentifier:@"CreateNewAlbumCell"];
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 0.0f, 0.0f);
+    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 10.0f, 0.0f);
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
-    _collectionView.scrollsToTop = NO;
     _collectionView.clipsToBounds = NO;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_collectionView];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = cancelBarButtonitem;
     
     _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_indicatorView];
     [_indicatorView startAnimating];
     
     [self reloadData];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
-        [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
-    }
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    
-    if (_viewDidAppearBlock) {
-        _viewDidAppearBlock();
-    }
-    
-    _collectionView.scrollsToTop = YES;
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    
-    _collectionView.scrollsToTop = NO;
 }
 
 - (void)viewWillLayoutSubviews {
@@ -107,10 +86,10 @@
         [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
     }
     
-    PWImagePickerController *tabBarViewController = (PWImagePickerController *)self.tabBarController;
-    UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
-    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 0.0f, viewInsets.bottom, 0.0f);
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, -10.0f);
+//    PWImagePickerController *tabBarViewController = (PWImagePickerController *)self.tabBarController;
+//    UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
+//    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 0.0f, viewInsets.bottom, 0.0f);
+//    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, -10.0f);
     
     if (_indicatorView) {
         _indicatorView.center = self.view.center;
@@ -121,24 +100,38 @@
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark UIBarButtonAction
+- (void)cancelBarButtonAction {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if (!_albums) {
         return 0;
     }
-    return _albums.count;
+    
+    if (section == 0) {
+        return _albums.count;
+    }
+    return 1;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    PLAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
+    if (indexPath.section == 0) {
+        PLAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
+        
+        cell.album = _albums[indexPath.row];
+        cell.isDisableActionButton = YES;
+        
+        return cell;
+    }
     
-    cell.album = _albums[indexPath.row];
-    
+    PLCreateNewAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"CreateNewAlbumCell" forIndexPath:indexPath];
     return cell;
 }
 
@@ -147,16 +140,19 @@
         return nil;
     }
     
-    
-    PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
-    
-    if (_albums) {
-        NSString *localizedString = NSLocalizedString(@"%lu個のアルバム", nil);
-        NSString *albumCountString = [NSString stringWithFormat:localizedString, (unsigned long)_albums.count];
-        [footerView setText:albumCountString];
+    if (indexPath.section == 0) {
+        PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
+        
+        if (_albums) {
+            NSString *localizedString = NSLocalizedString(@"%lu個のアルバム", nil);
+            NSString *albumCountString = [NSString stringWithFormat:localizedString, (unsigned long)_albums.count];
+            [footerView setText:albumCountString];
+        }
+        
+        return footerView;
     }
     
-    return footerView;
+    return nil;
 }
 
 #pragma mark UICollectionViewDelegateFlowLayout
@@ -178,13 +174,16 @@
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    return CGSizeMake(0.0f, 60.0f);
+    if (section == 0) {
+        return CGSizeMake(0.0f, 60.0f);
+    }
+    return CGSizeZero;
 }
 
 #pragma mark UIcollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWImagePickerLocalPhotoListViewController *viewController = [[PWImagePickerLocalPhotoListViewController alloc] initWithAlbum:_albums[indexPath.row]];
-    [self.navigationController pushViewController:viewController animated:YES];
+//    PWImagePickerLocalPhotoListViewController *viewController = [[PWImagePickerLocalPhotoListViewController alloc] initWithAlbum:_albums[indexPath.row]];
+//    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 #pragma mark LoadData
@@ -200,7 +199,7 @@
             sself.indicatorView = nil;
             
             [sself.collectionView reloadData];
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:sself.albums.count-1 inSection:0];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
             [sself.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
         });
     }];

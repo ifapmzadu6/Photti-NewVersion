@@ -31,6 +31,7 @@
 @dynamic userid;
 @dynamic tag_numphotos;
 @dynamic tag_thumbnail_url;
+@dynamic tag_updated;
 @dynamic gphoto;
 @dynamic link;
 @dynamic media;

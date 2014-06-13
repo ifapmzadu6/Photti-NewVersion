@@ -247,6 +247,12 @@
     });
 }
 
+- (void)setIsDisableActionButton:(BOOL)isDisableActionButton {
+    _isDisableActionButton = isDisableActionButton;
+    
+    _actionButton.hidden = isDisableActionButton;
+}
+
 + (UIImage *)createThumbnail:(UIImage *)image size:(CGSize)size {
 	CGFloat imageWidth = image.size.width;
 	CGFloat imageHeight = image.size.height;

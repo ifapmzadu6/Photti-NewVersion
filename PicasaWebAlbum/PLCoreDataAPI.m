@@ -19,6 +19,15 @@
 
 @implementation PLCoreDataAPI
 
+static dispatch_queue_t pl_coredata_queue() {
+    static dispatch_queue_t pl_coredata_queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        pl_coredata_queue = dispatch_queue_create("com.photti.plcoredata", DISPATCH_QUEUE_CONCURRENT);
+    });
+    return pl_coredata_queue;
+}
+
 + (id)sharedManager {
     static dispatch_once_t once;
     static id instance;
@@ -44,7 +53,7 @@
         
         NSPersistentStoreCoordinator *coordinator = _persistentStoreCoordinator;
         if (coordinator != nil) {
-            _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+            _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
             _managedObjectContext.persistentStoreCoordinator = coordinator;
         }
     }
@@ -54,36 +63,41 @@
 + (NSManagedObjectContext *)context {
     NSManagedObjectContext *context = [[PLCoreDataAPI sharedManager] managedObjectContext];
     if (!context) {
-//        DDLogError(@"%s", __func__);
-        return nil;
+        
     }
     return context;
 }
 
-+ (void)performBlock:(void (^)(NSManagedObjectContext *))block {
-    NSManagedObjectContext *context = [[PLCoreDataAPI sharedManager] managedObjectContext];
-    if (!context) {
-//        DDLogError(@"%s", __func__);
-        return;
-    }
-    [context performBlock:^{
++ (void)barrierAsyncBlock:(void (^)(NSManagedObjectContext *))block {
+    dispatch_barrier_async(pl_coredata_queue(), ^{
         if (block) {
-            block(context);
+            block([PLCoreDataAPI context]);
         }
-    }];
+    });
 }
 
-+ (void)performBlockAndWait:(void (^)(NSManagedObjectContext *))block {
-    NSManagedObjectContext *context = [[PLCoreDataAPI sharedManager] managedObjectContext];
-    if (!context) {
-//        DDLogError(@"%s", __func__);
-        return;
-    }
-    [context performBlockAndWait:^{
++ (void)barrierSyncBlock:(void (^)(NSManagedObjectContext *))block {
+    dispatch_barrier_sync(pl_coredata_queue(), ^{
         if (block) {
-            block(context);
+            block([PLCoreDataAPI context]);
         }
-    }];
+    });
+}
+
++ (void)asyncBlock:(void (^)(NSManagedObjectContext *))block {
+    dispatch_async(pl_coredata_queue(), ^{
+        if (block) {
+            block([PLCoreDataAPI context]);
+        }
+    });
+}
+
++ (void)syncBlock:(void (^)(NSManagedObjectContext *))block {
+    dispatch_sync(pl_coredata_queue(), ^{
+        if (block) {
+            block([PLCoreDataAPI context]);
+        }
+    });
 }
 
 #pragma mark - Application's Documents directory

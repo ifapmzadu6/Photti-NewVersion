@@ -15,5 +15,6 @@
 @property (copy, nonatomic) void (^actionButtonActionBlock)(PLAlbumObject *album);
 
 @property (strong, nonatomic) PLAlbumObject *album;
+@property (nonatomic) BOOL isDisableActionButton;
 
 @end

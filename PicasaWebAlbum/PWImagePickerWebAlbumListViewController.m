@@ -20,11 +20,9 @@
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 
+@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic) NSUInteger requestIndex;
 @property (nonatomic) BOOL isNowRequesting;
-@property (strong, nonatomic) NSString *searchText;
-
-@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
 @end
 
@@ -80,10 +78,6 @@
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-        NSString *searchText = sself.searchText;
-        if (searchText) {
-            request.predicate = [NSPredicate predicateWithFormat:@"title contains %@", searchText];
-        }
         sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
         NSError *error = nil;
         [sself.fetchedResultsController performFetch:&error];

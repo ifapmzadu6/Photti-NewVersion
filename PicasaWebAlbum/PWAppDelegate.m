@@ -30,6 +30,8 @@
 //    [[[NSURLSession sharedSession] configuration] setURLCache:nil];
     [[NSURLSession sharedSession] configuration].URLCache.memoryCapacity = 0;
     
+    [PDTaskManager sharedManager];
+    
     return YES;
 }
 

@@ -23,12 +23,6 @@
 #import "PWAlbumShareViewController.h"
 #import "PWImagePickerController.h"
 
-////test
-//#import "PDTaskManager.h"
-//#import "PLCoreDataAPI.h"
-//#import "PLModelObject.h"
-//#import "PLAssetsManager.h"
-
 @interface PWPhotoListViewController ()
 
 @property (strong, nonatomic) PWAlbumObject *album;
@@ -164,7 +158,7 @@
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 
-                if (sself.fetchedResultsController.fetchedObjects.count) {
+                if (sself.fetchedResultsController.fetchedObjects.count > 0) {
                     [sself.activityIndicatorView stopAnimating];
                 }
                 

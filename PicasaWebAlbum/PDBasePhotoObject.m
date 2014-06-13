@@ -12,6 +12,7 @@
 
 @implementation PDBasePhotoObject
 
+@dynamic tag_sort_index;
 @dynamic task;
 
 @end

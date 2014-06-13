@@ -20,13 +20,14 @@
 
 #import "PDTaskManager.h"
 
+#import "PWPicasaAPI.h"
+
 @interface PLAlbumListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
+@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
 @property (strong, nonatomic) NSArray *albums;
-
-@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
 @end
 
@@ -170,10 +171,6 @@
 
 #pragma mark UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (!_albums) {
-        return CGSizeZero;
-    }
-    
     if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
         return CGSizeMake(177.0f, ceilf(177.0f * 3.0f / 4.0f) + 40.0f);
     }
@@ -202,47 +199,47 @@
 
 #pragma mark LoadData
 - (void)reloadData {
-    __weak typeof(self) wself = self;
-    [PLAssetsManager getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        sself.albums = allAlbums;
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            [sself.indicatorView removeFromSuperview];
-            sself.indicatorView = nil;
+    if (![[PLAssetsManager sharedManager] isLibraryUpDated]) {
+        __weak typeof(self) wself = self;
+        [PLAssetsManager getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
             
-            [sself.collectionView reloadData];
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:sself.albums.count-1 inSection:0];
-            [sself.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-        });
-    }];
+            sself.albums = allAlbums;
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [sself.indicatorView removeFromSuperview];
+                sself.indicatorView = nil;
+                
+                [sself.collectionView reloadData];
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:sself.albums.count-1 inSection:0];
+                [sself.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+            });
+        }];
+    }
 }
 
 #pragma mark UIAlertView
 - (void)showAlbumActionSheet:(PLAlbumObject *)album {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.name];
     __weak typeof(self) wself = self;
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"アップロード", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-        });
-//        [PDTaskManager addTaskFromWebAlbum:_album toLocalAlbum:album completion:^(NSError *error) {
-//            NSLog(@"addTaskFromWebAlbum is Completion");
-//            if (error) {
-//                NSLog(@"%@", error.description);
-//            }
-//        }];
-        
-    }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"共有", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
         [sself shareAlbum:album];
+    }];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"アップロード", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself makeNewWebAlbumWithLocalAlbum:album completion:^(PWAlbumObject *webAlbum, NSError *error) {
+            [PDTaskManager addTaskFromLocalAlbum:album toWebAlbum:webAlbum completion:^(NSError *error) {
+                NSLog(@"成功したよ！！！！やったよ！！！！");
+                if (error) {
+                    NSLog(@"%@", error.description);
+                }
+            }];
+        }];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除", nil) handler:^{
         typeof(wself) sself = wself;
@@ -264,7 +261,7 @@
 
 #pragma mark HandleModelObject
 - (void)removeAlbum:(PLAlbumObject *)album completion:(void (^)())completion {
-    [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+    [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
         [context deleteObject:album];
         NSError *error = nil;
         [context save:&error];
@@ -292,6 +289,16 @@
             
         }];
     }
+}
+
+- (void)makeNewWebAlbumWithLocalAlbum:(PLAlbumObject *)album completion:(void(^)(PWAlbumObject *album, NSError *error))completion {
+    [PWPicasaAPI postCreatingNewAlbumRequestWithTitle:album.name
+                                              summary:nil
+                                             location:nil
+                                               access:kPWPicasaAPIGphotoAccessProtected
+                                            timestamp:album.timestamp.stringValue
+                                             keywords:nil
+                                           completion:completion];
 }
 
 @end

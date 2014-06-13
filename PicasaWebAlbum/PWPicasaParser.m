@@ -68,9 +68,9 @@
     
     @autoreleasepool {
         album.id_str = id_str;
-//#ifdef DEBUG_LOCAL
+#ifdef DEBUG_LOCAL
         NSLog(@"album.id_str = %@", album.id_str);
-//#endif
+#endif
         NSDictionary *author = NULL_TO_NIL(json[@"author"]);
         if (author) {
             NSDictionary *name = NULL_TO_NIL(author[@"name"]);

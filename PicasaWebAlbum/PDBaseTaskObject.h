@@ -13,7 +13,7 @@
 
 @interface PDBaseTaskObject : NSManagedObject
 
-@property (nonatomic, retain) NSDecimalNumber * sortIndex;
+@property (nonatomic, retain) NSNumber * sortIndex;
 @property (nonatomic, retain) NSOrderedSet *photos;
 @end
 

@@ -162,7 +162,7 @@ static const CGFloat animationDuration = 0.25f;
 
 #pragma mark UITabBarControllerDelegate
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
-    [viewController viewWillAppear:NO];
+//    [viewController viewWillAppear:NO];
     
     return YES;
 }

@@ -17,6 +17,7 @@
 
 #import "PWModelObject.h"
 #import "PWCoreDataAPI.h"
+#import "PWSnowFlake.h"
 
 @interface PDTaskManager ()
 
@@ -69,7 +70,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     __block PDWebToLocalAlbumTaskObject *webToLocalAlbumTask = nil;
     [PDCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
         webToLocalAlbumTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalAlbumTaskObjectName inManagedObjectContext:context];
-        webToLocalAlbumTask.album_object_id_str = toLocalAlbum.id_str;
+        webToLocalAlbumTask.album_object_id_str = fromWebAlbum.id_str;
+        
+        [context save:nil];
     }];
     
     __block NSArray *photos = nil;
@@ -99,6 +102,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
             PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
             
             webPhoto.photo_object_id_str = photoObject.id_str;
+            webPhoto.tag_sort_index = photoObject.sortIndex;
             webPhoto.task = webToLocalAlbumTask;
             
             [webToLocalAlbumTask addPhotosObject:webPhoto];
@@ -110,6 +114,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                     if (completion) {
                         completion(nil);
                     }
+                    
+                    NSError *error = nil;
+                    [context save:&error];
                 }
             }];
             newTask.taskObject = webToLocalAlbumTask;
@@ -129,6 +136,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
 }
 
 + (void)addTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *error))completion {
+    [[PDTaskManager sharedManager] addTaskFromLocalAlbum:fromLocalAlbum toWebAlbum:toWebAlbum completion:completion];
+}
+
+- (void)addTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *error))completion {
     if (fromLocalAlbum.photos.count == 0) {
         if (completion) {
             completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:400 userInfo:nil]);
@@ -136,23 +147,35 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         return;
     }
     
+    __weak typeof(self) wself = self;
     [PDCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
         PDLocalToWebAlbumTaskObject *localToWebAlbumTask = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalToWebAlbumTaskObjectName inManagedObjectContext:context];
         localToWebAlbumTask.album_object_id_str = fromLocalAlbum.id_str;
         localToWebAlbumTask.destination_album_id_str = toWebAlbum.id_str;
         
         __block NSUInteger index = 0;
-        NSUInteger count = fromLocalAlbum.photos.array.count;
-        for (PLPhotoObject *photoObject in fromLocalAlbum.photos.array) {
+        
+        NSMutableArray *id_strs = [NSMutableArray array];
+        [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+            for (PLPhotoObject *photoObject in fromLocalAlbum.photos.array) {
+                [id_strs addObject:photoObject.id_str];
+            }
+        }];
+        
+        NSUInteger count = id_strs.count;
+        for (NSString *id_str in id_strs) {
             PDLocalPhotoObject *localPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalPhotoObjectName inManagedObjectContext:context];
             
-            localPhoto.photo_object_id_str = photoObject.id_str;
+            localPhoto.photo_object_id_str = id_str;
             localPhoto.task = localToWebAlbumTask;
             
             [localToWebAlbumTask addPhotosObject:localPhoto];
             
             PDTask *newTask = [[PDTask alloc] init];
-            [newTask setUploadTaskFromLocalObject:localPhoto toWebAlbumID:localToWebAlbumTask.destination_album_id_str backgroundSession:[PDTaskManager sharedSession] completion:^(NSError *error) {
+            [newTask setUploadTaskFromLocalObject:localPhoto toWebAlbumID:localToWebAlbumTask.destination_album_id_str backgroundSession:sself.backgroundSession completion:^(NSError *error) {
                 index++;
                 if (index == count) {
                     if (completion) {
@@ -161,8 +184,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                 }
             }];
             newTask.taskObject = localToWebAlbumTask;
-            PDTaskManager *taskManager = [PDTaskManager sharedManager];
-            [taskManager.tasks addObject:newTask];
+            [sself.tasks addObject:newTask];
         }
         
         NSError *error = nil;
@@ -264,7 +286,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     NSURLResponse *response = task.response;
     
     NSUInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
-    NSLog(@"Status Code = %d", statusCode);
+    NSLog(@"Status Code = %lu", (unsigned long)statusCode);
     
     if (error) {
         NSLog(@"%@", error.description);
@@ -290,36 +312,86 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         if ([task.taskObject isKindOfClass:[PDWebToLocalAlbumTaskObject class]]) {
             PDWebToLocalAlbumTaskObject *webToLocalAlbumTask = (PDWebToLocalAlbumTaskObject *)task.taskObject;
             
-            [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-                request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", webToLocalAlbumTask.album_object_id_str];
+                request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", webToLocalAlbumTask.destination_album_object_id_str];
                 NSError *error = nil;
-                NSArray *photos = [context executeFetchRequest:request error:&error];
-                if (photos.count == 0) {
-                    NSLog(@"Incollect photo database.");
-                    return;
+                __block PLAlbumObject *localAlbumObject = nil;
+                NSArray *albums = [context executeFetchRequest:request error:&error];
+                if (albums.count > 0) {
+                    localAlbumObject = albums.firstObject;
                 }
-                PLAlbumObject *albumObject = photos.firstObject;
-                
-                if (albumObject.tag_type.integerValue != PLAlbumObjectTagTypeImported) {
-                    return;
-                }
-                
-                [PLAssetsManager groupForURL:[NSURL URLWithString:albumObject.url] resultBlock:^(ALAssetsGroup *group) {
-                    
-                    [PLAssetsManager assetForURL:assetURL resultBlock:^(ALAsset *asset) {
-                        
-                        [group addAsset:asset];
-                        
-                    } failureBlock:^(NSError *error) {
-                        
+                else {
+                    //アルバムがないので新しく作る
+                    [PWCoreDataAPI syncBlock:^(NSManagedObjectContext *webContext) {
+                        //情報を得るためにウェブアルバムを取得する
+                        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+                        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:webContext];
+                        request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", webToLocalAlbumTask.album_object_id_str];
+                        NSError *error = nil;
+                        NSArray *albums = [webContext executeFetchRequest:request error:&error];
+                        if (albums.count > 0) {
+                            PWAlbumObject *webAlbumObject = albums.firstObject;
+                            
+                            localAlbumObject = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
+                            localAlbumObject.id_str = [PWSnowFlake generateUniqueIDString];
+                            localAlbumObject.name = webAlbumObject.title;
+                            // TODO: 後でやること
+//                            localAlbumObject.tag_date = adjustedDate;
+                            localAlbumObject.timestamp = @(webAlbumObject.timestamp.integerValue);
+                            NSDate *enumurateDate = [NSDate date];
+                            localAlbumObject.import = enumurateDate;
+                            localAlbumObject.update = enumurateDate;
+                            localAlbumObject.tag_type = @(PLAlbumObjectTagTypeAutomatically);
+                            
+                            webToLocalAlbumTask.destination_album_object_id_str = localAlbumObject.id_str;
+                            
+                            [context save:nil];
+                        }
                     }];
+                }
+                
+                [PLAssetsManager assetForURL:assetURL resultBlock:^(ALAsset *asset) {
                     
+                    if (localAlbumObject.tag_type.integerValue == PLAlbumObjectTagTypeImported) {
+                        [PLAssetsManager groupForURL:[NSURL URLWithString:localAlbumObject.url] resultBlock:^(ALAssetsGroup *group) {
+                            [group addAsset:asset];
+                        } failureBlock:^(NSError *error) {
+                            
+                        }];
+                    }
+                    else {
+                        PLPhotoObject *photo = [NSEntityDescription insertNewObjectForEntityForName:kPLPhotoObjectName inManagedObjectContext:context];
+                        NSURL *url = asset.defaultRepresentation.url;
+                        photo.url = url.absoluteString;
+                        CGSize dimensions = asset.defaultRepresentation.dimensions;
+                        photo.width = @(dimensions.width);
+                        photo.height = @(dimensions.height);
+                        photo.filename = asset.defaultRepresentation.filename;
+                        photo.type = [asset valueForProperty:ALAssetPropertyType];
+                        NSDate *date = [asset valueForProperty:ALAssetPropertyDate];
+                        photo.timestamp = @((unsigned long)([date timeIntervalSince1970]) * 1000);
+                        CLLocation *location = [asset valueForProperty:ALAssetPropertyLocation];
+                        photo.date = date;
+                        photo.latitude = @(location.coordinate.latitude);
+                        photo.longitude = @(location.coordinate.longitude);
+                        NSDate *enumurateDate = [NSDate date];
+                        photo.update = enumurateDate;
+                        photo.import = enumurateDate;
+                        
+                        photo.tag_albumtype = @(PLAlbumObjectTagTypeImported);
+                        photo.id_str = url.query;
+                        
+                        [localAlbumObject addPhotosObject:photo];
+                        
+                        [context save:nil];
+                    }
                 } failureBlock:^(NSError *error) {
                     
                 }];
             }];
+            
         }
     }];
 }

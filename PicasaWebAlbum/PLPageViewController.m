@@ -176,7 +176,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         }
         
         __weak typeof(self) wself = self;
-        [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
             if (!sself) return;
             

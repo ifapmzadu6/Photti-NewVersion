@@ -82,7 +82,7 @@
                                       access:kPWPicasaAPIGphotoAccessProtected
                                    timestamp:self.timestamp
                                     keywords:nil
-                                  completion:^(NSError *error) {
+                                  completion:^(PWAlbumObject *album, NSError *error) {
                                       if (error) {
                                           NSLog(@"%@", error.description);
                                           dispatch_async(dispatch_get_main_queue(), ^{

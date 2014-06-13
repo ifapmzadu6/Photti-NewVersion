@@ -26,6 +26,7 @@
 @dynamic url;
 @dynamic width;
 @dynamic id_str;
+@dynamic tag_sort_index;
 @dynamic albums;
 @dynamic thumbnailed;
 

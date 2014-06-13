@@ -31,6 +31,15 @@
 
 static NSString * const kPDTaskErrorDomain = @"PDTaskErrorDomain";
 
+static dispatch_queue_t pd_task_queue() {
+    static dispatch_queue_t pd_task_queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        pd_task_queue = dispatch_queue_create("com.photti.pdtask", DISPATCH_QUEUE_SERIAL);
+    });
+    return pd_task_queue;
+}
+
 - (id)initWithTaskObject:(PDBaseTaskObject *)taskObject {
     self = [super init];
     if (self) {
@@ -89,20 +98,22 @@ static NSString * const kPDTaskErrorDomain = @"PDTaskErrorDomain";
             return;
         }
         
-        NSURLSessionDownloadTask *task = [backgroundSession downloadTaskWithRequest:request];
-        sself.sessionTask = task;
-        sself.identifier = task.taskIdentifier;
-        
-        if (completion) {
-            completion(task, nil);
-        }
+        dispatch_async(pd_task_queue(), ^{
+            NSURLSessionDownloadTask *task = [backgroundSession downloadTaskWithRequest:request];
+            sself.sessionTask = task;
+            sself.identifier = task.taskIdentifier;
+            
+            if (completion) {
+                completion(task, nil);
+            }
+        });
     }];
 }
 
 - (void)makeUploadTaskFromLocalObject:(PDLocalPhotoObject *)localPhotoObject toWebAlbumID:(NSString *)webAlbumID backgroundSession:(NSURLSession *)backgroundSession filePath:(NSString *)filePath completion:(void (^)(NSURLSessionUploadTask *task, NSError *error))completion {
     
-    
-    [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+    __block NSString *assetUrlString = nil;
+    [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", localPhotoObject.photo_object_id_str];
@@ -114,34 +125,38 @@ static NSString * const kPDTaskErrorDomain = @"PDTaskErrorDomain";
             }
             return;
         }
-        
         PLPhotoObject *photo = photos.firstObject;
-        NSString *requestUrlString = [NSString stringWithFormat:@"https://picasaweb.google.com/data/feed/api/user/default/albumid/%@", webAlbumID];
-        NSURL *requestUrl = [NSURL URLWithString:requestUrlString];
-        
-        [PLAssetsManager assetForURL:[NSURL URLWithString:photo.url] resultBlock:^(ALAsset *asset) {
-            if (!asset) {
-                if (completion) {
-                    completion(nil, [NSError errorWithDomain:kPDTaskErrorDomain code:0 userInfo:nil]);
-                }
-                return;
+        assetUrlString = photo.url;
+    }];
+    
+    NSString *requestUrlString = [NSString stringWithFormat:@"https://picasaweb.google.com/data/feed/api/user/default/albumid/%@", webAlbumID];
+    NSURL *requestUrl = [NSURL URLWithString:requestUrlString];
+    
+    [PLAssetsManager assetForURL:[NSURL URLWithString:assetUrlString] resultBlock:^(ALAsset *asset) {
+        if (!asset) {
+            if (completion) {
+                  completion(nil, [NSError errorWithDomain:kPDTaskErrorDomain code:0 userInfo:nil]);
             }
+            return;
+        }
+        
+        NSString *type = [asset valueForProperty:ALAssetPropertyType];
+        if ([type isEqualToString:ALAssetTypePhoto]) {
             
-            NSString *type = [asset valueForProperty:ALAssetPropertyType];
-            if ([type isEqualToString:ALAssetTypePhoto]) {
-                
-                [PWPicasaAPI getAuthorizedURLRequest:requestUrl completion:^(NSMutableURLRequest *request, NSError *error) {
-                    if (error) {
-                        if (completion) {
-                            completion(nil, error);
-                        }
-                        return;
+            [PWPicasaAPI getAuthorizedURLRequest:requestUrl completion:^(NSMutableURLRequest *request, NSError *error) {
+                if (error) {
+                    if (completion) {
+                        completion(nil, error);
                     }
-                    
+                    return;
+                }
+                
+                dispatch_async(pd_task_queue(), ^{
                     request.HTTPMethod = @"POST";
                     [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
                     
                     NSData *imageData = [PDTask resizedDataFromAsset:asset];
+                    NSError *error = nil;
                     [imageData writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error];
                     if (error) {
                         if (completion) {
@@ -157,37 +172,39 @@ static NSString * const kPDTaskErrorDomain = @"PDTaskErrorDomain";
                     if (completion) {
                         completion(task, nil);
                     }
-                }];
-            }
-            else if ([type isEqualToString:ALAssetTypeVideo]) {
+                });
+            }];
+        }
+        else if ([type isEqualToString:ALAssetTypeVideo]) {
+            
+            NSString *tmpFilePath = [PDTask makeUniquePathInTmpDir];
+            
+            AVAsset *urlAsset = [AVURLAsset URLAssetWithURL:asset.defaultRepresentation.url options:nil];
+            AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:urlAsset presetName:AVAssetExportPreset640x480];
+            exportSession.outputFileType = AVFileTypeMPEG4;
+            exportSession.shouldOptimizeForNetworkUse = YES;
+            exportSession.outputURL = [NSURL fileURLWithPath:tmpFilePath];
+            __weak typeof(exportSession) wExportSession = exportSession;
+            [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                typeof(wExportSession) sExportSession = wExportSession;
+                if (!sExportSession) return;
                 
-                NSString *tmpFilePath = [PDTask makeUniquePathInTmpDir];
+                if (sExportSession.status != AVAssetExportSessionStatusCompleted){
+                    if (completion) {
+                        completion(nil, sExportSession.error);
+                    }
+                    return;
+                }
                 
-                AVAsset *urlAsset = [AVURLAsset URLAssetWithURL:asset.defaultRepresentation.url options:nil];
-                AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:urlAsset presetName:AVAssetExportPreset640x480];
-                exportSession.outputFileType = AVFileTypeMPEG4;
-                exportSession.shouldOptimizeForNetworkUse = YES;
-                exportSession.outputURL = [NSURL fileURLWithPath:tmpFilePath];
-                __weak typeof(exportSession) wExportSession = exportSession;
-                [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                    typeof(wExportSession) sExportSession = wExportSession;
-                    if (!sExportSession) return;
-                    
-                    if (sExportSession.status != AVAssetExportSessionStatusCompleted){
+                [PWPicasaAPI getAuthorizedURLRequest:requestUrl completion:^(NSMutableURLRequest *request, NSError *error) {
+                    if (error) {
                         if (completion) {
-                            completion(nil, sExportSession.error);
+                            completion(nil, error);
                         }
                         return;
                     }
                     
-                    [PWPicasaAPI getAuthorizedURLRequest:requestUrl completion:^(NSMutableURLRequest *request, NSError *error) {
-                        if (error) {
-                            if (completion) {
-                                completion(nil, error);
-                            }
-                            return;
-                        }
-                        
+                    dispatch_async(pd_task_queue(), ^{
                         request.HTTPMethod = @"POST";
                         [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
                         [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
@@ -241,14 +258,14 @@ static NSString * const kPDTaskErrorDomain = @"PDTaskErrorDomain";
                         if (completion) {
                             completion(task, nil);
                         }
-                    }];
+                    });
                 }];
-            }
-        } failureBlock:^(NSError *error) {
-            if (completion) {
-                completion(nil, error);
-            }
-        }];
+            }];
+        }
+    } failureBlock:^(NSError *error) {
+        if (completion) {
+            completion(nil, error);
+        }
     }];
 }
 

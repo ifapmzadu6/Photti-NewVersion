@@ -12,40 +12,66 @@
 
 #import "PWAlbumPickerNavigationController.h"
 #import "PWAlbumPickerWebAlbumListViewController.h"
+#import "PWAlbumPickerLocalAlbumListViewController.h"
 
 @interface PWAlbumPickerController ()
 
 @property (strong, nonatomic) UIToolbar *toolbar;
 
 @property (weak, nonatomic) PWAlbumPickerNavigationController *navigationController;
-@property (weak, nonatomic) PWAlbumPickerWebAlbumListViewController *albumViewController;
+@property (weak, nonatomic) UIViewController *albumViewController;
 
+@property (nonatomic) BOOL isDownloadMode;
 @property (copy, nonatomic) void (^completion)(PWAlbumObject *);
 
 @end
 
 @implementation PWAlbumPickerController
 
-- (id)initWithCompletion:(void (^)(PWAlbumObject *))completion {
+- (id)initWithDownloadMode:(BOOL)isDownloadMode completion:(void (^)(PWAlbumObject *album))completion {
     self = [super init];
     if (self) {
+        _isDownloadMode = isDownloadMode;
         _completion = completion;
         
-        PWAlbumPickerWebAlbumListViewController *albumViewcontroller = [[PWAlbumPickerWebAlbumListViewController alloc] init];
+        UIViewController *albumViewcontroller = nil;
+        if (isDownloadMode) {
+            albumViewcontroller = [[PWAlbumPickerLocalAlbumListViewController alloc] init];
+        }
+        else {
+            albumViewcontroller = [[PWAlbumPickerWebAlbumListViewController alloc] init];
+        }
         _albumViewController = albumViewcontroller;
         PWAlbumPickerNavigationController *navigationController = [[PWAlbumPickerNavigationController alloc] initWithRootViewController:albumViewcontroller];
         _navigationController = navigationController;
         
-        self.viewControllers = @[navigationController];
+        UIViewController *dammyViewController = [[UIViewController alloc] init];
+        dammyViewController.tabBarItem.enabled = NO;
+        
+        if (isDownloadMode) {
+            self.viewControllers = @[navigationController, dammyViewController];
+        }
+        else {
+            self.viewControllers = @[dammyViewController, navigationController];
+        }        
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
-    self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    if (_isDownloadMode) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    }
+    else {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    }
     
     _toolbar = [[UIToolbar alloc] init];
     [self.view insertSubview:_toolbar belowSubview:self.tabBar];
@@ -84,6 +110,15 @@
 }
 
 #pragma methods
+- (void)setPrompt:(NSString *)prompt {
+    _prompt = prompt;
+    
+    UIViewController *viewController = _albumViewController;
+    if (viewController) {
+        viewController.navigationItem.prompt = prompt;
+    }
+}
+
 - (UIEdgeInsets)viewInsets {
     CGFloat nHeight = 44.0f + 30.0f;
     CGFloat tHeight = 44.0f;

@@ -13,9 +13,13 @@
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
 
+#import "PDTaskTableViewCell.h"
+
 @interface PDTaskManagerViewController ()
 
 @property (strong, nonatomic) UITableView *tableView;
+
+@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
 @end
 
@@ -43,9 +47,15 @@
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
+    [_tableView registerClass:[PDTaskTableViewCell class] forCellReuseIdentifier:@"Cell"];
     _tableView.rowHeight = 56.0f;
     [self.view addSubview:_tableView];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [self loadData];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -73,35 +83,41 @@
 
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return [[_fetchedResultsController sections] count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0) {
-        return 1;
-    }
-    
-    return 10;
+    id<NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
+    return [sectionInfo numberOfObjects];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    PDTaskTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
-    
+    cell.taskObject = [_fetchedResultsController objectAtIndexPath:indexPath];
     
     return cell;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    if (section == 0) {
-        return NSLocalizedString(@"進行中のタスク", nil);
-    }
-    else if (section == 1) {
-        return NSLocalizedString(@"待機中のタスク", nil);
-    }
-    else {
-        return nil;
-    }
+#pragma mark LoadData
+- (void)loadData {
+    __weak typeof(self) wself = self;
+    [PDCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        request.entity = [NSEntityDescription entityForName:kPDBaseTaskObjectName inManagedObjectContext:context];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        
+        NSError *error = nil;
+        [sself.fetchedResultsController performFetch:&error];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sself.tableView reloadData];
+        });
+    }];
 }
 
 @end

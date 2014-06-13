@@ -8,6 +8,6 @@
 
 @import UIKit;
 
-@interface PWAlbumPickerWebAlbumListViewController : UIViewController
+@interface PWAlbumPickerWebAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @end

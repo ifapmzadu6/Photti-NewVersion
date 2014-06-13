@@ -12,6 +12,8 @@
 
 @interface PLAssetsManager : NSObject
 
+@property (nonatomic, readonly) BOOL isLibraryUpDated;
+
 + (id)sharedManager;
 
 + (void)groupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;

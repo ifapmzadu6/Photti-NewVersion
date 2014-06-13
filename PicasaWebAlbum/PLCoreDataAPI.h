@@ -11,9 +11,9 @@
 
 @interface PLCoreDataAPI : NSObject
 
-+ (id)sharedManager;
-+ (NSManagedObjectContext *)context;
-+ (void)performBlock:(void (^)(NSManagedObjectContext *context))block;
-+ (void)performBlockAndWait:(void (^)(NSManagedObjectContext *context))block;
++ (void)barrierAsyncBlock:(void (^)(NSManagedObjectContext *context))block;
++ (void)barrierSyncBlock:(void (^)(NSManagedObjectContext *context))block;
++ (void)asyncBlock:(void (^)(NSManagedObjectContext *context))block;
++ (void)syncBlock:(void (^)(NSManagedObjectContext *context))block;
 
 @end

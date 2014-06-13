@@ -15,6 +15,7 @@
 @property (copy, nonatomic) void (^actionButtonActionBlock)(PWAlbumObject *album);
 
 @property (strong, nonatomic, readonly) PWAlbumObject *album;
+@property (nonatomic) BOOL isDisableActionButton;
 
 - (void)setAlbum:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading;
 

@@ -36,58 +36,72 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
             }
             return;
         }
+        if (!data) {
+            if (completion) {
+                completion(nil, index, [PWPicasaAPI parserError]);
+            }
+            return;
+        }
         
-        if (data) {
-            //                NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-            
-            NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
-            //            NSLog(@"%@", json.description);
-            
-            [PWCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
-                NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
-                NSDictionary *startIndexDic = NULL_TO_NIL(feed[@"openSearch:startIndex"]);
-                NSDictionary *totalResultsDic = NULL_TO_NIL(feed[@"openSearch:totalResults"]);
-                if (totalResultsDic && startIndexDic) {
-                    NSString *startIndex = NULL_TO_NIL(startIndexDic[@"text"]);
-                    if ([startIndex longLongValue] != apiIndex) {
-                        if (completion) {
-                            completion(nil, 0, [PWPicasaAPI parserError]);
-                        }
-                    }
-                    else {
-                        NSArray *albums = nil;
-                        NSString *totalResults = NULL_TO_NIL(totalResultsDic[@"text"]);
-                        if ([totalResults longLongValue] > 0) {
-                            albums = [PWPicasaParser parseListOfAlbumFromJson:json context:context];
-                            if (!albums) {
-                                if (completion) {
-                                    completion(nil, 0, [PWPicasaAPI parserError]);
-                                }
-                                return;
-                            }
-                            else {
-                                for (PWAlbumObject *album in albums) {
-                                    album.sortIndex = @([startIndex integerValue] + [albums indexOfObject:album]);
-                                }
-                                
-                            }
-                        }
-                        
-                        if (completion) {
-                            completion(albums, index + [totalResults integerValue], nil);
-                        }
-                        
-                        NSError *coreDataError = nil;
-                        [context save:&coreDataError];
-                    }
-                }
-                else {
+        //                NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+        
+        NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+        //            NSLog(@"%@", json.description);
+        
+        [PWCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
+            NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
+            NSDictionary *startIndexDic = NULL_TO_NIL(feed[@"openSearch:startIndex"]);
+            NSDictionary *totalResultsDic = NULL_TO_NIL(feed[@"openSearch:totalResults"]);
+            if (totalResultsDic && startIndexDic) {
+                NSString *startIndex = NULL_TO_NIL(startIndexDic[@"text"]);
+                if ([startIndex longLongValue] != apiIndex) {
                     if (completion) {
                         completion(nil, 0, [PWPicasaAPI parserError]);
                     }
+                    return;
                 }
-            }];
-        }
+                
+                NSArray *albums = nil;
+                NSString *totalResults = NULL_TO_NIL(totalResultsDic[@"text"]);
+                if ([totalResults longLongValue] > 0) {
+                    albums = [PWPicasaParser parseListOfAlbumFromJson:json context:context];
+                    if (!albums) {
+                        if (completion) {
+                            completion(nil, 0, [PWPicasaAPI parserError]);
+                        }
+                        return;
+                    }
+                    
+                    NSDate *date = [NSDate date];
+                    for (PWAlbumObject *album in albums) {
+                        album.sortIndex = @([startIndex integerValue] + [albums indexOfObject:album]);
+                        album.tag_updated = date;
+                    }
+                    
+                    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+                    request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+                    request.predicate = [NSPredicate predicateWithFormat:@"tag_updated != %@", date];
+                    NSError *error;
+                    NSArray *deleteAlbums = [context executeFetchRequest:request error:&error];
+                    for (PWAlbumObject *album in deleteAlbums) {
+                        [context deleteObject:album];
+                    }
+                }
+                
+                if (completion) {
+                    completion(albums, index + [totalResults integerValue], nil);
+                }
+                
+                NSError *coreDataError = nil;
+                [context save:&coreDataError];
+            }
+            else {
+                if (completion) {
+                    completion(nil, 0, [PWPicasaAPI parserError]);
+                }
+                return;
+            }
+        }];
     }];
 }
 
@@ -176,8 +190,50 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                              access:(NSString *)access
                           timestamp:(NSString *)timestamp
                            keywords:(NSString *)keywords
-                         completion:(void (^)(NSError *error))completion {
+                         completion:(void (^)(PWAlbumObject *album, NSError *error))completion {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
+    void (^requestCompletion)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        
+        if (error) {
+            if (completion) {
+                completion(nil, [NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]);
+            }
+            return;
+        }
+        NSUInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
+        if (statusCode != 201) {
+            if (completion) {
+                completion(nil, [NSError errorWithDomain:PWParserErrorDomain code:statusCode userInfo:nil]);
+            }
+            return;
+        }
+        
+        
+//        NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+        NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+//        NSLog(@"%@", json.description);
+        
+        id entries = NULL_TO_NIL(json[@"entry"]);
+        if (!entries) {
+            if (completion) {
+                completion(nil, [NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]);
+            }
+            return;
+        };
+        
+        [PWCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
+        
+            PWAlbumObject *album = [PWPicasaParser albumFromJson:entries context:context];
+            
+            if (completion) {
+                completion(album, nil);
+            }
+            
+            [context save:nil];
+        }];
+    };
     
     [PWPicasaPOSTRequest postCreatingNewAlbumRequestWithTitle:title
                                              summary:summary
@@ -185,28 +241,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                                               access:access
                                            timestamp:timestamp
                                             keywords:keywords
-                                          completion:^(NSData *data, NSURLResponse *response, NSError *error) {
-                                              [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                                              
-                                              if (error) {
-                                                  if (completion) {
-                                                      completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]);
-                                                  }
-                                                  return;
-                                              }
-                                              
-                                              NSUInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
-                                              if (statusCode != 201) {
-                                                  if (completion) {
-                                                      completion([NSError errorWithDomain:PWParserErrorDomain code:statusCode userInfo:nil]);
-                                                  }
-                                                  return;
-                                              }
-                                              
-                                              if (completion) {
-                                                  completion(nil);
-                                              }
-                                          }];
+                                          completion:requestCompletion];
 }
 
 + (void)putModifyingAlbumWithID:(NSString *)albumID

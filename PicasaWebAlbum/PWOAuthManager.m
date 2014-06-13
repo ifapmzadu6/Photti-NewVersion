@@ -45,8 +45,9 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 
 + (void)getAuthWithCompletion:(void (^)(GTMOAuth2Authentication *auth))completion {
     dispatch_async(dispatch_get_main_queue(), ^{
+        GTMOAuth2Authentication *auth = [[PWOAuthManager sharedManager] auth];
         if (completion) {
-            completion([[PWOAuthManager sharedManager] auth]);
+            completion(auth);
         }
     });
 }

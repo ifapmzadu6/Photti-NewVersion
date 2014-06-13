@@ -36,7 +36,7 @@ static NSString * const kPWPicasaAPILinkRelShare = @"alternate";
                              access:(NSString *)access
                           timestamp:(NSString *)timestamp
                            keywords:(NSString *)keywords
-                         completion:(void (^)(NSError *error))completion;
+                                  completion:(void (^)(PWAlbumObject *album, NSError *error))completion;
 
 + (void)putModifyingAlbumWithID:(NSString *)albumID
                           title:(NSString *)title

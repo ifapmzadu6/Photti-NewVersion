@@ -13,6 +13,12 @@
 #import "PWAlbumViewCell.h"
 #import "PWRefreshControl.h"
 #import "BlocksKit+UIKit.h"
+#import "PWSnowFlake.h"
+
+#import "PDTaskManager.h"
+
+#import "PLModelObject.h"
+#import "PLCoreDataAPI.h"
 
 #import "PWPhotoListViewController.h"
 #import "PWSearchNavigationController.h"
@@ -373,6 +379,31 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"ダウンロード", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:album.id_str index:0 completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
+            if (error) {
+                NSLog(@"%@", error.description);
+                return;
+            }
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [PDTaskManager addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
+                    NSLog(@"added");
+                    if (error) {
+                        NSLog(@"%@", error.description);
+                        return;
+                    }
+                    
+//                    dispatch_after(1.0f, dispatch_get_main_queue(), ^{
+//                        [PDTaskManager resumeAllTasks];
+//                    });
+                }];
+            });
+        }];
+    }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
@@ -392,7 +423,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
                 
                 if (error) {
                     NSLog(@"%@", error.description);
-                    return;
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), ^{

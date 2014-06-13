@@ -12,6 +12,7 @@
 @implementation PDWebToLocalAlbumTaskObject
 
 @dynamic album_object_id_str;
+@dynamic destination_album_object_id_str;
 @dynamic resume_data_url;
 
 @end

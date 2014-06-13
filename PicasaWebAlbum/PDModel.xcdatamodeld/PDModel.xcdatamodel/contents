@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13D65" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="PDBasePhotoObject" representedClassName="PDBasePhotoObject" isAbstract="YES" syncable="YES">
+        <attribute name="tag_sort_index" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
         <relationship name="task" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PDBaseTaskObject" inverseName="photos" inverseEntity="PDBaseTaskObject" syncable="YES"/>
     </entity>
     <entity name="PDBaseTaskObject" representedClassName="PDBaseTaskObject" isAbstract="YES" syncable="YES">
         <attribute name="error_description" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="sortIndex" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="sortIndex" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PDBasePhotoObject" inverseName="task" inverseEntity="PDBasePhotoObject" syncable="YES"/>
     </entity>
     <entity name="PDLocalPhotoObject" representedClassName="PDLocalPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES">
@@ -25,6 +26,7 @@
     </entity>
     <entity name="PDWebToLocalAlbumTaskObject" representedClassName="PDWebToLocalAlbumTaskObject" parentEntity="PDBaseTaskObject" syncable="YES">
         <attribute name="album_object_id_str" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="destination_album_object_id_str" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="resume_data_url" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="PDWebToLocalPhotosTaskObject" representedClassName="PDWebToLocalPhotosTaskObject" parentEntity="PDBaseTaskObject" syncable="YES">
@@ -32,13 +34,13 @@
         <attribute name="resume_data_url" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="PDBasePhotoObject" positionX="-135" positionY="-504" width="128" height="58"/>
-        <element name="PDBaseTaskObject" positionX="-119" positionY="-324" width="128" height="88"/>
+        <element name="PDBasePhotoObject" positionX="-135" positionY="-504" width="128" height="75"/>
+        <element name="PDBaseTaskObject" positionX="-119" positionY="-324" width="128" height="90"/>
         <element name="PDLocalPhotoObject" positionX="16" positionY="-661" width="128" height="73"/>
         <element name="PDLocalToWebAlbumTaskObject" positionX="99" positionY="-283" width="128" height="88"/>
         <element name="PDLocalToWebPhotosTaskObject" positionX="99" positionY="-454" width="128" height="60"/>
         <element name="PDWebPhotoObject" positionX="-135" positionY="-661" width="128" height="58"/>
-        <element name="PDWebToLocalAlbumTaskObject" positionX="99" positionY="-198" width="128" height="73"/>
+        <element name="PDWebToLocalAlbumTaskObject" positionX="99" positionY="-198" width="128" height="90"/>
         <element name="PDWebToLocalPhotosTaskObject" positionX="99" positionY="-364" width="128" height="73"/>
     </elements>
 </model>

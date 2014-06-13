@@ -24,12 +24,12 @@
 @implementation PLAssetsManager
 
 static dispatch_queue_t assets_manager_queue() {
-    static dispatch_queue_t af_url_session_manager_processing_queue;
+    static dispatch_queue_t assets_manager_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        af_url_session_manager_processing_queue = dispatch_queue_create("com.photto.picasawebalbum.queue", DISPATCH_QUEUE_SERIAL);
+        assets_manager_queue = dispatch_queue_create("com.photti.plassetsmanager.queue", DISPATCH_QUEUE_CONCURRENT);
     });
-    return af_url_session_manager_processing_queue;
+    return assets_manager_queue;
 }
 
 + (id)sharedManager {
@@ -49,8 +49,18 @@ static dispatch_queue_t assets_manager_queue() {
         _library = [[ALAssetsLibrary alloc] init];
         
         _isLibraryUpDated = NO;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(assetsLibraryChangedNotification) name:ALAssetsLibraryChangedNotification object:nil];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:ALAssetsLibraryChangedNotification object:nil];
+}
+
+- (void)assetsLibraryChangedNotification {
+    _isLibraryUpDated = NO;
 }
 
 + (void)groupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock {
@@ -72,9 +82,7 @@ static dispatch_queue_t assets_manager_queue() {
 }
 
 + (void)getAllPhotosWithCompletion:(void (^)(NSArray *, NSError *))completion {
-    dispatch_async(assets_manager_queue(), ^{
-        [[PLAssetsManager sharedManager] getAllPhotosWithCompletion:completion];
-    });
+    [[PLAssetsManager sharedManager] getAllPhotosWithCompletion:completion];
 }
 
 - (void)getAllPhotosWithCompletion:(void (^)(NSArray *, NSError *))completion {
@@ -93,7 +101,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_albumtype != %@", @(ALAssetsGroupPhotoStream)];
@@ -116,9 +124,7 @@ static dispatch_queue_t assets_manager_queue() {
 }
 
 + (void)getiCloudPhotosWithCompletion:(void (^)(NSArray *, NSError *))completion {
-    dispatch_async(assets_manager_queue(), ^{
-        [[PLAssetsManager sharedManager] getiCloudPhotosWithCompletion:completion];
-    });
+    [[PLAssetsManager sharedManager] getiCloudPhotosWithCompletion:completion];
 }
 
 - (void)getiCloudPhotosWithCompletion:(void (^)(NSArray *, NSError *))completion {
@@ -137,11 +143,11 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_albumtype = %@", @(ALAssetsGroupPhotoStream)];
-                request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
+                request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_sort_index" ascending:YES]];
                 NSError *error = nil;
                 NSArray *allphotos = [context executeFetchRequest:request error:&error];
                 
@@ -159,9 +165,7 @@ static dispatch_queue_t assets_manager_queue() {
 }
 
 + (void)getAllAlbumsWithCompletion:(void (^)(NSArray *, NSError *))completion {
-    dispatch_async(assets_manager_queue(), ^{
-        [[PLAssetsManager sharedManager] getAllAlbumsWithCompletion:completion];
-    });
+    [[PLAssetsManager sharedManager] getAllAlbumsWithCompletion:completion];
 }
 
 - (void)getAllAlbumsWithCompletion:(void (^)(NSArray *, NSError *))completion {
@@ -180,7 +184,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                 request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:YES]];
@@ -201,9 +205,7 @@ static dispatch_queue_t assets_manager_queue() {
 }
 
 + (void)getImportedAlbumsWithCompletion:(void (^)(NSArray *, NSError *))completion {
-    dispatch_async(assets_manager_queue(), ^{
-        [[PLAssetsManager sharedManager] getImportedAlbumsWithCompletion:completion];
-    });
+    [[PLAssetsManager sharedManager] getImportedAlbumsWithCompletion:completion];
 }
 
 - (void)getImportedAlbumsWithCompletion:(void (^)(NSArray *, NSError *))completion {
@@ -222,7 +224,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_type = %@", @(PLAlbumObjectTagTypeImported)];
@@ -244,9 +246,7 @@ static dispatch_queue_t assets_manager_queue() {
 }
 
 + (void)getAutomatticallyCreatedAlbumWithCompletion:(void (^)(NSArray *, NSError *))completion {
-    dispatch_async(assets_manager_queue(), ^{
-        [[PLAssetsManager sharedManager] getAutomatticallyCreatedAlbumWithCompletion:completion];
-    });
+    [[PLAssetsManager sharedManager] getAutomatticallyCreatedAlbumWithCompletion:completion];
 }
 
 - (void)getAutomatticallyCreatedAlbumWithCompletion:(void (^)(NSArray *, NSError *))completion {
@@ -265,7 +265,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_type = %@", @(PLAlbumObjectTagTypeAutomatically)];
@@ -302,50 +302,6 @@ static dispatch_queue_t assets_manager_queue() {
         
         NSDate *enumurateDate = [NSDate date];
         
-        void (^groupEnumurateBlock)(PLAlbumObject *, ALAsset *, NSUInteger , BOOL *) = ^(PLAlbumObject *album, ALAsset *result, NSUInteger index, BOOL *stop) {
-            if (!result) {
-                return;
-            }
-            
-            [PLCoreDataAPI performBlockAndWait:^(NSManagedObjectContext *context) {
-                ALAssetRepresentation *representation = result.defaultRepresentation;
-                NSString *url = representation.url.absoluteString;
-                
-                NSFetchRequest *request = [[NSFetchRequest alloc] init];
-                request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                request.predicate = [NSPredicate predicateWithFormat:@"url = %@", url];
-                NSError *error = nil;
-                NSArray *tmpphotos = [context executeFetchRequest:request error:&error];
-                if (tmpphotos.count) {
-                    PLPhotoObject *photo = tmpphotos.firstObject;
-                    photo.update = enumurateDate;
-                    return;
-                }
-                
-                PLPhotoObject *photo = [NSEntityDescription insertNewObjectForEntityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                photo.url = url;
-                CGSize dimensions = representation.dimensions;
-                photo.width = @(dimensions.width);
-                photo.height = @(dimensions.height);
-                photo.filename = representation.filename;
-                photo.type = [result valueForProperty:ALAssetPropertyType];
-                NSDate *date = [result valueForProperty:ALAssetPropertyDate];
-                photo.timestamp = @((unsigned long)([date timeIntervalSince1970]) * 1000);
-                CLLocation *location = [result valueForProperty:ALAssetPropertyLocation];
-                photo.date = date;
-                photo.latitude = @(location.coordinate.latitude);
-                photo.longitude = @(location.coordinate.longitude);
-                photo.update = enumurateDate;
-                photo.import = enumurateDate;
-                
-                photo.tag_albumtype = album.type;
-                NSURL *urlWithString = [NSURL URLWithString:url];
-                photo.id_str = urlWithString.query;
-                [album addPhotosObject:photo];
-            }];
-        };
-        groupEnumurateBlock = [groupEnumurateBlock copy];
-        
         // PhotoStreamはiCloud
         ALAssetsGroupType assetsGroupType = ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces | ALAssetsGroupLibrary | ALAssetsGroupSavedPhotos;
         
@@ -353,7 +309,7 @@ static dispatch_queue_t assets_manager_queue() {
             if (group) {
                 NSString *id_str = [group valueForProperty:ALAssetsGroupPropertyPersistentID];
                 
-                [PLCoreDataAPI performBlockAndWait:^(NSManagedObjectContext *context) {
+                [PLCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
                     NSFetchRequest *request = [[NSFetchRequest alloc] init];
                     request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                     request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
@@ -377,14 +333,52 @@ static dispatch_queue_t assets_manager_queue() {
                     album.update = enumurateDate;
                     
                     [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-                        groupEnumurateBlock(album, result, index, stop);
+                        if (!result) {
+                            return;
+                        }
+                        
+                        ALAssetRepresentation *representation = result.defaultRepresentation;
+                        NSURL *url = representation.url;
+                        
+                        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+                        request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+                        request.predicate = [NSPredicate predicateWithFormat:@"url = %@", url.absoluteString];
+                        NSError *error = nil;
+                        NSArray *tmpphotos = [context executeFetchRequest:request error:&error];
+                        if (tmpphotos.count) {
+                            PLPhotoObject *photo = tmpphotos.firstObject;
+                            photo.update = enumurateDate;
+                            return;
+                        }
+                        
+                        PLPhotoObject *photo = [NSEntityDescription insertNewObjectForEntityForName:kPLPhotoObjectName inManagedObjectContext:context];
+                        photo.url = url.absoluteString;
+                        CGSize dimensions = representation.dimensions;
+                        photo.width = @(dimensions.width);
+                        photo.height = @(dimensions.height);
+                        photo.filename = representation.filename;
+                        photo.type = [result valueForProperty:ALAssetPropertyType];
+                        NSDate *date = [result valueForProperty:ALAssetPropertyDate];
+                        photo.timestamp = @((unsigned long)([date timeIntervalSince1970]) * 1000);
+                        CLLocation *location = [result valueForProperty:ALAssetPropertyLocation];
+                        photo.date = date;
+                        photo.latitude = @(location.coordinate.latitude);
+                        photo.longitude = @(location.coordinate.longitude);
+                        photo.update = enumurateDate;
+                        photo.import = enumurateDate;
+                        
+                        if (album.tag_type.integerValue == PLAlbumObjectTagTypeImported) {
+                            photo.tag_sort_index = @(album.photos.count);
+                        }
+                        photo.tag_albumtype = album.type;
+                        photo.id_str = url.query;
+                        [album addPhotosObject:photo];
                     }];
                 }];
             }
             else {
                 //写真を全て読み込んだ後の処理だと思うわけよ
-                
-                [PLCoreDataAPI performBlock:^(NSManagedObjectContext *context) {
+                [PLCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
                     //前回の読み込みから消えた写真
                     NSFetchRequest *outdatedPhotoRequest = [[NSFetchRequest alloc] init];
                     outdatedPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
@@ -394,7 +388,7 @@ static dispatch_queue_t assets_manager_queue() {
                     for (PLPhotoObject *photo in outdatedPhotos) {
                         [context deleteObject:photo];
                     }
-//                    NSLog(@"removed = %lu", (unsigned long)outdatedPhotos.count);
+                    //NSLog(@"removed = %lu", (unsigned long)outdatedPhotos.count);
                     
                     //今回の読み込みで追加された新規写真
                     NSFetchRequest *newPhotoRequest = [[NSFetchRequest alloc] init];
@@ -402,7 +396,7 @@ static dispatch_queue_t assets_manager_queue() {
                     newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (import = %@)", @(ALAssetsGroupPhotoStream), enumurateDate];
                     error = nil;
                     NSArray *newPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
-//                    NSLog(@"new = %lu", (unsigned long)newPhotos.count);
+                    //NSLog(@"new = %lu", (unsigned long)newPhotos.count);
                     
                     if (newPhotos.count) {
                         //新規写真は振り分けをしなければならない
@@ -417,6 +411,7 @@ static dispatch_queue_t assets_manager_queue() {
                             BOOL isDetected = NO;
                             for (PLAlbumObject *album in albums.reverseObjectEnumerator) {
                                 if ([album.tag_date isEqualToDate:adjustedDate]) {
+                                    newPhoto.tag_sort_index = @(album.photos.count);
                                     [album addPhotosObject:newPhoto];
                                     isDetected = YES;
                                     break;
@@ -433,6 +428,7 @@ static dispatch_queue_t assets_manager_queue() {
                                 album.update = enumurateDate;
                                 album.tag_type = @(PLAlbumObjectTagTypeAutomatically);
                                 
+                                newPhoto.tag_sort_index = @(0);
                                 [album addPhotosObject:newPhoto];
                                 
                                 [albums addObject:album];
