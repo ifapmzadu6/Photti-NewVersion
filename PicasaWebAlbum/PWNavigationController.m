@@ -32,7 +32,7 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-    UINavigationItem *item = self.navigationBar.items.lastObject;
+    UINavigationItem *item = self.navigationBar.items.firstObject;
     [item.titleView setNeedsLayout];
 }
 

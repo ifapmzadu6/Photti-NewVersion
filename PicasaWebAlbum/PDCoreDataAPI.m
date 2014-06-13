@@ -10,10 +10,6 @@
 
 @interface PDCoreDataAPI ()
 
-@property (strong, nonatomic) NSManagedObjectModel *managedObjectModel;
-@property (strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-
 @end
 
 @implementation PDCoreDataAPI
