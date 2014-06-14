@@ -71,6 +71,8 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     [PDCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
         webToLocalAlbumTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalAlbumTaskObjectName inManagedObjectContext:context];
         webToLocalAlbumTask.album_object_id_str = fromWebAlbum.id_str;
+        webToLocalAlbumTask.album_object_title = fromWebAlbum.title;
+        webToLocalAlbumTask.album_object_thumbnail_url = fromWebAlbum.tag_thumbnail_url;
         
         [context save:nil];
     }];

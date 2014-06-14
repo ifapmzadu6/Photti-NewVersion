@@ -75,41 +75,17 @@
     NSUInteger hash = taskObject.hash;
     _taskHash = hash;
     
+    _titleLabel.text = nil;
     _thumbnailImageView.alpha = 0.0f;
     
-    __weak typeof(self) wself = self;
     if ([taskObject isKindOfClass:[PDWebToLocalAlbumTaskObject class]]) {
         PDWebToLocalAlbumTaskObject *webToLocalAlbumTaskObject = (PDWebToLocalAlbumTaskObject *)taskObject;
-        NSString *id_str = webToLocalAlbumTaskObject.album_object_id_str;
-        if (!id_str) {
-            return;
-        }
         
-        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            if (sself.taskHash != hash) return;
-            
-            NSFetchRequest *request = [[NSFetchRequest alloc] init];
-            request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
-            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-            NSError *error = nil;
-            NSArray *objects = [context executeFetchRequest:request error:&error];
-            if (objects.count == 0) {
-                return;
-            }
-            PWAlbumObject *albumObject = objects.firstObject;
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                if (sself.taskHash != hash) return;
-                
-                sself.titleLabel.text = albumObject.title;
-            });
-            
-            [sself loadThumbnailImage:albumObject hash:hash];
-        }];
+        _titleLabel.text = webToLocalAlbumTaskObject.album_object_title;
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self loadThumbnailImageWithURLString:webToLocalAlbumTaskObject.album_object_thumbnail_url hash:hash];
+        });
     }
     else if ([taskObject isKindOfClass:[PDWebToLocalPhotosTaskObject class]]) {
 //        PDWebToLocalPhotosTaskObject *webToLocalPhotosTaskObject = (PDWebToLocalPhotosTaskObject *)taskObject;
@@ -128,8 +104,7 @@
     }
 }
 
-- (void)loadThumbnailImage:(PWAlbumObject *)album hash:(NSUInteger)hash {
-    NSString *urlString = album.tag_thumbnail_url;
+- (void)loadThumbnailImageWithURLString:(NSString *)urlString hash:(NSUInteger)hash {
     if (!urlString) {
         return;
     }
@@ -137,8 +112,7 @@
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
     if (memoryCachedImage) {
-        UIImage *thumbnailImage = [PDTaskTableViewCell createThumbnail:memoryCachedImage size:_thumbnailImageView.bounds.size];
-        [self setImage:thumbnailImage hash:hash];
+        [self setImage:memoryCachedImage hash:hash];
         
         return;
     }
@@ -147,8 +121,7 @@
         if (_taskHash != hash) return;
         
         UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
-        UIImage *thumbnailImage = [PDTaskTableViewCell createThumbnail:diskCachedImage size:_thumbnailImageView.bounds.size];
-        [self setImage:thumbnailImage hash:hash];
+        [self setImage:diskCachedImage hash:hash];
         
         return;
     }
@@ -184,8 +157,7 @@
             
             UIImage *image = [UIImage imageWithData:data];
             if (sself.taskHash == hash) {
-                UIImage *thumbnailImage = [PDTaskTableViewCell createThumbnail:image size:sself.thumbnailImageView.bounds.size];
-                [sself setImage:thumbnailImage hash:hash];
+                [sself setImage:image hash:hash];
             }
             
             SDImageCache *imageCache = [SDImageCache sharedImageCache];
@@ -202,52 +174,21 @@
         return;
     }
     
+    __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (_taskHash != hash) {
-            return;
-        }
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (sself.taskHash != hash) return;
         
-        _thumbnailImageView.image = image;
+        sself.thumbnailImageView.image = image;
         [UIView animateWithDuration:0.1f animations:^{
-            _thumbnailImageView.alpha = 1.0f;
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (sself.taskHash != hash) return;
+            
+            sself.thumbnailImageView.alpha = 1.0f;
         }];
     });
-}
-
-+ (UIImage *)createThumbnail:(UIImage *)image size:(CGSize)size {
-    if (CGSizeEqualToSize(size, CGSizeZero)) {
-        return nil;
-    }
-    
-	CGFloat imageWidth = image.size.width;
-	CGFloat imageHeight = image.size.height;
-	
-	CGRect cropRect;
-	if (imageWidth >= imageHeight * 4.0f / 3.0f) {
-		cropRect.size.width = imageHeight * 4.0f / 3.0f;
-		cropRect.size.height = imageHeight;
-		cropRect.origin.x = imageWidth / 2.0f - cropRect.size.width / 2.0f;
-		cropRect.origin.y = 0.0f;
-	}
-	else {
-		cropRect.size.width = imageWidth;
-		cropRect.size.height = imageWidth * 3.0f / 4.0f;
-		cropRect.origin.x = 0.0f;
-		cropRect.origin.y = imageHeight / 2.0f - cropRect.size.height / 2.0f;
-	}
-	
-	CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, cropRect);
-	UIImage *croppedImage = [UIImage imageWithCGImage:imageRef scale:2.0f orientation:UIImageOrientationUp];
-	CGImageRelease(imageRef);
-    
-    CGFloat rate = MAX(cropRect.size.width, cropRect.size.height) / MAX(size.width, size.height);
-    CGSize resizeSize = CGSizeMake(ceilf(cropRect.size.width * rate), ceilf(cropRect.size.height * rate));
-    UIGraphicsBeginImageContextWithOptions(resizeSize, YES, 0.0f);
-    [croppedImage drawInRect:(CGRect){.origin = CGPointZero, .size = resizeSize}];
-    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-	
-	return resizedImage;
 }
 
 #pragma mark Cell Height

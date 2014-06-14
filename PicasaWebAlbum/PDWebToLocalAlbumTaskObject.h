@@ -14,6 +14,8 @@
 @interface PDWebToLocalAlbumTaskObject : PDBaseTaskObject
 
 @property (nonatomic, retain) NSString * album_object_id_str;
+@property (nonatomic, retain) NSString * album_object_thumbnail_url;
+@property (nonatomic, retain) NSString * album_object_title;
 @property (nonatomic, retain) NSString * destination_album_object_id_str;
 @property (nonatomic, retain) NSString * resume_data_url;
 

@@ -161,8 +161,7 @@
         SDImageCache *imageCache = [SDImageCache sharedImageCache];
         UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
         if (memoryCachedImage) {
-            UIImage *thumbnailImage = [PWAlbumViewCell createThumbnail:memoryCachedImage size:self.bounds.size];
-            [self setImage:thumbnailImage hash:hash];
+            [self setImage:memoryCachedImage hash:hash];
             
             return;
         }
@@ -171,8 +170,7 @@
             if (_albumHash != hash) return;
             
             UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
-            UIImage *thumbnailImage = [PWAlbumViewCell createThumbnail:diskCachedImage size:self.bounds.size];
-            [self setImage:thumbnailImage hash:hash];
+            [self setImage:diskCachedImage hash:hash];
             
             return;
         }
@@ -216,8 +214,7 @@
                     
                     UIImage *image = [UIImage imageWithData:data];
                     if (sself.albumHash == hash) {
-                        UIImage *thumbnailImage = [PWAlbumViewCell createThumbnail:image size:sself.bounds.size];
-                        [sself setImage:thumbnailImage hash:hash];
+                        [sself setImage:image hash:hash];
                     }
                     
                     SDImageCache *imageCache = [SDImageCache sharedImageCache];
@@ -253,38 +250,6 @@
     _isDisableActionButton = isDisableActionButton;
     
     _actionButton.hidden = isDisableActionButton;
-}
-
-+ (UIImage *)createThumbnail:(UIImage *)image size:(CGSize)size {
-	CGFloat imageWidth = image.size.width;
-	CGFloat imageHeight = image.size.height;
-	
-	CGRect cropRect;
-	if (imageWidth >= imageHeight * 4.0f / 3.0f) {
-		cropRect.size.width = imageHeight * 4.0f / 3.0f;
-		cropRect.size.height = imageHeight;
-		cropRect.origin.x = imageWidth / 2.0f - cropRect.size.width / 2.0f;
-		cropRect.origin.y = 0.0f;
-	}
-	else {
-		cropRect.size.width = imageWidth;
-		cropRect.size.height = imageWidth * 3.0f / 4.0f;
-		cropRect.origin.x = 0.0f;
-		cropRect.origin.y = imageHeight / 2.0f - cropRect.size.height / 2.0f;
-	}
-	
-	CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, cropRect);
-	UIImage *croppedImage = [UIImage imageWithCGImage:imageRef scale:2.0f orientation:UIImageOrientationUp];
-	CGImageRelease(imageRef);
-    
-    CGFloat rate = MAX(cropRect.size.width, cropRect.size.height) / MAX(size.width, size.height);
-    CGSize resizeSize = CGSizeMake(ceilf(cropRect.size.width * rate), ceilf(cropRect.size.height * rate));
-    UIGraphicsBeginImageContextWithOptions(resizeSize, YES, 0.0f);
-    [croppedImage drawInRect:(CGRect){.origin = CGPointZero, .size = resizeSize}];
-    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-	
-	return resizedImage;
 }
 
 #pragma mark Action

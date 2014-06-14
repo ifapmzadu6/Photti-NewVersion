@@ -448,6 +448,9 @@
 
 #pragma mark NSFetchedResultsControllerDelegate
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    if (!_fetchedResultsController) {
+        return;
+    }
     
     NSError *coredataError = nil;
     [_fetchedResultsController performFetch:&coredataError];

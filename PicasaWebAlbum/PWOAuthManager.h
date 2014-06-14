@@ -13,8 +13,7 @@
 
 @interface PWOAuthManager : NSObject
 
-+ (void)getAuthWithCompletion:(void (^)(GTMOAuth2Authentication *auth))completion;
-+ (void)getAccessTokenWithCompletion:(void (^)(NSString *, NSError *))completion;
++ (void)getAuthorizeHTTPHeaderFields:(void (^)(NSDictionary *headerFields, NSError *error))completion;
 + (void)logout;
 + (void)loginViewControllerWithCompletion:(void (^)(UINavigationController *))completion finish:(void (^)())finish;
 

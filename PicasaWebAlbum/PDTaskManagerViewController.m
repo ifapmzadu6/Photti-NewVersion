@@ -50,12 +50,18 @@
     [_tableView registerClass:[PDTaskTableViewCell class] forCellReuseIdentifier:@"Cell"];
     _tableView.rowHeight = 56.0f;
     [self.view addSubview:_tableView];
-    
-    [self loadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    if (!_fetchedResultsController) {
+        [self loadData];
+    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -127,7 +133,15 @@
 }
 
 #pragma NSFetchedResultsControllerDelegate
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+    NSLog(@"%s", __func__);
+}
+
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    if (!_fetchedResultsController) {
+        return;
+    }
+    
     NSError *error = nil;
     [_fetchedResultsController performFetch:&error];
     

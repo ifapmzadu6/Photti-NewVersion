@@ -41,7 +41,7 @@ static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/
 }
 
 + (void)getAuthorizedURLRequest:(NSURL *)url completion:(void (^)(NSMutableURLRequest *, NSError *))completion {
-    [PWPicasaGETRequest getHttpHeaderFieldsWithCompletion:^(NSDictionary *headerFields, NSError *error) {
+    [PWOAuthManager getAuthorizeHTTPHeaderFields:^(NSDictionary *headerFields, NSError *error) {
         if (error) {
             if (completion) {
                 completion(nil, error);
@@ -51,6 +51,7 @@ static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/
             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
             request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
             request.allHTTPHeaderFields = headerFields;
+            [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
             if (completion) {
                 completion(request, nil);
             }
@@ -59,7 +60,7 @@ static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/
 }
 
 + (void)authorizedGETRequestWithURL:(NSURL *)url completion:(void (^)(NSData *, NSURLResponse *, NSError *))completion {
-    [PWPicasaGETRequest getHttpHeaderFieldsWithCompletion:^(NSDictionary *headerFields, NSError *error) {
+    [PWOAuthManager getAuthorizeHTTPHeaderFields:^(NSDictionary *headerFields, NSError *error) {
         if (error) {
             if (completion) {
                 completion(nil, nil, error);
@@ -69,6 +70,7 @@ static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/
             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
             request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
             request.allHTTPHeaderFields = headerFields;
+            [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
             [task resume];
         }
@@ -92,22 +94,6 @@ static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/
     
     NSURL *url = [NSURL URLWithString:tmpUrlString];
     return url;
-}
-
-+ (void)getHttpHeaderFieldsWithCompletion:(void (^)(NSDictionary *headerFields, NSError *error))completion {
-    [PWOAuthManager getAccessTokenWithCompletion:^(NSString *accessToken, NSError *error) {
-        if (!accessToken) {
-            if (completion) {
-                completion(nil, error);
-            }
-        }
-        else {
-            NSDictionary *headerFields = @{@"GData-Version": @"2", @"Authorization": accessToken};
-            if (completion) {
-                completion(headerFields, nil);
-            }
-        }
-    }];
 }
 
 @end

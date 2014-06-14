@@ -75,7 +75,7 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
     }
 }
 
-+ (void)getAccessTokenWithCompletion:(void (^)(NSString *, NSError *))completion {
++ (void)getAccessTokenWithCompletion:(void (^)(NSDictionary *, NSError *))completion {
     [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
         
@@ -87,11 +87,40 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
                 return;
             }
             
-            NSDictionary *headerFields = request.allHTTPHeaderFields;
             if (completion) {
-                completion(headerFields[@"Authorization"], nil);
+                completion(request.allHTTPHeaderFields, nil);
             }
         }];
+    }];
+}
+
++ (void)getRefreshedAccessTokenWithCompletion:(void (^)(NSDictionary *, NSError *))completion {
+    [PWOAuthManager authRefreshWithCompletion:^{
+        [PWOAuthManager getAccessTokenWithCompletion:completion];
+    }];
+}
+
++ (void)getAuthorizeHTTPHeaderFields:(void (^)(NSDictionary *, NSError *))completion {
+    [PWOAuthManager getAccessTokenWithCompletion:^(NSDictionary *headerFields, NSError *error) {
+        if (error) {
+            [PWOAuthManager getRefreshedAccessTokenWithCompletion:^(NSDictionary *headerFields, NSError *error) {
+                if (error) {
+                    if (completion) {
+                        completion(nil, error);
+                    }
+                    return;
+                }
+                
+                if (completion) {
+                    completion(headerFields, nil);
+                }
+            }];
+            return;
+        }
+        
+        if (completion) {
+            completion(headerFields, nil);
+        }
     }];
 }
 

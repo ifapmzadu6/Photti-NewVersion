@@ -151,8 +151,7 @@
         SDImageCache *imageCache = [SDImageCache sharedImageCache];
         UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
         if (memoryCachedImage) {
-            UIImage *thumbnailImage = [PWPhotoViewCell createThumbnail:memoryCachedImage size:self.bounds.size];
-            [self setImage:thumbnailImage hash:hash];
+            [self setImage:memoryCachedImage hash:hash];
             
             return;
         }
@@ -161,8 +160,7 @@
             if (_photoHash != hash) return;
             
             UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
-            UIImage *thumbnailImage = [PWPhotoViewCell createThumbnail:diskCachedImage size:self.bounds.size];
-            [self setImage:thumbnailImage hash:hash];
+            [self setImage:diskCachedImage hash:hash];
             
             return;
         }
@@ -205,8 +203,7 @@
                     UIImage *image = [UIImage imageWithData:data];
                     
                     if (sself.photoHash == hash) {
-                        UIImage *thumbnailImage = [PWPhotoViewCell createThumbnail:image size:sself.bounds.size];
-                        [sself setImage:thumbnailImage hash:hash];
+                        [sself setImage:image hash:hash];
                     }
                     
                     SDImageCache *imageCache = [SDImageCache sharedImageCache];
@@ -236,36 +233,6 @@
             _imageView.alpha = 1.0f;
         }];
     });
-}
-
-+ (UIImage *)createThumbnail:(UIImage *)image size:(CGSize)size {
-	CGFloat imageWidth = image.size.width;
-	CGFloat imageHeight = image.size.height;
-	
-	CGRect cropRect;
-	if (imageWidth >= imageHeight) {
-		cropRect.size.width = imageHeight;
-		cropRect.size.height = imageHeight;
-		cropRect.origin.x = imageWidth / 2.0f - cropRect.size.width / 2.0f;
-		cropRect.origin.y = 0.0f;
-	}
-	else {
-		cropRect.size.width = imageWidth;
-		cropRect.size.height = imageWidth;
-		cropRect.origin.x = 0.0f;
-		cropRect.origin.y = imageHeight / 2.0f - cropRect.size.height / 2.0f;
-	}
-	
-	CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, cropRect);
-	UIImage *croppedImage = [UIImage imageWithCGImage:imageRef scale:2.0f orientation:UIImageOrientationUp];
-	CGImageRelease(imageRef);
-    
-    UIGraphicsBeginImageContextWithOptions(size, YES, 0.0f);
-    [croppedImage drawInRect:(CGRect){.origin = CGPointZero, .size = size}];
-    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-	
-	return resizedImage;
 }
 
 @end

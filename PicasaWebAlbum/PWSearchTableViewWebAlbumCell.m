@@ -173,13 +173,4 @@
     });
 }
 
-+ (UIImage *)createThumbnail:(UIImage *)image size:(CGSize)size {
-    UIGraphicsBeginImageContextWithOptions(size, YES, 0.0f);
-    [image drawInRect:(CGRect){.origin = CGPointZero, .size = size}];
-    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-	
-	return resizedImage;
-}
-
 @end
