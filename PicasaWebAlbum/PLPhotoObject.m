@@ -2,13 +2,14 @@
 //  PLPhotoObject.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/05/31.
+//  Created by Keisuke Karijuku on 2014/06/19.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
 #import "PLPhotoObject.h"
 #import "PLAlbumObject.h"
 
+#import "PLDateFormatter.h"
 
 @implementation PLPhotoObject
 
@@ -16,18 +17,45 @@
 @dynamic date;
 @dynamic filename;
 @dynamic height;
+@dynamic id_str;
 @dynamic import;
 @dynamic latitude;
 @dynamic longitude;
 @dynamic tag_albumtype;
+@dynamic tag_adjusted_date;
+@dynamic tag_sort_index;
 @dynamic timestamp;
 @dynamic type;
 @dynamic update;
 @dynamic url;
 @dynamic width;
-@dynamic id_str;
-@dynamic tag_sort_index;
 @dynamic albums;
 @dynamic thumbnailed;
+
+- (void)addAlbumsObject:(PLAlbumObject *)value {
+    self.albums = [self.albums setByAddingObject:value];;
+}
+
+- (void)removeAlbumsObject:(PLAlbumObject *)value {
+    NSMutableSet *mutableSet = [NSMutableSet setWithSet:self.albums];
+    [mutableSet removeObject:value];
+    self.albums = mutableSet.copy;
+}
+
+- (void)addAlbums:(NSSet *)values {
+    self.albums = [self.albums setByAddingObjectsFromSet:values];
+}
+
+- (void)removeAlbums:(NSSet *)values {
+    NSMutableSet *mutableSet = [NSMutableSet setWithSet:self.albums];
+    for (id object in values) {
+        [mutableSet removeObject:object];
+    }
+    self.albums = mutableSet.copy;
+}
+
+- (NSString *)tag_adjusted_date {
+    return [[PLDateFormatter formatter] stringFromDate:[PLDateFormatter adjustZeroClock:self.date]];
+}
 
 @end

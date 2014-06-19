@@ -32,7 +32,7 @@ static dispatch_queue_t assets_manager_queue() {
     return assets_manager_queue;
 }
 
-+ (id)sharedManager {
++ (PLAssetsManager *)sharedManager {
     static dispatch_once_t once;
     static id instance;
     dispatch_once(&once, ^{instance = self.new;});
@@ -69,16 +69,22 @@ static dispatch_queue_t assets_manager_queue() {
     });
 }
 
++ (void)syncGroupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock {
+    [[PLAssetsManager sharedLibrary] groupForURL:url resultBlock:resultBlock failureBlock:failureBlock];
+}
+
 + (void)assetForURL:(NSURL *)url resultBlock:(void (^)(ALAsset *asset))resultBlock failureBlock:(void (^)(NSError *error))failureBlock {
     dispatch_async(assets_manager_queue(), ^{
         [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:resultBlock failureBlock:failureBlock];
     });
 }
 
++ (void)syncAssetForURL:(NSURL *)url resultBlock:(void (^)(ALAsset *asset))resultBlock failureBlock:(void (^)(NSError *error))failureBlock {
+    [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:resultBlock failureBlock:failureBlock];
+}
+
 + (void)writeImageDataToSavedPhotosAlbum:(NSData *)data metadata:(NSDictionary *)metadata completionBlock:(void (^)(NSURL *, NSError *))completionBlock {
-    dispatch_barrier_async(assets_manager_queue(), ^{
-        [[PLAssetsManager sharedLibrary] writeImageDataToSavedPhotosAlbum:data metadata:metadata completionBlock:completionBlock];
-    });
+    [[PLAssetsManager sharedLibrary] writeImageDataToSavedPhotosAlbum:data metadata:metadata completionBlock:completionBlock];
 }
 
 + (void)getAllPhotosWithCompletion:(void (^)(NSArray *, NSError *))completion {
@@ -101,7 +107,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_albumtype != %@", @(ALAssetsGroupPhotoStream)];
@@ -143,7 +149,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_albumtype = %@", @(ALAssetsGroupPhotoStream)];
@@ -184,7 +190,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                 request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:YES]];
@@ -224,7 +230,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_type = %@", @(PLAlbumObjectTagTypeImported)];
@@ -421,7 +427,7 @@ static dispatch_queue_t assets_manager_queue() {
                                 //自動作成版アルバムを作る
                                 PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
                                 album.id_str = [PWSnowFlake generateUniqueIDString];
-                                album.name = NSLocalizedString(@"新規アルバム", nil);
+                                album.name = [NSString stringWithFormat:@"%@のアルバム", [[PLDateFormatter mmmddFormatter] stringFromDate:adjustedDate]];
                                 album.tag_date = adjustedDate;
                                 album.timestamp = @((unsigned long)([adjustedDate timeIntervalSince1970]) * 1000);
                                 album.import = enumurateDate;

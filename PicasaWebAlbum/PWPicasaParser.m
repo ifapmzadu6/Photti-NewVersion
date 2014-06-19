@@ -197,7 +197,7 @@
 
 + (PWPhotoObject *)photoFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
     if (!json) return nil;
-    //    NSLog(@"%@", json);
+//    NSLog(@"%@", json);
     NSDictionary *gphotoid = NULL_TO_NIL(json[@"gphoto:id"]);
     if (!gphotoid) return nil;
     NSString *id_str = NULL_TO_NIL(gphotoid[@"text"]);
@@ -308,6 +308,7 @@
         
         PWPhotoMediaThumbnailObject *content = photo.media.content.firstObject;
         photo.tag_screenimage_url = content.url;
+        photo.tag_originalimage_url = content.url;
     }
     
     return photo;

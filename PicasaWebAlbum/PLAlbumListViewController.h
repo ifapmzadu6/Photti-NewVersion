@@ -7,11 +7,10 @@
 //
 
 @import UIKit;
+@import CoreData;
 
-@interface PLAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface PLAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
-
-- (void)reloadData;
 
 @end

@@ -38,9 +38,10 @@
 @property (nonatomic) NSUInteger requestIndex;
 @property (nonatomic) BOOL isNowRequesting;
 @property (nonatomic) BOOL isSelectMode;
-@property (nonatomic) CGPoint scrollPositionBeforeRotation;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic) BOOL isChangingContext;
+
 @property (strong, nonatomic) NSMutableArray *selectedPhotoIDs;
 
 @property (weak, nonatomic) PWPhotoPageViewController *photoPageViewController;
@@ -154,6 +155,7 @@
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
         __weak typeof(self) wself = self;
@@ -175,6 +177,9 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -229,10 +234,18 @@
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    if (_isChangingContext) {
+        return 0;
+    }
+    
     return [[_fetchedResultsController sections] count];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    if (_isChangingContext) {
+        return 0;
+    }
+    
     id<NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
     return [sectionInfo numberOfObjects];
 }
@@ -240,7 +253,12 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     cell.isSelectWithCheckMark = _isSelectMode;
-    [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];;
+    if (_isChangingContext) {
+        [cell setPhoto:nil isNowLoading:NO];
+    }
+    else {
+        [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];;
+    }
     
     return cell;
 }
@@ -265,6 +283,10 @@
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (_isChangingContext) {
+        return;
+    }
+    
     if (_isSelectMode) {
         _selectActionBarButton.enabled = YES;
         _trashBarButtonItem.enabled = YES;
@@ -283,6 +305,10 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (_isChangingContext) {
+        return;
+    }
+    
     if (_isSelectMode) {
         if (_collectionView.indexPathsForSelectedItems.count == 0) {
             _selectActionBarButton.enabled = NO;
@@ -447,10 +473,12 @@
 }
 
 #pragma mark NSFetchedResultsControllerDelegate
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = YES;
+}
+
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    if (!_fetchedResultsController) {
-        return;
-    }
+    _isChangingContext = NO;
     
     NSError *coredataError = nil;
     [_fetchedResultsController performFetch:&coredataError];

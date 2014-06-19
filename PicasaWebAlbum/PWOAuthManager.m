@@ -24,7 +24,7 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 
 @implementation PWOAuthManager
 
-+ (id)sharedManager {
++ (PWOAuthManager *)sharedManager {
     static dispatch_once_t once;
     static id instance;
     dispatch_once(&once, ^{instance = self.new;});
@@ -34,7 +34,14 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 - (id)init {
     self = [super init];
     if (self) {
-        [self authRefresh];
+        if ([NSThread isMainThread]) {
+            [self authRefresh];
+        }
+        else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [self authRefresh];
+            });
+        }
     }
     return self;
 }
@@ -55,7 +62,7 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         block();
     }
     else {
-        dispatch_async(dispatch_get_main_queue(), block);
+        dispatch_sync(dispatch_get_main_queue(), block);
     }
 }
 
@@ -71,24 +78,23 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         block();
     }
     else {
-        dispatch_async(dispatch_get_main_queue(), block);
+        dispatch_sync(dispatch_get_main_queue(), block);
     }
 }
 
 + (void)getAccessTokenWithCompletion:(void (^)(NSDictionary *, NSError *))completion {
     [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
-        
         [auth authorizeRequest:request completionHandler:^(NSError *error) {
             if (error) {
                 if (completion) {
                     completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:401 userInfo:nil]);
                 }
-                return;
             }
-            
-            if (completion) {
-                completion(request.allHTTPHeaderFields, nil);
+            else {
+                if (completion) {
+                    completion(request.allHTTPHeaderFields, nil);
+                }
             }
         }];
     }];
@@ -136,7 +142,7 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         block();
     }
     else {
-        dispatch_async(dispatch_get_main_queue(), block);
+        dispatch_sync(dispatch_get_main_queue(), block);
     }
 }
 
@@ -180,7 +186,7 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         block();
     }
     else {
-        dispatch_async(dispatch_get_main_queue(), block);
+        dispatch_sync(dispatch_get_main_queue(), block);
     }
 }
 

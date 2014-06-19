@@ -27,7 +27,8 @@
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
-@property (strong, nonatomic) NSArray *albums;
+@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic) BOOL isChangingContext;
 
 @end
 
@@ -64,7 +65,25 @@
     [self.view addSubview:_indicatorView];
     [_indicatorView startAnimating];
     
-    [self reloadData];
+    __weak typeof(self) wself = self;
+    [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
+        
+        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        sself.fetchedResultsController.delegate = sself;
+        
+        [sself.fetchedResultsController performFetch:nil];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sself.indicatorView stopAnimating];
+            [sself.collectionView reloadData];
+        });
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -127,20 +146,26 @@
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
+    if (_isChangingContext) {
+        return 0;
+    }
+    
+    return [[_fetchedResultsController sections] count];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if (!_albums) {
+    if (_isChangingContext) {
         return 0;
     }
-    return _albums.count;
+    
+    id<NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
+    return [sectionInfo numberOfObjects];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PLAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    cell.album = _albums[indexPath.row];
+    cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
     __weak typeof(self) wself = self;
     [cell setActionButtonActionBlock:^(PLAlbumObject *album) {
         typeof(wself) sself = wself;
@@ -160,9 +185,9 @@
     
     PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
     
-    if (_albums) {
+    if (_fetchedResultsController.fetchedObjects.count > 0) {
         NSString *localizedString = NSLocalizedString(@"%lu個のアルバム", nil);
-        NSString *albumCountString = [NSString stringWithFormat:localizedString, (unsigned long)_albums.count];
+        NSString *albumCountString = [NSString stringWithFormat:localizedString, (unsigned long)_fetchedResultsController.fetchedObjects.count];
         [footerView setText:albumCountString];
     }
     
@@ -193,29 +218,24 @@
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PLPhotoListViewController *viewController = [[PLPhotoListViewController alloc] initWithAlbum:_albums[indexPath.row]];
+    PLPhotoListViewController *viewController = [[PLPhotoListViewController alloc] initWithAlbum:[_fetchedResultsController objectAtIndexPath:indexPath]];
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
-#pragma mark LoadData
-- (void)reloadData {
-    if (![[PLAssetsManager sharedManager] isLibraryUpDated]) {
-        __weak typeof(self) wself = self;
-        [PLAssetsManager getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            sself.albums = allAlbums;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [sself.indicatorView removeFromSuperview];
-                sself.indicatorView = nil;
-                
-                [sself.collectionView reloadData];
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:sself.albums.count-1 inSection:0];
-                [sself.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-            });
-        }];
-    }
+#pragma mark NSFetchedResultsControllerDelegate
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = YES;
+}
+
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = NO;
+    
+    NSError *error = nil;
+    [_fetchedResultsController performFetch:&error];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+    });
 }
 
 #pragma mark UIAlertView
@@ -233,7 +253,7 @@
         if (!sself) return;
         
         [sself makeNewWebAlbumWithLocalAlbum:album completion:^(PWAlbumObject *webAlbum, NSError *error) {
-            [PDTaskManager addTaskFromLocalAlbum:album toWebAlbum:webAlbum completion:^(NSError *error) {
+            [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:webAlbum completion:^(NSError *error) {
                 NSLog(@"成功したよ！！！！やったよ！！！！");
                 if (error) {
                     NSLog(@"%@", error.description);
@@ -245,14 +265,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [sself removeAlbum:album completion:^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                
-                [sself reloadData];
-            });
-        }];
+        [sself removeAlbum:album completion:nil];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
     }];

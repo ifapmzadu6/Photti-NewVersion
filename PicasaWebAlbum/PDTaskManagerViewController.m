@@ -21,6 +21,7 @@
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
+
 @end
 
 @implementation PDTaskManagerViewController
@@ -30,6 +31,29 @@
     if (self) {
         self.title = @"タスクマネージャー";
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"タスク" image:[UIImage imageNamed:@"Upload"] selectedImage:[UIImage imageNamed:@"UploadSelect"]];
+        
+        __weak typeof(self) wself = self;
+        PDTaskManager *taskManager = [PDTaskManager sharedManager];
+        void (^block)(PDTaskManager *) = ^(PDTaskManager *taskManager){
+            [taskManager countOfAllPhotosInTaskWithCompletion:^(NSUInteger count, NSError *error) {
+                if (error) {
+                    return;
+                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    if (count > 0) {
+                        sself.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)count];
+                    }
+                    else {
+                        sself.tabBarItem.badgeValue = nil;
+                    }
+                });
+            }];
+        };
+        block(taskManager);
+        
+        [taskManager setTaskManagerChangedBlock:block];
     }
     return self;
 }
@@ -49,6 +73,7 @@
     _tableView.delegate = self;
     [_tableView registerClass:[PDTaskTableViewCell class] forCellReuseIdentifier:@"Cell"];
     _tableView.rowHeight = 56.0f;
+    _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_tableView];
 }
 
@@ -101,6 +126,7 @@
     PDTaskTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
     cell.taskObject = [_fetchedResultsController objectAtIndexPath:indexPath];
+    cell.isNowLoading = (indexPath.row == 0);
     
     return cell;
 }
@@ -108,6 +134,18 @@
 #pragma mark UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return [PDTaskTableViewCell cellHeightForTaskObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
+    
 }
 
 #pragma mark NSFetchedResultsController
@@ -134,7 +172,7 @@
 
 #pragma NSFetchedResultsControllerDelegate
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    NSLog(@"%s", __func__);
+    
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {

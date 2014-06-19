@@ -22,14 +22,8 @@
 
 @property (strong, nonatomic) PDBaseTaskObject *taskObject;
 @property (strong, nonatomic) PDBasePhotoObject *photoObject;
-@property (strong, nonatomic) NSURLSessionTask *sessionTask;
 @property (nonatomic) NSUInteger identifier;
 
-- (void)setDownloadTaskFromWebObject:(PDWebPhotoObject *)webPhotoObject backgroundSession:(NSURLSession *)backgroundSession completion:(void (^)(NSURLSessionDownloadTask *task, NSError *error))completion;
-
-- (void)setUploadTaskFromLocalObject:(PDLocalPhotoObject *)localPhotoObject toWebAlbumID:(NSString *)webAlbumID backgroundSession:(NSURLSession *)backgroundSession completion:(void (^)(NSError *error))completion;
-
-
-//test
+- (void)setUploadTaskFromLocalObject:(PDLocalPhotoObject *)localPhotoObject toWebAlbumID:(NSString *)webAlbumID completion:(void (^)(NSError *error))completion;
 
 @end

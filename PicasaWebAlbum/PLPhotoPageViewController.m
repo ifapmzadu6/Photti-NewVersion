@@ -56,6 +56,7 @@
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, uploadBarButtonItem, flexibleSpace, deleteButtonItem];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isTabBarHidden]) {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
         if ([tabBarController isToolbarHideen]) {
@@ -73,6 +74,13 @@
             [tabBarController setTabBarHidden:YES animated:YES completion:nil];
         }];
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:YES];
 }
 
 - (void)didReceiveMemoryWarning {

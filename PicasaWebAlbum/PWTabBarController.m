@@ -191,32 +191,31 @@ static const CGFloat animationDuration = 0.25f;
 - (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
     _isTabBarHidden = hidden;
     
-    void (^block)() = ^{
+    void (^animation)() = ^{
         for(UIView *view in self.view.subviews) {
             if([view isKindOfClass:[UITabBar class]]) {
                 if (hidden) {
                     view.alpha = 0.0f;
-                    view.userInteractionEnabled = NO;
                 }
                 else {
                     view.alpha = 1.0f;
-                    view.userInteractionEnabled = YES;
                 }
             }
         }
     };
     
     if (animated) {
-        [UIView animateWithDuration:animationDuration animations:block completion:completion];
+        [UIView animateWithDuration:animationDuration animations:animation completion:completion];
     }
     else {
-        block();
+        animation();
         if (completion) {
             completion(YES);
         }
     }
 }
 
+#pragma mark Toolbar
 - (BOOL)isToolbarHideen {
     return _isToolbarHidden;
 }
@@ -224,22 +223,20 @@ static const CGFloat animationDuration = 0.25f;
 - (void)setToolbarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
     _isToolbarHidden = hidden;
     
-    void (^block)() = ^{
+    void (^animation)() = ^{
         if (hidden) {
             _toolbar.alpha = 0.0f;
-            _toolbar.userInteractionEnabled = NO;
         }
         else {
             _toolbar.alpha = 1.0f;
-            _toolbar.userInteractionEnabled = YES;
         }
     };
     
     if (animated) {
-        [UIView animateWithDuration:animationDuration animations:block completion:completion];
+        [UIView animateWithDuration:animationDuration animations:animation completion:completion];
     }
     else {
-        block();
+        animation();
         if (completion) {
             completion(YES);
         }
@@ -262,7 +259,7 @@ static const CGFloat animationDuration = 0.25f;
         _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight + tHeight, rect.size.width, tHeight);
     }
     
-    void (^block)() = ^{
+    void (^animation)() = ^{
         if (fadeout) {
             _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight + tHeight, rect.size.width, tHeight);
         }
@@ -272,10 +269,10 @@ static const CGFloat animationDuration = 0.25f;
     };
     
     if (animated) {
-        [UIView animateWithDuration:animationDuration animations:block completion:completion];
+        [UIView animateWithDuration:animationDuration animations:animation completion:completion];
     }
     else {
-        block();
+        animation();
         if (completion) {
             completion(YES);
         }
@@ -290,6 +287,8 @@ static const CGFloat animationDuration = 0.25f;
     _toolbar.tintColor = tintColor;
 }
 
+
+#pragma mark Actiontoolbar
 - (BOOL)isActionToolbarHidden {
     return _isActionToolbarHidden;
 }
@@ -297,22 +296,20 @@ static const CGFloat animationDuration = 0.25f;
 - (void)setActionToolbarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
     _isActionToolbarHidden = hidden;
     
-    void (^block)() = ^{
+    void (^animation)() = ^{
         if (hidden) {
             _actionToolbar.alpha = 0.0f;
-            _actionToolbar.userInteractionEnabled = NO;
         }
         else {
             _actionToolbar.alpha = 1.0f;
-            _actionToolbar.userInteractionEnabled = YES;
         }
     };
     
     if (animated) {
-        [UIView animateWithDuration:animationDuration animations:block completion:completion];
+        [UIView animateWithDuration:animationDuration animations:animation completion:completion];
     }
     else {
-        block();
+        animation();
         if (completion) {
             completion(YES);
         }
@@ -340,25 +337,25 @@ static const CGFloat animationDuration = 0.25f;
     }
 }
 
+
+#pragma mark ActionNavigationBar
 - (void)setActionNavigationBarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
     _isActionNavigationBarHidden = hidden;
     
-    void (^block)() = ^{
+    void (^animation)() = ^{
         if (hidden) {
             _actionNavigationBar.alpha = 0.0f;
-            _actionNavigationBar.userInteractionEnabled = NO;
         }
         else {
             _actionNavigationBar.alpha = 1.0f;
-            _actionNavigationBar.userInteractionEnabled = YES;
         }
     };
     
     if (animated) {
-        [UIView animateWithDuration:animationDuration animations:block completion:completion];
+        [UIView animateWithDuration:animationDuration animations:animation completion:completion];
     }
     else {
-        block();
+        animation();
         if (completion) {
             completion(YES);
         }
@@ -371,6 +368,23 @@ static const CGFloat animationDuration = 0.25f;
 
 - (void)setActionNavigationTintColor:(UIColor *)tintColor {
     _actionNavigationBar.tintColor = tintColor;
+}
+
+#pragma mark UserInteractionEnabled
+- (void)setUserInteractionEnabled:(BOOL)enabled {
+    [self navigationBarUserInteractionEnabled:enabled];
+    _toolbar.userInteractionEnabled = enabled;
+    _actionToolbar.userInteractionEnabled = enabled;
+    _actionNavigationBar.userInteractionEnabled = enabled;
+}
+
+- (void)navigationBarUserInteractionEnabled:(BOOL)enabled {
+    for (UIViewController *viewController in self.viewControllers) {
+        if ([viewController isKindOfClass:[UINavigationController class]]) {
+            UINavigationController *navigationController = (UINavigationController *)viewController;
+            navigationController.navigationBar.userInteractionEnabled = enabled;
+        }
+    }
 }
 
 @end

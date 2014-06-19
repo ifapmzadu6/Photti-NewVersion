@@ -58,10 +58,18 @@
     [super viewWillAppear:animated];
     
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:NO];
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     UIBarButtonItem *trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
     [tabBarController setToolbarItems:@[actionBarButtonItem, flexibleSpace, trashBarButtonItem] animated:YES];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

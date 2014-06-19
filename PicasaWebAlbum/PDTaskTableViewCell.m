@@ -11,6 +11,7 @@
 #import "PWColors.h"
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
+#import "PLAssetsManager.h"
 #import "PWModelObject.h"
 #import "PWCoreDataAPI.h"
 #import "PWPicasaAPI.h"
@@ -19,11 +20,14 @@
 
 #import "SDImageCache.h"
 
+#import "PWLoundedCornerBadgeLabel.h"
+
 @interface PDTaskTableViewCell ()
 
 @property (strong, nonatomic) UIImageView *thumbnailImageView;
 @property (strong, nonatomic) UILabel *titleLabel;
-//@property (strong, nonatomic) UILabel *
+@property (strong, nonatomic) UILabel *taskTypeLabel;
+@property (strong, nonatomic) PWLoundedCornerBadgeLabel *countLabel;
 
 @property (nonatomic) NSUInteger taskHash;
 @property (weak, nonatomic) NSURLSessionDataTask *task;
@@ -35,6 +39,9 @@
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
+        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        self.showsReorderControl = YES;
+        
         _thumbnailImageView = [[UIImageView alloc] init];
         _thumbnailImageView.clipsToBounds = YES;
         _thumbnailImageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -45,6 +52,14 @@
         _titleLabel.font = [UIFont systemFontOfSize:15.0f];
         _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
         [self.contentView addSubview:_titleLabel];
+        
+        _taskTypeLabel = [[UILabel alloc] init];
+        _taskTypeLabel.font = [UIFont systemFontOfSize:10.0f];
+        [self.contentView addSubview:_taskTypeLabel];
+        
+        _countLabel = [[PWLoundedCornerBadgeLabel alloc] init];
+        _countLabel.font = [UIFont systemFontOfSize:15.0f];
+        [self.contentView addSubview:_countLabel];
     }
     return self;
 }
@@ -54,9 +69,14 @@
     
     CGRect rect = self.contentView.bounds;
     
-    _thumbnailImageView.frame = CGRectMake(10.0f, 10.0f, rect.size.height - 20.0f, rect.size.height - 20.0f);
+    _thumbnailImageView.frame = CGRectMake(15.0f, 10.0f, rect.size.height - 20.0f, rect.size.height - 20.0f);
     
-    _titleLabel.frame = CGRectMake(100.0f, 0.0f, 220.0f, CGRectGetHeight(rect));
+    _titleLabel.frame = CGRectMake(70.0f, 26.0f, 220.0f, 15.0f);
+    
+    _taskTypeLabel.frame = CGRectMake(70.0f, 10.0f, 220.0f, 10.0f);
+    
+    CGSize countLabelSize = [_countLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    _countLabel.frame = CGRectMake(CGRectGetMaxX(rect) - (countLabelSize.width + 20.0f), 20.0f, countLabelSize.width + 16.0f, 20.0f);
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -80,12 +100,32 @@
     
     if ([taskObject isKindOfClass:[PDWebToLocalAlbumTaskObject class]]) {
         PDWebToLocalAlbumTaskObject *webToLocalAlbumTaskObject = (PDWebToLocalAlbumTaskObject *)taskObject;
+        NSString *id_str = webToLocalAlbumTaskObject.album_object_id_str;
         
-        _titleLabel.text = webToLocalAlbumTaskObject.album_object_title;
+        _taskTypeLabel.text = NSLocalizedString(@"Download", nil);
+        _taskTypeLabel.textColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+        _countLabel.text = [NSString stringWithFormat:@"%d", taskObject.photos.count];
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self loadThumbnailImageWithURLString:webToLocalAlbumTaskObject.album_object_thumbnail_url hash:hash];
-        });
+        __weak typeof(self) wself = self;
+        [PWCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            NSFetchRequest *request = [[NSFetchRequest alloc] init];
+            request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+            NSError *error = nil;
+            NSArray *objects = [context executeFetchRequest:request error:&error];
+            if (objects.count == 0) {
+                return;
+            }
+            PWAlbumObject *albumObject = objects.firstObject;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                sself.titleLabel.text = albumObject.title;
+            });
+            
+            [sself loadThumbnailImageWithURLString:albumObject.tag_thumbnail_url hash:hash];
+        }];
     }
     else if ([taskObject isKindOfClass:[PDWebToLocalPhotosTaskObject class]]) {
 //        PDWebToLocalPhotosTaskObject *webToLocalPhotosTaskObject = (PDWebToLocalPhotosTaskObject *)taskObject;
@@ -93,15 +133,46 @@
         
     }
     else if ([taskObject isKindOfClass:[PDLocalToWebAlbumTaskObject class]]) {
-//        PDLocalToWebAlbumTaskObject *localToWebAlbumTaskObject = (PDLocalToWebAlbumTaskObject *)taskObject;
+        PDLocalToWebAlbumTaskObject *localToWebAlbumTaskObject = (PDLocalToWebAlbumTaskObject *)taskObject;
+        NSString *id_str = localToWebAlbumTaskObject.album_object_id_str;
         
+        _taskTypeLabel.text = NSLocalizedString(@"Upload", nil);
+        _taskTypeLabel.textColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        _countLabel.text = [NSString stringWithFormat:@"%d", taskObject.photos.count];
         
+        __weak typeof(self) wself = self;
+        [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+            NSFetchRequest *request = [[NSFetchRequest alloc] init];
+            request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+            NSError *error = nil;
+            NSArray *objects = [context executeFetchRequest:request error:&error];
+            if (objects.count == 0) {
+                return;
+            }
+            PLAlbumObject *albumObject = objects.firstObject;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                sself.titleLabel.text = albumObject.name;
+                
+                PLPhotoObject *thumbnail = albumObject.thumbnail;
+                if (!thumbnail) {
+                    thumbnail = albumObject.photos.firstObject;
+                }
+                NSURL *url = [NSURL URLWithString:thumbnail.url];
+                [sself loadThmbnailImageWithAssetURL:url hash:hash];
+            });
+        }];
     }
     else if ([taskObject isKindOfClass:[PDLocalToWebPhotosTaskObject class]]) {
 //        PDLocalToWebPhotosTaskObject *localToWebPhotosTaskObject = (PDLocalToWebPhotosTaskObject *)taskObject;
         
         
     }
+    
+    [self setNeedsLayout];
 }
 
 - (void)loadThumbnailImageWithURLString:(NSString *)urlString hash:(NSUInteger)hash {
@@ -109,64 +180,85 @@
         return;
     }
     
-    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-    UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
-    if (memoryCachedImage) {
-        [self setImage:memoryCachedImage hash:hash];
-        
-        return;
-    }
-    
-    if ([imageCache diskImageExistsWithKey:urlString]) {
-        if (_taskHash != hash) return;
-        
-        UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
-        [self setImage:diskCachedImage hash:hash];
-        
-        return;
-    }
-    
-    NSURLSessionDataTask *beforeTask = _task;
-    if (beforeTask) {
-        [beforeTask cancel];
-        _task = nil;
-    }
-    
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    
     __weak typeof(self) wself = self;
-    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
-        if (error) {
-            NSLog(@"%@", error.description);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        SDImageCache *imageCache = [SDImageCache sharedImageCache];
+        UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+        if (memoryCachedImage) {
+            [self setImage:memoryCachedImage hash:hash];
+            
             return;
         }
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if (sself.taskHash != hash) return;
         
-        request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
-        NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        if ([imageCache diskImageExistsWithKey:urlString]) {
+            if (_taskHash != hash) return;
             
-            typeof(wself) sself = wself;
-            if (!sself) return;
+            UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
+            [self setImage:diskCachedImage hash:hash];
+            
+            return;
+        }
+        
+        NSURLSessionDataTask *beforeTask = _task;
+        if (beforeTask) {
+            [beforeTask cancel];
+            _task = nil;
+        }
+        
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        
+        [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
                 NSLog(@"%@", error.description);
                 return;
             }
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (sself.taskHash != hash) return;
             
-            UIImage *image = [UIImage imageWithData:data];
-            if (sself.taskHash == hash) {
-                [sself setImage:image hash:hash];
-            }
+            request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
+            NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+                
+                UIImage *image = [UIImage imageWithData:data];
+                if (sself.taskHash == hash) {
+                    [sself setImage:image hash:hash];
+                }
+                
+                SDImageCache *imageCache = [SDImageCache sharedImageCache];
+                [imageCache storeImage:image forKey:urlString toDisk:YES];
+            }];
+            [task resume];
             
-            SDImageCache *imageCache = [SDImageCache sharedImageCache];
-            [imageCache storeImage:image forKey:urlString toDisk:YES];
+            sself.task = task;
         }];
-        [task resume];
-        
-        sself.task = task;
-    }];
+    });
+}
+
+- (void)loadThmbnailImageWithAssetURL:(NSURL *)assetUrl hash:(NSUInteger)hash {
+    if (!assetUrl) {
+        return;
+    }
+    
+    __weak typeof(self) wself = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [PLAssetsManager assetForURL:assetUrl resultBlock:^(ALAsset *asset) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            UIImage *image = [UIImage imageWithCGImage:[asset thumbnail]];
+            [sself setImage:image hash:hash];
+        } failureBlock:^(NSError *error) {
+            
+        }];
+    });
 }
 
 - (void)setImage:(UIImage *)image hash:(NSUInteger)hash {
@@ -189,6 +281,49 @@
             sself.thumbnailImageView.alpha = 1.0f;
         }];
     });
+}
+
+- (void)setIsNowLoading:(BOOL)isNowLoading {
+    _isNowLoading = isNowLoading;
+    
+    if (isNowLoading) {
+        _countLabel.badgeBorderWidth = 0.0f;
+        _countLabel.textColor = [UIColor whiteColor];
+        
+        if ([_taskObject isKindOfClass:[PDWebToLocalAlbumTaskObject class]]) {
+            _countLabel.badgeBackgroundColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+        }
+        else if ([_taskObject isKindOfClass:[PDWebToLocalPhotosTaskObject class]]) {
+            _countLabel.badgeBackgroundColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+        }
+        else if ([_taskObject isKindOfClass:[PDLocalToWebAlbumTaskObject class]]) {
+            _countLabel.badgeBackgroundColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        }
+        else if ([_taskObject isKindOfClass:[PDLocalToWebPhotosTaskObject class]]) {
+            _countLabel.badgeBackgroundColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        }
+    }
+    else {
+        _countLabel.badgeBorderWidth = 1.0f;
+        _countLabel.badgeBackgroundColor = [UIColor whiteColor];
+        
+        if ([_taskObject isKindOfClass:[PDWebToLocalAlbumTaskObject class]]) {
+            _countLabel.badgeBorderColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+            _countLabel.textColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+        }
+        else if ([_taskObject isKindOfClass:[PDWebToLocalPhotosTaskObject class]]) {
+            _countLabel.badgeBorderColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+            _countLabel.textColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+        }
+        else if ([_taskObject isKindOfClass:[PDLocalToWebAlbumTaskObject class]]) {
+            _countLabel.badgeBorderColor = [PWColors getColor:PWColorsTypeTintWebColor];
+            _countLabel.textColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        }
+        else if ([_taskObject isKindOfClass:[PDLocalToWebPhotosTaskObject class]]) {
+            _countLabel.badgeBorderColor = [PWColors getColor:PWColorsTypeTintWebColor];
+            _countLabel.textColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        }
+    }
 }
 
 #pragma mark Cell Height

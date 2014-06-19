@@ -138,12 +138,17 @@
 - (void)setAlbum:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading {
     _album = album;
     
-    _titleLabel.text = album.title;
-    
-    _numPhotosLabel.text = album.tag_numphotos;
-    
     _imageView.alpha = 0.0f;
+    _titleLabel.text = nil;
+    _numPhotosLabel.text = nil;
     [_activityIndicatorView startAnimating];
+    
+    if (!album) {
+        return;
+    }
+    
+    _titleLabel.text = album.title;
+    _numPhotosLabel.text = album.tag_numphotos;
     
     [self loadThumbnailImage:album isNowLoading:isNowLoading];
 }

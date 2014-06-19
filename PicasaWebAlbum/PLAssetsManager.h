@@ -14,10 +14,14 @@
 
 @property (nonatomic, readonly) BOOL isLibraryUpDated;
 
-+ (id)sharedManager;
++ (PLAssetsManager *)sharedManager;
+
+- (void)enumurateAssetsWithCompletion:(void (^)(NSError *error))completion;
 
 + (void)groupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;
++ (void)syncGroupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;
 + (void)assetForURL:(NSURL *)url resultBlock:(void (^)(ALAsset *asset))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;
++ (void)syncAssetForURL:(NSURL *)url resultBlock:(void (^)(ALAsset *asset))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;
 + (void)writeImageDataToSavedPhotosAlbum:(NSData *)data metadata:(NSDictionary *)metadata completionBlock:(void (^)(NSURL *assetURL, NSError *error))completionBlock;
 
 + (void)getAllPhotosWithCompletion:(void (^)(NSArray *allPhotos, NSError *error))completion;

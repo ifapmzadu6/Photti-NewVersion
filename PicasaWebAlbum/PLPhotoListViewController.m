@@ -68,6 +68,7 @@
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
         [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
@@ -86,6 +87,9 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

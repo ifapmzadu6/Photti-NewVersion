@@ -37,6 +37,7 @@
 @property (nonatomic) BOOL isNowRequesting;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic) BOOL isChangingContext;
 
 @end
 
@@ -99,12 +100,18 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     }
     
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
-    [tabBarController setToolbarHidden:YES animated:animated completion:nil];
+    [UIView animateWithDuration:0.3f animations:^{
+        [tabBarController setToolbarHidden:YES animated:NO completion:nil];
+    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:YES];
     
     if (!_fetchedResultsController) {
         __weak typeof(self) wself = self;
@@ -174,10 +181,18 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    if (_isChangingContext) {
+        return 0;
+    }
+    
     return [[_fetchedResultsController sections] count];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    if (_isChangingContext) {
+        return 0;
+    }
+    
     id<NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
     return [sectionInfo numberOfObjects];
 }
@@ -185,14 +200,20 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    [cell setAlbum:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];
-    __weak typeof(self) wself = self;
-    [cell setActionButtonActionBlock:^(PWAlbumObject *album) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        [sself showAlbumActionSheet:album];
-    }];
+    if (_isChangingContext) {
+        [cell setAlbum:nil isNowLoading:NO];
+        cell.actionButtonActionBlock = nil;
+    }
+    else {
+        [cell setAlbum:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];
+        __weak typeof(self) wself = self;
+        [cell setActionButtonActionBlock:^(PWAlbumObject *album) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            [sself showAlbumActionSheet:album];
+        }];
+    }
     
     return cell;
 }
@@ -217,6 +238,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (_isChangingContext) {
+        return;
+    }
+    
     PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
     PWPhotoListViewController *viewController = [[PWPhotoListViewController alloc] initWithAlbum:album];
     [self.navigationController pushViewController:viewController animated:YES];
@@ -329,7 +354,13 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 }
 
 #pragma mark NSFetchedResultsControllerDelegate
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = YES;
+}
+
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = NO;
+    
     NSError *error = nil;
     [_fetchedResultsController performFetch:&error];
     
@@ -375,26 +406,21 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"ダウンロード", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
+                
         [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:album.id_str index:0 completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
             if (error) {
                 NSLog(@"%@", error.description);
                 return;
             }
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [PDTaskManager addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
-                    NSLog(@"added");
-                    if (error) {
-                        NSLog(@"%@", error.description);
-                        return;
-                    }
-                    
-//                    dispatch_after(1.0f, dispatch_get_main_queue(), ^{
-//                        [PDTaskManager resumeAllTasks];
-//                    });
-                }];
-            });
+            [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
+                NSLog(@"added");
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+                [[PDTaskManager sharedManager] start];
+            }];
         }];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除", nil) handler:^{

@@ -116,6 +116,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [super viewWillAppear:animated];
     
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
     [tabBarController setToolbarHidden:YES animated:animated completion:nil];
 }
@@ -128,6 +129,9 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:YES];
     
     _titleView.isDisableLayoutSubViews = NO;
     [_titleView setNeedsLayout];
@@ -193,15 +197,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
             
             NSError *error = nil;
             [context save:&error];
-            
-            for (UIViewController *viewController in sself.viewControllers) {
-                if ([viewController isKindOfClass:[PLAlbumListViewController class]]) {
-                    PLAlbumListViewController *albumListViewController = (PLAlbumListViewController *)viewController;
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [albumListViewController reloadData];
-                    });
-                }
-            }
         }];
     }];
     UITextField *textField = [alertView textFieldAtIndex:0];

@@ -84,6 +84,7 @@ static NSString * const PWSearchNavigationControllerHistoryItemUpdateKey = @"PWS
 @interface PWSearchNavigationController ()
 
 @property (strong, nonatomic) UISearchBar *searchBar;
+@property (strong, nonatomic) UIButton *cancelButton;
 @property (strong, nonatomic) UIView *searchBarBackgroundView;
 @property (strong, nonatomic) UIImageView *backbroundView;
 @property (strong, nonatomic) UITableView *tableView;
@@ -133,10 +134,18 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     _searchBar = [[UISearchBar alloc] init];
     _searchBar.searchBarStyle = UISearchBarStyleMinimal;
     _searchBar.delegate = self;
-    _searchBar.showsCancelButton = YES;
+    _searchBar.showsCancelButton = NO;
     _searchBar.placeholder = NSLocalizedString(@"Search", nil);
     _searchBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
     [_searchBarBackgroundView addSubview:_searchBar];
+    
+    _cancelButton = [[UIButton alloc] init];
+    [_cancelButton addTarget:self action:@selector(cancelButtonAction) forControlEvents:UIControlEventTouchUpInside];
+    _cancelButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    [_cancelButton setTitle:NSLocalizedString(@"Cancel", nil) forState:UIControlStateNormal];
+    [_cancelButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
+    [_cancelButton setTitleColor:[[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.2f]  forState:UIControlStateHighlighted];
+    [_searchBarBackgroundView addSubview:_cancelButton];
     
     _backbroundView = [[UIImageView alloc] init];
     _backbroundView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
@@ -164,7 +173,9 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         statusBarSize = CGSizeMake(statusBarSize.height, statusBarSize.width);
     }
     _searchBarBackgroundView.frame = CGRectMake(0.0f, 20.0f - statusBarSize.height, navigationBarSize.width, navigationBarSize.height + statusBarSize.height);
-    _searchBar.frame = CGRectMake(0.0f, statusBarSize.height, navigationBarSize.width, navigationBarSize.height);
+    CGSize cancelButtonSize = [_cancelButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    _searchBar.frame = CGRectMake(0.0f, statusBarSize.height, navigationBarSize.width - (cancelButtonSize.width + 10.0f), navigationBarSize.height);
+    _cancelButton.frame = CGRectMake(navigationBarSize.width - (cancelButtonSize.width + 10.0f), statusBarSize.height, cancelButtonSize.width, navigationBarSize.height);
     
     _backbroundView.frame = self.view.bounds;
     _tableView.frame = self.view.bounds;
@@ -213,7 +224,8 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     [searchBar resignFirstResponder];
 }
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+#pragma mark UIButtonAction
+- (void)cancelButtonAction {
     [self closeSearchBarWithCompletion:nil];
 }
 

@@ -12,8 +12,8 @@
 
 #import "SDImageCache.h"
 
-//Test
 #import "PDTaskManager.h"
+#import "PLAssetsManager.h"
 
 @implementation PWAppDelegate
 
@@ -31,6 +31,7 @@
     [[NSURLSession sharedSession] configuration].URLCache.memoryCapacity = 0;
     
     [PDTaskManager sharedManager];
+    [[PLAssetsManager sharedManager] enumurateAssetsWithCompletion:nil];
     
     return YES;
 }
@@ -59,7 +60,7 @@
 #pragma mark Background Fetch
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     NSLog(@"%s", __func__);
-        
+    
     completionHandler(UIBackgroundFetchResultNoData);
 }
 
@@ -67,9 +68,8 @@
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler {
     NSLog(@"%s", __func__);
     
-    [PDTaskManager resumeAllTasks];
-    
-    completionHandler();
+    PDTaskManager *sharedManager = [PDTaskManager sharedManager];
+    sharedManager.backgroundComplecationHandler = completionHandler;
 }
 
 @end

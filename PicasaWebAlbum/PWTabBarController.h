@@ -26,4 +26,6 @@
 - (void)setActionNavigationItem:(UINavigationItem *)item animated:(BOOL)animated;
 - (void)setActionNavigationTintColor:(UIColor *)tintColor;
 
+- (void)setUserInteractionEnabled:(BOOL)enabled;
+
 @end

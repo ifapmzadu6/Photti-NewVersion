@@ -13,6 +13,7 @@
 @interface PDTaskTableViewCell : UITableViewCell
 
 @property (strong, nonatomic) PDBaseTaskObject *taskObject;
+@property (nonatomic) BOOL isNowLoading;
 
 + (CGFloat)cellHeightForTaskObject:(PDBaseTaskObject *)taskObject;
 

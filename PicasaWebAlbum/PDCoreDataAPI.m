@@ -54,38 +54,34 @@ static dispatch_queue_t pd_coredata_queue() {
 }
 
 + (void)barrierAsyncBlock:(void (^)(NSManagedObjectContext *))block {
+    if (!block) return;
     id context = [PDCoreDataAPI context];
     dispatch_barrier_async(pd_coredata_queue(), ^{
-        if (block) {
-            block(context);
-        }
+        block(context);
     });
 }
 
 + (void)barrierSyncBlock:(void (^)(NSManagedObjectContext *))block {
+    if (!block) return;
     id context = [PDCoreDataAPI context];
     dispatch_barrier_sync(pd_coredata_queue(), ^{
-        if (block) {
-            block(context);
-        }
-    });
-}
-
-+ (void)asyncBlock:(void (^)(NSManagedObjectContext *))block {
-    id context = [PDCoreDataAPI context];
-    dispatch_async(pd_coredata_queue(), ^{
-        if (block) {
-            block(context);
-        }
+        block(context);
     });
 }
 
 + (void)syncBlock:(void (^)(NSManagedObjectContext *))block {
+    if (!block) return;
     id context = [PDCoreDataAPI context];
     dispatch_sync(pd_coredata_queue(), ^{
-        if (block) {
-            block(context);
-        }
+        block(context);
+    });
+}
+
++ (void)asyncBlock:(void (^)(NSManagedObjectContext *))block {
+    if (!block) return;
+    id context = [PDCoreDataAPI context];
+    dispatch_async(pd_coredata_queue(), ^{
+        block(context);
     });
 }
 
