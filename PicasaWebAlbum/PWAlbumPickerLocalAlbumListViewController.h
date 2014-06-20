@@ -7,7 +7,8 @@
 //
 
 @import UIKit;
+@import CoreData;
 
-@interface PWAlbumPickerLocalAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate>
+@interface PWAlbumPickerLocalAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 
 @end

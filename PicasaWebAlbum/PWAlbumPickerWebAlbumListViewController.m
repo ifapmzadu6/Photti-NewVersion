@@ -12,6 +12,8 @@
 #import "PWRefreshControl.h"
 #import "PWAlbumViewCell.h"
 #import "PWAlbumPickerController.h"
+#import "PWNavigationController.h"
+#import "PWNewAlbumEditViewController.h"
 
 @interface PWAlbumPickerWebAlbumListViewController ()
 
@@ -22,6 +24,7 @@
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic) NSUInteger requestIndex;
 @property (nonatomic) BOOL isNowRequesting;
+@property (nonatomic) BOOL isChangingContext;
 
 @end
 
@@ -60,8 +63,11 @@
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_activityIndicatorView];
     
-    UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
-    self.navigationItem.leftBarButtonItem = cancelBarButtonitem;
+    UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
+    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
+    addBarButtonItem.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    self.navigationItem.rightBarButtonItem = addBarButtonItem;
     
     [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];
@@ -75,6 +81,7 @@
         request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        sself.fetchedResultsController.delegate = self;
         NSError *error = nil;
         [sself.fetchedResultsController performFetch:&error];
         if (error) {
@@ -89,7 +96,7 @@
             
             [sself.collectionView reloadData];
             
-            [sself reloadData];
+            [sself loadDataWithStartIndex:0];
         });
     }];
 }
@@ -134,21 +141,39 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)addBarButtonAction {
+    PWNewAlbumEditViewController *viewController = [[PWNewAlbumEditViewController alloc] init];
+    __weak typeof(self) wself = self;
+    [viewController setSuccessBlock:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself loadDataWithStartIndex:0];
+    }];
+    PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+}
+
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return [[_fetchedResultsController sections] count];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    id<NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
+    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
     return [sectionInfo numberOfObjects];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    [cell setAlbum:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];
     cell.isDisableActionButton = YES;
+    if (_isChangingContext) {
+        [cell setAlbum:nil isNowLoading:NO];
+    }
+    else {
+        [cell setAlbum:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];
+    }
     
     return cell;
 }
@@ -173,15 +198,15 @@
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
+    PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];    
     PWAlbumPickerController *tabBarController = (PWAlbumPickerController *)self.tabBarController;
-    [tabBarController doneBarButtonActionWithSelectedAlbum:album];
+    [tabBarController doneBarButtonActionWithSelectedAlbum:album isWebAlbum:YES];
 }
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
     if (!_isNowRequesting) {
-        [self reloadData];
+        [self loadDataWithStartIndex:0];
     }
 }
 
@@ -201,50 +226,10 @@
         }
         
         sself.requestIndex = nextIndex;
-        NSError *coredataError = nil;
-        [sself.fetchedResultsController performFetch:&coredataError];
-        if (coredataError) {
-            NSLog(@"%@", coredataError.description);
-        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [sself.refreshControl endRefreshing];
             [sself.activityIndicatorView stopAnimating];
-            
-            [sself.collectionView reloadData];
-        });
-    }];
-}
-
-- (void)reloadData {
-    _isNowRequesting = YES;
-    
-    __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfAlbumsWithIndex:0 completion:^(NSArray *albums, NSUInteger nextIndex, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        if (error) {
-            NSLog(@"%@", error);
-            if (error.code == 401) {
-                [sself openLoginviewController];
-            }
-            return;
-        }
-        
-        sself.requestIndex = nextIndex;
-        NSError *coredataError = nil;
-        [sself.fetchedResultsController performFetch:&coredataError];
-        if (coredataError) {
-            NSLog(@"%@", coredataError.description);
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.refreshControl endRefreshing];
-            [sself.activityIndicatorView stopAnimating];
-            
-            sself.isNowRequesting = NO;
-            [sself.collectionView reloadData];
         });
     }];
 }
@@ -259,15 +244,30 @@
             [sself.refreshControl endRefreshing];
             [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
         });
-        
     } finish:^{
         dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            [sself reloadData];
+            [sself loadDataWithStartIndex:0];
         });
     }];
+}
+
+#pragma mark NSFetchedResultsControllerDelegate
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = YES;
+}
+
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = NO;
+    
+    NSError *error = nil;
+    [_fetchedResultsController performFetch:&error];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+    });
 }
 
 

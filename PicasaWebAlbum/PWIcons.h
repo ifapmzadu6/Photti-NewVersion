@@ -12,5 +12,6 @@
 
 + (UIImage *)albumActionButtonIconWithColor:(UIColor *)color;
 + (UIImage *)imageWithColor:(UIColor *)color;
++ (UIImage *)arrowIconWithColor:(UIColor *)color size:(CGSize)size;
 
 @end

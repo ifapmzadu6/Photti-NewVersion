@@ -61,6 +61,7 @@ static dispatch_queue_t assets_manager_queue() {
 
 - (void)assetsLibraryChangedNotification {
     _isLibraryUpDated = NO;
+    [self enumurateAssetsWithCompletion:nil];
 }
 
 + (void)groupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock {
@@ -271,7 +272,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_type = %@", @(PLAlbumObjectTagTypeAutomatically)];
@@ -294,7 +295,7 @@ static dispatch_queue_t assets_manager_queue() {
 
 - (void)enumurateAssetsWithCompletion:(void (^)(NSError *error))completion {
     __weak typeof(self) wself = self;
-    dispatch_async(assets_manager_queue(), ^{
+    dispatch_barrier_async(assets_manager_queue(), ^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -323,7 +324,7 @@ static dispatch_queue_t assets_manager_queue() {
                     NSArray *tmpalbums = [context executeFetchRequest:request error:&error];
                     
                     PLAlbumObject *album = nil;
-                    if (tmpalbums.count) {
+                    if (tmpalbums.count > 0) {
                         album = tmpalbums.firstObject;
                     }
                     else {
@@ -384,7 +385,13 @@ static dispatch_queue_t assets_manager_queue() {
             }
             else {
                 //写真を全て読み込んだ後の処理だと思うわけよ
-                [PLCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
+                [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    if (!sself.isLibraryUpDated) {
+                        return;
+                    }
+                    
                     //前回の読み込みから消えた写真
                     NSFetchRequest *outdatedPhotoRequest = [[NSFetchRequest alloc] init];
                     outdatedPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
@@ -400,11 +407,12 @@ static dispatch_queue_t assets_manager_queue() {
                     NSFetchRequest *newPhotoRequest = [[NSFetchRequest alloc] init];
                     newPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                     newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (import = %@)", @(ALAssetsGroupPhotoStream), enumurateDate];
+                    newPhotoRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
                     error = nil;
                     NSArray *newPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
                     //NSLog(@"new = %lu", (unsigned long)newPhotos.count);
                     
-                    if (newPhotos.count) {
+                    if (newPhotos.count > 0) {
                         //新規写真は振り分けをしなければならない
                         NSFetchRequest *request = [[NSFetchRequest alloc] init];
                         request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];

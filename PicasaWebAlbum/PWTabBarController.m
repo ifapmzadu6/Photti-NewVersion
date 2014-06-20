@@ -51,24 +51,26 @@ static const CGFloat animationDuration = 0.25f;
         self.delegate = self;
         
         _toolbar = [[UIToolbar alloc] init];
-        _toolbar.alpha = 0.0f;
         [self.view addSubview:_toolbar];
         
+        _toolbar.alpha = 0.0f;
         _isToolbarHidden = YES;
         
         _actionToolbar = [[UIToolbar alloc] init];
         _actionToolbar.barTintColor = [UIColor blackColor];
-        _actionToolbar.alpha = 0.0f;
         [self.view addSubview:_actionToolbar];
         
+        _actionToolbar.alpha = 0.0f;
         _isActionToolbarHidden = YES;
         
         _actionNavigationBar = [[UINavigationBar alloc] init];
         _actionNavigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor colorWithWhite:0.8f alpha:1.0f]};
         _actionNavigationBar.barTintColor = [UIColor blackColor];
-        _actionNavigationBar.alpha = 0.0f;
         _actionNavigationBar.delegate = self;
         [self.view addSubview:_actionNavigationBar];
+        
+        _actionNavigationBar.alpha = 0.0f;
+        _isActionNavigationBarHidden = YES;
     }
     return self;
 }
@@ -83,25 +85,27 @@ static const CGFloat animationDuration = 0.25f;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    if (_isTabBarHidden) {
-        for(UIView *view in self.view.subviews) {
-            if([view isKindOfClass:[UITabBar class]]) {
-                view.alpha = 0.0f;
-            }
+    for(UIView *view in self.view.subviews) {
+        if([view isKindOfClass:[UITabBar class]]) {
+            view.alpha = !_isTabBarHidden;
         }
     }
+    _actionNavigationBar.alpha = !_isActionNavigationBarHidden;
+    _toolbar.alpha = !_isToolbarHidden;
+    _actionToolbar.alpha = !_isActionToolbarHidden;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    if (_isTabBarHidden) {
-        for(UIView *view in self.view.subviews) {
-            if([view isKindOfClass:[UITabBar class]]) {
-                view.alpha = 0.0f;
-            }
+    for(UIView *view in self.view.subviews) {
+        if([view isKindOfClass:[UITabBar class]]) {
+            view.alpha = !_isTabBarHidden;
         }
     }
+    _actionNavigationBar.alpha = !_isActionNavigationBarHidden;
+    _toolbar.alpha = !_isToolbarHidden;
+    _actionToolbar.alpha = !_isActionToolbarHidden;
 }
 
 - (void)viewWillLayoutSubviews {

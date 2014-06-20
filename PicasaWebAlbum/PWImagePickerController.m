@@ -42,13 +42,13 @@
         PWImagePickerLocalPageViewController *localPageViewController = [[PWImagePickerLocalPageViewController alloc] init];
         _localPageViewController = localPageViewController;
         PWImagePickerNavigationController *localNavigationcontroller = [[PWImagePickerNavigationController alloc] initWithRootViewController:localPageViewController];
-        localNavigationcontroller.titleOnNavigationBar = [NSString stringWithFormat:@"写真を\"%@\"に追加します。", albumTitle];
+        localNavigationcontroller.titleOnNavigationBar = [NSString stringWithFormat:NSLocalizedString(@"Select items to add to \"%@\".", nil), albumTitle];
         _localNavigationcontroller = localNavigationcontroller;
         
         PWImagePickerWebAlbumListViewController *webAlbumViewController = [[PWImagePickerWebAlbumListViewController alloc] init];
         _webAlbumViewController = webAlbumViewController;
         PWImagePickerNavigationController *webNavigationController = [[PWImagePickerNavigationController alloc] initWithRootViewController:_webAlbumViewController];
-        webNavigationController.titleOnNavigationBar = [NSString stringWithFormat:@"写真を\"%@\"に追加します。", albumTitle];
+        webNavigationController.titleOnNavigationBar = [NSString stringWithFormat:NSLocalizedString(@"Select items to add to \"%@\".", nil), albumTitle];
         _webNavigationController = webNavigationController;
         
         self.viewControllers = @[localNavigationcontroller, webNavigationController];
@@ -66,9 +66,16 @@
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    self.tabBar.barTintColor = [UIColor blackColor];
     
     _toolbar = [[UIToolbar alloc] init];
     [self.view insertSubview:_toolbar belowSubview:self.tabBar];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
 - (void)viewWillLayoutSubviews {

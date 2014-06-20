@@ -24,11 +24,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = @"アルバム作成";
+    self.title = NSLocalizedString(@"New Album", nil);
     
     self.timestamp = [NSString stringWithFormat:@"%lld", (long long)([[NSDate date] timeIntervalSince1970])*1000];
     
-    UIBarButtonItem *createBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"作成" style:UIBarButtonItemStylePlain target:self action:@selector(createBarButtonAction)];
+    UIBarButtonItem *createBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Save", nil) style:UIBarButtonItemStylePlain target:self action:@selector(createBarButtonAction)];
     [createBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
     self.navigationItem.rightBarButtonItem = createBarButtonItem;
 }
@@ -42,7 +42,7 @@
     UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.bounds.size.width - textSize.width - 60.0f, 20.0f)];
     textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     textField.font = [UIFont systemFontOfSize:15.0f];
-    textField.placeholder = NSLocalizedString(@"新規アルバム", nil);
+    textField.placeholder = NSLocalizedString(@"New Album", nil);
     textField.returnKeyType = UIReturnKeyDone;
     [textField setBk_shouldReturnBlock:^BOOL(UITextField *textField) {
         [textField resignFirstResponder];
@@ -57,7 +57,7 @@
 
 #pragma mark UIBarButtonItem
 - (void)createBarButtonAction {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"アルバムを作成しています", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Saving...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
     UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
     [indicator startAnimating];
@@ -72,7 +72,7 @@
         }
     }
     if (!albumTitle) {
-        albumTitle = NSLocalizedString(@"新規アルバム", nil);
+        albumTitle = NSLocalizedString(@"New Album", nil);
     }
     
     __weak typeof(self) wself = self;

@@ -64,6 +64,7 @@
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.font = [UIFont systemFontOfSize:14.0f];
     _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+    _titleLabel.numberOfLines = 2;
     [self.contentView addSubview:_titleLabel];
         
     _numPhotosLabel = [[UILabel alloc] init];
@@ -126,13 +127,20 @@
     
     _activityIndicatorView.center = _imageView.center;
     
-    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 4.0f, rect.size.width - 20.0f - 4.0f, 14.0f);
+    [self setTitleLabelFrame];
     
     _numPhotosLabel.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 40.0f, CGRectGetMaxY(_imageView.frame) - 20.0f, 36.0f, 16.0f);
     
     _actionButton.frame = CGRectMake(CGRectGetMaxX(rect) - 20.0f, CGRectGetMaxY(_imageView.frame) + 5.0f, 20.0f, 30.0f);
     
     _overrayView.frame = rect;
+}
+
+- (void)setTitleLabelFrame {
+    CGRect rect = self.contentView.bounds;
+    
+    CGSize titleLabelSize = [_titleLabel sizeThatFits:CGSizeMake(rect.size.width - 20.0f - 8.0f, CGFLOAT_MAX)];
+    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 3.0f, rect.size.width - 20.0f - 8.0f, titleLabelSize.height);
 }
 
 - (void)setAlbum:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading {
@@ -148,6 +156,7 @@
     }
     
     _titleLabel.text = album.title;
+    [self setTitleLabelFrame];
     _numPhotosLabel.text = album.tag_numphotos;
     
     [self loadThumbnailImage:album isNowLoading:isNowLoading];

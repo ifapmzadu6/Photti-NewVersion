@@ -10,17 +10,23 @@
 
 #import "PWColors.h"
 #import "PLAssetsManager.h"
+#import "PLCoreDataAPI.h"
 #import "PLAlbumViewCell.h"
+#import "PWSnowFlake.h"
+#import "PLDateFormatter.h"
 #import "PLCreateNewAlbumViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PLModelObject.h"
+#import "BlocksKit+UIKit.h"
+#import "PWAlbumPickerController.h"
 
 @interface PWAlbumPickerLocalAlbumListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
-@property (strong, nonatomic) NSArray *albums;
+@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic) BOOL isChangingContext;
 
 @end
 
@@ -58,12 +64,33 @@
     
     UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     self.navigationItem.leftBarButtonItem = cancelBarButtonitem;
+    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
+    addBarButtonItem.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    self.navigationItem.rightBarButtonItem = addBarButtonItem;
     
     _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_indicatorView];
     [_indicatorView startAnimating];
     
-    [self reloadData];
+    __weak typeof(self) wself = self;
+    [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
+        
+        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        sself.fetchedResultsController.delegate = sself;
+        
+        [sself.fetchedResultsController performFetch:nil];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sself.indicatorView stopAnimating];
+            [sself.collectionView reloadData];
+        });
+    }];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -86,11 +113,6 @@
         [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
     }
     
-//    PWImagePickerController *tabBarViewController = (PWImagePickerController *)self.tabBarController;
-//    UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
-//    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 0.0f, viewInsets.bottom, 0.0f);
-//    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, -10.0f);
-    
     if (_indicatorView) {
         _indicatorView.center = self.view.center;
     }
@@ -105,33 +127,70 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark UICollectionViewDataSource
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 2;
+- (void)addBarButtonAction {
+    UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"新規アルバム", nil) message:NSLocalizedString(@"アルバム名を入力してください。", nil)];
+    alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+    [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
+    __weak UIAlertView *wAlertView = alertView;
+    [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
+        UIAlertView *sAlertView = wAlertView;
+        if (!sAlertView) return;
+        
+        UITextField *textField = [sAlertView textFieldAtIndex:0];
+        NSString *title = textField.text;
+        if (!title || [title isEqualToString:@""]) {
+            title = NSLocalizedString(@"新規アルバム", nil);
+        }
+        
+        __weak typeof(self) wself = self;
+        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
+            album.id_str = [PWSnowFlake generateUniqueIDString];
+            album.name = NSLocalizedString(@"新規アルバム", nil);
+            NSDate *date = [NSDate date];
+            NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:date];
+            album.tag_date = adjustedDate;
+            album.timestamp = @((unsigned long)([adjustedDate timeIntervalSince1970]) * 1000);
+            album.import = date;
+            album.update = date;
+            album.tag_type = @(PLAlbumObjectTagTypeMyself);
+            
+            NSError *error = nil;
+            [context save:&error];
+        }];
+    }];
+    UITextField *textField = [alertView textFieldAtIndex:0];
+    textField.placeholder = NSLocalizedString(@"新規アルバム", nil);
+    [alertView show];
 }
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if (!_albums) {
+#pragma mark UICollectionViewDataSource
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    if (_isChangingContext) {
         return 0;
     }
     
-    if (section == 0) {
-        return _albums.count;
+    return [[_fetchedResultsController sections] count];
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    if (_isChangingContext) {
+        return 0;
     }
-    return 1;
+    
+    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
+    return [sectionInfo numberOfObjects];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        PLAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-        
-        cell.album = _albums[indexPath.row];
-        cell.isDisableActionButton = YES;
-        
-        return cell;
-    }
+    PLAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    PLCreateNewAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"CreateNewAlbumCell" forIndexPath:indexPath];
+    cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
+    cell.isDisableActionButton = YES;
+    
     return cell;
 }
 
@@ -143,9 +202,9 @@
     if (indexPath.section == 0) {
         PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
         
-        if (_albums) {
+        if (_fetchedResultsController.fetchedObjects.count > 0) {
             NSString *localizedString = NSLocalizedString(@"%lu個のアルバム", nil);
-            NSString *albumCountString = [NSString stringWithFormat:localizedString, (unsigned long)_albums.count];
+            NSString *albumCountString = [NSString stringWithFormat:localizedString, (unsigned long)_fetchedResultsController.fetchedObjects.count];
             [footerView setText:albumCountString];
         }
         
@@ -182,27 +241,25 @@
 
 #pragma mark UIcollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-//    PWImagePickerLocalPhotoListViewController *viewController = [[PWImagePickerLocalPhotoListViewController alloc] initWithAlbum:_albums[indexPath.row]];
-//    [self.navigationController pushViewController:viewController animated:YES];
+    PLAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
+    PWAlbumPickerController *tabBarController = (PWAlbumPickerController *)self.tabBarController;
+    [tabBarController doneBarButtonActionWithSelectedAlbum:album isWebAlbum:NO];
 }
 
-#pragma mark LoadData
-- (void)reloadData {
-    __weak typeof(self) wself = self;
-    [PLAssetsManager getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        sself.albums = allAlbums;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.indicatorView removeFromSuperview];
-            sself.indicatorView = nil;
-            
-            [sself.collectionView reloadData];
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
-            [sself.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-        });
-    }];
+#pragma mark NSFetchedResultsControllerDelegate
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = YES;
+}
+
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = NO;
+    
+    NSError *error = nil;
+    [_fetchedResultsController performFetch:&error];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+    });
 }
 
 @end

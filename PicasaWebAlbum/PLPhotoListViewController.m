@@ -9,21 +9,32 @@
 #import "PLPhotoListViewController.h"
 
 #import "PWColors.h"
+#import "PLAssetsManager.h"
+#import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 #import "PLPhotoViewCell.h"
 #import "PWTabBarController.h"
 #import "PLPhotoPageViewController.h"
+#import "BlocksKit+UIKit.h"
+#import "PDTaskManager.h"
+#import "PWImagePickerController.h"
+#import "PWAlbumPickerController.h"
+#import "PWModelObject.h"
+#import "PDTaskManager.h"
 
 @interface PLPhotoListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButton;
-@property (strong, nonatomic) UIBarButtonItem *trashBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *moveBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *selectAllBarButtonItem;
 
-@property (strong, nonatomic) NSArray *photos;
 @property (nonatomic) BOOL isSelectMode;
+@property (strong, nonatomic) NSMutableArray *selectedPhotoURLs;
+
+@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic) BOOL isChangingContext;
 
 @end
 
@@ -34,16 +45,16 @@
     if (self) {
         self.title = album.name;
         
-        _photos = album.photos.array;
+        _album = album;
+        
+        _selectedPhotoURLs = @[].mutableCopy;
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
-    
+        
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
@@ -52,14 +63,39 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_collectionView];
+    
+    __weak typeof(self) wself = self;
+    [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+        request.predicate = [NSPredicate predicateWithFormat:@"ANY albums = %@", sself.album];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_sort_index" ascending:YES]];
+        
+        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        sself.fetchedResultsController.delegate = sself;
+        
+        [sself.fetchedResultsController performFetch:nil];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
+                [sself.collectionView reloadData];
+            }
+        });
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    NSArray *indexPaths = _collectionView.indexPathsForSelectedItems;
-    for (NSIndexPath *indexPath in indexPaths) {
-        [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    if (!_isSelectMode) {
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
+        
+        for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
+            [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+        }
     }
     
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
@@ -127,11 +163,14 @@
 }
 
 - (void)actionBarButtonAction {
+    [self showAlbumActionSheet:_album];
 }
 
 - (void)addBarButtonAction {
-    UIImagePickerController *pickerController = [[UIImagePickerController alloc] init];
-    [self.tabBarController presentViewController:pickerController animated:YES completion:nil];
+    PWImagePickerController *imagePickerController = [[PWImagePickerController alloc] initWithAlbumTitle:_album.name completion:^(NSArray *selectedPhotos) {
+        
+    }];
+    [self.tabBarController presentViewController:imagePickerController animated:YES completion:nil];
 }
 
 - (void)selectBarButtonAction {
@@ -143,30 +182,138 @@
 }
 
 - (void)selectActionBarButtonAction {
+    if (_selectedPhotoURLs.count == 0) {
+        return;
+    }
     
+    __block NSMutableArray *assets = @[].mutableCopy;
+    for (NSManagedObjectID *photoURL in _selectedPhotoURLs) {
+        __block PLPhotoObject *photoObject = nil;
+        [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+            NSFetchRequest *request = [[NSFetchRequest alloc] init];
+            request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+            request.predicate = [NSPredicate predicateWithFormat:@"url = %@", photoURL];
+            NSArray *objects = [context executeFetchRequest:request error:nil];
+            if (objects.count > 0) {
+                photoObject = objects.firstObject;
+            }
+        }];
+        if (!photoObject) return;
+        
+        __weak typeof(self) wself = self;
+        [PLAssetsManager syncAssetForURL:[NSURL URLWithString:photoObject.url] resultBlock:^(ALAsset *asset) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            [assets addObject:asset];
+            
+            if (assets.count == sself.selectedPhotoURLs.count) {
+                UIActivityViewController *activityViewcontroller = [[UIActivityViewController alloc] initWithActivityItems:assets applicationActivities:nil];
+                [sself.tabBarController presentViewController:activityViewcontroller animated:YES completion:nil];
+            }
+        } failureBlock:^(NSError *error) {
+            
+        }];
+    }
 }
 
-- (void)trashBarButtonAction {
-//    [self showTrashPhotosActionSheet];
+- (void)selectAllBarButtonAction {
+    if (_fetchedResultsController.fetchedObjects.count == _collectionView.indexPathsForSelectedItems.count) {
+        [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
+        [_selectedPhotoURLs removeAllObjects];
+        for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
+            [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+        }
+        
+        _selectActionBarButton.enabled = NO;
+        _moveBarButtonItem.enabled = NO;
+    }
+    else {
+        [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Deselect all", nil)];
+        for (PLPhotoObject *photoObject in _fetchedResultsController.fetchedObjects) {
+            if (![_selectedPhotoURLs containsObject:photoObject.objectID]) {
+                [_selectedPhotoURLs addObject:photoObject.url];
+            }
+            
+            [_collectionView selectItemAtIndexPath:[_fetchedResultsController indexPathForObject:photoObject] animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+        }
+        
+        _selectActionBarButton.enabled = YES;
+        _moveBarButtonItem.enabled = YES;
+    }
 }
 
 - (void)moveBarButtonAction {
-    
+    __weak typeof(self) wself = self;
+    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        NSMutableArray *selectLocalPhotos = @[].mutableCopy;
+        for (NSIndexPath *indexPath in sself.collectionView.indexPathsForSelectedItems) {
+            [selectLocalPhotos addObject:[sself.fetchedResultsController objectAtIndexPath:indexPath]];
+        }
+        
+        void (^completion)() = ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                [sself disableSelectMode];
+            });
+        };
+        
+        if (isWebAlbum) {
+            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectLocalPhotos toWebAlbum:album completion:^(NSError *error) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                [[PDTaskManager sharedManager] start];
+                
+                completion();
+            }];
+        }
+        else {
+            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+                PLAlbumObject *albumObject = (PLAlbumObject *)album;
+                
+                for (PLPhotoObject *photoObject in selectLocalPhotos) {
+                    [albumObject addPhotosObject:photoObject];
+                }
+                
+                [context save:nil];
+                
+                completion();
+            }];
+        }
+    }];
+    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
 }
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
+    if (_isChangingContext) {
+        return 0;
+    }
+    
+    return [[_fetchedResultsController sections] count];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return _photos.count;
+    if (_isChangingContext) {
+        return 0;
+    }
+    
+    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
+    return [sectionInfo numberOfObjects];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PLPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    cell.photo = _photos[indexPath.row];
+    cell.photo = [_fetchedResultsController objectAtIndexPath:indexPath];
+    cell.isSelectWithCheckMark = _isSelectMode;
     
     return cell;
 }
@@ -193,22 +340,32 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_isSelectMode) {
         _selectActionBarButton.enabled = YES;
-        _trashBarButtonItem.enabled = YES;
         _moveBarButtonItem.enabled = YES;
+        
+        PLPhotoObject *photoObject = [_fetchedResultsController objectAtIndexPath:indexPath];
+        [_selectedPhotoURLs addObject:photoObject.url];
+        
+        if (_selectedPhotoURLs.count == _fetchedResultsController.fetchedObjects.count) {
+            [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Deselect all", nil)];
+        }
     }
     else {
-        PLPhotoPageViewController *viewController = [[PLPhotoPageViewController alloc] initWithPhotos:_photos index:indexPath.row];
+        PLPhotoPageViewController *viewController = [[PLPhotoPageViewController alloc] initWithPhotos:_fetchedResultsController.fetchedObjects index:indexPath.row];
         [self.navigationController pushViewController:viewController animated:YES];
     }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_isSelectMode) {
-        if (_collectionView.indexPathsForSelectedItems.count == 0) {
+        PLPhotoObject *photoObject = [_fetchedResultsController objectAtIndexPath:indexPath];
+        [_selectedPhotoURLs removeObject:photoObject.url];
+        
+        if (_selectedPhotoURLs.count == 0) {
             _selectActionBarButton.enabled = NO;
-            _trashBarButtonItem.enabled = NO;
             _moveBarButtonItem.enabled = NO;
         }
+        
+        [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
     }
 }
 
@@ -220,6 +377,8 @@
     }
     _isSelectMode = YES;
     
+    [_selectedPhotoURLs removeAllObjects];
+    
     _collectionView.allowsMultipleSelection = YES;
     for (PLPhotoViewCell *cell in _collectionView.visibleCells) {
         cell.isSelectWithCheckMark = YES;
@@ -227,14 +386,15 @@
     
     _selectActionBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
     _selectActionBarButton.enabled = NO;
-    _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
-    _trashBarButtonItem.enabled = NO;
-    _moveBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"移動" style:UIBarButtonItemStylePlain target:self action:@selector(moveBarButtonAction)];
+    _moveBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Copy", nil) style:UIBarButtonItemStylePlain target:self action:@selector(moveBarButtonAction)];
     _moveBarButtonItem.enabled = NO;
+    UIBarButtonItem *fixedBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    fixedBarButtonItem.width = 32.0f;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _moveBarButtonItem, flexibleSpace, _trashBarButtonItem];
+    NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _moveBarButtonItem, flexibleSpace, fixedBarButtonItem];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
+    [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
@@ -245,10 +405,13 @@
     }];
     
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
-    [cancelBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
-    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:@"項目を選択"];
+    _selectAllBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:nil style:UIBarButtonItemStylePlain target:self action:@selector(selectAllBarButtonAction)];
+    [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
+    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
+    [navigationItem setRightBarButtonItem:_selectAllBarButtonItem animated:NO];
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
+    [tabBarController setActionNavigationTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
     [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
@@ -289,6 +452,74 @@
 	}
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+}
+
+#pragma mark NSFetchedResultsControllerDelegate
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = YES;
+}
+
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = NO;
+    
+    NSError *error = nil;
+    [_fetchedResultsController performFetch:&error];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+    });
+}
+
+#pragma mark UIAlertView
+- (void)showAlbumActionSheet:(PLAlbumObject *)album {
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.name];
+    __weak typeof(self) wself = self;
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself shareAlbum:album];
+    }];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Upload", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
+            if (error) NSLog(@"%@", error.description);
+            [[PDTaskManager sharedManager] start];
+        }];
+    }];
+    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+            [context deleteObject:album];
+            [context save:nil];
+        }];
+    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
+    [actionSheet showFromTabBar:self.tabBarController.tabBar];
+}
+
+#pragma mark HandleModelObject
+- (void)shareAlbum:(PLAlbumObject *)album {
+    NSMutableArray *assets = [NSMutableArray array];
+    for (PLPhotoObject *photo in album.photos) {
+        [PLAssetsManager assetForURL:[NSURL URLWithString:photo.url] resultBlock:^(ALAsset *asset) {
+            if (asset) {
+                [assets addObject:asset];
+            }
+            if (assets.count == album.photos.count) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    UIActivityViewController *viewControlle = [[UIActivityViewController alloc] initWithActivityItems:assets applicationActivities:nil];
+                    [self.tabBarController presentViewController:viewControlle animated:YES completion:nil];
+                });
+            }
+        } failureBlock:^(NSError *error) {
+            
+        }];
+    }
 }
 
 @end

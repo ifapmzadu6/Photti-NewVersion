@@ -40,7 +40,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     NSDictionary *option = [NSDictionary dictionaryWithObjectsAndKeys:@(PageViewControllerOptionInterPageSpacingValue), UIPageViewControllerOptionInterPageSpacingKey, nil];
     self = [self initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:option];
     if (self) {
-        NSString *title = NSLocalizedString(@"カメラロール", nil);
+        NSString *title = NSLocalizedString(@"Camera Roll", nil);
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
         
         self.automaticallyAdjustsScrollViewInsets = NO;
@@ -163,11 +163,9 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 }
 
 - (void)addBarButtonAction {
-    UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"新規アルバム", nil) message:NSLocalizedString(@"アルバム名を入力してください。", nil)];
+    UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"New Album", nil) message:NSLocalizedString(@"Enter album title.", nil)];
     alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
-    [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
-        
-    }];
+    [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
     __weak UIAlertView *wAlertView = alertView;
     [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
         UIAlertView *sAlertView = wAlertView;
@@ -176,7 +174,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         UITextField *textField = [sAlertView textFieldAtIndex:0];
         NSString *title = textField.text;
         if (!title || [title isEqualToString:@""]) {
-            title = NSLocalizedString(@"新規アルバム", nil);
+            title = NSLocalizedString(@"New Album", nil);
         }
         
         __weak typeof(self) wself = self;
@@ -186,7 +184,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
             
             PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
             album.id_str = [PWSnowFlake generateUniqueIDString];
-            album.name = NSLocalizedString(@"新規アルバム", nil);
+            album.name = NSLocalizedString(@"New Album", nil);
             NSDate *date = [NSDate date];
             NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:date];
             album.tag_date = adjustedDate;
@@ -200,7 +198,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         }];
     }];
     UITextField *textField = [alertView textFieldAtIndex:0];
-    textField.placeholder = NSLocalizedString(@"新規アルバム", nil);
+    textField.placeholder = NSLocalizedString(@"New Album", nil);
     [alertView show];
 }
 
@@ -292,7 +290,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[searchBarButtonItem] animated:YES];
         
-        UIBarButtonItem *allPhotoSelectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"選択", nil) style:UIBarButtonItemStylePlain target:sself action:@selector(allPhotoSelectBarButtonAction)];
+        UIBarButtonItem *allPhotoSelectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select", nil) style:UIBarButtonItemStylePlain target:sself action:@selector(allPhotoSelectBarButtonAction)];
         [sself.navigationItem setLeftBarButtonItem:allPhotoSelectBarButtonItem animated:YES];
     }];
     [allPhotosViewController setHeaderViewDidTapBlock:^(BOOL isSelectMode) {
@@ -352,7 +350,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     UIBarButtonItem *selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
-    UIBarButtonItem *selectAddBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"移動", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectAddBarButtonAction)];
+    UIBarButtonItem *selectAddBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Copy", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectAddBarButtonAction)];
     UIBarButtonItem *selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     [tabBarController setActionToolbarItems:@[selectActionBarButtonItem, flexibleSpace, selectAddBarButtonItem, flexibleSpace, selectTrashBarButtonItem] animated:YES];
@@ -366,7 +364,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];
     UIBarButtonItem *selectCancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(selectCancelBarButtonAction)];
-    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:@"項目を選択"];
+    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     navigationItem.leftBarButtonItem = selectCancelBarButtonItem;
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
     [tabBarController setActionNavigationTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];

@@ -7,7 +7,8 @@
 //
 
 @import UIKit;
+@import CoreData;
 
-@interface PWAlbumPickerWebAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface PWAlbumPickerWebAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @end

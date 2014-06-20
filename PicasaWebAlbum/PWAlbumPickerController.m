@@ -18,63 +18,47 @@
 
 @property (strong, nonatomic) UIToolbar *toolbar;
 
-@property (weak, nonatomic) PWAlbumPickerNavigationController *navigationController;
-@property (weak, nonatomic) UIViewController *albumViewController;
-
-@property (nonatomic) BOOL isDownloadMode;
-@property (copy, nonatomic) void (^completion)(PWAlbumObject *);
+@property (copy, nonatomic) void (^completion)(id, BOOL);
 
 @end
 
 @implementation PWAlbumPickerController
 
-- (id)initWithDownloadMode:(BOOL)isDownloadMode completion:(void (^)(PWAlbumObject *album))completion {
+- (id)initWithCompletion:(void (^)(id, BOOL))completion {
     self = [super init];
     if (self) {
-        _isDownloadMode = isDownloadMode;
         _completion = completion;
         
-        UIViewController *albumViewcontroller = nil;
-        if (isDownloadMode) {
-            albumViewcontroller = [[PWAlbumPickerLocalAlbumListViewController alloc] init];
-        }
-        else {
-            albumViewcontroller = [[PWAlbumPickerWebAlbumListViewController alloc] init];
-        }
-        _albumViewController = albumViewcontroller;
-        PWAlbumPickerNavigationController *navigationController = [[PWAlbumPickerNavigationController alloc] initWithRootViewController:albumViewcontroller];
-        _navigationController = navigationController;
+        PWAlbumPickerLocalAlbumListViewController *localAlbumViewcontroller = [[PWAlbumPickerLocalAlbumListViewController alloc] init];
+        PWAlbumPickerNavigationController *localNavigationController = [[PWAlbumPickerNavigationController alloc] initWithRootViewController:localAlbumViewcontroller];
         
-        UIViewController *dammyViewController = [[UIViewController alloc] init];
-        dammyViewController.tabBarItem.enabled = NO;
+        PWAlbumPickerWebAlbumListViewController *webAlbumViewcontroller = [[PWAlbumPickerWebAlbumListViewController alloc] init];
+        PWAlbumPickerNavigationController *webNavigationController = [[PWAlbumPickerNavigationController alloc] initWithRootViewController:webAlbumViewcontroller];
         
-        if (isDownloadMode) {
-            self.viewControllers = @[navigationController, dammyViewController];
-        }
-        else {
-            self.viewControllers = @[dammyViewController, navigationController];
-        }        
+        self.delegate = self;
+        self.viewControllers = @[localNavigationController, webNavigationController];
+        self.selectedIndex = 1;
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.tabBar.barTintColor = [UIColor blackColor];
+    
+    _toolbar = [[UIToolbar alloc] init];
+    [self.view insertSubview:_toolbar belowSubview:self.tabBar];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
-    if (_isDownloadMode) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
-    }
-    else {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
-    }
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
     
-    _toolbar = [[UIToolbar alloc] init];
-    [self.view insertSubview:_toolbar belowSubview:self.tabBar];
+    [self setPrompt:_prompt];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -101,21 +85,35 @@
 }
 
 #pragma mark UIBarButtonAction
-- (void)doneBarButtonActionWithSelectedAlbum:(PWAlbumObject *)selectedAlbum {
+- (void)doneBarButtonActionWithSelectedAlbum:(id)selectedAlbum isWebAlbum:(BOOL)isWebAlbum {
     if (_completion) {
-        _completion(nil);
+        _completion(selectedAlbum, isWebAlbum);
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark UITabBarControllerDelegate
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
+    [viewController viewDidAppear:NO];
+    
+    NSUInteger index = [self.viewControllers indexOfObject:viewController];
+    if (index == 0) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    }
+    else if (index == 1) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    }
 }
 
 #pragma methods
 - (void)setPrompt:(NSString *)prompt {
     _prompt = prompt;
     
-    UIViewController *viewController = _albumViewController;
-    if (viewController) {
-        viewController.navigationItem.prompt = prompt;
+    for (UINavigationController *navigationController in self.viewControllers) {
+        for (UIViewController *viewController in navigationController.viewControllers) {
+            viewController.navigationItem.prompt = prompt;
+        }
     }
 }
 

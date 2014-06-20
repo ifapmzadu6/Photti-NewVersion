@@ -21,7 +21,6 @@
 @property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UILabel *titleLabel;
-@property (strong, nonatomic) UILabel *dateLabel;
 @property (strong, nonatomic) UILabel *numPhotosLabel;
 @property (strong, nonatomic) UIButton *actionButton;
 @property (strong, nonatomic) UIView *overrayView;
@@ -63,12 +62,8 @@
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.font = [UIFont systemFontOfSize:14.0f];
     _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+    _titleLabel.numberOfLines = 2;
     [self.contentView addSubview:_titleLabel];
-    
-    _dateLabel = [[UILabel alloc] init];
-    _dateLabel.font = [UIFont systemFontOfSize:14.0f];
-    _dateLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
-    [self.contentView addSubview:_dateLabel];
     
     _numPhotosLabel = [[UILabel alloc] init];
     _numPhotosLabel.font = [UIFont systemFontOfSize:12.0f];
@@ -123,9 +118,7 @@
     
     _activityIndicatorView.center = _imageView.center;
     
-    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 4.0f, rect.size.width - 20.0f - 4.0f, 14.0f);
-    
-    _dateLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 4.0f + 14.0f + 4.0f, rect.size.width - 20.0f - 4.0f, 14.0f);
+    [self setTitleLabelFrame];
     
     _numPhotosLabel.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 40.0f, CGRectGetMaxY(_imageView.frame) - 20.0f, 36.0f, 16.0f);
     
@@ -134,23 +127,30 @@
     _overrayView.frame = rect;
 }
 
+- (void)setTitleLabelFrame {
+    CGRect rect = self.contentView.bounds;
+    
+    CGSize titleLabelSize = [_titleLabel sizeThatFits:CGSizeMake(rect.size.width - 20.0f - 8.0f, CGFLOAT_MAX)];
+    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 3.0f, rect.size.width - 20.0f - 8.0f, titleLabelSize.height);
+}
+
 - (void)setAlbum:(PLAlbumObject *)album {
     _album = album;
     
-    NSUInteger hash = album.hash;
-    _albumHash = hash;
-    
     _titleLabel.text = nil;
-    _dateLabel.text = nil;
     _numPhotosLabel.text = nil;
     _imageView.image = nil;
     [_activityIndicatorView startAnimating];
     
-    NSString *albumName = album.name;
-    NSString *date = [[PLDateFormatter mmmddFormatter] stringFromDate:album.tag_date];
-    if (album.tag_enddate) {
-        date = [date stringByAppendingString:[[PLDateFormatter mmmddFormatter] stringFromDate:album.tag_enddate]];
+    if (!album) {
+        _albumHash = 0;
+        return;
     }
+    
+    NSUInteger hash = album.hash;
+    _albumHash = hash;
+    
+    NSString *albumName = album.name;
     NSUInteger count = album.photos.count;
     NSString *countString = [NSString stringWithFormat:@"%lu", (unsigned long)count];
     __weak typeof(self) wself = self;
@@ -160,7 +160,8 @@
         if (sself.albumHash != hash) return;
         
         sself.titleLabel.text = albumName;
-        sself.dateLabel.text = date;
+        [sself setTitleLabelFrame];
+        
         sself.numPhotosLabel.text = countString;
     });
     

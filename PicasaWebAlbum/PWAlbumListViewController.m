@@ -48,7 +48,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = @"ウェブアルバム";
+        self.title = NSLocalizedString(@"Web Album", nil);
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];
     }
     return self;
@@ -115,7 +115,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     
     if (!_fetchedResultsController) {
         __weak typeof(self) wself = self;
-        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        [PWCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
             if (!sself) return;
             
@@ -136,9 +136,11 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
                     [sself.activityIndicatorView stopAnimating];
                 }
                 
-                [sself.collectionView reloadData];
+                if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
+                    [sself.collectionView reloadData];
+                }
                 
-                [sself reloadData];
+                [sself loadDataWithStartIndex:0];
             });
         }];
     }
@@ -193,7 +195,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         return 0;
     }
     
-    id<NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
+    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
     return [sectionInfo numberOfObjects];
 }
 
@@ -250,7 +252,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
     if (!_isNowRequesting) {
-        [self reloadData];
+        [self loadDataWithStartIndex:0];
     }
 }
 
@@ -276,7 +278,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [sself reloadData];
+        [sself loadDataWithStartIndex:0];
     }];
     PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
@@ -306,32 +308,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     }];
 }
 
-- (void)reloadData {
-    _isNowRequesting = YES;
-    
-    __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfAlbumsWithIndex:0 completion:^(NSArray *albums, NSUInteger nextIndex, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        if (error) {
-            NSLog(@"%@", error);
-            if (error.code == 401) {
-                [sself openLoginviewController];
-            }
-            return;
-        }
-        
-        sself.requestIndex = nextIndex;
-        sself.isNowRequesting = NO;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.refreshControl endRefreshing];
-            [sself.activityIndicatorView stopAnimating];
-        });
-    }];
-}
-
 - (void)openLoginviewController {
     __weak typeof(self) wself = self;
     [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
@@ -348,7 +324,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            [sself reloadData];
+            [sself loadDataWithStartIndex:0];
         });
     }];
 }
@@ -363,17 +339,43 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     
     NSError *error = nil;
     [_fetchedResultsController performFetch:&error];
-    
+
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
     });
+}
+
+- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
+    
+    switch (type) {
+        case NSFetchedResultsChangeInsert:
+//            [_collectionView insertItemsAtIndexPaths:@[newIndexPath]];
+            break;
+            
+        case NSFetchedResultsChangeDelete:
+//            [_collectionView deleteItemsAtIndexPaths:@[indexPath]];
+            break;
+            
+        case NSFetchedResultsChangeUpdate:
+//            [_collectionView reloadItemsAtIndexPaths:@[indexPath]];
+            break;
+            
+        case NSFetchedResultsChangeMove:
+//            [_collectionView deleteItemsAtIndexPaths:@[indexPath]];
+//            [_collectionView insertItemsAtIndexPaths:@[indexPath]];
+//            [_collectionView moveItemAtIndexPath:indexPath toIndexPath:newIndexPath];
+            break;
+            
+        default:
+            break;
+    }
 }
 
 #pragma mark UIActionSheet
 - (void)showAlbumActionSheet:(PWAlbumObject *)album {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.title];
     __weak typeof(self) wself = self;
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"情報", nil) handler:^{
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Edit", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -382,12 +384,12 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            [sself reloadData];
+            [sself loadDataWithStartIndex:0];
         }];
         PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"共有", nil) handler:^{
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -403,7 +405,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"ダウンロード", nil) handler:^{
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Download", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
                 
@@ -423,13 +425,13 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             }];
         }];
     }];
-    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除", nil) handler:^{
+    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
         UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"本当に削除しますか？アルバム内の写真はすべて削除されます。", nil)];
         [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除する", nil) handler:^{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"アルバムを削除しています", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
             UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
             indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
             [indicator startAnimating];
@@ -446,7 +448,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                    [sself reloadData];
+                    [sself loadDataWithStartIndex:0];
                 });
             }];
         }];

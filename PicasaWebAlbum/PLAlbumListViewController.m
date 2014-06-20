@@ -37,7 +37,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"アルバム", nil);
+        self.title = NSLocalizedString(@"Album", nil);
     }
     return self;
 }
@@ -81,7 +81,10 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [sself.indicatorView stopAnimating];
-            [sself.collectionView reloadData];
+            
+            if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
+                [sself.collectionView reloadData];
+            }
         });
     }];
 }
@@ -158,7 +161,7 @@
         return 0;
     }
     
-    id<NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
+    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
     return [sectionInfo numberOfObjects];
 }
 
@@ -181,7 +184,6 @@
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
         return nil;
     }
-    
     
     PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
     
@@ -242,49 +244,58 @@
 - (void)showAlbumActionSheet:(PLAlbumObject *)album {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.name];
     __weak typeof(self) wself = self;
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"共有", nil) handler:^{
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Edit", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"Edit Album", nil) message:NSLocalizedString(@"Enter album title.", nil)];
+        alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+        UITextField *textField = [alertView textFieldAtIndex:0];
+        textField.text = album.name;
+        [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
+        [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
+            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+                album.name = textField.text;
+                
+                [context save:nil];
+            }];
+        }];
+        [alertView show];
+    }];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
         [sself shareAlbum:album];
     }];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"アップロード", nil) handler:^{
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Upload", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [sself makeNewWebAlbumWithLocalAlbum:album completion:^(PWAlbumObject *webAlbum, NSError *error) {
-            [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:webAlbum completion:^(NSError *error) {
-                NSLog(@"成功したよ！！！！やったよ！！！！");
-                if (error) {
-                    NSLog(@"%@", error.description);
-                }
-            }];
+        [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
+            if (error) NSLog(@"%@", error.description);
+            [[PDTaskManager sharedManager] start];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Added new tasks.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil];
+                [alertView show];
+            });
         }];
     }];
-    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除", nil) handler:^{
+    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [sself removeAlbum:album completion:nil];
+        [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+            [context deleteObject:album];
+            [context save:nil];
+        }];
     }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
-    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
     [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }
 
 #pragma mark HandleModelObject
-- (void)removeAlbum:(PLAlbumObject *)album completion:(void (^)())completion {
-    [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
-        [context deleteObject:album];
-        NSError *error = nil;
-        [context save:&error];
-        
-        if (completion) {
-            completion();
-        }
-    }];
-}
-
 - (void)shareAlbum:(PLAlbumObject *)album {
     NSMutableArray *assets = [NSMutableArray array];
     for (PLPhotoObject *photo in album.photos) {

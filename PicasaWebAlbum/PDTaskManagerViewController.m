@@ -20,7 +20,7 @@
 @property (strong, nonatomic) UITableView *tableView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-
+@property (nonatomic) BOOL isChangingContext;
 
 @end
 
@@ -29,8 +29,8 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = @"タスクマネージャー";
-        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"タスク" image:[UIImage imageNamed:@"Upload"] selectedImage:[UIImage imageNamed:@"UploadSelect"]];
+        self.title = NSLocalizedString(@"Task Manager", nil);
+        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Upload"] selectedImage:[UIImage imageNamed:@"UploadSelect"]];
         
         __weak typeof(self) wself = self;
         PDTaskManager *taskManager = [PDTaskManager sharedManager];
@@ -114,11 +114,19 @@
 
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    if (_isChangingContext) {
+        return 0;
+    }
+    
     return [[_fetchedResultsController sections] count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    id<NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
+    if (_isChangingContext) {
+        return 0;
+    }
+    
+    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
     return [sectionInfo numberOfObjects];
 }
 
@@ -165,20 +173,20 @@
         [sself.fetchedResultsController performFetch:&error];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.tableView reloadData];
+            if (sself.tableView.indexPathsForVisibleRows.count == 0) {
+                [sself.tableView reloadData];
+            }
         });
     }];
 }
 
 #pragma NSFetchedResultsControllerDelegate
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    
+    _isChangingContext = YES;
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    if (!_fetchedResultsController) {
-        return;
-    }
+    _isChangingContext = NO;
     
     NSError *error = nil;
     [_fetchedResultsController performFetch:&error];

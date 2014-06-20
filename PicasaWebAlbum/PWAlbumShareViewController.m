@@ -47,8 +47,7 @@
     _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_tableView];
     
-    UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"完了", nil) style:UIBarButtonItemStylePlain target:self action:@selector(doneBarButtonAction)];
-    [doneBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
+    UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
     self.navigationItem.leftBarButtonItem = doneBarButtonItem;
     
     self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
@@ -122,7 +121,7 @@
             }
         }
         else {
-            cell.textLabel.text = NSLocalizedString(@"リンクを共有する", nil);
+            cell.textLabel.text = NSLocalizedString(@"Share link", nil);
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             NSString *link = nil;
@@ -147,9 +146,9 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if (section == 0) {
-        return NSLocalizedString(@"共有設定", nil);
+        return NSLocalizedString(@"Setting", nil);
     }
-    return NSLocalizedString(@"リンク", nil);
+    return NSLocalizedString(@"Link", nil);
 }
 
 #pragma mark UITableViewDelegate

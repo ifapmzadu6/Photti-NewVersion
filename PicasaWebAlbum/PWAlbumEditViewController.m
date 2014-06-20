@@ -41,7 +41,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = NSLocalizedString(@"アルバム編集", nil);
+    self.title = NSLocalizedString(@"Edit", nil);
     
     _timestamp = _album.gphoto.timestamp;
     
@@ -54,13 +54,12 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
     
-    UIBarButtonItem *createBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"保存", nil) style:UIBarButtonItemStylePlain target:self action:@selector(createBarButtonAction)];
-    [createBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
-    self.navigationItem.rightBarButtonItem = createBarButtonItem;
+    UIBarButtonItem *saveBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Save", nil) style:UIBarButtonItemStylePlain target:self action:@selector(saveBarButtonAction)];
+    [saveBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
+    self.navigationItem.rightBarButtonItem = saveBarButtonItem;
     
     self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     [[UITextField appearance] setTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
-    
 }
 
 - (void)viewWillLayoutSubviews {
@@ -79,6 +78,8 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
     
     for (NSIndexPath *indexPath in _tableView.indexPathsForSelectedRows) {
         [_tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -113,7 +114,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     
     if (indexPath.section == 0) {
         if (indexPath.row == PWAlbumEditViewControllerCellRowTitle) {
-            cell.textLabel.text = @"タイトル";
+            cell.textLabel.text = NSLocalizedString(@"Title", nil);
             CGSize textSize = [cell.textLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
             UITextField *textField = _textField;
             if (!textField) {
@@ -126,7 +127,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
             }
         }
         else if (indexPath.row == PWAlbumEditViewControllerCellRowTimestamp) {
-            cell.textLabel.text = @"日付";
+            cell.textLabel.text = NSLocalizedString(@"Date", nil);
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             dateFormatter.dateStyle = NSDateFormatterLongStyle;
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:_timestamp.longLongValue / 1000];
@@ -172,24 +173,6 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     _textField = textField;
     
     return textField;
-}
-
-- (void)linkCopyAction {
-    NSString *link = nil;
-    for (PWPhotoLinkObject *linkObject in _album.link.allObjects) {
-        if ([kPWPicasaAPILinkRelShare isEqualToString:linkObject.rel]) {
-            link = linkObject.href;
-        }
-    }
-    if (!link) {
-        return;
-    }
-    
-    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    pasteboard.string = link;
-    
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"コピーしました。", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Done", nil), nil];
-    [alertView show];
 }
 
 - (void)linkShareAction {
@@ -277,12 +260,12 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
 }
 
 #pragma mark UIBarButtonItem
-- (void)createBarButtonAction {
+- (void)saveBarButtonAction {
     if (!_album) {
         return;
     }
     
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"アルバムを保存しています", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Saving...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
     UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
     [indicator startAnimating];

@@ -7,10 +7,13 @@
 //
 
 @import UIKit;
+@import CoreData;
 
 @class PLAlbumObject;
 
-@interface PLPhotoListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface PLPhotoListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+
+@property (strong, nonatomic, readonly) PLAlbumObject *album;
 
 - initWithAlbum:(PLAlbumObject *)album;
 

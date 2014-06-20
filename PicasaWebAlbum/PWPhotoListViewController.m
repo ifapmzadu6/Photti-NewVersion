@@ -22,6 +22,7 @@
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
 #import "PWImagePickerController.h"
+#import "PWAlbumPickerController.h"
 
 @interface PWPhotoListViewController ()
 
@@ -115,7 +116,9 @@
                 [sself.activityIndicatorView stopAnimating];
             }
             
-            [sself.collectionView reloadData];
+            if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
+                [sself.collectionView reloadData];
+            }
             
             [sself reloadData];
         });
@@ -144,14 +147,17 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    NSArray *indexPaths = _collectionView.indexPathsForSelectedItems;
-    for (NSIndexPath *indexPath in indexPaths) {
-        [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    if (!_isSelectMode) {
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
+        
+        for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
+            [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+        }
     }
     
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
-    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"選択" style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
+    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
@@ -222,7 +228,15 @@
 }
 
 - (void)moveBarButtonAction {
-    
+    __weak typeof(self) wself = self;
+    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself disableSelectMode];
+    }];
+    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
 }
 
 #pragma mark UIRefreshControl
@@ -246,7 +260,7 @@
         return 0;
     }
     
-    id<NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
+    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
     return [sectionInfo numberOfObjects];
 }
 
@@ -338,7 +352,7 @@
     _selectActionBarButton.enabled = NO;
     _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
     _trashBarButtonItem.enabled = NO;
-    _moveBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"移動" style:UIBarButtonItemStylePlain target:self action:@selector(moveBarButtonAction)];
+    _moveBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Copy", nil) style:UIBarButtonItemStylePlain target:self action:@selector(moveBarButtonAction)];
     _moveBarButtonItem.enabled = NO;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _moveBarButtonItem, flexibleSpace, _trashBarButtonItem];
@@ -355,8 +369,7 @@
     }];
     
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
-    [cancelBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
-    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:@"項目を選択"];
+    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
     [tabBarController setActionNavigationTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
@@ -506,7 +519,7 @@
 - (void)showAlbumActionSheet:(PWAlbumObject *)album {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.title];
     __weak typeof(self) wself = self;
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"情報", nil) handler:^{
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Edit", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -520,7 +533,7 @@
         PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"共有", nil) handler:^{
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -536,7 +549,7 @@
         PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
-    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除", nil) handler:^{
+    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         

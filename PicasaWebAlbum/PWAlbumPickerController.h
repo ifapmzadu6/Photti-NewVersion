@@ -8,15 +8,13 @@
 
 @import UIKit;
 
-@class PWAlbumObject;
+@interface PWAlbumPickerController : UITabBarController <UITabBarControllerDelegate>
 
-@interface PWAlbumPickerController : UITabBarController
-
-- (id)initWithDownloadMode:(BOOL)isDownloadMode completion:(void (^)(PWAlbumObject *album))completion;
+- (id)initWithCompletion:(void (^)(id album, BOOL isWebAlbum))completion;
 
 @property (strong, nonatomic) NSString *prompt;
 
-- (void)doneBarButtonActionWithSelectedAlbum:(PWAlbumObject *)selectedAlbum;
+- (void)doneBarButtonActionWithSelectedAlbum:(id)selectedAlbum isWebAlbum:(BOOL)isWebAlbum;
 - (UIEdgeInsets)viewInsets;
 
 @end

@@ -38,7 +38,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"すべての写真", nil);
+        self.title = NSLocalizedString(@"All Items", nil);
         
         _headers = [NSMutableArray array];
     }
@@ -308,13 +308,13 @@
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     _isChangingContext = NO;
     
-    NSError *coredataError = nil;
-    [_fetchedResultsController performFetch:&coredataError];
-    
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         typeof(wself) sself = wself;
         if (!sself) return;
+        
+        NSError *coredataError = nil;
+        [_fetchedResultsController performFetch:&coredataError];
         
         [sself.collectionView reloadData];
     });

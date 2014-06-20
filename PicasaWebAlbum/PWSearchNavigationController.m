@@ -356,19 +356,19 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if (_isShowHistory) {
         if (_items.count) {
-            return NSLocalizedString(@"履歴", nil);
+            return NSLocalizedString(@"History", nil);
         }
     }
     else {
         PWSearchNavigationControllerItem *sectionItem = _items[section];
         if (sectionItem.type == PWSearchNavigationControllerItemTypeWebAlbum) {
-            return NSLocalizedString(@"ウェブ上のアルバム", nil);
+            return NSLocalizedString(@"Web Album", nil);
         }
         else if (sectionItem.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
-            return NSLocalizedString(@"カメラロールのアルバム", nil);
+            return NSLocalizedString(@"Camera Roll", nil);
         }
         else if (sectionItem.type == PWSearchNavigationControllerItemTypeLocalPhoto) {
-            return NSLocalizedString(@"カメラロールの写真", nil);
+            return NSLocalizedString(@"Camera Roll", nil);
         }
     }
     return nil;
