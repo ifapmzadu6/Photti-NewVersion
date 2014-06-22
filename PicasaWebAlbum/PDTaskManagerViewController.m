@@ -9,11 +9,16 @@
 #import "PDTaskManagerViewController.h"
 
 #import "PWColors.h"
+#import "PWIcons.h"
 #import "PDModelObject.h"
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
 
+#import "PWCoreDataAPI.h"
+#import "PLCoreDataAPI.h"
+
 #import "PDTaskTableViewCell.h"
+#import "PDTaskViewController.h"
 
 @interface PDTaskManagerViewController ()
 
@@ -31,6 +36,15 @@
     if (self) {
         self.title = NSLocalizedString(@"Task Manager", nil);
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Upload"] selectedImage:[UIImage imageNamed:@"UploadSelect"]];
+        
+        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerWillChangeContent:) name:NSManagedObjectContextWillSaveNotification object:context];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:context];
+        }];
+        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerWillChangeContent:) name:NSManagedObjectContextWillSaveNotification object:context];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:context];
+        }];
         
         __weak typeof(self) wself = self;
         PDTaskManager *taskManager = [PDTaskManager sharedManager];
@@ -75,18 +89,20 @@
     _tableView.rowHeight = 56.0f;
     _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_tableView];
+    
+    [self loadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    for (NSIndexPath *indexPath in _tableView.indexPathsForSelectedRows) {
+        [_tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    if (!_fetchedResultsController) {
-        [self loadData];
-    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -97,6 +113,17 @@
     _tableView.frame = rect;
 }
 
+- (void)dealloc {
+    [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextWillSaveNotification object:context];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
+    }];
+    [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextWillSaveNotification object:context];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
+    }];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
@@ -105,6 +132,18 @@
     [super setEditing:editing animated:animated];
     
     [_tableView setEditing:editing animated:animated];
+}
+
+#pragma mark UITabBarItem
+- (void)updateTabBarItem {
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"UploadSelect"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+    }
+    else {
+        self.tabBarItem.image = [UIImage imageNamed:@"Upload"];
+        self.tabBarItem.selectedImage = [UIImage imageNamed:@"UploadSelect"];
+    }
 }
 
 #pragma mark UIBarButtonAction
@@ -133,13 +172,23 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     PDTaskTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
-    cell.taskObject = [_fetchedResultsController objectAtIndexPath:indexPath];
+    if (_isChangingContext) {
+        cell.taskObject = nil;
+    }
+    else {
+        cell.taskObject = [_fetchedResultsController objectAtIndexPath:indexPath];
+    }
     cell.isNowLoading = (indexPath.row == 0);
     
     return cell;
 }
 
 #pragma mark UITableViewDelegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    PDTaskViewController *viewController = [[PDTaskViewController alloc] initWithTask:[_fetchedResultsController objectAtIndexPath:indexPath]];
+    [self.navigationController pushViewController:viewController animated:YES];
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return [PDTaskTableViewCell cellHeightForTaskObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
 }

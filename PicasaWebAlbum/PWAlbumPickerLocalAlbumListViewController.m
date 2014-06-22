@@ -9,12 +9,12 @@
 #import "PWAlbumPickerLocalAlbumListViewController.h"
 
 #import "PWColors.h"
+#import "PWIcons.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLAlbumViewCell.h"
 #import "PWSnowFlake.h"
 #import "PLDateFormatter.h"
-#import "PLCreateNewAlbumViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PLModelObject.h"
 #import "BlocksKit+UIKit.h"
@@ -35,10 +35,10 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"アルバム", nil);
+        self.title = NSLocalizedString(@"Album", nil);
         
-        NSString *tabBarTitle = NSLocalizedString(@"カメラロール", nil);
-        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:tabBarTitle image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
+        NSString *title = NSLocalizedString(@"Camera Roll", nil);
+        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
     }
     return self;
 }
@@ -46,20 +46,19 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundDarkColor];
     
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
     [_collectionView registerClass:[PLAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
-    [_collectionView registerClass:[PLCreateNewAlbumViewCell class] forCellWithReuseIdentifier:@"CreateNewAlbumCell"];
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 10.0f, 0.0f);
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
     _collectionView.clipsToBounds = NO;
-    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundDarkColor];
     [self.view addSubview:_collectionView];
     
     UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
@@ -73,7 +72,7 @@
     [_indicatorView startAnimating];
     
     __weak typeof(self) wself = self;
-    [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+    [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -120,6 +119,18 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+#pragma mark UITabBarItem
+- (void)updateTabBarItem {
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+    }
+    else {
+        self.tabBarItem.image = [UIImage imageNamed:@"Picture"];
+        self.tabBarItem.selectedImage = [UIImage imageNamed:@"PictureSelected"];
+    }
 }
 
 #pragma mark UIBarButtonAction

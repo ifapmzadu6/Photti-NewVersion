@@ -48,7 +48,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
         NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
         //            NSLog(@"%@", json.description);
         
-        [PWCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
             NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
             NSDictionary *startIndexDic = NULL_TO_NIL(feed[@"openSearch:startIndex"]);
             NSDictionary *totalResultsDic = NULL_TO_NIL(feed[@"openSearch:totalResults"]);
@@ -127,7 +127,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
             NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
             //            NSLog(@"%@", json.description);
             
-            [PWCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
+            [PWCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
                 NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
                 NSDictionary *startIndexDic = NULL_TO_NIL(feed[@"openSearch:startIndex"]);
                 NSDictionary *totalResultsDic = NULL_TO_NIL(feed[@"openSearch:totalResults"]);
@@ -223,7 +223,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
             return;
         };
         
-        [PWCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
+        [PWCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
         
             PWAlbumObject *album = [PWPicasaParser albumFromJson:entries context:context];
             
@@ -273,7 +273,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
             return;
         }
         
-        [PWCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
+        [PWCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
             NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
             NSDictionary *entries = NULL_TO_NIL(json[@"entry"]);
             if (!entries) {

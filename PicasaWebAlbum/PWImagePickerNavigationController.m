@@ -61,4 +61,13 @@
     viewController.navigationItem.prompt = _titleOnNavigationBar;
 }
 
+#pragma mark UITabBarItem
+- (void)updateTabBarItem {
+    for (UIViewController *viewController in self.viewControllers) {
+        if ([viewController respondsToSelector:@selector(updateTabBarItem)]) {
+            [viewController performSelector:@selector(updateTabBarItem)];
+        }
+    }
+}
+
 @end

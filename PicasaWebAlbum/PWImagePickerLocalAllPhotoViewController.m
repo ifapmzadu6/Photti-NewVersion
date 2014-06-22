@@ -17,6 +17,7 @@
 #import "PLDateFormatter.h"
 #import "PLAssetsManager.h"
 #import "PLModelObject.h"
+#import "PLCoreDataAPI.h"
 
 
 @interface PLImagePickerSection : NSObject
@@ -45,7 +46,9 @@
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
-@property (strong, nonatomic) NSArray *sections;
+@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic) BOOL isChangingContext;
+
 @property (nonatomic) NSUInteger photosCount;
 @property (nonatomic) NSUInteger videosCount;
 
@@ -58,7 +61,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"すべての写真", nil);
+        self.title = NSLocalizedString(@"All Items", nil);
     }
     return self;
 }
@@ -83,19 +86,23 @@
     _headerViews = [NSMutableDictionary dictionary];
     
     __weak typeof(self) wself = self;
-    [self getDataWithCompletion:^(NSArray *allPhotos, NSError *error) {
+    [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        sself.sections = [sself devidedPhotosByDate:allPhotos];
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+        request.predicate = [NSPredicate predicateWithFormat:@"tag_albumtype != %@", @(ALAssetsGroupPhotoStream)];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]];
+        
+        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:@"tag_adjusted_date" cacheName:nil];
+        [sself.fetchedResultsController performFetch:nil];
+        
         dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
             [sself.collectionView reloadData];
-            PLImagePickerSection *section = sself.sections.lastObject;
-            NSArray *photos = section.photos;
-            if (sself.sections.count > 0 && photos.count > 0) {
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:section.photos.count-1 inSection:sself.sections.count-1];
-                [sself.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-            }
         });
     }];
 }
@@ -148,19 +155,31 @@
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return _sections.count;
+    if (_isChangingContext) {
+        return 0;
+    }
+    
+    return [[_fetchedResultsController sections] count];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    PLImagePickerSection *photosection = _sections[section];
-    return photosection.photos.count;
+    if (_isChangingContext) {
+        return 0;
+    }
+    
+    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
+    return [sectionInfo numberOfObjects];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PLPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    PLImagePickerSection *section = _sections[indexPath.section];
-    cell.photo = section.photos[indexPath.row];
+    if (_isChangingContext) {
+        cell.photo = nil;
+    }
+    else {
+        cell.photo = [_fetchedResultsController objectAtIndexPath:indexPath];
+    }
     cell.isSelectWithCheckMark = YES;
     
     return cell;
@@ -171,22 +190,23 @@
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
         PLPhotoViewHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Header" forIndexPath:indexPath];
         
-        PLImagePickerSection *section = _sections[indexPath.section];
-        NSString *string = [[PLDateFormatter formatter] stringFromDate:section.date];
-        [headerView setText:string];
-        [headerView setDetail:[PWString photoAndVideoStringWithPhotoCount:section.photoCount videoCount:section.videoCount]];
+        PLPhotoObject *photoObject = [_fetchedResultsController objectAtIndexPath:indexPath];
+        [headerView setText:photoObject.tag_adjusted_date];
+        id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[indexPath.section];
+        NSArray *filteredPhotoObjects = [sectionInfo.objects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypePhoto]];
+        NSArray *filteredVideoObjects = [sectionInfo.objects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypeVideo]];
+        [headerView setDetail:[PWString photoAndVideoStringWithPhotoCount:filteredPhotoObjects.count videoCount:filteredVideoObjects.count]];
         __weak typeof(self) wself = self;
         [headerView setSelectButtonActionBlock:^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
             PWImagePickerController *tabBarController = (PWImagePickerController *)sself.tabBarController;
-            PLImagePickerSection *section = sself.sections[indexPath.section];
-            for (size_t i=0; i<section.photos.count; i++) {
+            for (size_t i=0; i<sectionInfo.numberOfObjects; i++) {
                 NSIndexPath *selectIndexPath = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
                 [sself.collectionView selectItemAtIndexPath:selectIndexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
                 
-                [tabBarController addSelectedPhoto:section.photos[selectIndexPath.row]];
+                [tabBarController addSelectedPhoto:sectionInfo.objects[selectIndexPath.row]];
             }
         }];
         [headerView setDeselectButtonActionBlock:^{
@@ -194,12 +214,11 @@
             if (!sself) return;
             
             PWImagePickerController *tabBarController = (PWImagePickerController *)sself.tabBarController;
-            PLImagePickerSection *section = sself.sections[indexPath.section];
-            for (size_t i=0; i<section.photos.count; i++) {
+            for (size_t i=0; i<sectionInfo.numberOfObjects; i++) {
                 NSIndexPath *selectIndexPath = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
                 [sself.collectionView deselectItemAtIndexPath:selectIndexPath animated:NO];
                 
-                [tabBarController removeSelectedPhoto:section.photos[selectIndexPath.row]];
+                [tabBarController removeSelectedPhoto:sectionInfo.objects[selectIndexPath.row]];
             }
         }];
         NSUInteger count = 0;
@@ -208,7 +227,7 @@
                 count++;
             }
         }
-        if (count == section.photos.count) {
+        if (count == sectionInfo.numberOfObjects) {
             [headerView setSelectButtonIsDeselect:YES];
         }
         else {
@@ -220,13 +239,16 @@
         reusableView = headerView;
     }
     else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
-        if (indexPath.section == _sections.count - 1) {
+        if (indexPath.section == _fetchedResultsController.sections.count - 1) {
             PLCollectionFooterView *footer = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
             
-            NSString *localizedString = NSLocalizedString(@"すべての写真: %lu枚、すべてのビデオ: %lu本", nil);
+            NSString *localizedString = NSLocalizedString(@"All Photos:%lu, All Videos:%lu", nil);
             [footer setText:[NSString stringWithFormat:localizedString, _photosCount, _videosCount]];
             
             reusableView = footer;
+        }
+        else {
+            reusableView = [[UICollectionReusableView alloc] init];
         }
     }
     
@@ -257,18 +279,17 @@
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    if (section < _sections.count - 1) {
+    if (section < _fetchedResultsController.sections.count - 1) {
         return CGSizeZero;
     }
     
-    return CGSizeMake(0.0f, 60.0f);
+    return CGSizeMake(0.0f, 50.0f);
 }
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
-    PLImagePickerSection *section = _sections[indexPath.section];
-    [tabBarController addSelectedPhoto:section.photos[indexPath.row]];
+    [tabBarController addSelectedPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
     
     NSUInteger count = 0;
     for (NSIndexPath *selectedIndexPath in _collectionView.indexPathsForSelectedItems) {
@@ -279,7 +300,8 @@
     for (NSNumber *sectionIndex in _headerViews.allKeys) {
         if (sectionIndex.integerValue == indexPath.section) {
             PLPhotoViewHeaderView *headerView = [_headerViews objectForKey:@(indexPath.section)];
-            if (count == section.photos.count) {
+            id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[indexPath.section];
+            if (count == sectionInfo.numberOfObjects) {
                 [headerView setSelectButtonIsDeselect:YES];
             }
         }
@@ -288,8 +310,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
     PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
-    PLImagePickerSection *section = _sections[indexPath.section];
-    [tabBarController removeSelectedPhoto:section.photos[indexPath.row]];
+    [tabBarController removeSelectedPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
     
     NSUInteger count = 0;
     for (NSIndexPath *selectedIndexPath in _collectionView.indexPathsForSelectedItems) {
@@ -300,60 +321,32 @@
     for (NSNumber *sectionIndex in _headerViews.allKeys) {
         if (sectionIndex.integerValue == indexPath.section) {
             PLPhotoViewHeaderView *headerView = [_headerViews objectForKey:@(indexPath.section)];
-            if (count != section.photos.count) {
+            id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[indexPath.section];
+            if (count == sectionInfo.numberOfObjects) {
                 [headerView setSelectButtonIsDeselect:NO];
             }
         }
     }
 }
 
-#pragma mark Data
-- (void)getDataWithCompletion:(void (^)(NSArray *allPhotos, NSError *error))completion {
-    [PLAssetsManager getAllPhotosWithCompletion:completion];
+#pragma mark NSFetchedResultsControllerDelegate
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = YES;
 }
 
-- (NSArray *)devidedPhotosByDate:(NSArray *)photos {
-    _photosCount = 0;
-    _videosCount = 0;
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    _isChangingContext = NO;
     
-    NSMutableArray *sections = [NSMutableArray array];
+    NSError *coredataError = nil;
+    [_fetchedResultsController performFetch:&coredataError];
     
-    for (PLPhotoObject *photo in photos) {
-        NSDate *photoDate = [PLDateFormatter adjustZeroClock:photo.date];
-        BOOL isDone = NO;
-        for (PLImagePickerSection *section in sections.reverseObjectEnumerator) {
-            if ([photoDate isEqualToDate:section.date]) {
-                [section.photos addObject:photo];
-                if ([photo.type isEqualToString:ALAssetTypePhoto]) {
-                    section.photoCount++;
-                    _photosCount++;
-                }
-                else if ([photo.type isEqualToString:ALAssetTypeVideo]) {
-                    section.videoCount++;
-                    _videosCount++;
-                }
-                isDone = YES;
-                break;
-            }
-        }
-        if (!isDone) {
-            PLImagePickerSection *newSection = [[PLImagePickerSection alloc] init];
-            [newSection.photos addObject:photo];
-            newSection.date = photoDate;
-            
-            [sections addObject:newSection];
-            if ([photo.type isEqualToString:ALAssetTypePhoto]) {
-                newSection.photoCount++;
-                _photosCount++;
-            }
-            else if ([photo.type isEqualToString:ALAssetTypeVideo]) {
-                newSection.videoCount++;
-                _videosCount++;
-            }
-        }
-    }
-    
-    return sections;
+    __weak typeof(self) wself = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself.collectionView reloadData];
+    });
 }
 
 @end

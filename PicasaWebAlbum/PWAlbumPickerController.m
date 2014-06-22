@@ -46,10 +46,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundDarkColor];
     self.tabBar.barTintColor = [UIColor blackColor];
     
     _toolbar = [[UIToolbar alloc] init];
+    _toolbar.barTintColor = [UIColor blackColor];
     [self.view insertSubview:_toolbar belowSubview:self.tabBar];
 }
 
@@ -78,6 +79,15 @@
     }
     
     _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
+    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    for (UIViewController *viewController in self.viewControllers) {
+        if ([viewController respondsToSelector:@selector(updateTabBarItem)]) {
+            [viewController performSelector:@selector(updateTabBarItem)];
+        }
+    }
+#pragma clang diagnostic pop
 }
 
 - (void)didReceiveMemoryWarning {

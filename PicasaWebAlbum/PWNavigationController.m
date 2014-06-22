@@ -40,6 +40,15 @@
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark UITabBarItem
+- (void)updateTabBarItem {
+    for (UIViewController *viewController in self.viewControllers) {
+        if ([viewController respondsToSelector:@selector(updateTabBarItem)]) {
+            [viewController performSelector:@selector(updateTabBarItem)];
+        }
+    }
+}
+
 #pragma mark UINavigationBar
 - (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
     return UIBarPositionTopAttached;

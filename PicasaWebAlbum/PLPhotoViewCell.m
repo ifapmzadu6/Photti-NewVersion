@@ -126,7 +126,7 @@
     
     _imageView.image = nil;
     [_activityIndicatorView startAnimating];
-        
+    
     NSURL *url = [NSURL URLWithString:photo.url];
     __weak typeof(self) wself = self;
     [PLAssetsManager assetForURL:url resultBlock:^(ALAsset *asset) {

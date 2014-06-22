@@ -21,7 +21,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"iCloud上の写真", nil);
+        self.title = NSLocalizedString(@"iCloud", nil);
     }
     return self;
 }

@@ -9,7 +9,6 @@
 #import "PWAlbumViewCell.h"
 
 #import "PWModelObject.h"
-#import "UIImageView+AFNetworking.h"
 #import "PWPicasaAPI.h"
 #import "PWColors.h"
 #import "Reachability.h"
@@ -151,9 +150,8 @@
     _numPhotosLabel.text = nil;
     [_activityIndicatorView startAnimating];
     
-    if (!album) {
-        return;
-    }
+    if (!album) return;
+    if (album.managedObjectContext == nil) return;
     
     _titleLabel.text = album.title;
     [self setTitleLabelFrame];

@@ -11,9 +11,7 @@
 
 @interface PDCoreDataAPI : NSObject
 
-+ (void)barrierAsyncBlock:(void (^)(NSManagedObjectContext *context))block;
-+ (void)barrierSyncBlock:(void (^)(NSManagedObjectContext *context))block;
 + (void)asyncBlock:(void (^)(NSManagedObjectContext *context))block;
-+ (void)syncBlock:(void (^)(NSManagedObjectContext *))block;
++ (void)syncBlock:(void (^)(NSManagedObjectContext *context))block;
 
 @end

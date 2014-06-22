@@ -14,13 +14,15 @@
 #import "PLiCloudViewController.h"
 #import "PWTabBarController.h"
 #import "PWSearchNavigationController.h"
-#import "BlocksKit+UIKit.h"
+#import "PWSettingsViewController.h"
 
 #import "PWColors.h"
+#import "PWIcons.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 #import "PWSnowFlake.h"
 #import "PLDateFormatter.h"
+#import "BlocksKit+UIKit.h"
 
 @interface PLPageViewController ()
 
@@ -147,6 +149,18 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark UITabBarItem
+- (void)updateTabBarItem {
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+    }
+    else {
+        self.tabBarItem.image = [UIImage imageNamed:@"Picture"];
+        self.tabBarItem.selectedImage = [UIImage imageNamed:@"PictureSelected"];
+    }
+}
+
 #pragma mark UIBarButtonAction
 - (void)searchBarButtonAction {
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
@@ -202,7 +216,9 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [alertView show];
 }
 
-- (void)actionBarButtonAction {
+- (void)settingsBarButtonAction {
+    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] init];
+    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
 - (void)allPhotoSelectBarButtonAction {
@@ -318,8 +334,8 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[addBarButtonItem, searchBarButtonItem] animated:YES];
         
-        UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(actionBarButtonAction)];
-        [sself.navigationItem setLeftBarButtonItem:actionBarButtonItem animated:YES];
+        UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
+        [sself.navigationItem setLeftBarButtonItem:settingsBarButtonItem animated:YES];
     }];
     
     PLiCloudViewController *iCloudViewController = [[PLiCloudViewController alloc] init];

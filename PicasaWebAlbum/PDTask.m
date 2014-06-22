@@ -42,7 +42,7 @@ static NSString * const kPDTaskErrorDomain = @"PDTaskErrorDomain";
     _photoObject = localPhotoObject;
     
     __block NSString *assetUrlString = nil;
-    [PLCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
+    [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", localPhotoObject.photo_object_id_str];

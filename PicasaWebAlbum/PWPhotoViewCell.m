@@ -8,7 +8,6 @@
 
 #import "PWPhotoViewCell.h"
 
-#import "UIImageView+AFNetworking.h"
 #import "PWPicasaAPI.h"
 #import "PWColors.h"
 #import "Reachability.h"
@@ -139,9 +138,8 @@
     _imageView.alpha = 0.0f;
     [_activityIndicatorView startAnimating];
     
-    if (!photo) {
-        return;
-    }
+    if (!photo) return;
+    if (photo.managedObjectContext == nil) return;
     
     NSString *urlString = photo.tag_thumbnail_url;
     if (!urlString) return;

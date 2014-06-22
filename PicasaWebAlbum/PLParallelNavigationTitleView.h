@@ -13,6 +13,7 @@
 @property (copy, nonatomic) NSString *(^titleBeforeCurrentTitle)(NSString *currentTitle);
 @property (copy, nonatomic) NSString *(^titleAfterCurrentTitle)(NSString *currentTitle);
 @property (nonatomic) BOOL isDisableLayoutSubViews;
+@property (strong, nonatomic) UIColor *titleTextColor;
 
 - (void)setScrollRate:(CGFloat)rate;
 - (void)setNumberOfPages:(NSUInteger)numberOfPages;

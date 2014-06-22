@@ -27,7 +27,7 @@ static dispatch_queue_t assets_manager_queue() {
     static dispatch_queue_t assets_manager_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        assets_manager_queue = dispatch_queue_create("com.photti.plassetsmanager.queue", DISPATCH_QUEUE_CONCURRENT);
+        assets_manager_queue = dispatch_queue_create("com.photti.plassetsmanager.queue", DISPATCH_QUEUE_SERIAL);
     });
     return assets_manager_queue;
 }
@@ -108,7 +108,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_albumtype != %@", @(ALAssetsGroupPhotoStream)];
@@ -150,7 +150,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_albumtype = %@", @(ALAssetsGroupPhotoStream)];
@@ -191,7 +191,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                 request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:YES]];
@@ -231,7 +231,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_type = %@", @(PLAlbumObjectTagTypeImported)];
@@ -272,7 +272,7 @@ static dispatch_queue_t assets_manager_queue() {
                 return;
             }
             
-            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"tag_type = %@", @(PLAlbumObjectTagTypeAutomatically)];
@@ -295,7 +295,7 @@ static dispatch_queue_t assets_manager_queue() {
 
 - (void)enumurateAssetsWithCompletion:(void (^)(NSError *error))completion {
     __weak typeof(self) wself = self;
-    dispatch_barrier_async(assets_manager_queue(), ^{
+    dispatch_async(assets_manager_queue(), ^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -316,14 +316,13 @@ static dispatch_queue_t assets_manager_queue() {
             if (group) {
                 NSString *id_str = [group valueForProperty:ALAssetsGroupPropertyPersistentID];
                 
-                [PLCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
+                __block PLAlbumObject *album = nil;
+                [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
                     NSFetchRequest *request = [[NSFetchRequest alloc] init];
                     request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                     request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
                     NSError *error = nil;
                     NSArray *tmpalbums = [context executeFetchRequest:request error:&error];
-                    
-                    PLAlbumObject *album = nil;
                     if (tmpalbums.count > 0) {
                         album = tmpalbums.firstObject;
                     }
@@ -338,15 +337,19 @@ static dispatch_queue_t assets_manager_queue() {
                         album.tag_type = @(PLAlbumObjectTagTypeImported);
                     }
                     album.update = enumurateDate;
+                }];
+                
+                [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                    if (!result) return;
                     
-                    [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-                        if (!result) {
-                            return;
-                        }
-                        
-                        ALAssetRepresentation *representation = result.defaultRepresentation;
-                        NSURL *url = representation.url;
-                        
+                    ALAssetRepresentation *representation = result.defaultRepresentation;
+                    NSURL *url = representation.url;
+                    CGSize dimensions = representation.dimensions;
+                    NSString *filename = representation.filename;
+                    NSString *type = [result valueForProperty:ALAssetPropertyType];
+                    NSDate *date = [result valueForProperty:ALAssetPropertyDate];
+                    CLLocation *location = [result valueForProperty:ALAssetPropertyLocation];
+                    [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
                         NSFetchRequest *request = [[NSFetchRequest alloc] init];
                         request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                         request.predicate = [NSPredicate predicateWithFormat:@"url = %@", url.absoluteString];
@@ -360,14 +363,11 @@ static dispatch_queue_t assets_manager_queue() {
                         
                         PLPhotoObject *photo = [NSEntityDescription insertNewObjectForEntityForName:kPLPhotoObjectName inManagedObjectContext:context];
                         photo.url = url.absoluteString;
-                        CGSize dimensions = representation.dimensions;
                         photo.width = @(dimensions.width);
                         photo.height = @(dimensions.height);
-                        photo.filename = representation.filename;
-                        photo.type = [result valueForProperty:ALAssetPropertyType];
-                        NSDate *date = [result valueForProperty:ALAssetPropertyDate];
+                        photo.filename = filename;
+                        photo.type = type;
                         photo.timestamp = @((unsigned long)([date timeIntervalSince1970]) * 1000);
-                        CLLocation *location = [result valueForProperty:ALAssetPropertyLocation];
                         photo.date = date;
                         photo.latitude = @(location.coordinate.latitude);
                         photo.longitude = @(location.coordinate.longitude);
@@ -385,7 +385,7 @@ static dispatch_queue_t assets_manager_queue() {
             }
             else {
                 //写真を全て読み込んだ後の処理だと思うわけよ
-                [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+                [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
                     typeof(wself) sself = wself;
                     if (!sself) return;
                     if (!sself.isLibraryUpDated) {

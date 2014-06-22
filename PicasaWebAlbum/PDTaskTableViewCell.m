@@ -120,16 +120,16 @@
         _titleLabel.frame = CGRectMake(70.0f, 22.0f, 220.0f, 15.0f);
     }
     
-    _taskTypeLabel.frame = CGRectMake(65.0f, 10.0f, 220.0f, 10.0f);
+    _taskTypeLabel.frame = CGRectMake(64.0f, 10.0f, 220.0f, 10.0f);
     
     CGSize countLabelSize = [_countLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-    _countLabel.frame = CGRectMake(CGRectGetMaxX(rect) - (countLabelSize.width + 20.0f), 20.0f, countLabelSize.width + 16.0f, 20.0f);
+    _countLabel.frame = CGRectMake(CGRectGetMaxX(rect) - (countLabelSize.width + 16.0f), 20.0f, countLabelSize.width + 12.0f, 20.0f);
     
     if (_isPhotosTask) {
         _subThumbnailImageView.frame = CGRectMake(15.0f + 2.0f, 10.0f + 2.0f, rect.size.height - 24.0f, rect.size.height - 24.0f);
         _subSubThumbnailImageView.frame = CGRectMake(15.0f + 4.0f, 10.0f + 4.0f, rect.size.height - 24.0f, rect.size.height - 24.0f);
         
-        CGFloat arrowSize = ceilf(CGRectGetHeight(rect) / 3.0f);
+        CGFloat arrowSize = ceilf(CGRectGetHeight(rect) / 4.0f);
         _subArrowIcon.frame = CGRectMake(CGRectGetWidth(rect) / 2.0f - 10.0f, CGRectGetHeight(rect) / 2.0f - arrowSize / 2.0f, arrowSize, arrowSize);
         _subArrowIcon.image = [PWIcons arrowIconWithColor:[PWColors getColor:PWColorsTypeTintWebColor] size:CGSizeMake(arrowSize, arrowSize)];
         
@@ -164,6 +164,9 @@
     _subDestiantionThumbnailImageView.alpha = 0.0f;
     _subArrowIcon.hidden = YES;
     
+    if (!taskObject) return;
+    if (taskObject.managedObjectContext == nil) return;
+    
     __weak typeof(self) wself = self;
     if ([taskObject isKindOfClass:[PDWebToLocalAlbumTaskObject class]]) {
         _isPhotosTask = NO;
@@ -173,9 +176,9 @@
         
         _taskTypeLabel.text = NSLocalizedString(@"Download", nil);
         _taskTypeLabel.textColor = [PWColors getColor:PWColorsTypeTintLocalColor];
-        _countLabel.text = [NSString stringWithFormat:@"%d", taskObject.photos.count];
+        _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.count.integerValue];
         
-        [PWCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (sself.taskHash != hash) return;
@@ -202,11 +205,11 @@
     else if ([taskObject isKindOfClass:[PDWebToLocalPhotosTaskObject class]]) {
         _isPhotosTask = YES;
         
-        PDWebToLocalPhotosTaskObject *webToLocalPhotosTaskObject = (PDWebToLocalPhotosTaskObject *)taskObject;
+//        PDWebToLocalPhotosTaskObject *webToLocalPhotosTaskObject = (PDWebToLocalPhotosTaskObject *)taskObject;
         
         _taskTypeLabel.text = NSLocalizedString(@"Download", nil);
         _taskTypeLabel.textColor = [PWColors getColor:PWColorsTypeTintLocalColor];
-        _countLabel.text = [NSString stringWithFormat:@"%d", taskObject.photos.count];
+        _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.count.integerValue];
         
         
     }
@@ -218,9 +221,9 @@
         
         _taskTypeLabel.text = NSLocalizedString(@"Upload", nil);
         _taskTypeLabel.textColor = [PWColors getColor:PWColorsTypeTintWebColor];
-        _countLabel.text = [NSString stringWithFormat:@"%d", taskObject.photos.count];
+        _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.count.integerValue];
         
-        [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (sself.taskHash != hash) return;
@@ -260,8 +263,8 @@
         
         _taskTypeLabel.text = NSLocalizedString(@"Upload", nil);
         _taskTypeLabel.textColor = [PWColors getColor:PWColorsTypeTintWebColor];
-        _countLabel.text = [NSString stringWithFormat:@"%d", taskObject.photos.count];
-        _titleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%d items", nil), taskObject.photos.count];
+        _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.count.integerValue];
+        _titleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%d items", nil), taskObject.count.integerValue];
         _subArrowIcon.hidden = NO;
         
         [localToWebPhotosTaskObject.photos enumerateObjectsUsingBlock:^(PDLocalPhotoObject *obj, NSUInteger idx, BOOL *stop) {
@@ -270,36 +273,36 @@
                 return;
             }
             
-            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                if (sself.taskHash != hash) return;
-                
+            NSString *photo_object_id_str = obj.photo_object_id_str;
+            __block NSURL *url = nil;
+            [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [[NSFetchRequest alloc] init];
                 request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", obj.photo_object_id_str];
+                request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photo_object_id_str];
                 NSError *error = nil;
                 NSArray *objects = [context executeFetchRequest:request error:&error];
-                if (objects.count == 0) {
-                    return;
-                }
+                if (objects.count == 0) return;
                 PLPhotoObject *photoObject = objects.firstObject;
-                
-                [sself loadThmbnailImageWithAssetURL:[NSURL URLWithString:photoObject.url] hash:hash completion:^(UIImage *image) {
-                    if (idx == 0) {
-                        [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
-                    }
-                    else if (idx == 1) {
-                        [sself setImage:image toImageView:sself.subThumbnailImageView toAlpha:0.667f hash:hash];
-                    }
-                    else if (idx == 2) {
-                        [sself setImage:image toImageView:sself.subSubThumbnailImageView toAlpha:0.333f hash:hash];
-                    }
-                }];
+                url = [NSURL URLWithString:photoObject.url];
+            }];
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (sself.taskHash != hash) return;
+            if (!url) return;
+            [sself loadThmbnailImageWithAssetURL:url hash:hash completion:^(UIImage *image) {
+                if (idx == 0) {
+                    [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
+                }
+                else if (idx == 1) {
+                    [sself setImage:image toImageView:sself.subThumbnailImageView toAlpha:0.667f hash:hash];
+                }
+                else if (idx == 2) {
+                    [sself setImage:image toImageView:sself.subSubThumbnailImageView toAlpha:0.333f hash:hash];
+                }
             }];
         }];
         
-        [PWCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (sself.taskHash != hash) return;

@@ -19,7 +19,7 @@ static dispatch_queue_t pl_coredata_queue() {
     static dispatch_queue_t pl_coredata_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        pl_coredata_queue = dispatch_queue_create("com.photti.plcoredata", DISPATCH_QUEUE_CONCURRENT);
+        pl_coredata_queue = dispatch_queue_create("com.photti.plcoredata", DISPATCH_QUEUE_SERIAL);
     });
     return pl_coredata_queue;
 }
@@ -28,7 +28,7 @@ static dispatch_queue_t pl_coredata_queue() {
     static NSManagedObjectContext *context;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        dispatch_barrier_sync(pl_coredata_queue(), ^{
+        dispatch_sync(pl_coredata_queue(), ^{
             NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PLModel" withExtension:@"momd"];
             NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
             
@@ -52,22 +52,6 @@ static dispatch_queue_t pl_coredata_queue() {
         });
     });
     return context;
-}
-
-+ (void)barrierAsyncBlock:(void (^)(NSManagedObjectContext *))block {
-    if (!block) return;
-    id context = [PLCoreDataAPI context];
-    dispatch_barrier_async(pl_coredata_queue(), ^{
-        block(context);
-    });
-}
-
-+ (void)barrierSyncBlock:(void (^)(NSManagedObjectContext *))block {
-    if (!block) return;
-    id context = [PLCoreDataAPI context];
-    dispatch_barrier_sync(pl_coredata_queue(), ^{
-        block(context);
-    });
 }
 
 + (void)syncBlock:(void (^)(NSManagedObjectContext *))block {

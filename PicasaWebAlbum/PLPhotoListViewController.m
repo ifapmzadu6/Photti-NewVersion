@@ -65,7 +65,7 @@
     [self.view addSubview:_collectionView];
     
     __weak typeof(self) wself = self;
-    [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+    [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -274,7 +274,7 @@
             }];
         }
         else {
-            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 PLAlbumObject *albumObject = (PLAlbumObject *)album;
                 
                 for (PLPhotoObject *photoObject in selectLocalPhotos) {
@@ -474,6 +474,24 @@
 - (void)showAlbumActionSheet:(PLAlbumObject *)album {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.name];
     __weak typeof(self) wself = self;
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Edit", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"Edit Album", nil) message:NSLocalizedString(@"Enter album title.", nil)];
+        alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+        UITextField *textField = [alertView textFieldAtIndex:0];
+        textField.text = album.name;
+        [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
+        [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+                album.name = textField.text;
+                
+                [context save:nil];
+            }];
+        }];
+        [alertView show];
+    }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
@@ -487,13 +505,18 @@
         [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
             if (error) NSLog(@"%@", error.description);
             [[PDTaskManager sharedManager] start];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Added new tasks.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil];
+                [alertView show];
+            });
         }];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
             [context deleteObject:album];
             [context save:nil];
         }];

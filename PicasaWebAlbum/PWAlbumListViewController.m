@@ -9,9 +9,11 @@
 #import "PWAlbumListViewController.h"
 
 #import "PWColors.h"
+#import "PWIcons.h"
 #import "PWPicasaAPI.h"
 #import "PWAlbumViewCell.h"
 #import "PWRefreshControl.h"
+#import "PLCollectionFooterView.h"
 #import "BlocksKit+UIKit.h"
 #import "PWSnowFlake.h"
 
@@ -65,6 +67,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
     [_collectionView registerClass:[PWAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
+    [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 10.0f, 0.0f);
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
@@ -89,6 +92,36 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     
     [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];
+    
+    __weak typeof(self) wself = self;
+    [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        sself.fetchedResultsController.delegate = sself;
+        NSError *error = nil;
+        [sself.fetchedResultsController performFetch:&error];
+        if (error) {
+            NSLog(@"%@", error.description);
+            return;
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (sself.fetchedResultsController.fetchedObjects.count > 0) {
+                [sself.activityIndicatorView stopAnimating];
+            }
+            
+            if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
+                [sself.collectionView reloadData];
+            }
+            
+            [sself loadDataWithStartIndex:0];
+        });
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -112,38 +145,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
-    
-    if (!_fetchedResultsController) {
-        __weak typeof(self) wself = self;
-        [PWCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            NSFetchRequest *request = [[NSFetchRequest alloc] init];
-            request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
-            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-            sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-            sself.fetchedResultsController.delegate = sself;
-            NSError *error = nil;
-            [sself.fetchedResultsController performFetch:&error];
-            if (error) {
-                NSLog(@"%@", error.description);
-                return;
-            }
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (sself.fetchedResultsController.fetchedObjects.count > 0) {
-                    [sself.activityIndicatorView stopAnimating];
-                }
-                
-                if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
-                    [sself.collectionView reloadData];
-                }
-                
-                [sself loadDataWithStartIndex:0];
-            });
-        }];
-    }
     
     if (!_isNowRequesting) {
         [_refreshControl endRefreshing];
@@ -175,6 +176,18 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+#pragma mark UITabBarItem
+- (void)updateTabBarItem {
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Picasa"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"PicasaSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+    }
+    else {
+        self.tabBarItem.image = [UIImage imageNamed:@"Picasa"];
+        self.tabBarItem.selectedImage = [UIImage imageNamed:@"PicasaSelected"];
+    }
 }
 
 #pragma mark UIBarButtonItem - Depricated
@@ -220,6 +233,24 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     return cell;
 }
 
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+    if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
+        return nil;
+    }
+    
+    PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
+    
+    if (_fetchedResultsController.fetchedObjects.count > 0) {
+        NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"%lu Albums", nil), (unsigned long)_fetchedResultsController.fetchedObjects.count];
+        [footerView setText:albumCountString];
+    }
+    else {
+        [footerView setText:nil];
+    }
+    
+    return footerView;
+}
+
 #pragma mark UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
@@ -236,6 +267,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return 8.0f;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    return CGSizeMake(0.0f, 50.0f);
 }
 
 #pragma mark UICollectionViewDelegate

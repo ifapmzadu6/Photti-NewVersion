@@ -94,6 +94,7 @@ static NSString * const PWSearchNavigationControllerHistoryItemUpdateKey = @"PWS
 @property (nonatomic) BOOL isShowHistory;
 @property (nonatomic) NSUInteger searchedTextHash;
 @property (copy, nonatomic) void (^cancelBlock)();
+@property (strong, nonatomic) UIScrollView *beforeSctollToTopScrollView;
 
 @property (strong, nonatomic) NSArray *items;
 
@@ -237,6 +238,10 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     
     _cancelBlock = cancelBlock;
     
+    _beforeSctollToTopScrollView = [self getScrollToTopScrollView:self.view.subviews];
+    _beforeSctollToTopScrollView.scrollsToTop = NO;
+    _tableView.scrollsToTop = YES;
+    
     UIImage *backgroundImage = [self.view screenCapture];
     UIColor *tintColor = [UIColor colorWithWhite:0.5 alpha:0.3];
     _backbroundView.image = [backgroundImage applyBlurWithRadius:25 tintColor:tintColor saturationDeltaFactor:1.8 maskImage:nil];
@@ -270,6 +275,10 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         _cancelBlock();
         _cancelBlock = nil;
     }
+    
+    _beforeSctollToTopScrollView.scrollsToTop = YES;
+    _beforeSctollToTopScrollView = nil;
+    _tableView.scrollsToTop = NO;
     
     [_searchBar resignFirstResponder];
     
@@ -686,6 +695,30 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
                 }
             }];
         }
+    }
+}
+
+#pragma mark OtherMethods
+- (UIScrollView *)getScrollToTopScrollView:(NSArray *)subViews {
+    UIScrollView *scrollView = nil;
+    [self getScrollToTopScrollView:subViews scrollView:&scrollView];
+    return scrollView;
+}
+
+- (void)getScrollToTopScrollView:(NSArray *)subViews scrollView:(UIScrollView **)scrollView {
+    if (*scrollView) {
+        return;
+    }
+    
+    for (UIView *view in subViews) {
+        if ([view isKindOfClass:[UIScrollView class]]) {
+            UIScrollView *tmpScrollView = (UIScrollView *)view;
+            if (tmpScrollView.scrollsToTop) {
+                *scrollView = tmpScrollView;
+                break;
+            }
+        }
+        [self getScrollToTopScrollView:view.subviews scrollView:scrollView];
     }
 }
 

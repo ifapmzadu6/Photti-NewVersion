@@ -49,7 +49,7 @@
     UIImage *defaultImage = nil;
     UIGraphicsBeginImageContextWithOptions(size, NO, 0.0f);
     
-    CGFloat lineWidth = 3.0f;
+    CGFloat lineWidth = 1.0f;
     CGFloat upAndDownRadius = ceilf(size.width/3.0f*2.0f)/2.0f;
     
     [[color colorWithAlphaComponent:1.0f] setStroke];
@@ -81,6 +81,15 @@
     UIGraphicsEndImageContext();
     
     return defaultImage;
+}
+
++ (UIImage *)imageWithImage:(UIImage *)image insets:(UIEdgeInsets)insets {
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, image.scale);
+    CGRect rect = CGRectMake(insets.left, insets.top, image.size.width - insets.left - insets.right, image.size.height - insets.top - insets.bottom);
+    [image drawInRect:rect];
+    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resizedImage;
 }
 
 @end

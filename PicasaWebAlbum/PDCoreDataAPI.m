@@ -18,7 +18,7 @@ static dispatch_queue_t pd_coredata_queue() {
     static dispatch_queue_t pd_coredata_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        pd_coredata_queue = dispatch_queue_create("com.photti.pdcoredata", DISPATCH_QUEUE_CONCURRENT);
+        pd_coredata_queue = dispatch_queue_create("com.photti.pdcoredata", DISPATCH_QUEUE_SERIAL);
     });
     return pd_coredata_queue;
 }
@@ -27,7 +27,7 @@ static dispatch_queue_t pd_coredata_queue() {
     static NSManagedObjectContext *context;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        dispatch_barrier_sync(pd_coredata_queue(), ^{
+        dispatch_sync(pd_coredata_queue(), ^{
             NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PDModel" withExtension:@"momd"];
             NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
             
@@ -51,22 +51,6 @@ static dispatch_queue_t pd_coredata_queue() {
         });
     });
     return context;
-}
-
-+ (void)barrierAsyncBlock:(void (^)(NSManagedObjectContext *))block {
-    if (!block) return;
-    id context = [PDCoreDataAPI context];
-    dispatch_barrier_async(pd_coredata_queue(), ^{
-        block(context);
-    });
-}
-
-+ (void)barrierSyncBlock:(void (^)(NSManagedObjectContext *))block {
-    if (!block) return;
-    id context = [PDCoreDataAPI context];
-    dispatch_barrier_sync(pd_coredata_queue(), ^{
-        block(context);
-    });
 }
 
 + (void)syncBlock:(void (^)(NSManagedObjectContext *))block {

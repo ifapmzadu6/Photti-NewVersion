@@ -66,7 +66,7 @@
     [_indicatorView startAnimating];
     
     __weak typeof(self) wself = self;
-    [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+    [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -77,7 +77,12 @@
         sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
         sself.fetchedResultsController.delegate = sself;
         
-        [sself.fetchedResultsController performFetch:nil];
+        NSError *error = nil;
+        [sself.fetchedResultsController performFetch:&error];
+        if (error) {
+            NSLog(@"%@", error.description);
+            return;
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [sself.indicatorView stopAnimating];
@@ -168,7 +173,12 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PLAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
+    if (_isChangingContext) {
+        cell.album = nil;
+    }
+    else {
+        cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
+    }
     __weak typeof(self) wself = self;
     [cell setActionButtonActionBlock:^(PLAlbumObject *album) {
         typeof(wself) sself = wself;
@@ -188,9 +198,11 @@
     PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
     
     if (_fetchedResultsController.fetchedObjects.count > 0) {
-        NSString *localizedString = NSLocalizedString(@"%lu個のアルバム", nil);
-        NSString *albumCountString = [NSString stringWithFormat:localizedString, (unsigned long)_fetchedResultsController.fetchedObjects.count];
+        NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"%lu Albums", nil), (unsigned long)_fetchedResultsController.fetchedObjects.count];
         [footerView setText:albumCountString];
+    }
+    else {
+        [footerView setText:nil];
     }
     
     return footerView;
@@ -234,6 +246,10 @@
     
     NSError *error = nil;
     [_fetchedResultsController performFetch:&error];
+    if (error) {
+        NSLog(@"%@", error);
+        return;
+    }
     
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
@@ -254,7 +270,7 @@
         textField.text = album.name;
         [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
         [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
-            [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
                 album.name = textField.text;
                 
                 [context save:nil];
@@ -286,7 +302,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [PLCoreDataAPI barrierAsyncBlock:^(NSManagedObjectContext *context) {
+        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
             [context deleteObject:album];
             [context save:nil];
         }];

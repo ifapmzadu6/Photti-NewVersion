@@ -32,7 +32,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"アルバム", nil);
+        self.title = NSLocalizedString(@"Album", nil);
     }
     return self;
 }

@@ -142,7 +142,7 @@
     _imageView.image = nil;
     [_activityIndicatorView startAnimating];
     
-    if (!album) {
+    if (!album || !album.managedObjectContext) {
         _albumHash = 0;
         return;
     }

@@ -6,6 +6,7 @@
         <relationship name="task" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PDBaseTaskObject" inverseName="photos" inverseEntity="PDBaseTaskObject" syncable="YES"/>
     </entity>
     <entity name="PDBaseTaskObject" representedClassName="PDBaseTaskObject" isAbstract="YES" syncable="YES">
+        <attribute name="count" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="error_description" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="sortIndex" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PDBasePhotoObject" inverseName="task" inverseEntity="PDBasePhotoObject" syncable="YES"/>
@@ -36,7 +37,7 @@
     </entity>
     <elements>
         <element name="PDBasePhotoObject" positionX="-135" positionY="-504" width="128" height="88"/>
-        <element name="PDBaseTaskObject" positionX="-119" positionY="-324" width="128" height="88"/>
+        <element name="PDBaseTaskObject" positionX="-119" positionY="-324" width="128" height="105"/>
         <element name="PDLocalPhotoObject" positionX="16" positionY="-661" width="128" height="73"/>
         <element name="PDLocalToWebAlbumTaskObject" positionX="99" positionY="-283" width="128" height="90"/>
         <element name="PDLocalToWebPhotosTaskObject" positionX="99" positionY="-454" width="128" height="60"/>

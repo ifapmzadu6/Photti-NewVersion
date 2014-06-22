@@ -9,6 +9,7 @@
 #import "PWAlbumPickerWebAlbumListViewController.h"
 
 #import "PWColors.h"
+#import "PWIcons.h"
 #import "PWRefreshControl.h"
 #import "PWAlbumViewCell.h"
 #import "PWAlbumPickerController.h"
@@ -33,7 +34,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = @"ウェブアルバム";
+        self.title = NSLocalizedString(@"Web Album", nil);
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];
     }
     return self;
@@ -51,7 +52,7 @@
     _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 10.0f, 0.0f);
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
     _collectionView.clipsToBounds = NO;
-    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundDarkColor];
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
@@ -134,6 +135,18 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+#pragma mark UITabBarItem
+- (void)updateTabBarItem {
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Picasa"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"PicasaSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+    }
+    else {
+        self.tabBarItem.image = [UIImage imageNamed:@"Picasa"];
+        self.tabBarItem.selectedImage = [UIImage imageNamed:@"PicasaSelected"];
+    }
 }
 
 #pragma mark UIBarButtonAction

@@ -13,6 +13,7 @@
 #import "PWString.h"
 #import "PWRefreshControl.h"
 #import "BlocksKit+UIKit.h"
+#import "PDTaskManager.h"
 
 #import "PWPhotoViewCell.h"
 #import "PWTabBarController.h"
@@ -515,7 +516,7 @@
     });
 }
 
-#pragma mark Action
+#pragma mark UIActionSheet
 - (void)showAlbumActionSheet:(PWAlbumObject *)album {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.title];
     __weak typeof(self) wself = self;
@@ -528,7 +529,7 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            [sself reloadData];
+            [sself loadDataWithStartIndex:0];
         }];
         PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
@@ -549,13 +550,33 @@
         PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Download", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:album.id_str index:0 completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
+            if (error) {
+                NSLog(@"%@", error.description);
+                return;
+            }
+            
+            [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
+                NSLog(@"added");
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+                [[PDTaskManager sharedManager] start];
+            }];
+        }];
+    }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
         UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"本当に削除しますか？アルバム内の写真はすべて削除されます。", nil)];
         [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除する", nil) handler:^{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"アルバムを削除しています", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
             UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
             indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
             [indicator startAnimating];
@@ -568,12 +589,11 @@
                 
                 if (error) {
                     NSLog(@"%@", error.description);
-                    return;
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                    [sself reloadData];
+                    [sself loadDataWithStartIndex:0];
                 });
             }];
         }];

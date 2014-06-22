@@ -130,16 +130,14 @@ static const CGFloat animationDuration = 0.25f;
     CGRect navigationbarFrame = CGRectMake(0.0f, 0.0f, rect.size.width, tHeight + 20.0f);
     _actionNavigationBar.frame = navigationbarFrame;
     
-    if (isLandscape) {
-        for (UIViewController *viewController in self.viewControllers) {
-            viewController.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    for (UIViewController *viewController in self.viewControllers) {
+        if ([viewController respondsToSelector:@selector(updateTabBarItem)]) {
+            [viewController performSelector:@selector(updateTabBarItem)];
         }
     }
-    else {
-        for (UIViewController *viewController in self.viewControllers) {
-            viewController.tabBarItem.imageInsets = UIEdgeInsetsZero;
-        }
-    }
+#pragma clang diagnostic pop
 }
 
 - (void)didReceiveMemoryWarning {

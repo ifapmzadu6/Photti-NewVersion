@@ -12,8 +12,6 @@
 
 @interface PWCoreDataAPI : NSObject
 
-+ (void)barrierAsyncBlock:(void (^)(NSManagedObjectContext *))block;
-+ (void)barrierSyncBlock:(void (^)(NSManagedObjectContext *context))block;
 + (void)syncBlock:(void (^)(NSManagedObjectContext *context))block;
 + (void)asyncBlock:(void (^)(NSManagedObjectContext *context))block;
 

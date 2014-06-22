@@ -48,28 +48,25 @@
     
     _beforeTitleLabel = [[UILabel alloc] init];
     _beforeTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-    _beforeTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
-//    _beforeTitleLabel.textColor = [UIColor whiteColor];
     _beforeTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_beforeTitleLabel];
     
     _currentTitleLabel = [[UILabel alloc] init];
     _currentTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-    _currentTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
-//    _currentTitleLabel.textColor = [UIColor whiteColor];
     _currentTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_currentTitleLabel];
     
     _afterTitleLabel = [[UILabel alloc] init];
     _afterTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-    _afterTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
-//    _afterTitleLabel.textColor = [UIColor whiteColor];
     _afterTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_afterTitleLabel];
     
+    _titleTextColor = [PWColors getColor:PWColorsTypeTextColor];
+    
     _pageControll = [[UIPageControl alloc] init];
-    _pageControll.currentPageIndicatorTintColor = [UIColor colorWithWhite:0.666f alpha:1.0f];
-    _pageControll.pageIndicatorTintColor = [UIColor colorWithWhite:0.85f alpha:1.0f];
+    _pageControll.currentPageIndicatorTintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    _pageControll.pageIndicatorTintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
+//    _pageControll.pageIndicatorTintColor = [UIColor colorWithWhite:0.85f alpha:1.0f];
     [_clipBackgroundView addSubview:_pageControll];
 }
 
@@ -168,6 +165,14 @@
     if (_titleBeforeCurrentTitle) {
         _beforeTitleLabel.text = _titleBeforeCurrentTitle(_currentTitleLabel.text);
     }
+}
+
+- (void)setTitleTextColor:(UIColor *)titleTextColor {
+    _titleTextColor = titleTextColor;
+    
+    _beforeTitleLabel.textColor = titleTextColor;
+    _currentTitleLabel.textColor = titleTextColor;
+    _afterTitleLabel.textColor = titleTextColor;
 }
 
 @end

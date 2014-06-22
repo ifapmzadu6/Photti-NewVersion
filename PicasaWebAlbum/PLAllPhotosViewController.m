@@ -62,7 +62,7 @@
     [self.view addSubview:_collectionView];
     
     __weak typeof(self) wself = self;
-    [PLCoreDataAPI barrierSyncBlock:^(NSManagedObjectContext *context) {
+    [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -182,7 +182,12 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PLPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    cell.photo = [_fetchedResultsController objectAtIndexPath:indexPath];
+    if (_isChangingContext) {
+        cell.photo = nil;
+    }
+    else {
+        cell.photo = [_fetchedResultsController objectAtIndexPath:indexPath];
+    }
     cell.isSelectWithCheckMark = _isSelectMode;
     
     return cell;
@@ -239,10 +244,13 @@
         if (indexPath.section == _fetchedResultsController.sections.count - 1) {
             PLCollectionFooterView *footer = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
             
-            NSString *localizedString = NSLocalizedString(@"すべての写真%lu枚、すべてのビデオ%lu本", nil);
+            NSString *localizedString = NSLocalizedString(@"All Photos:%lu, All Videos:%lu", nil);
             [footer setText:[NSString stringWithFormat:localizedString, _photosCount, _videosCount]];
             
             reusableView = footer;
+        }
+        else {
+            reusableView = [[UICollectionReusableView alloc] init];
         }
     }
     
@@ -308,13 +316,13 @@
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     _isChangingContext = NO;
     
+    NSError *coredataError = nil;
+    [_fetchedResultsController performFetch:&coredataError];
+    
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
-        NSError *coredataError = nil;
-        [_fetchedResultsController performFetch:&coredataError];
         
         [sself.collectionView reloadData];
     });
