@@ -9,6 +9,11 @@
 #import "PWNavigationController.h"
 
 #import "PWColors.h"
+#import "PWIcons.h"
+#import "PWOAuthManager.h"
+
+#import "PWAlbumListViewController.h"
+#import "PWGoogleLoginViewController.h"
 
 @interface PWNavigationController ()
 
@@ -19,6 +24,17 @@
 - (id)init {
     self = [super init];
     if (self) {
+        self.title = NSLocalizedString(@"Web Album", nil);
+        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];
+        
+//        if ([PWOAuthManager isLogined]) {
+//            PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
+//            self.viewControllers = @[albumListViewController];
+//        }
+//        else {
+            PWGoogleLoginViewController *googleLoginViewController = [[PWGoogleLoginViewController alloc] init];
+            self.viewControllers = @[googleLoginViewController];
+//        }
     }
     return self;
 }
@@ -42,16 +58,20 @@
 
 #pragma mark UITabBarItem
 - (void)updateTabBarItem {
-    for (UIViewController *viewController in self.viewControllers) {
-        if ([viewController respondsToSelector:@selector(updateTabBarItem)]) {
-            [viewController performSelector:@selector(updateTabBarItem)];
-        }
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Picasa"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"PicasaSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+    }
+    else {
+        self.tabBarItem.image = [UIImage imageNamed:@"Picasa"];
+        self.tabBarItem.selectedImage = [UIImage imageNamed:@"PicasaSelected"];
     }
 }
 
-#pragma mark UINavigationBar
-- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
-    return UIBarPositionTopAttached;
-}
+//不要なら後で消す
+//#pragma mark UINavigationBar
+//- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
+//    return UIBarPositionTopAttached;
+//}
 
 @end

@@ -42,11 +42,8 @@
 }
 
 + (UIImage *)arrowIconWithColor:(UIColor *)color size:(CGSize)size {
-    if (CGSizeEqualToSize(CGSizeZero, size)) {
-        return nil;
-    }
+    if (CGSizeEqualToSize(CGSizeZero, size)) return nil;
     
-    UIImage *defaultImage = nil;
     UIGraphicsBeginImageContextWithOptions(size, NO, 0.0f);
     
     CGFloat lineWidth = 1.0f;
@@ -77,7 +74,7 @@
     [downLine stroke];
     [[UIBezierPath bezierPathWithOvalInRect:CGRectMake(downStartPoint.x - lineWidth/2.0f, downStartPoint.y - lineWidth/2.0f, lineWidth, lineWidth)] fill];
     
-    defaultImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIImage *defaultImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
     return defaultImage;

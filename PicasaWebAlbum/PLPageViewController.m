@@ -41,10 +41,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 - (id)init {
     NSDictionary *option = [NSDictionary dictionaryWithObjectsAndKeys:@(PageViewControllerOptionInterPageSpacingValue), UIPageViewControllerOptionInterPageSpacingKey, nil];
     self = [self initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:option];
-    if (self) {
-        NSString *title = NSLocalizedString(@"Camera Roll", nil);
-        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
-        
+    if (self) {        
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
         
@@ -147,18 +144,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-}
-
-#pragma mark UITabBarItem
-- (void)updateTabBarItem {
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-        self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-    }
-    else {
-        self.tabBarItem.image = [UIImage imageNamed:@"Picture"];
-        self.tabBarItem.selectedImage = [UIImage imageNamed:@"PictureSelected"];
-    }
 }
 
 #pragma mark UIBarButtonAction

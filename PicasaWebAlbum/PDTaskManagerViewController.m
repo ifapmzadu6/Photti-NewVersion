@@ -19,6 +19,7 @@
 
 #import "PDTaskTableViewCell.h"
 #import "PDTaskViewController.h"
+#import "PWSettingsViewController.h"
 
 @interface PDTaskManagerViewController ()
 
@@ -26,6 +27,8 @@
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic) BOOL isChangingContext;
+@property (nonatomic) BOOL isEnabledPLCoreDataNotification;
+@property (nonatomic) BOOL isEnabledPWCoreDataNotification;
 
 @end
 
@@ -35,39 +38,23 @@
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"Task Manager", nil);
-        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Upload"] selectedImage:[UIImage imageNamed:@"UploadSelect"]];
-        
-        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerWillChangeContent:) name:NSManagedObjectContextWillSaveNotification object:context];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:context];
-        }];
-        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerWillChangeContent:) name:NSManagedObjectContextWillSaveNotification object:context];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:context];
-        }];
         
         __weak typeof(self) wself = self;
-        PDTaskManager *taskManager = [PDTaskManager sharedManager];
-        void (^block)(PDTaskManager *) = ^(PDTaskManager *taskManager){
-            [taskManager countOfAllPhotosInTaskWithCompletion:^(NSUInteger count, NSError *error) {
-                if (error) {
-                    return;
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    typeof(wself) sself = wself;
-                    if (!sself) return;
-                    if (count > 0) {
-                        sself.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)count];
-                    }
-                    else {
-                        sself.tabBarItem.badgeValue = nil;
-                    }
-                });
-            }];
-        };
-        block(taskManager);
+        [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            sself.isEnabledPLCoreDataNotification = YES;
+            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerWillChangeContent:) name:NSManagedObjectContextWillSaveNotification object:context];
+            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:context];
+        }];
+        [PWCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            sself.isEnabledPWCoreDataNotification = YES;
+            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerWillChangeContent:) name:NSManagedObjectContextWillSaveNotification object:context];
+            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:context];
+        }];
         
-        [taskManager setTaskManagerChangedBlock:block];
     }
     return self;
 }
@@ -75,12 +62,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(actionBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
@@ -114,11 +100,11 @@
 }
 
 - (void)dealloc {
-    [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+    [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextWillSaveNotification object:context];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
     }];
-    [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+    [PWCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextWillSaveNotification object:context];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
     }];
@@ -134,21 +120,10 @@
     [_tableView setEditing:editing animated:animated];
 }
 
-#pragma mark UITabBarItem
-- (void)updateTabBarItem {
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-        self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"UploadSelect"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-    }
-    else {
-        self.tabBarItem.image = [UIImage imageNamed:@"Upload"];
-        self.tabBarItem.selectedImage = [UIImage imageNamed:@"UploadSelect"];
-    }
-}
-
 #pragma mark UIBarButtonAction
-- (void)actionBarButtonAction {
-    
+- (void)settingsBarButtonAction {
+    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] init];
+    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
 #pragma mark UITableViewDataSource

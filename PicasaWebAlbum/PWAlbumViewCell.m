@@ -60,20 +60,20 @@
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.contentView addSubview:_imageView];
     
-    _titleLabel = [[UILabel alloc] init];
+    _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:14.0f];
     _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
     _titleLabel.numberOfLines = 2;
     [self.contentView addSubview:_titleLabel];
         
-    _numPhotosLabel = [[UILabel alloc] init];
+    _numPhotosLabel = [UILabel new];
     _numPhotosLabel.font = [UIFont systemFontOfSize:12.0f];
     _numPhotosLabel.textAlignment = NSTextAlignmentCenter;
     _numPhotosLabel.textColor = [UIColor whiteColor];
     _numPhotosLabel.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.667f];
     [self.contentView addSubview:_numPhotosLabel];
     
-    _actionButton = [[UIButton alloc] init];
+    _actionButton = [UIButton new];
     [_actionButton addTarget:self action:@selector(actionButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _actionButton.hitEdgeInsets = UIEdgeInsetsMake(-4.0f, -10.0f, -4.0f, 0.0f);
     [_actionButton setImage:[PWIcons albumActionButtonIconWithColor:[PWColors getColor:PWColorsTypeTintWebColor]] forState:UIControlStateNormal];

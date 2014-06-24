@@ -59,6 +59,8 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     self.navigationItem.rightBarButtonItem = saveBarButtonItem;
     
     self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
+    
     [[UITextField appearance] setTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
 }
 

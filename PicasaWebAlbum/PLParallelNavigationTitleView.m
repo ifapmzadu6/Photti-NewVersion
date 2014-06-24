@@ -46,17 +46,17 @@
     _clipBackgroundView.clipsToBounds = YES;
     [self addSubview:_clipBackgroundView];
     
-    _beforeTitleLabel = [[UILabel alloc] init];
+    _beforeTitleLabel = [UILabel new];
     _beforeTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
     _beforeTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_beforeTitleLabel];
     
-    _currentTitleLabel = [[UILabel alloc] init];
+    _currentTitleLabel = [UILabel new];
     _currentTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
     _currentTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_currentTitleLabel];
     
-    _afterTitleLabel = [[UILabel alloc] init];
+    _afterTitleLabel = [UILabel new];
     _afterTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
     _afterTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_afterTitleLabel];

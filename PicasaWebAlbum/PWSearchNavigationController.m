@@ -111,7 +111,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 - (id)init {
     self = [super init];
     if (self) {
-        [self initialization];
+        _items = @[].mutableCopy;
     }
     return self;
 }
@@ -119,50 +119,9 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 - (id)initWithRootViewController:(UIViewController *)rootViewController {
     self = [super initWithRootViewController:rootViewController];
     if (self) {
-        [self initialization];
+        _items = @[].mutableCopy;
     }
     return self;
-}
-
-- (void)initialization {
-    _items = @[].mutableCopy;
-    
-    _searchBarBackgroundView = [[UIView alloc] init];
-    _searchBarBackgroundView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
-    _searchBarBackgroundView.alpha = 0.0f;
-    [self.view addSubview:_searchBarBackgroundView];
-    
-    _searchBar = [[UISearchBar alloc] init];
-    _searchBar.searchBarStyle = UISearchBarStyleMinimal;
-    _searchBar.delegate = self;
-    _searchBar.showsCancelButton = NO;
-    _searchBar.placeholder = NSLocalizedString(@"Search", nil);
-    _searchBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
-    [_searchBarBackgroundView addSubview:_searchBar];
-    
-    _cancelButton = [[UIButton alloc] init];
-    [_cancelButton addTarget:self action:@selector(cancelButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    _cancelButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
-    [_cancelButton setTitle:NSLocalizedString(@"Cancel", nil) forState:UIControlStateNormal];
-    [_cancelButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
-    [_cancelButton setTitleColor:[[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.2f]  forState:UIControlStateHighlighted];
-    [_searchBarBackgroundView addSubview:_cancelButton];
-    
-    _backbroundView = [[UIImageView alloc] init];
-    _backbroundView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
-    _backbroundView.alpha = 0.0;
-    _backbroundView.userInteractionEnabled = YES;
-    [self.view addSubview:_backbroundView];
-    
-    _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
-    _tableView.dataSource = self;
-    _tableView.delegate = self;
-    _tableView.scrollsToTop = NO;
-    _tableView.backgroundColor = [UIColor clearColor];
-    _tableView.separatorColor = [UIColor colorWithWhite:0.0f alpha:0.15f];
-    [_tableView registerClass:[PWSearchTableViewWebAlbumCell class] forCellReuseIdentifier:PWSearchNavigationControllerWebAlbumCell];
-    [_tableView registerClass:[PWSearchTableViewLocalAlbumCell class] forCellReuseIdentifier:PWSearchNavigationControllerLocalAlbumCell];
-    [_backbroundView addSubview:_tableView];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -187,6 +146,43 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    _searchBarBackgroundView = [[UIView alloc] init];
+    _searchBarBackgroundView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _searchBarBackgroundView.alpha = 0.0f;
+    [self.view addSubview:_searchBarBackgroundView];
+    
+    _searchBar = [[UISearchBar alloc] init];
+    _searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    _searchBar.delegate = self;
+    _searchBar.showsCancelButton = NO;
+    _searchBar.placeholder = NSLocalizedString(@"Search", nil);
+    _searchBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
+    [_searchBarBackgroundView addSubview:_searchBar];
+    
+    _cancelButton = [UIButton new];
+    [_cancelButton addTarget:self action:@selector(cancelButtonAction) forControlEvents:UIControlEventTouchUpInside];
+    _cancelButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    [_cancelButton setTitle:NSLocalizedString(@"Cancel", nil) forState:UIControlStateNormal];
+    [_cancelButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
+    [_cancelButton setTitleColor:[[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.2f]  forState:UIControlStateHighlighted];
+    [_searchBarBackgroundView addSubview:_cancelButton];
+    
+    _backbroundView = [[UIImageView alloc] init];
+    _backbroundView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
+    _backbroundView.alpha = 0.0;
+    _backbroundView.userInteractionEnabled = YES;
+    [self.view addSubview:_backbroundView];
+    
+    _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    _tableView.dataSource = self;
+    _tableView.delegate = self;
+    _tableView.scrollsToTop = NO;
+    _tableView.backgroundColor = [UIColor clearColor];
+    _tableView.separatorColor = [UIColor colorWithWhite:0.0f alpha:0.15f];
+    [_tableView registerClass:[PWSearchTableViewWebAlbumCell class] forCellReuseIdentifier:PWSearchNavigationControllerWebAlbumCell];
+    [_tableView registerClass:[PWSearchTableViewLocalAlbumCell class] forCellReuseIdentifier:PWSearchNavigationControllerLocalAlbumCell];
+    [_backbroundView addSubview:_tableView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

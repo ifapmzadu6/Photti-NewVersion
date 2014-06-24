@@ -8,6 +8,6 @@
 
 @import UIKit;
 
-@interface PWSettingsViewController : UIViewController
+@interface PWSettingsViewController : UINavigationController
 
 @end

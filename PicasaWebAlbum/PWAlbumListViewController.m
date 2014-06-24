@@ -28,6 +28,7 @@
 #import "PWAlbumEditViewController.h"
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
+#import "PWSettingsViewController.h"
 
 @interface PWAlbumListViewController ()
 
@@ -51,7 +52,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"Web Album", nil);
-        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];
     }
     return self;
 }
@@ -88,7 +88,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
     self.navigationItem.rightBarButtonItems = @[addBarButtonItem, searchBarButtonItem];
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(actionBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     
     [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];
@@ -176,22 +176,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-}
-
-#pragma mark UITabBarItem
-- (void)updateTabBarItem {
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Picasa"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-        self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"PicasaSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-    }
-    else {
-        self.tabBarItem.image = [UIImage imageNamed:@"Picasa"];
-        self.tabBarItem.selectedImage = [UIImage imageNamed:@"PicasaSelected"];
-    }
-}
-
-#pragma mark UIBarButtonItem - Depricated
-- (void)actionBarButtonAction {
 }
 
 #pragma mark UICollectionViewDataSource
@@ -315,8 +299,13 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         
         [sself loadDataWithStartIndex:0];
     }];
-    PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)settingsBarButtonAction {
+    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] init];
+    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
 #pragma mark LoadData
@@ -421,7 +410,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             
             [sself loadDataWithStartIndex:0];
         }];
-        PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
@@ -437,7 +426,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
                 [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
             });
         }];
-        PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Download", nil) handler:^{

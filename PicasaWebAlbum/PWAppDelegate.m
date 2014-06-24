@@ -21,6 +21,8 @@
     
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{kPDTaskManagerIsResizePhotosKey: @(YES)}];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = [[PWTabBarController alloc] init];
     self.window.backgroundColor = [UIColor whiteColor];

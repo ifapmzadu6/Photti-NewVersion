@@ -13,7 +13,8 @@
 
 @class PLAlbumObject, PWAlbumObject;
 
-static NSString * const kPDBackgroundSessionIdentifier = @"kPDBSI";
+static NSString * const kPDTaskManagerIsResizePhotosKey = @"kPDTMIRPK";
+static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
 @interface PDTaskManager : NSObject <NSURLSessionDataDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate, NSURLSessionTaskDelegate>
 
@@ -28,6 +29,8 @@ static NSString * const kPDBackgroundSessionIdentifier = @"kPDBSI";
 //- (void)addTaskFromWebPhotos:(NSArray *)from toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *error))completion;
 
 - (void)countOfAllPhotosInTaskWithCompletion:(void (^)(NSUInteger count, NSError *error))completion;
+
+- (void)getRequestingTasksWithCompletion:(void (^)(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks))completion;
 
 - (void)start;
 - (void)stop;

@@ -43,17 +43,17 @@
 - (void)initialization {
     self.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
     
-    _textLabel = [[UILabel alloc] init];
+    _textLabel = [UILabel new];
     _textLabel.font = [UIFont systemFontOfSize:15.0f];
     _textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
     [self addSubview:_textLabel];
     
-    _detailLabel = [[UILabel alloc] init];
+    _detailLabel = [UILabel new];
     _detailLabel.font = [UIFont systemFontOfSize:13.0f];
     _detailLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     [self addSubview:_detailLabel];
     
-    _selectButton = [[UIButton alloc] init];
+    _selectButton = [UIButton new];
     [_selectButton addTarget:self action:@selector(selectButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _selectButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
     [_selectButton setTitle:NSLocalizedString(@"選択", nil) forState:UIControlStateNormal];

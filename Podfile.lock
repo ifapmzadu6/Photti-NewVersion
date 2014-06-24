@@ -38,6 +38,7 @@ PODS:
   - SDWebImage (3.6):
     - SDWebImage/Core
   - SDWebImage/Core (3.6)
+  - SFHFKeychainUtils (0.0.1)
 
 DEPENDENCIES:
   - BlocksKit
@@ -46,6 +47,7 @@ DEPENDENCIES:
   - GPUImage
   - LXReorderableCollectionViewFlowLayout
   - SDWebImage
+  - SFHFKeychainUtils
 
 SPEC CHECKSUMS:
   BlocksKit: 07c8a80f04275efac6a5f8b973782489c083a182
@@ -56,5 +58,6 @@ SPEC CHECKSUMS:
   GTMHTTPFetcher: 0f02d5a5803dd08736462981064de6a7f59cf9bd
   LXReorderableCollectionViewFlowLayout: b4e25543263e27d4c147109ae5ead01cc9119f23
   SDWebImage: c6989652c1cdf27cbdf3f56957e2030f825af5bc
+  SFHFKeychainUtils: 6fdda05a86d035db406c7662ec1054814b68f0fd
 
 COCOAPODS: 0.33.1

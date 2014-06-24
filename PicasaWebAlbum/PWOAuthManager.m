@@ -8,9 +8,6 @@
 
 #import "PWOAuthManager.h"
 
-//#import <GTMOAuth2Authentication.h>
-//#import <GTMOAuth2ViewControllerTouch.h>
-
 static NSString * const PWScope = @"https://picasaweb.google.com/data/";
 static NSString * const PWClientID = @"982107973738-pqihuiltucj69o5413n38hm52lj3ubm3.apps.googleusercontent.com";
 static NSString * const PWClientSecret = @"5OS58Vf-PA09YGHlFZUc_BtX";
@@ -34,20 +31,22 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 - (id)init {
     self = [super init];
     if (self) {
-        if ([NSThread isMainThread]) {
-            [self authRefresh];
-        }
-        else {
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                [self authRefresh];
-            });
-        }
+        [self authRefresh];
     }
     return self;
 }
 
 - (void)authRefresh {
-    _auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
+    void (^block)() = ^{
+        _auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
+    };
+    
+    if ([NSThread isMainThread]) {
+        block();
+    }
+    else {
+        dispatch_sync(dispatch_get_main_queue(), block);
+    }
 }
 
 + (void)getAuthWithCompletion:(void (^)(GTMOAuth2Authentication *auth))completion {
@@ -128,6 +127,10 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
             completion(headerFields, nil);
         }
     }];
+}
+
++ (BOOL)isLogined {
+    return [GTMOAuth2ViewControllerTouch authorizeFromKeychainForName:PWKeyChainItemName authentication:[[PWOAuthManager sharedManager] auth] error:nil];
 }
 
 + (void)logout {

@@ -49,7 +49,7 @@
 - (void)initialization {
     self.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.1f];
     
-    _titleLabel = [[UILabel alloc] init];
+    _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:15.0f];
     _titleLabel.textColor = [UIColor whiteColor];
     [self.contentView addSubview:_titleLabel];

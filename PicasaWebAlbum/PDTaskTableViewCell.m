@@ -59,12 +59,12 @@
         _thumbnailImageView.alpha = 0.0f;
         [self.contentView addSubview:_thumbnailImageView];
         
-        _titleLabel = [[UILabel alloc] init];
+        _titleLabel = [UILabel new];
         _titleLabel.font = [UIFont systemFontOfSize:15.0f];
         _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
         [self.contentView addSubview:_titleLabel];
         
-        _taskTypeLabel = [[UILabel alloc] init];
+        _taskTypeLabel = [UILabel new];
         _taskTypeLabel.font = [UIFont systemFontOfSize:10.0f];
         [self.contentView addSubview:_taskTypeLabel];
         
@@ -93,7 +93,7 @@
         _subDestiantionThumbnailImageView.alpha = 0.0f;
         [self.contentView addSubview:_subDestiantionThumbnailImageView];
         
-        _subTitleLabel = [[UILabel alloc] init];
+        _subTitleLabel = [UILabel new];
         _subTitleLabel.font = [UIFont systemFontOfSize:15.0f];
         _subTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
         _subTitleLabel.minimumScaleFactor = 0.75f;

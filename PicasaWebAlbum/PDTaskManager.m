@@ -42,7 +42,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
 - (id)init {
     self = [super init];
     if (self) {
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfiguration:kPDBackgroundSessionIdentifier];
+        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfiguration:kPDTaskManagerBackgroundSessionIdentifier];
         _backgroundSession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
         
         _tasks = @[].mutableCopy;
@@ -251,8 +251,14 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         NSError *error = nil;
         NSUInteger count = [context countForFetchRequest:request error:&error];
         
-        completion(count, error);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            completion(count, error);
+        });
     }];
+}
+
+- (void)getRequestingTasksWithCompletion:(void (^)(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks))completion {
+    [_backgroundSession getTasksWithCompletionHandler:completion];
 }
 
 - (void)start {

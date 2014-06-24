@@ -12,10 +12,8 @@
 #import "SDImageCache.h"
 
 #import "PWNavigationController.h"
-#import "PWSearchNavigationController.h"
-#import "PLPageViewController.h"
-#import "PWAlbumListViewController.h"
-#import "PDTaskManagerViewController.h"
+#import "PLNavigationController.h"
+#import "PDNavigationController.h"
 
 static const CGFloat animationDuration = 0.25f;
 
@@ -37,16 +35,11 @@ static const CGFloat animationDuration = 0.25f;
 - (id)init {
     self = [super init];
     if (self) {
-        PLPageViewController *localPageViewController = [[PLPageViewController alloc] init];
-        PWSearchNavigationController *localNavigationController = [[PWSearchNavigationController alloc] initWithRootViewController:localPageViewController];
+        PLNavigationController *localNavigationController = [[PLNavigationController alloc] init];
+        PWNavigationController *webNavigationViewController = [[PWNavigationController alloc] init];
+        PDNavigationController *taskNavigationController = [[PDNavigationController alloc] init];
         
-        PWAlbumListViewController *albumListViweController = [[PWAlbumListViewController alloc] init];
-        PWSearchNavigationController *albumNavigationController = [[PWSearchNavigationController alloc] initWithRootViewController:albumListViweController];
-        
-        PDTaskManagerViewController *taskManagerViewController = [[PDTaskManagerViewController alloc] init];
-        PWNavigationController *autoUploadNavigationController = [[PWNavigationController alloc] initWithRootViewController:taskManagerViewController];
-        
-        self.viewControllers = @[localNavigationController, albumNavigationController, autoUploadNavigationController];
+        self.viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
         self.selectedIndex = 1;
         self.delegate = self;
         

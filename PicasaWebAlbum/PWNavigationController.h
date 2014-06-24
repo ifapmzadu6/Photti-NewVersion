@@ -8,6 +8,8 @@
 
 @import UIKit;
 
-@interface PWNavigationController : UINavigationController <UINavigationBarDelegate>
+#import "PWSearchNavigationController.h"
+
+@interface PWNavigationController : PWSearchNavigationController <UINavigationBarDelegate>
 
 @end
