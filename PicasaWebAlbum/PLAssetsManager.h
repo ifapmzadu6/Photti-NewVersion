@@ -16,7 +16,9 @@
 
 + (PLAssetsManager *)sharedManager;
 
-- (void)enumurateAssetsWithCompletion:(void (^)(NSError *error))completion;
++ (ALAuthorizationStatus)getAuthorizationStatus;
++ (void)testAccessPhotoLibraryWithCompletion:(void (^)(NSError *))completion;
++ (void)enumurateAssetsWithCompletion:(void (^)(NSError *error))completion;
 
 + (void)groupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;
 + (void)syncGroupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;

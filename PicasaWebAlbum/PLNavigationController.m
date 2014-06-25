@@ -10,8 +10,11 @@
 
 #import "PWColors.h"
 #import "PWIcons.h"
+#import "PLAssetsManager.h"
 
 #import "PLPageViewController.h"
+#import "PLAccessPhotoLibraryViewController.h"
+#import "PLAutoCreateAlbumViewController.h"
 
 @interface PLNavigationController ()
 
@@ -19,15 +22,27 @@
 
 @implementation PLNavigationController
 
+static NSString * const kPLNavigationControllerAutoCreateOpenedKey = @"kPLNCACOK";
+
 - (id)init {
     self = [super init];
     if (self) {
         NSString *title = NSLocalizedString(@"Camera Roll", nil);
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
         
-        PLPageViewController *pageViewcontroller = [[PLPageViewController alloc] init];
+        if ([PLAssetsManager getAuthorizationStatus] != ALAuthorizationStatusAuthorized) {
+            PLAccessPhotoLibraryViewController *accessPhotoLibraryViewController = [[PLAccessPhotoLibraryViewController alloc] init];
+            self.viewControllers = @[accessPhotoLibraryViewController];
+        }
+        else if (![[NSUserDefaults standardUserDefaults] boolForKey:kPLNavigationControllerAutoCreateOpenedKey]) {
+            PLAutoCreateAlbumViewController *autoCreateAlbumViewController = [[PLAutoCreateAlbumViewController alloc] init];
+            self.viewControllers = @[autoCreateAlbumViewController];
+        }
+        else {
+            PLPageViewController *pageViewcontroller = [[PLPageViewController alloc] init];
+            self.viewControllers = @[pageViewcontroller];
+        }
         
-        self.viewControllers = @[pageViewcontroller];
     }
     return self;
 }
@@ -35,6 +50,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
 }
 

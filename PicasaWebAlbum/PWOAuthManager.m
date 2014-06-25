@@ -8,6 +8,8 @@
 
 #import "PWOAuthManager.h"
 
+#import "PWColors.h"
+
 static NSString * const PWScope = @"https://picasaweb.google.com/data/";
 static NSString * const PWClientID = @"982107973738-pqihuiltucj69o5413n38hm52lj3ubm3.apps.googleusercontent.com";
 static NSString * const PWClientSecret = @"5OS58Vf-PA09YGHlFZUc_BtX";
@@ -168,6 +170,8 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
             }];
         }];
         viewController.automaticallyAdjustsScrollViewInsets = NO;
+        viewController.edgesForExtendedLayout = UIRectEdgeAll;
+        viewController.title = NSLocalizedString(@"Login", nil);
         for (UIView *view in viewController.view.subviews) {
             if ([view isKindOfClass:[UIWebView class]]) {
                 UIWebView *webView = (UIWebView *)view;
@@ -175,10 +179,20 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
                 webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
             }
         }
+        for (UIView *view in viewController.navigationItem.rightBarButtonItem.customView.subviews) {
+            if ([view isKindOfClass:[UIButton class]]) {
+                UIButton *button = (UIButton *)view;
+                button.titleLabel.shadowOffset = CGSizeZero;
+                button.titleLabel.shadowColor = [UIColor clearColor];
+            }
+        }
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         navigationController.view.backgroundColor = [UIColor whiteColor];
         navigationController.automaticallyAdjustsScrollViewInsets = NO;
+        navigationController.edgesForExtendedLayout = UIRectEdgeAll;
+        navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
         
         if (completion) {
             completion(navigationController);

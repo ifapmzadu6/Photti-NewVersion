@@ -1,5 +1,5 @@
 //
-//  PWGoogleLoginViewController.h
+//  PLAccessPhotoLibraryViewController.h
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/06/24.
@@ -8,8 +8,6 @@
 
 @import UIKit;
 
-@interface PWGoogleLoginViewController : UIViewController
-
-@property (copy, nonatomic) void (^completion)();
+@interface PLAccessPhotoLibraryViewController : UIViewController
 
 @end

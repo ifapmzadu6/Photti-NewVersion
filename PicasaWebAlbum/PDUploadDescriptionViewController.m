@@ -10,10 +10,10 @@
 
 #import "PWColors.h"
 #import "PWIcons.h"
+#import "PWShareAction.h"
+#import "PDTaskManager.h"
 
 #import "PWSettingsViewController.h"
-
-#import "PDTaskManager.h"
 
 @interface PDUploadDescriptionViewController ()
 
@@ -47,6 +47,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareBarButtonAction)];
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"UploadLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -180,6 +181,10 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
 - (void)settingsBarButtonAction {
     PWSettingsViewController *viewController = [[PWSettingsViewController alloc] init];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)shareBarButtonAction {
+    [PWShareAction showFromViewController:self.tabBarController];
 }
 
 #pragma mark UIButtonAction

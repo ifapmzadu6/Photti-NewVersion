@@ -64,6 +64,22 @@ static dispatch_queue_t assets_manager_queue() {
     [self enumurateAssetsWithCompletion:nil];
 }
 
++ (ALAuthorizationStatus)getAuthorizationStatus {
+    return [ALAssetsLibrary authorizationStatus];
+}
+
++ (void)testAccessPhotoLibraryWithCompletion:(void (^)(NSError *))completion {
+    [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:@""] resultBlock:^(ALAsset *asset) {
+        if (completion) {
+            completion(nil);
+        }
+    } failureBlock:^(NSError *error) {
+        if (completion) {
+            completion(error);
+        }
+    }];
+}
+
 + (void)groupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock {
     dispatch_async(assets_manager_queue(), ^{
         [[PLAssetsManager sharedLibrary] groupForURL:url resultBlock:resultBlock failureBlock:failureBlock];
@@ -291,6 +307,12 @@ static dispatch_queue_t assets_manager_queue() {
             [sself enumurateAssetsWithCompletion:block];
         }
     });
+}
+
++ (void)enumurateAssetsWithCompletion:(void (^)(NSError *error))completion {
+    if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized) {
+        [[PLAssetsManager sharedManager] enumurateAssetsWithCompletion:completion];
+    }
 }
 
 - (void)enumurateAssetsWithCompletion:(void (^)(NSError *error))completion {

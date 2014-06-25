@@ -29,7 +29,7 @@
         self.title = NSLocalizedString(@"Task Manager", nil);
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Upload"] selectedImage:[UIImage imageNamed:@"UploadSelect"]];
         
-//        [PDInAppPurchase resetKeyChain];
+        [PDInAppPurchase resetKeyChain];
         
         if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
             PDInAppPurchaseViewController *inAppPurchaseViewController = [[PDInAppPurchaseViewController alloc] init];

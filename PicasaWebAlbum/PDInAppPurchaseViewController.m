@@ -11,6 +11,7 @@
 #import "PWColors.h"
 #import "PWIcons.h"
 #import "PDInAppPurchase.h"
+#import "PWShareAction.h"
 
 #import "PWSettingsViewController.h"
 
@@ -44,6 +45,7 @@
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareBarButtonAction)];
     
     _iconImageView = [[UIImageView alloc] init];
     _iconImageView.image = [[UIImage imageNamed:@"UploadLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -53,7 +55,7 @@
     
     _descriptionLabel = [UILabel new];
 //    _descriptionLabel.text = @"アップロード/ダウンロード機能を有効にすると写真をウェブにアップロードまたはダウンロードできます。";
-    _descriptionLabel.text = NSLocalizedString(@"When enable upload / download function, you download or upload to Web Album.", nil);
+    _descriptionLabel.text = NSLocalizedString(@"Purchasing Upload-Download Addon, you can download or upload to Web Album by Photti 2.", nil);
     _descriptionLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _descriptionLabel.textAlignment = NSTextAlignmentCenter;
     _descriptionLabel.font = [UIFont systemFontOfSize:15.0f];
@@ -154,15 +156,15 @@
     
     CGRect rect = self.view.bounds;
     
-    _iconImageView.frame = CGRectMake(70.0f, 100.0f, 180.0f, 180.0f);
+    _iconImageView.frame = CGRectMake(70.0f, 90.0f, 180.0f, 180.0f);
     
-    _descriptionLabel.frame = CGRectMake(40.0f, 290.0f, 240.0f, 100.0f);
+    _descriptionLabel.frame = CGRectMake(40.0f, 282.0f, 240.0f, 100.0f);
     
-    _priceLabel.frame = CGRectMake(110.0f, 400.0f, 100.0f, 15.0f);
+    _priceLabel.frame = CGRectMake(110.0f, 390.0f, 100.0f, 15.0f);
     _inAppPurchaseLabel.frame = CGRectMake(0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetWidth(rect), 7.0f);
     _activityIndicatorView.center = _priceLabel.center;
     
-    _purchaseButton.frame = CGRectMake(110.0f, 432.0f, 100.0f, 30.0f);
+    _purchaseButton.frame = CGRectMake(110.0f, 428.0f, 100.0f, 30.0f);
     
     CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
     _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, CGRectGetMaxY(rect) - 44.0f - restoreButtonSize.height, restoreButtonSize.width, restoreButtonSize.height);
@@ -178,6 +180,10 @@
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
+- (void)shareBarButtonAction {
+    [PWShareAction showFromViewController:self.tabBarController];
+}
+
 #pragma mark UIButton
 - (void)purchaseButtonAction {
     if (!_product) {
@@ -188,6 +194,14 @@
         SKPayment *payment = [SKPayment paymentWithProduct:_product];
         [[SKPaymentQueue defaultQueue] addPayment:payment];
     }
+    
+    _purchaseButton.enabled = NO;
+    _purchaseButton.alpha = 0.5f;
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        _purchaseButton.enabled = YES;
+        _purchaseButton.alpha = 1.0f;
+    });
 }
 
 - (void)restoreButtonAction {
