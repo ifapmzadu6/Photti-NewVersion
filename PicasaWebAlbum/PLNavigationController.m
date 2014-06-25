@@ -22,8 +22,6 @@
 
 @implementation PLNavigationController
 
-static NSString * const kPLNavigationControllerAutoCreateOpenedKey = @"kPLNCACOK";
-
 - (id)init {
     self = [super init];
     if (self) {
@@ -34,15 +32,21 @@ static NSString * const kPLNavigationControllerAutoCreateOpenedKey = @"kPLNCACOK
             PLAccessPhotoLibraryViewController *accessPhotoLibraryViewController = [[PLAccessPhotoLibraryViewController alloc] init];
             self.viewControllers = @[accessPhotoLibraryViewController];
         }
-        else if (![[NSUserDefaults standardUserDefaults] boolForKey:kPLNavigationControllerAutoCreateOpenedKey]) {
+        else if ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeUnknown) {
             PLAutoCreateAlbumViewController *autoCreateAlbumViewController = [[PLAutoCreateAlbumViewController alloc] init];
+            __weak typeof(self) wself = self;
+            autoCreateAlbumViewController.completion = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PLPageViewController *pageViewcontroller = [[PLPageViewController alloc] init];
+                [sself setViewControllers:@[pageViewcontroller] animated:YES];
+            };
             self.viewControllers = @[autoCreateAlbumViewController];
         }
         else {
             PLPageViewController *pageViewcontroller = [[PLPageViewController alloc] init];
-            self.viewControllers = @[pageViewcontroller];
-        }
-        
+            self.viewControllers = @[pageViewcontroller];            
+        }        
     }
     return self;
 }
@@ -52,6 +56,13 @@ static NSString * const kPLNavigationControllerAutoCreateOpenedKey = @"kPLNCACOK
     
     self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    
+    UINavigationItem *item = self.navigationBar.items.firstObject;
+    [item.titleView setNeedsLayout];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -10,4 +10,6 @@
 
 @interface PLAutoCreateAlbumViewController : UIViewController
 
+@property (copy, nonatomic) void (^completion)();
+
 @end

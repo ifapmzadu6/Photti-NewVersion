@@ -27,7 +27,7 @@
         self.title = NSLocalizedString(@"Web Album", nil);
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];
         
-        [PWOAuthManager logout];
+//        [PWOAuthManager logout];
         
         if ([PWOAuthManager isLogined]) {
             PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
@@ -36,7 +36,7 @@
         else {
             PWGoogleLoginViewController *googleLoginViewController = [[PWGoogleLoginViewController alloc] init];
             __weak typeof(self) wself = self;
-            [googleLoginViewController setCompletion:^{
+            googleLoginViewController.completion = ^{
                 dispatch_async(dispatch_get_main_queue(), ^{
                     typeof(wself) sself = wself;
                     if (!sself) return;
@@ -44,7 +44,7 @@
                     PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
                     [sself setViewControllers:@[albumListViewController] animated:YES];
                 });
-            }];
+            };
             self.viewControllers = @[googleLoginViewController];
         }
     }
@@ -56,13 +56,6 @@
     
     self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
-}
-
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
-    
-    UINavigationItem *item = self.navigationBar.items.firstObject;
-    [item.titleView setNeedsLayout];
 }
 
 - (void)didReceiveMemoryWarning {

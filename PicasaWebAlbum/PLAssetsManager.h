@@ -10,8 +10,17 @@
 @import AssetsLibrary;
 @import MapKit;
 
+
+typedef enum _PLAssetsManagerAutoCreateAlbumType {
+    PLAssetsManagerAutoCreateAlbumTypeUnknown = 0,
+    PLAssetsManagerAutoCreateAlbumTypeEnable,
+    PLAssetsManagerAutoCreateAlbumTypeDisable
+} PLAssetsManagerAutoCreateAlbumType;
+
+
 @interface PLAssetsManager : NSObject
 
+@property (nonatomic) PLAssetsManagerAutoCreateAlbumType autoCreateAlbumType;
 @property (nonatomic, readonly) BOOL isLibraryUpDated;
 
 + (PLAssetsManager *)sharedManager;

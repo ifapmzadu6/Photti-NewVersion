@@ -12,6 +12,7 @@
 #import "PWIcons.h"
 #import "PDTaskManager.h"
 #import "PDInAppPurchase.h"
+#import "BlocksKit+UIKit.h"
 
 #import "PDTaskManagerViewController.h"
 #import "PDInAppPurchaseViewController.h"
@@ -42,6 +43,7 @@
         
         [self setInAppPurchaseBlocks];
         [self setTaskManagerChangedBlock];
+        [self setTaskManagerNotPurchaseBlock];
     }
     return self;
 }
@@ -135,6 +137,19 @@
     }];
 }
 
+- (void)setTaskManagerNotPurchaseBlock {
+    PDTaskManager *taskManager = [PDTaskManager sharedManager];
+    __weak typeof(self) wself = self;
+    taskManager.notPurchasedUploadDownloadAction = ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            sself.tabBarController.selectedIndex = 2;
+        });
+    };
+}
+
 #pragma mark PDInAppPurchase
 - (void)setInAppPurchaseBlocks {
     PDInAppPurchase *inAppPurchase = [PDInAppPurchase sharedInstance];
@@ -159,7 +174,6 @@
             [sself checkTaskIsNone];
         });
     }];
-    
 }
 
 @end

@@ -206,12 +206,12 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     else {
         [cell setAlbum:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];
         __weak typeof(self) wself = self;
-        [cell setActionButtonActionBlock:^(PWAlbumObject *album) {
+        cell.actionButtonActionBlock = ^(PWAlbumObject *album) {
             typeof(wself) sself = wself;
             if (!sself) return;
             
             [sself showAlbumActionSheet:album];
-        }];
+        };
     }
     
     return cell;
@@ -286,6 +286,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         typeof(wself) sself = wself;
         if (!sself) return;
         
+        PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
         [tabBarController setTabBarHidden:NO animated:NO completion:nil];
     }];
 }
@@ -293,12 +294,12 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (void)addBarButtonAction {
     PWNewAlbumEditViewController *viewController = [[PWNewAlbumEditViewController alloc] init];
     __weak typeof(self) wself = self;
-    [viewController setSuccessBlock:^{
+    viewController.successBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
         [sself loadDataWithStartIndex:0];
-    }];
+    };
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
@@ -480,9 +481,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         
         [deleteActionSheet showFromTabBar:sself.tabBarController.tabBar];
     }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
-        
-    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
     
     [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }

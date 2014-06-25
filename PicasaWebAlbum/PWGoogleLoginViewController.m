@@ -52,7 +52,12 @@
     
     _titleLabel = [UILabel new];
     _titleLabel.text = NSLocalizedString(@"Picasa Web Albums\n(Google+ Photos)", nil);
-    _titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     _titleLabel.numberOfLines = 2;
@@ -60,7 +65,12 @@
     
     _descriptionLabel = [UILabel new];
     _descriptionLabel.text = NSLocalizedString(@"You can manage your Picasa Web Albums (Google+ Photos), photos, albums, and videos with Photti 2", nil);
-    _descriptionLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _descriptionLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _descriptionLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     _descriptionLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _descriptionLabel.textAlignment = NSTextAlignmentCenter;
     _descriptionLabel.numberOfLines = 0;
@@ -68,7 +78,12 @@
     
     _loginButton = [UIButton new];
     [_loginButton addTarget:self action:@selector(loginButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    _loginButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _loginButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _loginButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     [_loginButton setTitle:NSLocalizedString(@"Login", nil) forState:UIControlStateNormal];
     [_loginButton setTitleColor:[PWColors getColor:PWColorsTypeTintWebColor] forState:UIControlStateNormal];
     [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
@@ -85,13 +100,34 @@
     
     CGRect rect = self.view.bounds;
     
-    _iconImageView.frame = CGRectMake(70.0f, 90.0f, 180.0f, 180.0f);
-    
-    _titleLabel.frame = CGRectMake(0.0f, 286.0f, CGRectGetWidth(rect), 36.0f);
-    
-    _descriptionLabel.frame = CGRectMake(40.0f, 326.0f, 240.0f, 100.0f);
-    
-    _loginButton.frame = CGRectMake(110.0f, 444.0f, 100.0f, 30.0f);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            _iconImageView.frame = CGRectMake(64.0f, 80.0f, 180.0f, 180.0f);
+            _titleLabel.frame = CGRectMake(250.0f + 0.0f, 286.0f - 190.0f, CGRectGetHeight(rect), 36.0f);
+            _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 326.0f - 202.0f, 240.0f, 100.0f);
+            _loginButton.frame = CGRectMake(250.0f + 110.0f, 444.0f - 224.0f, 100.0f, 30.0f);
+        }
+        else {
+            _iconImageView.frame = CGRectMake(70.0f, 90.0f, 180.0f, 180.0f);
+            _titleLabel.frame = CGRectMake(0.0f, 286.0f, CGRectGetWidth(rect), 36.0f);
+            _descriptionLabel.frame = CGRectMake(40.0f, 326.0f, 240.0f, 100.0f);
+            _loginButton.frame = CGRectMake(110.0f, 444.0f, 100.0f, 30.0f);
+        }
+    }
+    else {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            _iconImageView.frame = CGRectMake(184.0f, 170.0f, 400.0f, 400.0f);
+            _titleLabel.frame = CGRectMake(0.0f, 286.0f - 212.0f, CGRectGetHeight(rect), 50.0f);
+            _descriptionLabel.frame = CGRectMake(250.0f, 326.0f - 212.0f, 240.0f, 100.0f);
+            _loginButton.frame = CGRectMake(250.0f, 444.0f - 212.0f, 100.0f, 30.0f);
+        }
+        else {
+            _iconImageView.frame = CGRectMake(184.0f, 150.0f, 400.0f, 400.0f);
+            _titleLabel.frame = CGRectMake(0.0f, 580.0f, CGRectGetWidth(rect), 50.0f);
+            _descriptionLabel.frame = CGRectMake(184.0f, 640.0f, 400.0f, 100.0f);
+            _loginButton.frame = CGRectMake(304.0f, 800.0f, 160.0f, 50.0f);
+        }
+    }
 }
 
 - (void)didReceiveMemoryWarning {

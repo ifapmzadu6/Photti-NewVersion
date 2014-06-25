@@ -107,8 +107,13 @@ static const CGFloat animationDuration = 0.25f;
     CGRect rect = self.view.bounds;
     CGFloat tHeight = 44.0f;
     BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    if(isLandscape) {
-        tHeight = 32.0f;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if(isLandscape) {
+            tHeight = 32.0f;
+        }
+    }
+    else {
+        tHeight = 56.0f;
     }
     for(UIView *view in self.view.subviews) {
         if([view isKindOfClass:[UITabBar class]]) {

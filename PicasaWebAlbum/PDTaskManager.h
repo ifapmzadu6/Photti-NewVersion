@@ -14,7 +14,6 @@
 @class PLAlbumObject, PWAlbumObject;
 
 static NSString * const kPDTaskManagerIsResizePhotosKey = @"kPDTMIRPK";
-static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
 @interface PDTaskManager : NSObject <NSURLSessionDataDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate, NSURLSessionTaskDelegate>
 
@@ -26,7 +25,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
 - (void)addTaskFromLocalPhotos:(NSArray *)fromLocalPhotos toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *error))completion;
 
-//- (void)addTaskFromWebPhotos:(NSArray *)from toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *error))completion;
+- (void)addTaskFromWebPhotos:(NSArray *)fromWebPhotos toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *error))completion;
 
 - (void)countOfAllPhotosInTaskWithCompletion:(void (^)(NSUInteger count, NSError *error))completion;
 
@@ -37,16 +36,11 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 - (void)cancel;
 
 
-@property (strong, nonatomic) void (^taskManagerChangedBlock)(PDTaskManager *taskManager);
+@property (copy, nonatomic) void (^taskManagerChangedBlock)(PDTaskManager *taskManager);
 
-@property (strong, nonatomic) void (^backgroundComplecationHandler)();
+@property (copy, nonatomic) void (^backgroundComplecationHandler)();
 
-@end
+@property (copy, nonatomic) void (^notPurchasedUploadDownloadAction)();
 
-@interface PDTaskManagerDownloadedItem : NSObject
-
-@property (nonatomic) NSUInteger sortIndex;
-@property (strong, nonatomic) NSURL *location;
-@property (strong, nonatomic) PDTask *task;
 
 @end

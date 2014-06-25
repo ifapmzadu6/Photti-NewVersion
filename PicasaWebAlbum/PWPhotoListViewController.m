@@ -525,12 +525,12 @@
         if (!sself) return;
         
         PWAlbumEditViewController *viewController = [[PWAlbumEditViewController alloc] initWithAlbum:album];
-        [viewController setSuccessBlock:^{
+        viewController.successBlock = ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
             [sself loadDataWithStartIndex:0];
-        }];
+        };
         PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
@@ -539,14 +539,14 @@
         if (!sself) return;
         
         PWAlbumShareViewController *viewController = [[PWAlbumShareViewController alloc] initWithAlbum:album];
-        [viewController setChangedAlbumBlock:^(NSString *retAccess, NSSet *link) {
+        viewController.changedAlbumBlock = ^(NSString *retAccess, NSSet *link) {
             album.link = link;
             album.gphoto.access = retAccess;
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
             });
-        }];
+        };
         PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
@@ -601,9 +601,7 @@
         
         [deleteActionSheet showFromTabBar:sself.tabBarController.tabBar];
     }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
-        
-    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
     
     [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }

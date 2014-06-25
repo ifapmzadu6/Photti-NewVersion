@@ -91,13 +91,18 @@
     
     CGRect rect = self.view.bounds;
     
-    _titleLabel.frame = CGRectMake(0.0f, 286.0f, CGRectGetWidth(rect), 36.0f);
-    
-    _iconImageView.frame = CGRectMake(70.0f, 92.0f, 180.0f, 180.0f);
-    
-    _descriptionLabel.frame = CGRectMake(40.0f, 326.0f, 240.0f, 100.0f);
-    
-    _accessButton.frame = CGRectMake(110.0f, 444.0f, 100.0f, 30.0f);
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        _iconImageView.frame = CGRectMake(70.0f, 80.0f, 180.0f, 180.0f);
+        _titleLabel.frame = CGRectMake(250.0f, 286.0f - 192.0f, CGRectGetHeight(rect), 36.0f);
+        _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 326.0f - 212.0f, 240.0f, 100.0f);
+        _accessButton.frame = CGRectMake(250.0f + 110.0f, 444.0f - 227.0f, 100.0f, 30.0f);
+    }
+    else {
+        _iconImageView.frame = CGRectMake(70.0f, 92.0f, 180.0f, 180.0f);
+        _titleLabel.frame = CGRectMake(0.0f, 286.0f, CGRectGetWidth(rect), 36.0f);
+        _descriptionLabel.frame = CGRectMake(40.0f, 326.0f, 240.0f, 100.0f);
+        _accessButton.frame = CGRectMake(110.0f, 444.0f, 100.0f, 30.0f);
+    }
 }
 
 - (void)didReceiveMemoryWarning {

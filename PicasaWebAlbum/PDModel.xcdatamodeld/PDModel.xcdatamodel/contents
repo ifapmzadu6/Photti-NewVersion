@@ -23,6 +23,9 @@
     <entity name="PDLocalToWebPhotosTaskObject" representedClassName="PDLocalToWebPhotosTaskObject" parentEntity="PDBaseTaskObject" syncable="YES">
         <attribute name="destination_album_id_str" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="PDOtherActionObject" representedClassName="PDOtherActionObject" parentEntity="PDBasePhotoObject" syncable="YES">
+        <attribute name="action_type" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    </entity>
     <entity name="PDWebPhotoObject" representedClassName="PDWebPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES">
         <attribute name="photo_object_id_str" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
@@ -44,5 +47,6 @@
         <element name="PDWebPhotoObject" positionX="-135" positionY="-661" width="128" height="58"/>
         <element name="PDWebToLocalAlbumTaskObject" positionX="99" positionY="-198" width="128" height="88"/>
         <element name="PDWebToLocalPhotosTaskObject" positionX="99" positionY="-364" width="128" height="73"/>
+        <element name="PDOtherActionObject" positionX="-18" positionY="-513" width="128" height="58"/>
     </elements>
 </model>

@@ -20,28 +20,6 @@
 #import "PLCoreDataAPI.h"
 
 
-@interface PLImagePickerSection : NSObject
-
-@property (strong, nonatomic) NSMutableArray *photos;
-@property (strong, nonatomic) NSDate *date;
-@property (nonatomic) NSUInteger photoCount;
-@property (nonatomic) NSUInteger videoCount;
-
-@end
-
-@implementation PLImagePickerSection
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        _photos = [[NSMutableArray alloc] init];
-    }
-    return self;
-}
-
-@end
-
-
 @interface PWImagePickerLocalAllPhotoViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
@@ -198,6 +176,8 @@
         [headerView setDetail:[PWString photoAndVideoStringWithPhotoCount:filteredPhotoObjects.count videoCount:filteredVideoObjects.count]];
         __weak typeof(self) wself = self;
         [headerView setSelectButtonActionBlock:^{
+        }];
+        headerView.selectButtonActionBlock = ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
@@ -208,8 +188,8 @@
                 
                 [tabBarController addSelectedPhoto:sectionInfo.objects[selectIndexPath.row]];
             }
-        }];
-        [headerView setDeselectButtonActionBlock:^{
+        };
+        headerView.deselectButtonActionBlock = ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
@@ -220,7 +200,7 @@
                 
                 [tabBarController removeSelectedPhoto:sectionInfo.objects[selectIndexPath.row]];
             }
-        }];
+        };
         NSUInteger count = 0;
         for (NSIndexPath *selectedIndexPath in _collectionView.indexPathsForSelectedItems) {
             if (indexPath.section == selectedIndexPath.section) {

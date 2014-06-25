@@ -23,6 +23,8 @@
 
 @implementation PLAssetsManager
 
+static NSString * const kPLAssetsManagerAutoCreateAlbumTypeKey = @"PLAMACATK";
+
 static dispatch_queue_t assets_manager_queue() {
     static dispatch_queue_t assets_manager_queue;
     static dispatch_once_t onceToken;
@@ -50,6 +52,8 @@ static dispatch_queue_t assets_manager_queue() {
         
         _isLibraryUpDated = NO;
         
+        _autoCreateAlbumType = [[NSUserDefaults standardUserDefaults] integerForKey:kPLAssetsManagerAutoCreateAlbumTypeKey];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(assetsLibraryChangedNotification) name:ALAssetsLibraryChangedNotification object:nil];
     }
     return self;
@@ -62,6 +66,13 @@ static dispatch_queue_t assets_manager_queue() {
 - (void)assetsLibraryChangedNotification {
     _isLibraryUpDated = NO;
     [self enumurateAssetsWithCompletion:nil];
+}
+
+- (void)setAutoCreateAlbumType:(PLAssetsManagerAutoCreateAlbumType)autoCreateAlbumType {
+    _autoCreateAlbumType = autoCreateAlbumType;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:@(autoCreateAlbumType) forKey:kPLAssetsManagerAutoCreateAlbumTypeKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (ALAuthorizationStatus)getAuthorizationStatus {
@@ -140,7 +151,7 @@ static dispatch_queue_t assets_manager_queue() {
             block(nil);
         }
         else {
-            [sself enumurateAssetsWithCompletion:block];
+            [PLAssetsManager enumurateAssetsWithCompletion:block];
         }
         
     });
@@ -182,7 +193,7 @@ static dispatch_queue_t assets_manager_queue() {
             block(nil);
         }
         else {
-            [sself enumurateAssetsWithCompletion:block];
+            [PLAssetsManager enumurateAssetsWithCompletion:block];
         }
     });
 }
@@ -222,7 +233,7 @@ static dispatch_queue_t assets_manager_queue() {
             block(nil);
         }
         else {
-            [sself enumurateAssetsWithCompletion:block];
+            [PLAssetsManager enumurateAssetsWithCompletion:block];
         }
     });
 }
@@ -263,7 +274,7 @@ static dispatch_queue_t assets_manager_queue() {
             block(nil);
         }
         else {
-            [self enumurateAssetsWithCompletion:block];
+            [PLAssetsManager enumurateAssetsWithCompletion:block];
         }
     });
 }
@@ -304,14 +315,19 @@ static dispatch_queue_t assets_manager_queue() {
             block(nil);
         }
         else {
-            [sself enumurateAssetsWithCompletion:block];
+            [PLAssetsManager enumurateAssetsWithCompletion:block];
         }
     });
 }
 
 + (void)enumurateAssetsWithCompletion:(void (^)(NSError *error))completion {
-    if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized) {
+    if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized && [PLAssetsManager sharedManager].autoCreateAlbumType != PLAssetsManagerAutoCreateAlbumTypeUnknown) {
         [[PLAssetsManager sharedManager] enumurateAssetsWithCompletion:completion];
+    }
+    else {
+        if (completion) {
+            completion([NSError errorWithDomain:@"com.photti.PLAssetsManager.domain" code:500 userInfo:nil]);
+        }
     }
 }
 

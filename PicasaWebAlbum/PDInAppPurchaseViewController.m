@@ -156,18 +156,26 @@
     
     CGRect rect = self.view.bounds;
     
-    _iconImageView.frame = CGRectMake(70.0f, 90.0f, 180.0f, 180.0f);
-    
-    _descriptionLabel.frame = CGRectMake(40.0f, 282.0f, 240.0f, 100.0f);
-    
-    _priceLabel.frame = CGRectMake(110.0f, 390.0f, 100.0f, 15.0f);
-    _inAppPurchaseLabel.frame = CGRectMake(0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetWidth(rect), 7.0f);
-    _activityIndicatorView.center = _priceLabel.center;
-    
-    _purchaseButton.frame = CGRectMake(110.0f, 428.0f, 100.0f, 30.0f);
-    
-    CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-    _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, CGRectGetMaxY(rect) - 44.0f - restoreButtonSize.height, restoreButtonSize.width, restoreButtonSize.height);
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        _iconImageView.frame = CGRectMake(60.0f, 70.0f, 180.0f, 180.0f);
+        _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 282.0f - 220.0f, 240.0f, 100.0f);
+        _priceLabel.frame = CGRectMake(250.0f + 110.0f, 390.0f - 220.0f, 100.0f, 15.0f);
+        _inAppPurchaseLabel.frame = CGRectMake(250.0f + 0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetHeight(rect), 7.0f);
+        _activityIndicatorView.center = _priceLabel.center;
+        _purchaseButton.frame = CGRectMake(250.0f + 110.0f, 428.0f - 220.0f, 100.0f, 30.0f);
+        CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+        _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 258.0f, restoreButtonSize.width, restoreButtonSize.height);
+    }
+    else {
+        _iconImageView.frame = CGRectMake(70.0f, 90.0f, 180.0f, 180.0f);
+        _descriptionLabel.frame = CGRectMake(40.0f, 282.0f, 240.0f, 100.0f);
+        _priceLabel.frame = CGRectMake(110.0f, 390.0f, 100.0f, 15.0f);
+        _inAppPurchaseLabel.frame = CGRectMake(0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetWidth(rect), 7.0f);
+        _activityIndicatorView.center = _priceLabel.center;
+        _purchaseButton.frame = CGRectMake(110.0f, 428.0f, 100.0f, 30.0f);
+        CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+        _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 494.0f, restoreButtonSize.width, restoreButtonSize.height);
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -198,7 +206,7 @@
     _purchaseButton.enabled = NO;
     _purchaseButton.alpha = 0.5f;
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         _purchaseButton.enabled = YES;
         _purchaseButton.alpha = 1.0f;
     });
@@ -206,6 +214,14 @@
 
 - (void)restoreButtonAction {
     [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+    
+    _restoreButton.enabled = NO;
+    _restoreButton.alpha = 0.5f;
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        _restoreButton.enabled = YES;
+        _restoreButton.alpha = 1.0f;
+    });
 }
 
 @end

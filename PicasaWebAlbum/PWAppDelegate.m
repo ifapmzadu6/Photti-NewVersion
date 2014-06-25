@@ -33,7 +33,6 @@
     [[NSURLSession sharedSession] configuration].URLCache.memoryCapacity = 0;
     
     [PDTaskManager sharedManager];
-    [PLAssetsManager enumurateAssetsWithCompletion:nil];
     
     return YES;
 }

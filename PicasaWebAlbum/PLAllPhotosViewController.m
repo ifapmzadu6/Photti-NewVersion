@@ -205,7 +205,7 @@
         NSArray *filteredVideoObjects = [sectionInfo.objects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypeVideo]];
         [headerView setDetail:[PWString photoAndVideoStringWithPhotoCount:filteredPhotoObjects.count videoCount:filteredVideoObjects.count]];
         __weak typeof(self) wself = self;
-        [headerView setSelectButtonActionBlock:^{
+        headerView.selectButtonActionBlock = ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
@@ -224,8 +224,8 @@
             if (sself.photoDidSelectedInSelectModeBlock) {
                 sself.photoDidSelectedInSelectModeBlock(indexPaths);
             }
-        }];
-        [headerView setDeselectButtonActionBlock:^{
+        };
+        headerView.deselectButtonActionBlock = ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
@@ -234,7 +234,7 @@
                 NSIndexPath *tmpIndexPath = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
                 [sself.collectionView deselectItemAtIndexPath:tmpIndexPath animated:YES];
             }
-        }];
+        };
         
         reusableView = headerView;
         

@@ -10,6 +10,7 @@
 
 #import "PDModelObject.h"
 #import "PDCoreDataAPI.h"
+#import "PDInAppPurchase.h"
 
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
@@ -19,6 +20,8 @@
 #import "PWModelObject.h"
 #import "PWCoreDataAPI.h"
 #import "PWSnowFlake.h"
+
+static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
 @interface PDTaskManager ()
 
@@ -58,6 +61,13 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     if (fromWebAlbum.tag_numphotos.intValue == 0) {
         if (completion) {
             completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
+        }
+        return;
+    }
+    
+    if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
+        if (_notPurchasedUploadDownloadAction) {
+            _notPurchasedUploadDownloadAction();
         }
         return;
     }
@@ -105,6 +115,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                 newTask.taskObject = webToLocalAlbumTask;
                 [sself.tasks addObject:newTask];
             }
+            
             [context save:nil];
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -121,10 +132,35 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     });
 }
 
-- (void)addTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *error))completion {
+- (void)addTaskFromWebPhotos:(NSArray *)fromWebPhotos toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *))completion {
+    if (fromWebPhotos.count == 0) {
+        if (completion) {
+            completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
+        }
+        return;
+    }
+    
+    if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
+        if (_notPurchasedUploadDownloadAction) {
+            _notPurchasedUploadDownloadAction();
+        }
+        return;
+    }
+    
+    
+}
+
+- (void)addTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *))completion {
     if (fromLocalAlbum.photos.count == 0) {
         if (completion) {
             completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
+        }
+        return;
+    }
+    
+    if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
+        if (_notPurchasedUploadDownloadAction) {
+            _notPurchasedUploadDownloadAction();
         }
         return;
     }
@@ -182,10 +218,17 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     }];
 }
 
-- (void)addTaskFromLocalPhotos:(NSArray *)fromLocalPhotos toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *error))completion {
+- (void)addTaskFromLocalPhotos:(NSArray *)fromLocalPhotos toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *))completion {
     if (fromLocalPhotos.count == 0) {
         if (completion) {
             completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
+        }
+        return;
+    }
+    
+    if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
+        if (_notPurchasedUploadDownloadAction) {
+            _notPurchasedUploadDownloadAction();
         }
         return;
     }

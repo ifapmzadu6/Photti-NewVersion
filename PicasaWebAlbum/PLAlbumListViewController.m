@@ -66,31 +66,33 @@
     [_indicatorView startAnimating];
     
     __weak typeof(self) wself = self;
-    [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
-        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
-        
-        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-        sself.fetchedResultsController.delegate = sself;
-        
-        NSError *error = nil;
-        [sself.fetchedResultsController performFetch:&error];
-        if (error) {
-            NSLog(@"%@", error.description);
-            return;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.indicatorView stopAnimating];
+    [PLAssetsManager enumurateAssetsWithCompletion:^(NSError *error) {
+        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
             
-            if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
-                [sself.collectionView reloadData];
+            NSFetchRequest *request = [[NSFetchRequest alloc] init];
+            request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
+            
+            sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+            sself.fetchedResultsController.delegate = sself;
+            
+            NSError *error = nil;
+            [sself.fetchedResultsController performFetch:&error];
+            if (error) {
+                NSLog(@"%@", error.description);
+                return;
             }
-        });
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [sself.indicatorView stopAnimating];
+                
+                if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
+                    [sself.collectionView reloadData];
+                }
+            });
+        }];
     }];
 }
 
