@@ -52,7 +52,7 @@
     _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 10.0f, 0.0f);
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
     _collectionView.clipsToBounds = NO;
-    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundDarkColor];
+    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
@@ -82,7 +82,7 @@
         request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-        sself.fetchedResultsController.delegate = self;
+        sself.fetchedResultsController.delegate = sself;
         NSError *error = nil;
         [sself.fetchedResultsController performFetch:&error];
         if (error) {
@@ -169,7 +169,7 @@
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return [[_fetchedResultsController sections] count];
+    return _fetchedResultsController.sections.count;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
@@ -193,7 +193,7 @@
 
 #pragma mark UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
         return CGSizeMake(177.0f, ceilf(177.0f * 3.0f / 4.0f) + 40.0f);
     }
     else {

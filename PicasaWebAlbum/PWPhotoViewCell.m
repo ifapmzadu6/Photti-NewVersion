@@ -46,7 +46,9 @@
 }
 
 - (void)initialization {
-    self.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        self.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
+    }
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.contentView addSubview:_activityIndicatorView];
@@ -112,15 +114,32 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    
     CGRect rect = self.contentView.bounds;
     
-    _imageView.frame = rect;
-    
-    _activityIndicatorView.center = _imageView.center;
-    
-    _overrayView.frame = rect;
-    
-    _checkMark.frame = CGRectMake(CGRectGetMaxX(rect) - 32.0f, CGRectGetMaxY(rect) - 32.0f, 28.0f, 28.0f);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _imageView.frame = rect;
+    }
+    else {
+        CGFloat width = _imageView.image.size.width;
+        CGFloat height = _imageView.image.size.height;
+        if (width > 0 && height > 0) {
+            if (width > height) {
+                height = ceilf(rect.size.width * height/width * 2.0f) / 2.0f;
+                _imageView.frame = CGRectMake(0.0f, ceilf(rect.size.width-height)/2.0f, rect.size.width, height);
+            }
+            else {
+                width = ceilf(rect.size.width * width/height * 2.0f) / 2.0f;
+                _imageView.frame = CGRectMake(ceilf(rect.size.width-width)/2.0f, 0.0f, width, rect.size.width);
+            }
+        }
+        else {
+            _imageView.frame = CGRectZero;
+        }
+    }
+    _activityIndicatorView.center = self.contentView.center;
+    _overrayView.frame = _imageView.frame;
+    _checkMark.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 32.0f, CGRectGetMaxY(_imageView.frame) - 32.0f, 28.0f, 28.0f);
 }
 
 - (void)setIsSelectWithCheckMark:(BOOL)isSelectWithCheckMark {
@@ -193,7 +212,7 @@
                     });
                     
                     if (error) {
-                        NSLog(@"%@", error.description);
+//                        NSLog(@"%@", error.description);
                         return;
                     }
                     typeof(wself) sself = wself;
@@ -227,6 +246,7 @@
         
         [_activityIndicatorView stopAnimating];
         _imageView.image = image;
+        [self setNeedsLayout];
         [UIView animateWithDuration:0.1f animations:^{
             _imageView.alpha = 1.0f;
         }];

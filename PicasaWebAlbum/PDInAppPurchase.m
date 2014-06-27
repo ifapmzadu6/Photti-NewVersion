@@ -127,7 +127,6 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
     if (_paymentQueueRestored) {
         _paymentQueueRestored(queue.transactions, false);
     }
-    NSLog(@"restoreCompletedTransactionsFailedWithError %@, %@", error, [error userInfo]);
 }
 
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue {

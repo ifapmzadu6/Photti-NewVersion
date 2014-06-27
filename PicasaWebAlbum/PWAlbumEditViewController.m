@@ -49,6 +49,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     _tableView.dataSource = self;
     _tableView.delegate = self;
     _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     [self.view addSubview:_tableView];
     
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
@@ -72,7 +73,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     _tableView.frame = rect;
     
     CGFloat dHeight = 216.0f + 44.0f;
-    if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
         dHeight = 162.0 + 44.0f;
     }
     _datePickerView.frame = CGRectMake(0.0f, rect.size.height - dHeight, rect.size.width, dHeight);
@@ -151,14 +152,6 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     }
 }
 
-#pragma mark UIScrollViewDelegate
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    UITextField *textField = _textField;
-    if (textField) {
-        [textField resignFirstResponder];
-    }
-}
-
 #pragma mark UITableViewCellOption
 - (UITextField *)makeTextField:(CGSize)textSize {
     UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.bounds.size.width - textSize.width - 60.0f, 20.0f)];
@@ -213,7 +206,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     _datePickerView.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     CGRect rect = self.view.bounds;
     CGFloat dHeight = 216.0f + 44.0f;
-    if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
         dHeight = 162.0 + 44.0f;
     }
     _datePickerView.frame = CGRectMake(0.0f, rect.size.height, rect.size.width, dHeight);

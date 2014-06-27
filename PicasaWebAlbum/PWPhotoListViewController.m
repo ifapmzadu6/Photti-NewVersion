@@ -71,14 +71,15 @@
     [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
     
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
-    _collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:collectionViewLayout];
+    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
     [_collectionView registerClass:[PWPhotoViewCell class] forCellWithReuseIdentifier:@"Cell"];
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.autoresizesSubviews = YES;
-    _collectionView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        _collectionView.contentInset = UIEdgeInsetsMake(20.0f, 20.0f, 20.0f, 20.0f);
+    }
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
@@ -128,6 +129,10 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
+    
+    CGRect rect = self.view.bounds;
+    
+    _collectionView.frame = rect;
     
     NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
     NSIndexPath *indexPath = nil;
@@ -208,7 +213,11 @@
 
 - (void)addBarButtonAction {
     PWImagePickerController *viewController = [[PWImagePickerController alloc] initWithAlbumTitle:_album.title completion:^(NSArray *selectedPhotos) {
+        if (selectedPhotos.count == 0) {
+            return;
+        }
         
+//        [PDTaskManager sharedManager] add
     }];
     [self presentViewController:viewController animated:YES completion:nil];
 }
@@ -234,6 +243,41 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
+        NSMutableArray *selectedPhotos = @[].mutableCopy;
+        NSArray *photos = _fetchedResultsController.fetchedObjects;
+        for (NSString *id_str in _selectedPhotoIDs) {
+            NSArray *searched = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+            if (searched.count > 0) {
+                [selectedPhotos addObject:searched.firstObject];
+            }
+        }
+        if (selectedPhotos.count == 0) {
+            return;
+        }
+        
+        if (isWebAlbum) {
+            PWAlbumObject *webAlbum = (PWAlbumObject *)album;
+            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+                
+                NSLog(@"web album added tasks");
+            }];
+        }
+        else {
+            PLAlbumObject *localAlbum = (PLAlbumObject *)album;
+            [[PDTaskManager sharedManager] addTaskFromWebPhotos:selectedPhotos toLocalAlbum:localAlbum completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+                
+                NSLog(@"local album added tasks");
+            }];
+        }
+        
         [sself disableSelectMode];
     }];
     albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
@@ -253,7 +297,7 @@
         return 0;
     }
     
-    return [[_fetchedResultsController sections] count];
+    return _fetchedResultsController.sections.count;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
@@ -280,20 +324,40 @@
 
 #pragma mark UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
-        return CGSizeMake(112.0f, 112.0f);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return CGSizeMake(112.0f, 112.0f);
+        }
+        else {
+            return CGSizeMake(106.0f, 106.0f);
+        }
     }
     else {
-        return CGSizeMake(105.0f, 105.0f);
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return CGSizeMake(172.0f, 187.0f);
+        }
+        else {
+            return CGSizeMake(172.0f, 187.0f);
+        }
     }
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 2.0f;
+    return 1.0f;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 2.0f;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return 2.0f;
+        }
+        else {
+            return 1.0f;
+        }
+    }
+    else {
+        return 10.0f;
+    }
 }
 
 #pragma mark UICollectionViewDelegate
@@ -575,7 +639,7 @@
         if (!sself) return;
         
         UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"本当に削除しますか？アルバム内の写真はすべて削除されます。", nil)];
-        [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除する", nil) handler:^{
+        [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
             UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
             indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
@@ -601,7 +665,7 @@
         
         [deleteActionSheet showFromTabBar:sself.tabBarController.tabBar];
     }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
     
     [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }
@@ -653,7 +717,7 @@
                 }];
             }
         }];
-        [actionSheet bk_setCancelButtonWithTitle:cancelButton handler:nil];
+        [actionSheet bk_setCancelButtonWithTitle:cancelButton handler:^{}];
         
         [actionSheet showFromTabBar:sself.tabBarController.tabBar];
     }];

@@ -335,7 +335,7 @@
 
 + (PWGPhotoObject *)gphotoFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
     if (!json) return nil;
-    //    NSLog(@"%@", json);
+//    NSLog(@"%@", json);
     
     PWGPhotoObject *gphoto = [NSEntityDescription insertNewObjectForEntityForName:kPWGPhotoManagedObjectName inManagedObjectContext:context];
     

@@ -124,26 +124,6 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     return self;
 }
 
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
-    
-    CGSize navigationBarSize = self.navigationBar.bounds.size;
-    CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
-    if (UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
-        statusBarSize = CGSizeMake(statusBarSize.height, statusBarSize.width);
-    }
-    _searchBarBackgroundView.frame = CGRectMake(0.0f, 20.0f - statusBarSize.height, navigationBarSize.width, navigationBarSize.height + statusBarSize.height);
-    CGSize cancelButtonSize = [_cancelButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-    _searchBar.frame = CGRectMake(0.0f, statusBarSize.height, navigationBarSize.width - (cancelButtonSize.width + 10.0f), navigationBarSize.height);
-    _cancelButton.frame = CGRectMake(navigationBarSize.width - (cancelButtonSize.width + 10.0f), statusBarSize.height, cancelButtonSize.width, navigationBarSize.height);
-    
-    _backbroundView.frame = self.view.bounds;
-    _tableView.frame = self.view.bounds;
-    
-    _tableView.contentInset = UIEdgeInsetsMake(navigationBarSize.height + statusBarSize.height, 0.0f, _tableView.contentInset.bottom, 0.0f);
-    _tableView.scrollIndicatorInsets = _tableView.contentInset;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -182,11 +162,32 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     _tableView.separatorColor = [UIColor colorWithWhite:0.0f alpha:0.15f];
     [_tableView registerClass:[PWSearchTableViewWebAlbumCell class] forCellReuseIdentifier:PWSearchNavigationControllerWebAlbumCell];
     [_tableView registerClass:[PWSearchTableViewLocalAlbumCell class] forCellReuseIdentifier:PWSearchNavigationControllerLocalAlbumCell];
+    _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     [_backbroundView addSubview:_tableView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    
+    CGSize navigationBarSize = self.navigationBar.bounds.size;
+    CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        statusBarSize = CGSizeMake(statusBarSize.height, statusBarSize.width);
+    }
+    _searchBarBackgroundView.frame = CGRectMake(0.0f, 20.0f - statusBarSize.height, navigationBarSize.width, navigationBarSize.height + statusBarSize.height);
+    CGSize cancelButtonSize = [_cancelButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    _searchBar.frame = CGRectMake(0.0f, statusBarSize.height, navigationBarSize.width - (cancelButtonSize.width + 10.0f), navigationBarSize.height);
+    _cancelButton.frame = CGRectMake(navigationBarSize.width - (cancelButtonSize.width + 10.0f), statusBarSize.height, cancelButtonSize.width, navigationBarSize.height);
+    
+    _backbroundView.frame = self.view.bounds;
+    _tableView.frame = self.view.bounds;
+    
+    _tableView.contentInset = UIEdgeInsetsMake(navigationBarSize.height + statusBarSize.height, 0.0f, _tableView.contentInset.bottom, 0.0f);
+    _tableView.scrollIndicatorInsets = _tableView.contentInset;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -459,11 +460,6 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 //            
 //        }
     }
-}
-
-#pragma mark UIScrollViewDelegate
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    [_searchBar resignFirstResponder];
 }
 
 #pragma mark History

@@ -116,15 +116,15 @@
     }
     else {
         if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            _iconImageView.frame = CGRectMake(184.0f, 170.0f, 400.0f, 400.0f);
-            _titleLabel.frame = CGRectMake(0.0f, 286.0f - 212.0f, CGRectGetHeight(rect), 50.0f);
-            _descriptionLabel.frame = CGRectMake(250.0f, 326.0f - 212.0f, 240.0f, 100.0f);
-            _loginButton.frame = CGRectMake(250.0f, 444.0f - 212.0f, 100.0f, 30.0f);
+            _iconImageView.frame = CGRectMake(362.0f, 100.0f, 300.0f, 300.0f);
+            _titleLabel.frame = CGRectMake(412.0f, 410.0f, 200.0f, 50.0f);
+            _descriptionLabel.frame = CGRectMake(272.0f, 460.0f, 480.0f, 100.0f);
+            _loginButton.frame = CGRectMake(432.0f, 576.0f, 160.0f, 50.0f);
         }
         else {
             _iconImageView.frame = CGRectMake(184.0f, 150.0f, 400.0f, 400.0f);
-            _titleLabel.frame = CGRectMake(0.0f, 580.0f, CGRectGetWidth(rect), 50.0f);
-            _descriptionLabel.frame = CGRectMake(184.0f, 640.0f, 400.0f, 100.0f);
+            _titleLabel.frame = CGRectMake(284.0f, 580.0f, 200.0f, 50.0f);
+            _descriptionLabel.frame = CGRectMake(144.0f, 640.0f, 480.0f, 100.0f);
             _loginButton.frame = CGRectMake(304.0f, 800.0f, 160.0f, 50.0f);
         }
     }

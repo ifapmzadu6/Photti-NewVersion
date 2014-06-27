@@ -167,7 +167,7 @@
         return 0;
     }
     
-    return [[_fetchedResultsController sections] count];
+    return _fetchedResultsController.sections.count;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {

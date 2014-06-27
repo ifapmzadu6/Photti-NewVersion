@@ -10,7 +10,9 @@
 
 #import "PWColors.h"
 #import "PLModelObject.h"
+#import "PLAssetsManager.h"
 #import "PWModelObject.h"
+#import "PWOAuthManager.h"
 
 #import "PWImagePickerNavigationController.h"
 #import "PWImagePickerLocalPageViewController.h"
@@ -20,10 +22,10 @@
 
 @property (strong, nonatomic) UIToolbar *toolbar;
 
-@property (weak, nonatomic) PWImagePickerLocalPageViewController *localPageViewController;
-@property (weak, nonatomic) PWImagePickerNavigationController *localNavigationcontroller;
-@property (weak, nonatomic) PWImagePickerWebAlbumListViewController *webAlbumViewController;
-@property (weak, nonatomic) PWImagePickerNavigationController *webNavigationController;
+@property (strong, nonatomic) PWImagePickerLocalPageViewController *localPageViewController;
+@property (strong, nonatomic) PWImagePickerNavigationController *localNavigationcontroller;
+@property (strong, nonatomic) PWImagePickerWebAlbumListViewController *webAlbumViewController;
+@property (strong, nonatomic) PWImagePickerNavigationController *webNavigationController;
 
 @property (nonatomic) NSUInteger countOfSelectedWebPhoto;
 @property (nonatomic) NSUInteger countOfSelectedLocalPhoto;
@@ -39,20 +41,38 @@
     if (self) {
         _completion = completion;
         
-        PWImagePickerLocalPageViewController *localPageViewController = [[PWImagePickerLocalPageViewController alloc] init];
-        _localPageViewController = localPageViewController;
-        PWImagePickerNavigationController *localNavigationcontroller = [[PWImagePickerNavigationController alloc] initWithRootViewController:localPageViewController];
-        localNavigationcontroller.titleOnNavigationBar = [NSString stringWithFormat:NSLocalizedString(@"Select items to add to \"%@\".", nil), albumTitle];
-        _localNavigationcontroller = localNavigationcontroller;
+        NSString *titleOnNavigationBarString = [NSString stringWithFormat:NSLocalizedString(@"Select items to add to \"%@\".", nil), albumTitle];
         
-        PWImagePickerWebAlbumListViewController *webAlbumViewController = [[PWImagePickerWebAlbumListViewController alloc] init];
-        _webAlbumViewController = webAlbumViewController;
-        PWImagePickerNavigationController *webNavigationController = [[PWImagePickerNavigationController alloc] initWithRootViewController:_webAlbumViewController];
-        webNavigationController.titleOnNavigationBar = [NSString stringWithFormat:NSLocalizedString(@"Select items to add to \"%@\".", nil), albumTitle];
-        _webNavigationController = webNavigationController;
+        if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized && [PLAssetsManager sharedManager].autoCreateAlbumType != PLAssetsManagerAutoCreateAlbumTypeUnknown) {
+            PWImagePickerLocalPageViewController *localPageViewController = [[PWImagePickerLocalPageViewController alloc] init];
+            _localPageViewController = localPageViewController;
+            PWImagePickerNavigationController *localNavigationcontroller = [[PWImagePickerNavigationController alloc] initWithRootViewController:localPageViewController];
+            localNavigationcontroller.titleOnNavigationBar = titleOnNavigationBarString;
+            _localNavigationcontroller = localNavigationcontroller;
+        }
         
-        self.viewControllers = @[localNavigationcontroller, webNavigationController];
+        if ([PWOAuthManager isLogined]) {
+            PWImagePickerWebAlbumListViewController *webAlbumViewController = [[PWImagePickerWebAlbumListViewController alloc] init];
+            _webAlbumViewController = webAlbumViewController;
+            PWImagePickerNavigationController *webNavigationController = [[PWImagePickerNavigationController alloc] initWithRootViewController:_webAlbumViewController];
+            webNavigationController.titleOnNavigationBar = titleOnNavigationBarString;
+            _webNavigationController = webNavigationController;
+        }
+        
         self.delegate = self;
+        
+        if (_localNavigationcontroller && _webAlbumViewController) {
+            self.viewControllers = @[_localNavigationcontroller, _webNavigationController];
+            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+        }
+        else if (_localNavigationcontroller) {
+            self.viewControllers = @[_localNavigationcontroller];
+            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+        }
+        else if (_webAlbumViewController) {
+            self.viewControllers = @[_webNavigationController];
+            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        }
         
         _selectedPhotoIDs = @[];
         _countOfSelectedWebPhoto = 0;
@@ -65,7 +85,6 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
-    self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     self.tabBar.barTintColor = [UIColor blackColor];
     
     _toolbar = [[UIToolbar alloc] init];
@@ -134,13 +153,12 @@
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
     [viewController viewDidAppear:NO];
     
-    NSUInteger index = [self.viewControllers indexOfObject:viewController];
-    if (index == 0) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
-    }
-    else if (index == 1) {
+    if (viewController == _webNavigationController) {
         self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     }
+    else if (viewController == _localNavigationcontroller) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    }    
 }
 
 #pragma methods

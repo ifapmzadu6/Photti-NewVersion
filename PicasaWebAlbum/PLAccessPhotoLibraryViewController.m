@@ -50,14 +50,24 @@
     
     _titleLabel = [UILabel new];
     _titleLabel.text = @"Camera Roll";
-    _titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_titleLabel];
     
     _descriptionLabel = [UILabel new];
     [self setDescriptionLabelText];
-    _descriptionLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _descriptionLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _descriptionLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     _descriptionLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _descriptionLabel.textAlignment = NSTextAlignmentCenter;
     _descriptionLabel.numberOfLines = 0;
@@ -65,7 +75,12 @@
     
     _accessButton = [UIButton new];
     [_accessButton addTarget:self action:@selector(accessButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    _accessButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _accessButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _accessButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     [_accessButton setTitle:NSLocalizedString(@"Access", nil) forState:UIControlStateNormal];
     [_accessButton setTitleColor:[PWColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateNormal];
     [_accessButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
@@ -91,17 +106,33 @@
     
     CGRect rect = self.view.bounds;
     
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        _iconImageView.frame = CGRectMake(70.0f, 80.0f, 180.0f, 180.0f);
-        _titleLabel.frame = CGRectMake(250.0f, 286.0f - 192.0f, CGRectGetHeight(rect), 36.0f);
-        _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 326.0f - 212.0f, 240.0f, 100.0f);
-        _accessButton.frame = CGRectMake(250.0f + 110.0f, 444.0f - 227.0f, 100.0f, 30.0f);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            _iconImageView.frame = CGRectMake(70.0f, 80.0f, 180.0f, 180.0f);
+            _titleLabel.frame = CGRectMake(250.0f, 286.0f - 192.0f, CGRectGetHeight(rect), 36.0f);
+            _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 326.0f - 212.0f, 240.0f, 100.0f);
+            _accessButton.frame = CGRectMake(250.0f + 110.0f, 444.0f - 227.0f, 100.0f, 30.0f);
+        }
+        else {
+            _iconImageView.frame = CGRectMake(70.0f, 92.0f, 180.0f, 180.0f);
+            _titleLabel.frame = CGRectMake(0.0f, 286.0f, CGRectGetWidth(rect), 36.0f);
+            _descriptionLabel.frame = CGRectMake(40.0f, 326.0f, 240.0f, 100.0f);
+            _accessButton.frame = CGRectMake(110.0f, 444.0f, 100.0f, 30.0f);
+        }
     }
     else {
-        _iconImageView.frame = CGRectMake(70.0f, 92.0f, 180.0f, 180.0f);
-        _titleLabel.frame = CGRectMake(0.0f, 286.0f, CGRectGetWidth(rect), 36.0f);
-        _descriptionLabel.frame = CGRectMake(40.0f, 326.0f, 240.0f, 100.0f);
-        _accessButton.frame = CGRectMake(110.0f, 444.0f, 100.0f, 30.0f);
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            _iconImageView.frame = CGRectMake(362.0f, 100.0f, 300.0f, 300.0f);
+            _titleLabel.frame = CGRectMake(412.0f, 410.0f, 200.0f, 50.0f);
+            _descriptionLabel.frame = CGRectMake(272.0f, 460.0f, 480.0f, 100.0f);
+            _accessButton.frame = CGRectMake(432.0f, 576.0f, 160.0f, 50.0f);
+        }
+        else {
+            _iconImageView.frame = CGRectMake(184.0f, 150.0f, 400.0f, 400.0f);
+            _titleLabel.frame = CGRectMake(284.0f, 580.0f, 200.0f, 50.0f);
+            _descriptionLabel.frame = CGRectMake(144.0f, 640.0f, 480.0f, 100.0f);
+            _accessButton.frame = CGRectMake(304.0f, 800.0f, 160.0f, 50.0f);
+        }
     }
 }
 
@@ -128,8 +159,15 @@
         }
         typeof(wself) sself = wself;
         if (!sself) return;
-        [sself setDescriptionLabelText];
-        [sself updateAccessButton];
+        if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized) {
+            if (sself.completion) {
+                sself.completion();
+            }
+        }
+        else {
+            [sself setDescriptionLabelText];
+            [sself updateAccessButton];
+        }
     }];
 }
 

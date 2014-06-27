@@ -54,18 +54,28 @@
     [self.view addSubview:_iconImageView];
     
     _descriptionLabel = [UILabel new];
-//    _descriptionLabel.text = @"アップロード/ダウンロード機能を有効にすると写真をウェブにアップロードまたはダウンロードできます。";
+    //    _descriptionLabel.text = @"アップロード/ダウンロード機能を有効にすると写真をウェブにアップロードまたはダウンロードできます。";
     _descriptionLabel.text = NSLocalizedString(@"Purchasing Upload-Download Addon, you can download or upload to Web Album by Photti 2.", nil);
     _descriptionLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _descriptionLabel.textAlignment = NSTextAlignmentCenter;
-    _descriptionLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _descriptionLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _descriptionLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     _descriptionLabel.numberOfLines = 0;
     [self.view addSubview:_descriptionLabel];
     
     _priceLabel = [UILabel new];
     _priceLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _priceLabel.textAlignment = NSTextAlignmentCenter;
-    _priceLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _priceLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _priceLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     _priceLabel.hidden = YES;
     [self.view addSubview:_priceLabel];
     
@@ -73,13 +83,23 @@
     _inAppPurchaseLabel.text = @"In-App Purchase";
     _inAppPurchaseLabel.textColor = [PWColors getColor:PWColorsTypeTextLightSubColor];
     _inAppPurchaseLabel.textAlignment = NSTextAlignmentCenter;
-    _inAppPurchaseLabel.font = [UIFont systemFontOfSize:7.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _inAppPurchaseLabel.font = [UIFont systemFontOfSize:7.0f];
+    }
+    else {
+        _inAppPurchaseLabel.font = [UIFont systemFontOfSize:9.0f];
+    }
     _inAppPurchaseLabel.hidden = YES;
     [self.view addSubview:_inAppPurchaseLabel];
     
     _purchaseButton = [UIButton new];
     [_purchaseButton addTarget:self action:@selector(purchaseButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    _purchaseButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _purchaseButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _purchaseButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     [_purchaseButton setTitle:NSLocalizedString(@"Purchase", nil) forState:UIControlStateNormal];
     _purchaseButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintUploadColor].CGColor;
     _purchaseButton.layer.borderWidth = 1.0f;
@@ -98,7 +118,12 @@
     
     _restoreButton = [UIButton new];
     [_restoreButton addTarget:self action:@selector(restoreButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    _restoreButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _restoreButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
+    }
+    else {
+        _restoreButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
     [_restoreButton setTitle:NSLocalizedString(@"Restore purchase", NSLocalizedString) forState:UIControlStateNormal];
     [_restoreButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
     [_restoreButton setTitleColor:[[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
@@ -156,25 +181,49 @@
     
     CGRect rect = self.view.bounds;
     
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        _iconImageView.frame = CGRectMake(60.0f, 70.0f, 180.0f, 180.0f);
-        _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 282.0f - 220.0f, 240.0f, 100.0f);
-        _priceLabel.frame = CGRectMake(250.0f + 110.0f, 390.0f - 220.0f, 100.0f, 15.0f);
-        _inAppPurchaseLabel.frame = CGRectMake(250.0f + 0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetHeight(rect), 7.0f);
-        _activityIndicatorView.center = _priceLabel.center;
-        _purchaseButton.frame = CGRectMake(250.0f + 110.0f, 428.0f - 220.0f, 100.0f, 30.0f);
-        CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-        _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 258.0f, restoreButtonSize.width, restoreButtonSize.height);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            _iconImageView.frame = CGRectMake(60.0f, 70.0f, 180.0f, 180.0f);
+            _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 282.0f - 220.0f, 240.0f, 100.0f);
+            _priceLabel.frame = CGRectMake(250.0f + 110.0f, 390.0f - 220.0f, 100.0f, 15.0f);
+            _inAppPurchaseLabel.frame = CGRectMake(250.0f + 0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetHeight(rect), 7.0f);
+            _activityIndicatorView.center = _priceLabel.center;
+            _purchaseButton.frame = CGRectMake(250.0f + 110.0f, 428.0f - 220.0f, 100.0f, 30.0f);
+            CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+            _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 258.0f, restoreButtonSize.width, restoreButtonSize.height);
+        }
+        else {
+            _iconImageView.frame = CGRectMake(70.0f, 90.0f, 180.0f, 180.0f);
+            _descriptionLabel.frame = CGRectMake(40.0f, 282.0f, 240.0f, 100.0f);
+            _priceLabel.frame = CGRectMake(110.0f, 390.0f, 100.0f, 15.0f);
+            _inAppPurchaseLabel.frame = CGRectMake(0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetWidth(rect), 7.0f);
+            _activityIndicatorView.center = _priceLabel.center;
+            _purchaseButton.frame = CGRectMake(110.0f, 428.0f, 100.0f, 30.0f);
+            CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+            _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 494.0f, restoreButtonSize.width, restoreButtonSize.height);
+        }
     }
     else {
-        _iconImageView.frame = CGRectMake(70.0f, 90.0f, 180.0f, 180.0f);
-        _descriptionLabel.frame = CGRectMake(40.0f, 282.0f, 240.0f, 100.0f);
-        _priceLabel.frame = CGRectMake(110.0f, 390.0f, 100.0f, 15.0f);
-        _inAppPurchaseLabel.frame = CGRectMake(0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetWidth(rect), 7.0f);
-        _activityIndicatorView.center = _priceLabel.center;
-        _purchaseButton.frame = CGRectMake(110.0f, 428.0f, 100.0f, 30.0f);
-        CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-        _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 494.0f, restoreButtonSize.width, restoreButtonSize.height);
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            _iconImageView.frame = CGRectMake(362.0f, 100.0f, 300.0f, 300.0f);
+            _descriptionLabel.frame = CGRectMake(272.0f, 410.0f, 480.0f, 100.0f);
+            _priceLabel.frame = CGRectMake(462.0f, 526.0f, 100.0f, 15.0f);
+            _inAppPurchaseLabel.frame = CGRectMake(462.0f, CGRectGetMinY(_priceLabel.frame) - 13.0f, 100.0f, 9.0f);
+            _activityIndicatorView.center = _priceLabel.center;
+            _purchaseButton.frame = CGRectMake(432.0f, 576.0f, 160.0f, 50.0f);
+            CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+            _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 30.0f, 658.0f, restoreButtonSize.width, restoreButtonSize.height);
+        }
+        else {
+            _iconImageView.frame = CGRectMake(184.0f, 150.0f, 400.0f, 400.0f);
+            _descriptionLabel.frame = CGRectMake(144.0f, 600.0f, 480.0f, 100.0f);
+            _priceLabel.frame = CGRectMake(334.0f, 730.0f, 100.0f, 15.0f);
+            _inAppPurchaseLabel.frame = CGRectMake(334.0f, CGRectGetMinY(_priceLabel.frame) - 13.0f, 100.0f, 9.0f);
+            _activityIndicatorView.center = _priceLabel.center;
+            _purchaseButton.frame = CGRectMake(304.0f, 800.0f, 160.0f, 50.0f);
+            CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+            _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 30.0f, 910.0f, restoreButtonSize.width, restoreButtonSize.height);
+        }
     }
 }
 

@@ -83,9 +83,12 @@
 			  type:PWColorsTypeTextLightColor];
 	[self setColor:[UIColor colorWithRed:0.628f green:0.632f blue:0.644f alpha:1.0f]
 			  type:PWColorsTypeTextLightSubColor];
+    
 	[self setColor:[UIColor colorWithWhite:1.0f alpha:1.0f]
 			  type:PWColorsTypeBackgroundColor];
-    [self setColor:[UIColor colorWithRed:240.0f/255.0f green:243.0f/255.0f blue:245.0f/255.0f alpha:1.0f]
+//    [self setColor:[UIColor colorWithRed:240.0f/255.0f green:243.0f/255.0f blue:245.0f/255.0f alpha:1.0f]
+//			  type:PWColorsTypeBackgroundLightColor];
+    [self setColor:[UIColor colorWithRed:235.0f/255.0f green:238.0f/255.0f blue:240.0f/255.0f alpha:1.0f]
 			  type:PWColorsTypeBackgroundLightColor];
 	[self setColor:[UIColor colorWithRed:210.0f/255.0f green:213.0f/255.0f blue:215.0f/255.0f alpha:1.0f]
 			  type:PWColorsTypeBackgroundDarkColor];

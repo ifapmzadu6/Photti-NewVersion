@@ -73,7 +73,14 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     }
     
     NSString *webAlbumId = fromWebAlbum.id_str;
+    if (!webAlbumId) {
+        if (completion) {
+            completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
+        }
+        return;
+    }
     
+    __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         __block PDWebToLocalAlbumTaskObject *webToLocalAlbumTask = nil;
         [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
@@ -99,7 +106,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
             return;
         }
         
-        __weak typeof(self) wself = self;
         [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
             if (!sself) return;
@@ -111,7 +117,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                 webPhoto.task = webToLocalAlbumTask;
                 [webToLocalAlbumTask addPhotosObject:webPhoto];
                 
-                PDTask *newTask = [[PDTask alloc] init];
+                PDTask *newTask = [PDTask new];
                 newTask.taskObject = webToLocalAlbumTask;
                 [sself.tasks addObject:newTask];
             }
@@ -147,7 +153,44 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         return;
     }
     
-    
+    __weak typeof(self) wself = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        __block PDWebToLocalPhotosTaskObject *webToLocalPhotosTask = nil;
+        [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+            webToLocalPhotosTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalAlbumTaskObjectName inManagedObjectContext:context];
+            [context save:nil];
+        }];
+        
+        [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            for (PWPhotoObject *photoObject in fromWebPhotos) {
+                PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
+                webPhoto.photo_object_id_str = photoObject.id_str;
+                webPhoto.tag_sort_index = photoObject.sortIndex;
+                webPhoto.task = webToLocalPhotosTask;
+                [webToLocalPhotosTask addPhotosObject:webPhoto];
+                
+                PDTask *newTask = [PDTask new];
+                newTask.taskObject = webToLocalPhotosTask;
+                [sself.tasks addObject:newTask];
+            }
+            
+            [context save:nil];
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                if (completion) {
+                    completion(nil);
+                }
+            });
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                if (sself.taskManagerChangedBlock) {
+                    sself.taskManagerChangedBlock(sself);
+                }
+            });
+        }];
+    });
 }
 
 - (void)addTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *))completion {
@@ -191,7 +234,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
             localPhoto.task = localToWebAlbumTask;
             [localToWebAlbumTask addPhotosObject:localPhoto];
             
-            PDTask *newTask = [[PDTask alloc] init];
+            PDTask *newTask = [PDTask new];
             [newTask setUploadTaskFromLocalObject:localPhoto toWebAlbumID:localToWebAlbumTask.destination_album_id_str completion:^(NSError *error) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -256,7 +299,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
             localPhoto.task = localToWebPhotoTask;
             [localToWebPhotoTask addPhotosObject:localPhoto];
             
-            PDTask *newTask = [[PDTask alloc] init];
+            PDTask *newTask = [PDTask new];
             [newTask setUploadTaskFromLocalObject:localPhoto toWebAlbumID:localToWebPhotoTask.destination_album_id_str completion:^(NSError *error) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -442,6 +485,11 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                 [PDTaskManager donnedASessionTask];
             }];
         }];
+    }
+    else if ([baseTaskObject isKindOfClass:[PDWebToLocalPhotosTaskObject class]]) {
+//        PDWebToLocalPhotosTaskObject *webToPhotosTask = (PDWebToLocalPhotosTaskObject *)baseTaskObject;
+        
+        
     }
 }
 

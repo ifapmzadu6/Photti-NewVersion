@@ -136,20 +136,20 @@
     NSString *title = [NSString stringWithFormat:@"%ld/%ld", (long)index + 1, (long)_photos.count];
     viewController.title = title;
     __weak typeof(self) wself = self;
-    [viewController setViewDidAppearBlock:^{
+    viewController.viewDidAppearBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
         sself.title = title;
         sself.index = index;
-    }];
-    [viewController setHandleSingleTapBlock:^{
+    };
+    viewController.handleSingleTapBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
         PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
         if ([tabBarController isToolbarHideen]) {
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
             [tabBarController setToolbarHidden:NO animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
                 sself.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
@@ -157,16 +157,17 @@
             }];
         }
         else {
+            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
             [tabBarController setToolbarHidden:YES animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
                 sself.view.backgroundColor = [UIColor blackColor];
                 sself.navigationController.navigationBar.alpha = 0.0f;
             } completion:^(BOOL finished) {
-                [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
                 sself.navigationController.navigationBar.alpha = 0.0f;
             }];
         }
-    }];
+    };
+    
     return viewController;
 }
 

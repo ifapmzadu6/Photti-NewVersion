@@ -194,12 +194,7 @@ static const CGFloat animationDuration = 0.25f;
     void (^animation)() = ^{
         for(UIView *view in self.view.subviews) {
             if([view isKindOfClass:[UITabBar class]]) {
-                if (hidden) {
-                    view.alpha = 0.0f;
-                }
-                else {
-                    view.alpha = 1.0f;
-                }
+                view.alpha = !hidden;
             }
         }
     };
@@ -224,12 +219,7 @@ static const CGFloat animationDuration = 0.25f;
     _isToolbarHidden = hidden;
     
     void (^animation)() = ^{
-        if (hidden) {
-            _toolbar.alpha = 0.0f;
-        }
-        else {
-            _toolbar.alpha = 1.0f;
-        }
+        _toolbar.alpha = !hidden;
     };
     
     if (animated) {
@@ -281,6 +271,9 @@ static const CGFloat animationDuration = 0.25f;
 
 - (void)setToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated {
     [_toolbar setItems:toolbarItems animated:animated];
+    for (UIView *view in _toolbar.subviews) {
+        view.exclusiveTouch = YES;
+    }
 }
 
 - (void)setToolbarTintColor:(UIColor *)tintColor {
@@ -297,12 +290,7 @@ static const CGFloat animationDuration = 0.25f;
     _isActionToolbarHidden = hidden;
     
     void (^animation)() = ^{
-        if (hidden) {
-            _actionToolbar.alpha = 0.0f;
-        }
-        else {
-            _actionToolbar.alpha = 1.0f;
-        }
+        _actionToolbar.alpha = !hidden;
     };
     
     if (animated) {
@@ -318,6 +306,9 @@ static const CGFloat animationDuration = 0.25f;
 
 - (void)setActionToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated {
     [_actionToolbar setItems:toolbarItems animated:animated];
+    for (UIView *view in _actionToolbar.subviews) {
+        view.exclusiveTouch = YES;
+    }
 }
 
 - (void)setActionToolbarTintColor:(UIColor *)tintColor {
@@ -343,12 +334,7 @@ static const CGFloat animationDuration = 0.25f;
     _isActionNavigationBarHidden = hidden;
     
     void (^animation)() = ^{
-        if (hidden) {
-            _actionNavigationBar.alpha = 0.0f;
-        }
-        else {
-            _actionNavigationBar.alpha = 1.0f;
-        }
+        _actionNavigationBar.alpha = !hidden;
     };
     
     if (animated) {
@@ -364,6 +350,9 @@ static const CGFloat animationDuration = 0.25f;
 
 - (void)setActionNavigationItem:(UINavigationItem *)item animated:(BOOL)animated {
     [_actionNavigationBar setItems:@[item] animated:animated];
+    for (UIView *view in _actionNavigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
 }
 
 - (void)setActionNavigationTintColor:(UIColor *)tintColor {

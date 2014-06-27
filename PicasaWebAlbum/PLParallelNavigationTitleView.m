@@ -81,7 +81,7 @@
     
     CGFloat halfwidth = CGRectGetMaxX(self.frame) - CGRectGetWidth(superViewRect) / 2.0f;
     
-    BOOL isLandScape = UIDeviceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
+    BOOL isLandScape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
     CGFloat tHeight = 44.0f;
     if (isLandScape) {
         tHeight = 32.0f;

@@ -348,7 +348,7 @@ static dispatch_queue_t assets_manager_queue() {
         NSDate *enumurateDate = [NSDate date];
         
         // PhotoStreamはiCloud
-        ALAssetsGroupType assetsGroupType = ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces | ALAssetsGroupLibrary | ALAssetsGroupSavedPhotos;
+        ALAssetsGroupType assetsGroupType = ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces | ALAssetsGroupSavedPhotos;
         
         [sself.library enumerateGroupsWithTypes:assetsGroupType usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
             if (group) {
@@ -441,49 +441,51 @@ static dispatch_queue_t assets_manager_queue() {
                     }
                     //NSLog(@"removed = %lu", (unsigned long)outdatedPhotos.count);
                     
-                    //今回の読み込みで追加された新規写真
-                    NSFetchRequest *newPhotoRequest = [[NSFetchRequest alloc] init];
-                    newPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                    newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (import = %@)", @(ALAssetsGroupPhotoStream), enumurateDate];
-                    newPhotoRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
-                    error = nil;
-                    NSArray *newPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
-                    //NSLog(@"new = %lu", (unsigned long)newPhotos.count);
-                    
-                    if (newPhotos.count > 0) {
-                        //新規写真は振り分けをしなければならない
-                        NSFetchRequest *request = [[NSFetchRequest alloc] init];
-                        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-                        request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(PLAlbumObjectTagTypeAutomatically)];
+                    if (_autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
+                        //今回の読み込みで追加された新規写真
+                        NSFetchRequest *newPhotoRequest = [[NSFetchRequest alloc] init];
+                        newPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+                        newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (import = %@)", @(ALAssetsGroupPhotoStream), enumurateDate];
+                        newPhotoRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
                         error = nil;
-                        NSArray *tmpalbums = [context executeFetchRequest:request error:&error];
-                        NSMutableArray *albums = tmpalbums.mutableCopy;
-                        for (PLPhotoObject *newPhoto in newPhotos) {
-                            NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:newPhoto.date];
-                            BOOL isDetected = NO;
-                            for (PLAlbumObject *album in albums.reverseObjectEnumerator) {
-                                if ([album.tag_date isEqualToDate:adjustedDate]) {
-                                    newPhoto.tag_sort_index = @(album.photos.count);
-                                    [album addPhotosObject:newPhoto];
-                                    isDetected = YES;
-                                    break;
+                        NSArray *newPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
+                        //NSLog(@"new = %lu", (unsigned long)newPhotos.count);
+                        
+                        if (newPhotos.count > 0) {
+                            //新規写真は振り分けをしなければならない
+                            NSFetchRequest *request = [[NSFetchRequest alloc] init];
+                            request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+                            request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(PLAlbumObjectTagTypeAutomatically)];
+                            error = nil;
+                            NSArray *tmpalbums = [context executeFetchRequest:request error:&error];
+                            NSMutableArray *albums = tmpalbums.mutableCopy;
+                            for (PLPhotoObject *newPhoto in newPhotos) {
+                                NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:newPhoto.date];
+                                BOOL isDetected = NO;
+                                for (PLAlbumObject *album in albums.reverseObjectEnumerator) {
+                                    if ([album.tag_date isEqualToDate:adjustedDate]) {
+                                        newPhoto.tag_sort_index = @(album.photos.count);
+                                        [album addPhotosObject:newPhoto];
+                                        isDetected = YES;
+                                        break;
+                                    }
                                 }
-                            }
-                            if (!isDetected) {
-                                //自動作成版アルバムを作る
-                                PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
-                                album.id_str = [PWSnowFlake generateUniqueIDString];
-                                album.name = [NSString stringWithFormat:@"%@のアルバム", [[PLDateFormatter mmmddFormatter] stringFromDate:adjustedDate]];
-                                album.tag_date = adjustedDate;
-                                album.timestamp = @((unsigned long)([adjustedDate timeIntervalSince1970]) * 1000);
-                                album.import = enumurateDate;
-                                album.update = enumurateDate;
-                                album.tag_type = @(PLAlbumObjectTagTypeAutomatically);
-                                
-                                newPhoto.tag_sort_index = @(0);
-                                [album addPhotosObject:newPhoto];
-                                
-                                [albums addObject:album];
+                                if (!isDetected) {
+                                    //自動作成版アルバムを作る
+                                    PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
+                                    album.id_str = [PWSnowFlake generateUniqueIDString];
+                                    album.name = [NSString stringWithFormat:@"%@のアルバム", [[PLDateFormatter mmmddFormatter] stringFromDate:adjustedDate]];
+                                    album.tag_date = adjustedDate;
+                                    album.timestamp = @((unsigned long)([adjustedDate timeIntervalSince1970]) * 1000);
+                                    album.import = enumurateDate;
+                                    album.update = enumurateDate;
+                                    album.tag_type = @(PLAlbumObjectTagTypeAutomatically);
+                                    
+                                    newPhoto.tag_sort_index = @(0);
+                                    [album addPhotosObject:newPhoto];
+                                    
+                                    [albums addObject:album];
+                                }
                             }
                         }
                     }

@@ -10,4 +10,6 @@
 
 @interface PLAccessPhotoLibraryViewController : UIViewController
 
+@property (copy, nonatomic) void (^completion)();
+
 @end

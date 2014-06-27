@@ -172,11 +172,13 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         viewController.automaticallyAdjustsScrollViewInsets = NO;
         viewController.edgesForExtendedLayout = UIRectEdgeAll;
         viewController.title = NSLocalizedString(@"Login", nil);
-        for (UIView *view in viewController.view.subviews) {
-            if ([view isKindOfClass:[UIWebView class]]) {
-                UIWebView *webView = (UIWebView *)view;
-                webView.scrollView.contentInset = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
-                webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            for (UIView *view in viewController.view.subviews) {
+                if ([view isKindOfClass:[UIWebView class]]) {
+                    UIWebView *webView = (UIWebView *)view;
+                    webView.scrollView.contentInset = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
+                    webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20.0f, 0.0f, 0.0f, 0.0f);
+                }
             }
         }
         for (UIView *view in viewController.navigationItem.rightBarButtonItem.customView.subviews) {
@@ -193,6 +195,9 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         navigationController.edgesForExtendedLayout = UIRectEdgeAll;
         navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
         navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        }
         
         if (completion) {
             completion(navigationController);

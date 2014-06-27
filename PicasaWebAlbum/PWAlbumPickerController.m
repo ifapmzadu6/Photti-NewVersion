@@ -10,11 +10,17 @@
 
 #import "PWColors.h"
 
+#import "PLAssetsManager.h"
+#import "PWOAuthManager.h"
+
 #import "PWAlbumPickerNavigationController.h"
 #import "PWAlbumPickerWebAlbumListViewController.h"
 #import "PWAlbumPickerLocalAlbumListViewController.h"
 
 @interface PWAlbumPickerController ()
+
+@property (strong, nonatomic) PWAlbumPickerNavigationController *localNavigationController;
+@property (strong, nonatomic) PWAlbumPickerNavigationController *webNavigationController;
 
 @property (strong, nonatomic) UIToolbar *toolbar;
 
@@ -29,16 +35,32 @@
     if (self) {
         _completion = completion;
         
-        PWAlbumPickerLocalAlbumListViewController *localAlbumViewcontroller = [[PWAlbumPickerLocalAlbumListViewController alloc] init];
-        PWAlbumPickerNavigationController *localNavigationController = [[PWAlbumPickerNavigationController alloc] initWithRootViewController:localAlbumViewcontroller];
+        if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized && [PLAssetsManager sharedManager].autoCreateAlbumType != PLAssetsManagerAutoCreateAlbumTypeUnknown) {
+            PWAlbumPickerLocalAlbumListViewController *localAlbumViewcontroller = [[PWAlbumPickerLocalAlbumListViewController alloc] init];
+            _localNavigationController = [[PWAlbumPickerNavigationController alloc] initWithRootViewController:localAlbumViewcontroller];
+        }
         
-        PWAlbumPickerWebAlbumListViewController *webAlbumViewcontroller = [[PWAlbumPickerWebAlbumListViewController alloc] init];
-        PWAlbumPickerNavigationController *webNavigationController = [[PWAlbumPickerNavigationController alloc] initWithRootViewController:webAlbumViewcontroller];
+        if ([PWOAuthManager isLogined]) {
+            PWAlbumPickerWebAlbumListViewController *webAlbumViewcontroller = [[PWAlbumPickerWebAlbumListViewController alloc] init];
+            _webNavigationController = [[PWAlbumPickerNavigationController alloc] initWithRootViewController:webAlbumViewcontroller];
+        }
         
         self.delegate = self;
-        self.viewControllers = @[localNavigationController, webNavigationController];
-        self.selectedIndex = 1;
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        
+        if (_localNavigationController && _webNavigationController) {
+            self.viewControllers = @[_localNavigationController, _webNavigationController];
+            self.selectedIndex = 1;
+            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        }
+        else if (_localNavigationController) {
+            self.viewControllers = @[_localNavigationController];
+            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+        }
+        else if (_webNavigationController) {
+            self.viewControllers = @[_webNavigationController];
+            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        }
+        
     }
     return self;
 }
@@ -107,11 +129,10 @@
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
     [viewController viewDidAppear:NO];
     
-    NSUInteger index = [self.viewControllers indexOfObject:viewController];
-    if (index == 0) {
+    if (viewController == _localNavigationController) {
         self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     }
-    else if (index == 1) {
+    else if (viewController == _webNavigationController) {
         self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     }
 }

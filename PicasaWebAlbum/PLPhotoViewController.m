@@ -37,13 +37,11 @@
     _imageScrollView = [[PWImageScrollView alloc] initWithFrame:self.view.bounds];
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     __weak typeof(self) wself = self;
-    id block = ^{
+    _imageScrollView.handleFirstZoomBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         [sself loadFullResolutionImage];
     };
-    [_imageScrollView setHandleFirstZoomBlock:[block copy]];
     [_imageScrollView setHandleSingleTapBlock:_handleSingleTapBlock];
     [self.view addSubview:_imageScrollView];
     
