@@ -56,7 +56,6 @@ static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/e
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", PWPutAlbumURL, albumID]];
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
         request.HTTPMethod = @"PATCH";
-        request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
         NSString *body = [PWPicasaPOSTRequest makeBodyWithGPhotoID:albumID Title:title summary:summary location:location access:access timestamp:timestamp keywords:keywords];
         NSData *bodyData = [body dataUsingEncoding:NSUTF8StringEncoding];
         request.HTTPBody = bodyData;

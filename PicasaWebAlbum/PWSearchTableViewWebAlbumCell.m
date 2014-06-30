@@ -87,8 +87,7 @@
     NSString *urlString = album.tag_thumbnail_url;
     if (!urlString) return;
     
-    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-    UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+    UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
     if (memoryCachedImage) {
         _thumbnailImageView.image = memoryCachedImage;
         _thumbnailImageView.alpha = 1.0f;
@@ -101,20 +100,15 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (_albumHash != hash) return;
         
-        SDImageCache *imageCache = [SDImageCache sharedImageCache];
-        UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+        UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
         if (memoryCachedImage) {
-            if (_albumHash != hash) return;
-            
             [self setImage:memoryCachedImage hash:hash];
             
             return;
         }
         
-        if ([imageCache diskImageExistsWithKey:urlString]) {
-            if (_albumHash != hash) return;
-            
-            UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
+        if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
+            UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
             [self setImage:diskCachedImage hash:hash];
             
             return;
@@ -140,7 +134,6 @@
                 if (!sself) return;
                 if (sself.albumHash != hash) return;
                 
-                request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
                 NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                     typeof(wself) sself = wself;
                     if (!sself) return;
@@ -150,12 +143,9 @@
                     }
                     
                     UIImage *image = [UIImage imageWithData:data];
-                    if (sself.albumHash == hash) {
-                        [sself setImage:image hash:hash];
-                    }
+                    [sself setImage:image hash:hash];
                     
-                    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-                    [imageCache storeImage:image forKey:urlString toDisk:YES];
+                    [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
                 }];
                 [task resume];
                 

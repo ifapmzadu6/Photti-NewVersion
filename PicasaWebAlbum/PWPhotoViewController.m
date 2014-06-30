@@ -85,8 +85,7 @@
         return;
     }
     
-    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-    UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+    UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
     if (memoryCachedImage) {
         [_indicatorView stopAnimating];
         [_imageScrollView setImage:memoryCachedImage];
@@ -101,9 +100,8 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        SDImageCache *imageCache = [SDImageCache sharedImageCache];
-        if ([imageCache diskImageExistsWithKey:urlString]) {
-            UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
+        if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
+            UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
             dispatch_async(dispatch_get_main_queue(), ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -124,39 +122,35 @@
                 NSLog(@"%@", error.description);
                 return;
             }
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
                 typeof(wself) sself = wself;
                 if (!sself) return;
+                UIImage *image = [UIImage imageWithData:data];
+                if (!image) return;
                 
-                request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
-                NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                    if (error) {
-                        NSLog(@"%@", error.description);
-                        return;
-                    }
+                dispatch_async(dispatch_get_main_queue(), ^{
                     typeof(wself) sself = wself;
                     if (!sself) return;
-                    UIImage *image = [UIImage imageWithData:data];
-                    if (!image) return;
                     
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        typeof(wself) sself = wself;
-                        if (!sself) return;
-                        
-                        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                        [sself.indicatorView stopAnimating];
-                        [sself.imageScrollView setImage:image];
-                        
-                        [sself loadScreenResolutionImage];
-                    });
+                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                    [sself.indicatorView stopAnimating];
+                    [sself.imageScrollView setImage:image];
                     
-                    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-                    [imageCache storeImage:image forKey:urlString toDisk:YES];
-                }];
-                [task resume];
+                    [sself loadScreenResolutionImage];
+                });
                 
-                sself.task = task;
-            });
+                [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+            }];
+            [task resume];
+            
+            sself.task = task;
         }];
     });
 }
@@ -175,7 +169,6 @@
             return;
         }
         
-        request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;

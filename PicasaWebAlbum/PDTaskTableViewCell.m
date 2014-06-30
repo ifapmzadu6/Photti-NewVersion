@@ -337,8 +337,7 @@
     
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        SDImageCache *imageCache = [SDImageCache sharedImageCache];
-        UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+        UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
         if (memoryCachedImage) {
             if (isSub) {
                 [self setImage:memoryCachedImage toImageView:self.subDestiantionThumbnailImageView toAlpha:1.0f hash:hash];
@@ -350,10 +349,10 @@
             return;
         }
         
-        if ([imageCache diskImageExistsWithKey:urlString]) {
+        if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
             if (_taskHash != hash) return;
             
-            UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
+            UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
             if (isSub) {
                 [self setImage:diskCachedImage toImageView:self.subDestiantionThumbnailImageView toAlpha:1.0f hash:hash];
             }
@@ -381,7 +380,6 @@
             if (!sself) return;
             if (sself.taskHash != hash) return;
             
-            request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                 [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
                 
@@ -402,11 +400,9 @@
                     }
                 }
                 
-                SDImageCache *imageCache = [SDImageCache sharedImageCache];
-                [imageCache storeImage:image forKey:urlString toDisk:YES];
+                [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
             }];
             [task resume];
-            
             sself.task = task;
         }];
     });
