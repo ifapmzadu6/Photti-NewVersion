@@ -48,16 +48,19 @@
     
     _beforeTitleLabel = [UILabel new];
     _beforeTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+    _beforeTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
     _beforeTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_beforeTitleLabel];
     
     _currentTitleLabel = [UILabel new];
     _currentTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+    _currentTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
     _currentTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_currentTitleLabel];
     
     _afterTitleLabel = [UILabel new];
     _afterTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+    _afterTitleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
     _afterTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_afterTitleLabel];
     

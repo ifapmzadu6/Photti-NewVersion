@@ -14,6 +14,7 @@
 @interface PWOAuthManager : NSObject
 
 + (void)getAuthorizeHTTPHeaderFields:(void (^)(NSDictionary *headerFields, NSError *error))completion;
++ (void)getUserData:(void (^)(NSString *email, NSError *error))completion;
 + (BOOL)isLogined;
 + (void)logout;
 + (void)loginViewControllerWithCompletion:(void (^)(UINavigationController *))completion finish:(void (^)())finish;

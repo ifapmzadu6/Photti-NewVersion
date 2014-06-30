@@ -154,25 +154,29 @@
     NSUInteger hash = photo.hash;
     _photoHash = hash;
     
-    _imageView.alpha = 0.0f;
-    [_activityIndicatorView startAnimating];
-    
     if (!photo) return;
     if (photo.managedObjectContext == nil) return;
     
     NSString *urlString = photo.tag_thumbnail_url;
     if (!urlString) return;
+    
+    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+    UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+    if (memoryCachedImage) {
+        _imageView.image = memoryCachedImage;
+        _imageView.alpha = 1.0f;
+        [self setNeedsLayout];
+        
+        return;
+    }
+    
+    _imageView.alpha = 0.0f;
+    [_activityIndicatorView startAnimating];
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (_photoHash != hash) return;
         
         SDImageCache *imageCache = [SDImageCache sharedImageCache];
-        UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
-        if (memoryCachedImage) {
-            [self setImage:memoryCachedImage hash:hash];
-            
-            return;
-        }
-        
         if ([imageCache diskImageExistsWithKey:urlString]) {
             if (_photoHash != hash) return;
             

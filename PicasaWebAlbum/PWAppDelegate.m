@@ -22,13 +22,14 @@
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{kPDTaskManagerIsResizePhotosKey: @(YES)}];
-        
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = [[PWTabBarController alloc] init];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-    [[SDImageCache sharedImageCache] setMaxMemoryCost:10 * 10^6];
+//    [[SDImageCache sharedImageCache] setMaxMemoryCost:10 * 10^6];
     [[[NSURLSession sharedSession] configuration] setURLCache:nil];
 //    [[NSURLSession sharedSession] configuration].URLCache.memoryCapacity = 0;
     
@@ -38,7 +39,7 @@
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-//    NSLog(@"%s", __func__);
+//    NSLog(@"%s", __func__);    
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {

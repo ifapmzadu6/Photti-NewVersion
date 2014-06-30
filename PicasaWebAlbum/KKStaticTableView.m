@@ -204,7 +204,9 @@
     cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     
     cell.textLabel.textColor = self.cellTextColor;
+    cell.textLabel.alpha = 1.0f;
     cell.detailTextLabel.textColor = self.cellDetailTextColor;
+    cell.detailTextLabel.alpha = 1.0f;
     cell.textLabel.font = self.cellTextFont;
     if (staticCell.type == KKStaticTableViewCellTypeSubTitle) {
         cell.detailTextLabel.font = self.cellDetailTextFontTypeSubTitle;

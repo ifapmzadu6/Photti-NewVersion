@@ -142,7 +142,7 @@
 
 #pragma mark UIBarButtonAction
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] init];
+    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
@@ -174,10 +174,10 @@
 #pragma mark OtherMethods
 - (void)setDescriptionLabelText {
     if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized || [PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusNotDetermined) {
-        _descriptionLabel.text = NSLocalizedString(@"You can manage smartly your Photo Library photos, albums, and videos with Photti 2.", nil);
+        _descriptionLabel.text = NSLocalizedString(@"You can manage smartly your Photo Library photos, albums, and videos with Photti.", nil);
     }
     else {
-        _descriptionLabel.text = NSLocalizedString(@"Go to Settings > Privacy > Photos and switch Photti 2 to ON to access Photo Library.", nil);
+        _descriptionLabel.text = NSLocalizedString(@"Go to Settings > Privacy > Photos and switch Photti to ON to access Photo Library.", nil);
     }
 }
 

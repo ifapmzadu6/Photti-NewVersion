@@ -25,6 +25,7 @@
 #import "PWPhotoListViewController.h"
 #import "PWSearchNavigationController.h"
 #import "PWTabBarController.h"
+#import "PWBaseNavigationController.h"
 #import "PWAlbumEditViewController.h"
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
@@ -70,13 +71,12 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 10.0f, 0.0f, 10.0f);
-    _collectionView.clipsToBounds = NO;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
-    _refreshControl.myContentInsetTop = 10.0f;
+    _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
     _refreshControl.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
@@ -316,12 +316,12 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         
         [sself loadDataWithStartIndex:0];
     };
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] init];
+    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeWeb];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
@@ -427,7 +427,8 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             
             [sself loadDataWithStartIndex:0];
         }];
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
@@ -443,7 +444,8 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
                 [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
             });
         }];
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Download", nil) handler:^{
@@ -474,7 +476,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除する", nil) handler:^{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
             UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
+            indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
             [indicator startAnimating];
             [alertView setValue:indicator forKey:@"accessoryView"];
             [alertView show];

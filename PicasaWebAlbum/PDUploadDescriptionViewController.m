@@ -176,12 +176,12 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     [self.view addSubview:_highResolutionButton];
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
-        _unlimitedButton.selected = NO;
-        _highResolutionButton.selected = YES;
-    }
-    else {
         _unlimitedButton.selected = YES;
         _highResolutionButton.selected = NO;
+    }
+    else {
+        _unlimitedButton.selected = NO;
+        _highResolutionButton.selected = YES;
     }
 }
 
@@ -262,7 +262,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
 
 #pragma mark UIBarButtonAction
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] init];
+    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeTaskManager];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
@@ -276,7 +276,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
         return;
     }
     
-    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kPDTaskManagerIsResizePhotosKey];
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kPDTaskManagerIsResizePhotosKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     _unlimitedButton.selected = YES;
@@ -288,7 +288,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
         return;
     }
     
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kPDTaskManagerIsResizePhotosKey];
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kPDTaskManagerIsResizePhotosKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     _highResolutionButton.selected = YES;

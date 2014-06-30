@@ -196,10 +196,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 
 #pragma mark UISearchBarDelegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    if (!searchText) {
-        NSLog(@"nil");
-    }
-    NSLog(@"%@", searchText);
+//    NSLog(@"%@", searchText);
     if (!searchText || [searchText isEqualToString:@""]) {
         _isShowHistory = YES;
         _items = @[];

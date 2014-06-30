@@ -24,9 +24,13 @@ static const CGFloat animationDuration = 0.25f;
 @property (strong, nonatomic) UINavigationBar *actionNavigationBar;
 
 @property (nonatomic) BOOL isTabBarHidden;
+@property (nonatomic) BOOL isTabBarAnimation;
 @property (nonatomic) BOOL isToolbarHidden;
+@property (nonatomic) BOOL isToolbarAnimation;
 @property (nonatomic) BOOL isActionToolbarHidden;
+@property (nonatomic) BOOL isActionToolbarAnimation;
 @property (nonatomic) BOOL isActionNavigationBarHidden;
+@property (nonatomic) BOOL isActionNavigationBarAnimation;
 
 @end
 
@@ -78,27 +82,31 @@ static const CGFloat animationDuration = 0.25f;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    for(UIView *view in self.view.subviews) {
-        if([view isKindOfClass:[UITabBar class]]) {
-            view.alpha = !_isTabBarHidden;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        for(UIView *view in self.view.subviews) {
+            if([view isKindOfClass:[UITabBar class]]) {
+                view.alpha = !_isTabBarHidden;
+            }
         }
-    }
-    _actionNavigationBar.alpha = !_isActionNavigationBarHidden;
-    _toolbar.alpha = !_isToolbarHidden;
-    _actionToolbar.alpha = !_isActionToolbarHidden;
+        _actionNavigationBar.alpha = !_isActionNavigationBarHidden;
+        _toolbar.alpha = !_isToolbarHidden;
+        _actionToolbar.alpha = !_isActionToolbarHidden;
+    });
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    for(UIView *view in self.view.subviews) {
-        if([view isKindOfClass:[UITabBar class]]) {
-            view.alpha = !_isTabBarHidden;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        for(UIView *view in self.view.subviews) {
+            if([view isKindOfClass:[UITabBar class]]) {
+                view.alpha = !_isTabBarHidden;
+            }
         }
-    }
-    _actionNavigationBar.alpha = !_isActionNavigationBarHidden;
-    _toolbar.alpha = !_isToolbarHidden;
-    _actionToolbar.alpha = !_isActionToolbarHidden;
+        _actionNavigationBar.alpha = !_isActionNavigationBarHidden;
+        _toolbar.alpha = !_isToolbarHidden;
+        _actionToolbar.alpha = !_isActionToolbarHidden;
+    });
 }
 
 - (void)viewWillLayoutSubviews {
@@ -115,18 +123,27 @@ static const CGFloat animationDuration = 0.25f;
     else {
         tHeight = 56.0f;
     }
-    for(UIView *view in self.view.subviews) {
-        if([view isKindOfClass:[UITabBar class]]) {
-            [view setFrame:CGRectMake(view.frame.origin.x, rect.size.height - tHeight, view.frame.size.width, tHeight)];
+    
+    if (!_isTabBarAnimation) {
+        for(UIView *view in self.view.subviews) {
+            if([view isKindOfClass:[UITabBar class]]) {
+                [view setFrame:CGRectMake(view.frame.origin.x, rect.size.height - tHeight, view.frame.size.width, tHeight)];
+            }
         }
     }
     
     CGRect toolbarFrame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
-    _toolbar.frame = toolbarFrame;
-    _actionToolbar.frame = toolbarFrame;
+    if (!_isToolbarAnimation) {
+        _toolbar.frame = toolbarFrame;
+    }
+    if (!_isActionToolbarAnimation) {
+        _actionToolbar.frame = toolbarFrame;
+    }
     
     CGRect navigationbarFrame = CGRectMake(0.0f, 0.0f, rect.size.width, tHeight + 20.0f);
-    _actionNavigationBar.frame = navigationbarFrame;
+    if (!_isActionNavigationBarAnimation) {
+        _actionNavigationBar.frame = navigationbarFrame;
+    }
     
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
@@ -190,6 +207,7 @@ static const CGFloat animationDuration = 0.25f;
 
 - (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
     _isTabBarHidden = hidden;
+    _isTabBarAnimation = YES;
     
     void (^animation)() = ^{
         for(UIView *view in self.view.subviews) {
@@ -200,9 +218,15 @@ static const CGFloat animationDuration = 0.25f;
     };
     
     if (animated) {
-        [UIView animateWithDuration:animationDuration animations:animation completion:completion];
+        [UIView animateWithDuration:animationDuration animations:animation completion:^(BOOL finished) {
+            _isTabBarAnimation = NO;
+            if (completion) {
+                completion(finished);
+            }
+        }];
     }
     else {
+        _isTabBarAnimation = NO;
         animation();
         if (completion) {
             completion(YES);
@@ -217,15 +241,22 @@ static const CGFloat animationDuration = 0.25f;
 
 - (void)setToolbarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
     _isToolbarHidden = hidden;
+    _isToolbarAnimation = YES;
     
     void (^animation)() = ^{
         _toolbar.alpha = !hidden;
     };
     
     if (animated) {
-        [UIView animateWithDuration:animationDuration animations:animation completion:completion];
+        [UIView animateWithDuration:animationDuration animations:animation completion:^(BOOL finished) {
+            _isToolbarAnimation = NO;
+            if (completion) {
+                completion(finished);
+            }
+        }];
     }
     else {
+        _isToolbarAnimation = NO;
         animation();
         if (completion) {
             completion(YES);
@@ -235,18 +266,24 @@ static const CGFloat animationDuration = 0.25f;
 
 - (void)setToolbarFadeout:(BOOL)fadeout animated:(BOOL)animated completion:(void (^)(BOOL finished))completion {
     _isToolbarHidden = fadeout;
+    _isToolbarAnimation = YES;
     
     CGRect rect = self.view.bounds;
     CGFloat tHeight = 44.0f;
     BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    if(isLandscape) {
-        tHeight = 32.0f;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if(isLandscape) {
+            tHeight = 32.0f;
+        }
+    }
+    else {
+        tHeight = 56.0f;
     }
     if (fadeout) {
         _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
     }
     else {
-        _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight + tHeight, rect.size.width, tHeight);
+        _toolbar.frame = CGRectMake(0.0f, rect.size.height, rect.size.width, tHeight);
     }
     
     void (^animation)() = ^{
@@ -258,10 +295,21 @@ static const CGFloat animationDuration = 0.25f;
         }
     };
     
+    _toolbar.alpha = 1.0f;
+    
     if (animated) {
-        [UIView animateWithDuration:animationDuration animations:animation completion:completion];
+        [UIView animateWithDuration:animationDuration animations:animation completion:^(BOOL finished) {
+            _isToolbarAnimation = NO;
+            
+            _toolbar.alpha = !fadeout;
+            
+            if (completion) {
+                completion(finished);
+            }
+        }];
     }
     else {
+        _isToolbarAnimation = NO;
         animation();
         if (completion) {
             completion(YES);
@@ -288,15 +336,23 @@ static const CGFloat animationDuration = 0.25f;
 
 - (void)setActionToolbarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
     _isActionToolbarHidden = hidden;
+    _isActionToolbarAnimation = YES;
     
     void (^animation)() = ^{
         _actionToolbar.alpha = !hidden;
     };
     
     if (animated) {
-        [UIView animateWithDuration:animationDuration animations:animation completion:completion];
+        [UIView animateWithDuration:animationDuration animations:animation completion:^(BOOL finished) {
+            _isActionToolbarAnimation = NO;
+            
+            if (completion) {
+                completion(finished);
+            }
+        }];
     }
     else {
+        _isActionToolbarAnimation = NO;
         animation();
         if (completion) {
             completion(YES);
@@ -332,15 +388,23 @@ static const CGFloat animationDuration = 0.25f;
 #pragma mark ActionNavigationBar
 - (void)setActionNavigationBarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL))completion {
     _isActionNavigationBarHidden = hidden;
+    _isActionNavigationBarAnimation = YES;
     
     void (^animation)() = ^{
         _actionNavigationBar.alpha = !hidden;
     };
     
     if (animated) {
-        [UIView animateWithDuration:animationDuration animations:animation completion:completion];
+        [UIView animateWithDuration:animationDuration animations:animation completion:^(BOOL finished) {
+            _isActionNavigationBarAnimation = NO;
+            
+            if (completion) {
+                completion(finished);
+            }
+        }];
     }
     else {
+        _isActionNavigationBarAnimation = NO;
         animation();
         if (completion) {
             completion(YES);

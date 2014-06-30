@@ -122,7 +122,7 @@
 
 #pragma mark UIBarButtonAction
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] init];
+    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeTaskManager];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 

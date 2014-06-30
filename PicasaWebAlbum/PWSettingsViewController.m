@@ -14,16 +14,21 @@
 
 @interface PWSettingsViewController ()
 
+@property (nonatomic) PWSettingsViewControllerInitType type;
+
 @end
 
 @implementation PWSettingsViewController
 
-- (id)init {
+- (id)initWithInitType:(PWSettingsViewControllerInitType)type {
     self = [super init];
     if (self) {
-        PWSettingsTableViewController *tableViewController = [[PWSettingsTableViewController alloc] init];
+        _type = type;
         
+        PWSettingsTableViewController *tableViewController = [PWSettingsTableViewController new];
         self.viewControllers = @[tableViewController];
+        
+        self.modalPresentationStyle = UIModalPresentationFormSheet;
     }
     return self;
 }
@@ -34,6 +39,16 @@
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
     self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
+    
+    if (_type == PWSettingsViewControllerInitTypeWeb) {
+        self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    }
+    else if (_type == PWSettingsViewControllerInitTypeLocal) {
+        self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    }
+    else if (_type == PWSettingsViewControllerInitTypeTaskManager) {
+        self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

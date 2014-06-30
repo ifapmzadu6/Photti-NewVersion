@@ -110,7 +110,7 @@
 }
 
 - (void)trashBarButtonAction {
-    
+//    PLPhotoViewController *photoViewController = (PLPhotoViewController *)self.presentingViewController;
 }
 
 #pragma mark UIPageViewControllerDataSource

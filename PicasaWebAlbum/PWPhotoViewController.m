@@ -74,36 +74,34 @@
 #pragma mark LoadImage
 - (void)loadImage {
     NSString *urlString = _photo.tag_thumbnail_url;
+    
+    UIImage *memoryCache = [_photoViewCache objectForKey:urlString];
+    if (memoryCache) {
+        [_indicatorView stopAnimating];
+        [_imageScrollView setImage:memoryCache];
+        
+        [self loadScreenResolutionImage];
+        
+        return;
+    }
+    
+    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+    UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+    if (memoryCachedImage) {
+        [_indicatorView stopAnimating];
+        [_imageScrollView setImage:memoryCachedImage];
+        
+        [self loadScreenResolutionImage];
+        
+        return;
+    }
+    
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        UIImage *memoryCache = [sself.photoViewCache objectForKey:urlString];
-        if (memoryCache) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                [sself.indicatorView stopAnimating];
-                [sself.imageScrollView setImage:memoryCache];
-            });
-            return;
-        }
-        
         SDImageCache *imageCache = [SDImageCache sharedImageCache];
-        UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
-        if (memoryCachedImage) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                [sself.indicatorView stopAnimating];
-                [sself.imageScrollView setImage:memoryCachedImage];
-                
-                [sself loadScreenResolutionImage];
-            });
-            return;
-        }
-        
         if ([imageCache diskImageExistsWithKey:urlString]) {
             UIImage *diskCachedImage = [imageCache imageFromDiskCacheForKey:urlString];
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -139,6 +137,7 @@
                     typeof(wself) sself = wself;
                     if (!sself) return;
                     UIImage *image = [UIImage imageWithData:data];
+                    if (!image) return;
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
                         typeof(wself) sself = wself;

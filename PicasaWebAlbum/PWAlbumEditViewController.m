@@ -33,7 +33,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
 - (id)initWithAlbum:(PWAlbumObject *)album {
     self = [super init];
     if (self) {
-        _album = album;
+        _album = album;        
     }
     return self;
 }
@@ -310,6 +310,11 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
 
 - (void)cancelBarButtonAction {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+
+- (BOOL)disablesAutomaticKeyboardDismissal {
+    return NO;
 }
 
 @end

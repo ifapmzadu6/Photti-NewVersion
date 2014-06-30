@@ -64,7 +64,7 @@
     [self.view addSubview:_titleLabel];
     
     _descriptionLabel = [UILabel new];
-    _descriptionLabel.text = NSLocalizedString(@"You can manage your Picasa Web Albums (Google+ Photos), photos, albums, and videos with Photti 2", nil);
+    _descriptionLabel.text = NSLocalizedString(@"You can manage your Picasa Web Albums (Google+ Photos), photos, albums, and videos with Photti", nil);
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _descriptionLabel.font = [UIFont systemFontOfSize:15.0f];
     }
@@ -136,7 +136,7 @@
 
 #pragma mark UIBarButtonAction
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] init];
+    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeWeb];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
@@ -146,35 +146,40 @@
 
 #pragma mark UIButton
 - (void)loginButtonAction {
-    __weak typeof(self) wself = self;
-    [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:sself action:@selector(cancelBarButtonAction)];
-            navigationController.visibleViewController.navigationItem.leftBarButtonItem  = cancelBarButtonItem;
-            
-            sself.authViewTouchNavigationController = navigationController;
-            [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
-        });
-    } finish:^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            if (sself.completion) {
-                sself.completion();
-            }
-        });
-    }];
+    if ([PWOAuthManager isLogined]) {
+        if (_completion) {
+            _completion();
+        }
+    }
+    else {
+        __weak typeof(self) wself = self;
+        [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:sself action:@selector(cancelBarButtonAction)];
+                navigationController.visibleViewController.navigationItem.leftBarButtonItem  = cancelBarButtonItem;
+                
+                sself.authViewTouchNavigationController = navigationController;
+                [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+            });
+        } finish:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                if (sself.completion) {
+                    sself.completion();
+                }
+            });
+        }];
+    }
 }
 
 - (void)cancelBarButtonAction {
     UIViewController *viewController = _authViewTouchNavigationController;
-    if (!viewController) {
-        return;
-    }
+    if (!viewController) return;
     
     [viewController dismissViewControllerAnimated:YES completion:nil];
 }

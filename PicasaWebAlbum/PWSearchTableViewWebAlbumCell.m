@@ -79,15 +79,24 @@
 - (void)setAlbum:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading {
     _album = album;
     
-    NSString *urlString = album.tag_thumbnail_url;
-    if (!urlString) {
-        return;
-    }
-    
     _titleLabel.text = album.title;
     
     NSUInteger hash = album.hash;
     _albumHash = hash;
+    
+    NSString *urlString = album.tag_thumbnail_url;
+    if (!urlString) return;
+    
+    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+    UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+    if (memoryCachedImage) {
+        _thumbnailImageView.image = memoryCachedImage;
+        _thumbnailImageView.alpha = 1.0f;
+        
+        return;
+    }
+    
+    _thumbnailImageView.alpha = 0.0f;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (_albumHash != hash) return;

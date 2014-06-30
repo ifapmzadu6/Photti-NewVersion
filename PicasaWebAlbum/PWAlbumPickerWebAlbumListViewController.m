@@ -49,15 +49,13 @@
     _collectionView.delegate = self;
     [_collectionView registerClass:[PWAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 10.0f, 0.0f);
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
-    _collectionView.clipsToBounds = NO;
+    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 10.0f, 0.0f, 10.0f);
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
-    _refreshControl.myContentInsetTop = 5.0f;
+    _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
     _refreshControl.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
@@ -115,7 +113,7 @@
     
     CGRect rect = self.view.bounds;
     
-    _collectionView.frame = CGRectMake(10.0f, 0.0f, rect.size.width - 20.0f, rect.size.height);
+    _collectionView.frame = rect;
     
     NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
     NSIndexPath *indexPath = nil;
@@ -193,20 +191,33 @@
 
 #pragma mark UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        return CGSizeMake(177.0f, ceilf(177.0f * 3.0f / 4.0f) + 40.0f);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return CGSizeMake(177.0f, ceilf(177.0f * 3.0f / 4.0f) + 40.0f);
+        }
+        else {
+            return CGSizeMake(146.0f, ceilf(146.0f * 3.0f / 4.0f) + 40.0f);
+        }
     }
     else {
-        return CGSizeMake(146.0f, ceilf(146.0f * 3.0f / 4.0f) + 40.0f);
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return CGSizeMake(192.0f, ceilf(192.0f * 3.0f / 4.0f) + 40.0f);
+        }
+        else {
+            return CGSizeMake(181.0f, ceilf(181.0f * 3.0f / 4.0f) + 40.0f);
+        }
     }
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 8.0f;
+    return 1.0f;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 8.0f;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        return 8.0f;
+    }
+    return 1.0f;
 }
 
 #pragma mark UICollectionViewDelegate

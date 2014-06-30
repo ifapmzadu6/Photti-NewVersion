@@ -42,13 +42,13 @@
         // if refresh control fully appeared
     } else {
         // keeping it at the same place
-        newFrame.origin.y = scrollView.contentOffset.y + _topContentInset - _myContentInsetTop / 2.0f;
+        newFrame.origin.y = scrollView.contentOffset.y + _topContentInset - _myContentInsetTop/2.0f;
     }
-    
-    newFrame.origin.x -= _leftContentInset;
     
     // applying new frame to the refresh control
     self.frame = newFrame;
+    
+    self.center = CGPointMake(scrollView.center.x - _leftContentInset, self.center.y);
 }
 
 - (void)beginRefreshing {

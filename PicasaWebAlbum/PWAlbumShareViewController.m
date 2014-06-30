@@ -9,6 +9,7 @@
 #import "PWAlbumShareViewController.h"
 
 #import "PWColors.h"
+#import "PWIcons.h"
 
 @interface PWAlbumShareViewController ()
 
@@ -84,11 +85,18 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
         cell.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     }
+    cell.textLabel.text = nil;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:15.0f];
     cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
     cell.accessoryType = UITableViewCellAccessoryNone;
+    cell.accessoryView = nil;
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
     cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+    
+    UIView *view = [cell viewWithTag:100];
+    if (view) {
+        [view removeFromSuperview];
+    }
     
     if (indexPath.section == 0) {
         NSString *key = [[self arrayOfAccess] objectAtIndex:indexPath.row];
@@ -122,9 +130,26 @@
             }
         }
         else {
-            cell.textLabel.text = NSLocalizedString(@"Share link", nil);
-            cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            UIButton *button = [UIButton new];
+            button.tag = 100;
+            button.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+            [button addTarget:self action:@selector(shareButtonAction) forControlEvents:UIControlEventTouchUpInside];
+            button.frame = CGRectMake(0.0f, 0.0f, 160.0f, 34.0f);
+            button.center = cell.contentView.center;
+            button.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+            [button setTitle:NSLocalizedString(@"Share Link", nil) forState:UIControlStateNormal];
+            [button setBackgroundImage:nil forState:UIControlStateNormal];
+            [button setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintWebColor]] forState:UIControlStateHighlighted];
+            [button setTitleColor:[PWColors getColor:PWColorsTypeTintWebColor] forState:UIControlStateNormal];
+            [button setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+            button.clipsToBounds = YES;
+            button.layer.borderColor = [PWColors getColor:PWColorsTypeTintWebColor].CGColor;
+            button.layer.borderWidth = 1.0f;
+            button.layer.cornerRadius = 5.0f;
+            [cell.contentView addSubview:button];
+            
             NSString *link = nil;
             if (![_album.gphoto.access isEqualToString:kPWPicasaAPIGphotoAccessProtected]) {
                 for (PWPhotoLinkObject *linkObject in _album.link) {
@@ -133,11 +158,9 @@
                     }
                 }
             }
-            if (link) {
-                cell.textLabel.textColor = cell.tintColor;
-            }
-            else {
-                cell.textLabel.textColor = [[PWColors getColor:PWColorsTypeTextColor] colorWithAlphaComponent:0.5f];
+            if (!link) {
+                button.alpha = 0.334f;
+                button.userInteractionEnabled = NO;
             }
         }
     }
@@ -181,6 +204,11 @@
                                       if (!sself) return;
                                       if (error) {
                                           NSLog(@"%@", error.description);
+                                          dispatch_async(dispatch_get_main_queue(), ^{
+                                              [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                                              
+                                              [tableView reloadSections:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 2)] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                          });
                                           return;
                                       }
                                       
@@ -201,30 +229,28 @@
                                       NSLog(@"Success!");
                                   }];
     }
-    else {
-        if (indexPath.row == 1) {
-            NSString *link = nil;
-            if (![_album.gphoto.access isEqualToString:kPWPicasaAPIGphotoAccessProtected]) {
-                for (PWPhotoLinkObject *linkObject in _album.link) {
-                    if ([linkObject.rel isEqualToString:kPWPicasaAPILinkRelShare]) {
-                        link = linkObject.href;
-                    }
-                }
-            }
-            if (link) {
-                NSURL *url = [NSURL URLWithString:link];
-                UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:@[_album.title, url] applicationActivities:nil];
-                [self.navigationController presentViewController:viewController animated:YES completion:nil];
-            }
-            
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
-        }
-    }
 }
 
 #pragma mark UIBarButtonItem
 - (void)doneBarButtonAction {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark UIButton
+- (void)shareButtonAction {
+    NSString *link = nil;
+    if (![_album.gphoto.access isEqualToString:kPWPicasaAPIGphotoAccessProtected]) {
+        for (PWPhotoLinkObject *linkObject in _album.link) {
+            if ([linkObject.rel isEqualToString:kPWPicasaAPILinkRelShare]) {
+                link = linkObject.href;
+            }
+        }
+    }
+    if (link) {
+        NSURL *url = [NSURL URLWithString:link];
+        UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:@[_album.title, url] applicationActivities:nil];
+        [self.navigationController presentViewController:viewController animated:YES completion:nil];
+    }
 }
 
 #pragma mark AccessLocalizedString

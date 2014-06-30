@@ -19,6 +19,7 @@
 #import "PWTabBarController.h"
 #import "PWNavigationController.h"
 #import "PWPhotoPageViewController.h"
+#import "PWBaseNavigationController.h"
 #import "PWAlbumEditViewController.h"
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
@@ -85,6 +86,7 @@
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
     _refreshControl.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
     [_collectionView addSubview:_refreshControl];
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -595,7 +597,8 @@
             
             [sself loadDataWithStartIndex:0];
         };
-        PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+        PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
@@ -611,7 +614,8 @@
                 [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
             });
         };
-        PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+        PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Download", nil) handler:^{
@@ -642,7 +646,7 @@
         [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
             UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
+            indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
             [indicator startAnimating];
             [alertView setValue:indicator forKey:@"accessoryView"];
             [alertView show];
@@ -686,21 +690,26 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"写真を削除しています", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
             UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
+            indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
             [indicator startAnimating];
             [alertView setValue:indicator forKey:@"accessoryView"];
             [alertView show];
             
             NSArray *indexPaths = sself.collectionView.indexPathsForSelectedItems;
-            NSUInteger maxCount = indexPaths.count;
+            __block NSUInteger maxCount = indexPaths.count;
             __block NSUInteger count = 0;
             for (NSIndexPath *indexPath in indexPaths) {
                 PWPhotoObject *photo = [sself.fetchedResultsController objectAtIndexPath:indexPath];
                 [PWPicasaAPI deletePhoto:photo completion:^(NSError *error) {
                     typeof(wself) sself = wself;
                     if (!sself) return;
+                    if (error) {
+                        NSLog(@"%@", error.description);
+                        maxCount--;
+                        return;
+                    }
                     
                     count++;
                     if (count == maxCount) {
@@ -709,10 +718,10 @@
                             [sself reloadData];
                         });
                     }
-                    
-                    if (error) {
-                        NSLog(@"%@", error.description);
-                        return;
+                    else {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            alertView.title = [NSString stringWithFormat:@"%@(%ld+1/%ld)", NSLocalizedString(@"Deleting...", nil), (unsigned long)count, (unsigned long)maxCount];
+                        });
                     }
                 }];
             }

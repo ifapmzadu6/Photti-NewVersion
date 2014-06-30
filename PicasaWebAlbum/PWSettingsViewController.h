@@ -8,6 +8,15 @@
 
 @import UIKit;
 
+typedef enum _PWSettingsViewControllerInitType {
+    PWSettingsViewControllerInitTypeDefault,
+    PWSettingsViewControllerInitTypeLocal,
+    PWSettingsViewControllerInitTypeWeb,
+    PWSettingsViewControllerInitTypeTaskManager
+} PWSettingsViewControllerInitType;
+
 @interface PWSettingsViewController : UINavigationController
+
+- (id)initWithInitType:(PWSettingsViewControllerInitType)type;
 
 @end

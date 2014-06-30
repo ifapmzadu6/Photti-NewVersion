@@ -13,6 +13,7 @@
 @property (copy, nonatomic) void (^doneBlock)(NSString *selectedItem);
 @property (copy, nonatomic) void (^changeValueBlock)(NSString *selectedItem);
 @property (nonatomic) NSUInteger disableIndex;
+@property (strong, nonatomic) NSString *footerString;
 
 - (id)initWithItems:(NSArray *)items defaultIndex:(NSUInteger)defaultIndex;
 

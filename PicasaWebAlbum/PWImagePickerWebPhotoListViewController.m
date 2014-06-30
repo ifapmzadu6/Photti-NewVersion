@@ -57,20 +57,22 @@
     [super viewDidLoad];
     
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
-    _collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:collectionViewLayout];
+    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
     [_collectionView registerClass:[PWPhotoViewCell class] forCellWithReuseIdentifier:@"Cell"];
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.autoresizesSubviews = YES;
-    _collectionView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _collectionView.allowsMultipleSelection = YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        _collectionView.contentInset = UIEdgeInsetsMake(20.0f, 20.0f, 20.0f, 20.0f);
+    }
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
     _refreshControl.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
     [_collectionView addSubview:_refreshControl];
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -148,6 +150,10 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
+    
+    CGRect rect = self.view.bounds;
+    
+    _collectionView.frame = rect;
     
     NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
     NSIndexPath *indexPath = nil;
@@ -232,20 +238,40 @@
 
 #pragma mark UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        return CGSizeMake(112.0f, 112.0f);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return CGSizeMake(112.0f, 112.0f);
+        }
+        else {
+            return CGSizeMake(106.0f, 106.0f);
+        }
     }
     else {
-        return CGSizeMake(105.0f, 105.0f);
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return CGSizeMake(172.0f, 187.0f);
+        }
+        else {
+            return CGSizeMake(172.0f, 187.0f);
+        }
     }
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 2.0f;
+    return 1.0f;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 2.0f;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return 2.0f;
+        }
+        else {
+            return 1.0f;
+        }
+    }
+    else {
+        return 10.0f;
+    }
 }
 
 #pragma mark UICollectionViewDelegate

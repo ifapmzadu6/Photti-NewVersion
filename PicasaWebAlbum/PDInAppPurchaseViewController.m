@@ -54,8 +54,8 @@
     [self.view addSubview:_iconImageView];
     
     _descriptionLabel = [UILabel new];
-    //    _descriptionLabel.text = @"アップロード/ダウンロード機能を有効にすると写真をウェブにアップロードまたはダウンロードできます。";
-    _descriptionLabel.text = NSLocalizedString(@"Purchasing Upload-Download Addon, you can download or upload to Web Album by Photti 2.", nil);
+    //    _descriptionLabel.text = @"アップロード/ダウンロード機能を有効にすると写真をウェブに無制限にアップロードまたはダウンロードできます。";
+    _descriptionLabel.text = NSLocalizedString(@"Purchasing Upload-Download Addon, you can download or upload unlimitedly to Web Album by Photti.", nil);
     _descriptionLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _descriptionLabel.textAlignment = NSTextAlignmentCenter;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
@@ -233,7 +233,7 @@
 
 #pragma mark UIBarButtonAction
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] init];
+    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeTaskManager];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 

@@ -9,9 +9,10 @@
 #import "PWPhotoPageViewController.h"
 
 #import "PWColors.h"
-#import "PWModelObject.h"
+#import "PWPicasaAPI.h"
 #import "PWPhotoViewController.h"
 #import "PWTabBarController.h"
+#import "BlocksKit+UIKit.h"
 
 @interface PWPhotoPageViewController ()
 
@@ -92,7 +93,37 @@
 }
 
 - (void)trashBarButtonAction {
-    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Are you sure you want to delete?", nil)];
+    __weak typeof(self) wself = self;
+    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        PWPhotoObject *photo = sself.photos[sself.index];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
+        [indicator startAnimating];
+        [alertView setValue:indicator forKey:@"accessoryView"];
+        [alertView show];
+        [PWPicasaAPI deletePhoto:photo completion:^(NSError *error) {
+            if (error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                });
+                NSLog(@"%@", error.description);
+                return;
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                
+                [sself.navigationController popViewControllerAnimated:YES];
+            });
+        }];
+    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }
 
 #pragma mark Methods
@@ -138,16 +169,15 @@
     viewController.title = title;
     NSString *id_str = photo.id_str;
     __weak typeof(self) wself = self;
-    [viewController setViewDidAppearBlock:^{
+    viewController.viewDidAppearBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
         sself.title = title;
         sself.index = index;
         sself.id_str = id_str;
-    }];
-    
-    [viewController setHandleSingleTapBlock:^{
+    };
+    viewController.handleSingleTapBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -168,7 +198,7 @@
                 sself.view.backgroundColor = [UIColor blackColor];
             }];
         }
-    }];
+    };
     
     viewController.photoViewCache = _photoViewCache;
     

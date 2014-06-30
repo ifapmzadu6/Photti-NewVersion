@@ -33,20 +33,6 @@
             PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
             self.viewControllers = @[albumListViewController];
         }
-        else {
-            PWGoogleLoginViewController *googleLoginViewController = [[PWGoogleLoginViewController alloc] init];
-            __weak typeof(self) wself = self;
-            googleLoginViewController.completion = ^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    typeof(wself) sself = wself;
-                    if (!sself) return;
-                    
-                    PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
-                    [sself setViewControllers:@[albumListViewController] animated:YES];
-                });
-            };
-            self.viewControllers = @[googleLoginViewController];
-        }
     }
     return self;
 }
@@ -56,6 +42,25 @@
     
     self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    if (![PWOAuthManager isLogined]) {
+        PWGoogleLoginViewController *googleLoginViewController = [[PWGoogleLoginViewController alloc] init];
+        __weak typeof(self) wself = self;
+        googleLoginViewController.completion = ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
+                [sself setViewControllers:@[albumListViewController] animated:YES];
+            });
+        };
+        [self setViewControllers:@[googleLoginViewController] animated:NO];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

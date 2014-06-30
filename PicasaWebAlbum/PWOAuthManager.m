@@ -54,6 +54,11 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 + (void)getAuthWithCompletion:(void (^)(GTMOAuth2Authentication *auth))completion {
     void (^block)() = ^() {
         GTMOAuth2Authentication *auth = [[PWOAuthManager sharedManager] auth];
+        if (![auth canAuthorize]) {
+            [[PWOAuthManager sharedManager] authRefresh];
+            auth = [[PWOAuthManager sharedManager] auth];
+        }
+        
         if (completion) {
             completion(auth);
         }
@@ -85,6 +90,13 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 
 + (void)getAccessTokenWithCompletion:(void (^)(NSDictionary *, NSError *))completion {
     [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
+        if (![auth canAuthorize]) {
+            if (completion) {
+                completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:401 userInfo:nil]);
+            }
+            return;
+        }
+        
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
         [auth authorizeRequest:request completionHandler:^(NSError *error) {
             if (error) {
@@ -127,6 +139,21 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         
         if (completion) {
             completion(headerFields, nil);
+        }
+    }];
+}
+
++ (void)getUserData:(void (^)(NSString *, NSError *))completion {
+    [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
+        if ([auth canAuthorize]) {
+            if (completion) {
+                completion(auth.userEmail, nil);
+            }
+        }
+        else {
+            if (completion) {
+                completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:401 userInfo:nil]);
+            }
         }
     }];
 }
@@ -195,9 +222,7 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         navigationController.edgesForExtendedLayout = UIRectEdgeAll;
         navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
         navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        }
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         
         if (completion) {
             completion(navigationController);

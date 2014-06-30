@@ -62,8 +62,8 @@
     [self.view addSubview:_titleLabel];
     
     _descriptionLabel = [UILabel new];
-    //    _descriptionLabel.text = NSLocalizedString(@"Go to Settings > Privacy > Photos and switch Photti 2 to ON to access Photo Library.", nil);
-    _descriptionLabel.text = NSLocalizedString(@"Photti 2 automatically create albums each day. When that is created, you are pushed a notification.", nil);
+    //    _descriptionLabel.text = NSLocalizedString(@"Go to Settings > Privacy > Photos and switch Photti to ON to access Photo Library.", nil);
+    _descriptionLabel.text = NSLocalizedString(@"Photti automatically create albums each day. When that is created, you are pushed a notification.", nil);
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _descriptionLabel.font = [UIFont systemFontOfSize:15.0f];
     }
@@ -157,7 +157,7 @@
 
 #pragma mark UIBarButtonAction
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] init];
+    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 

@@ -48,6 +48,9 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.allowsMultipleSelection = YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        _collectionView.contentInset = UIEdgeInsetsMake(20.0f, 20.0f, 20.0f, 20.0f);
+    }
     [self.view addSubview:_collectionView];
     
     PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
@@ -149,20 +152,40 @@
 
 #pragma mark UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        return CGSizeMake(112.0f, 112.0f);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return CGSizeMake(112.0f, 112.0f);
+        }
+        else {
+            return CGSizeMake(106.0f, 106.0f);
+        }
     }
     else {
-        return CGSizeMake(105.0f, 105.0f);
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return CGSizeMake(172.0f, 187.0f);
+        }
+        else {
+            return CGSizeMake(172.0f, 187.0f);
+        }
     }
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 2.0f;
+    return 1.0f;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 2.0f;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return 2.0f;
+        }
+        else {
+            return 1.0f;
+        }
+    }
+    else {
+        return 10.0f;
+    }
 }
 
 #pragma mark UICollectionViewDelegate

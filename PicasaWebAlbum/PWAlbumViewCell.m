@@ -145,10 +145,8 @@
 - (void)setAlbum:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading {
     _album = album;
     
-    _imageView.alpha = 0.0f;
     _titleLabel.text = nil;
     _numPhotosLabel.text = nil;
-    [_activityIndicatorView startAnimating];
     
     if (!album) return;
     if (album.managedObjectContext == nil) return;
@@ -165,19 +163,21 @@
     _albumHash = hash;
     
     NSString *urlString = album.tag_thumbnail_url;
-    if (!urlString) {
+    if (!urlString) return;
+    
+    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+    UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
+    if (memoryCachedImage) {
+        _imageView.image = memoryCachedImage;
+        _imageView.alpha = 1.0f;
+        
         return;
     }
     
+    _imageView.alpha = 0.0f;
+    [_activityIndicatorView startAnimating];
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        SDImageCache *imageCache = [SDImageCache sharedImageCache];
-        UIImage *memoryCachedImage = [imageCache imageFromMemoryCacheForKey:urlString];
-        if (memoryCachedImage) {
-            [self setImage:memoryCachedImage hash:hash];
-            
-            return;
-        }
-        
         if ([imageCache diskImageExistsWithKey:urlString]) {
             if (_albumHash != hash) return;
             

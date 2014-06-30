@@ -358,6 +358,11 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
             return;
         }
         
+        [PWCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+            [context deleteObject:photo];
+            [context save:nil];
+        }];
+        
         if (completion) {
             completion(nil);
         }
