@@ -17,6 +17,8 @@ typedef enum _PLAssetsManagerAutoCreateAlbumType {
     PLAssetsManagerAutoCreateAlbumTypeDisable
 } PLAssetsManagerAutoCreateAlbumType;
 
+static NSString * const kPLAssetsManagerAssetCountKey = @"kPLAMACK";
+
 
 @interface PLAssetsManager : NSObject
 
@@ -24,21 +26,15 @@ typedef enum _PLAssetsManagerAutoCreateAlbumType {
 @property (nonatomic, readonly) BOOL isLibraryUpDated;
 
 + (PLAssetsManager *)sharedManager;
++ (ALAssetsLibrary *)sharedLibrary;
 
-+ (ALAuthorizationStatus)getAuthorizationStatus;
-+ (void)testAccessPhotoLibraryWithCompletion:(void (^)(NSError *))completion;
-+ (void)enumurateAssetsWithCompletion:(void (^)(NSError *error))completion;
-
-+ (void)groupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;
-+ (void)syncGroupForURL:(NSURL *)url resultBlock:(void (^)(ALAssetsGroup *group))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;
-+ (void)assetForURL:(NSURL *)url resultBlock:(void (^)(ALAsset *asset))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;
-+ (void)syncAssetForURL:(NSURL *)url resultBlock:(void (^)(ALAsset *asset))resultBlock failureBlock:(void (^)(NSError *error))failureBlock;
-+ (void)writeImageDataToSavedPhotosAlbum:(NSData *)data metadata:(NSDictionary *)metadata completionBlock:(void (^)(NSURL *assetURL, NSError *error))completionBlock;
-
-+ (void)getAllPhotosWithCompletion:(void (^)(NSArray *allPhotos, NSError *error))completion;
-+ (void)getiCloudPhotosWithCompletion:(void (^)(NSArray *allPhotos, NSError *error))completion;
-+ (void)getAllAlbumsWithCompletion:(void (^)(NSArray *allAlbums, NSError *error))completion;
-+ (void)getImportedAlbumsWithCompletion:(void (^)(NSArray *importedAlbums, NSError *error))completion;
-+ (void)getAutomatticallyCreatedAlbumWithCompletion:(void (^)(NSArray *importedAlbums, NSError *error))completion;
+- (void)testAccessPhotoLibraryWithCompletion:(void (^)(NSError *error))completion;
+- (void)checkNewAlbumBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate completion:(void (^)(NSArray *newAlbumDates, NSError *error))completion;
+- (void)enumurateAssetsWithCompletion:(void (^)(NSError *error))completion;
+- (void)getAllPhotosWithCompletion:(void (^)(NSArray *allPhotos, NSError *error))completion;
+- (void)getiCloudPhotosWithCompletion:(void (^)(NSArray *allPhotos, NSError *error))completion;
+- (void)getAllAlbumsWithCompletion:(void (^)(NSArray *allAlbums, NSError *error))completion;
+- (void)getImportedAlbumsWithCompletion:(void (^)(NSArray *importedAlbums, NSError *error))completion;
+- (void)getAutomatticallyCreatedAlbumWithCompletion:(void (^)(NSArray *importedAlbums, NSError *error))completion;
 
 @end

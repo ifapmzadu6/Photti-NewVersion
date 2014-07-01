@@ -92,7 +92,7 @@
     PLPhotoObject *photo = _photos[_index];
     NSURL *url = [NSURL URLWithString:photo.url];
     __weak typeof(self) wself = self;
-    [PLAssetsManager assetForURL:url resultBlock:^(ALAsset *asset) {
+    [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
         typeof(wself) sself = wself;
         if (!sself) return;
         

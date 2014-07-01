@@ -222,7 +222,7 @@
 
 #pragma mark Data
 - (void)getDataWithCompletion:(void (^)(NSArray *allPhotos, NSError *error))completion {
-    [PLAssetsManager getiCloudPhotosWithCompletion:completion];
+    [[PLAssetsManager sharedManager] getiCloudPhotosWithCompletion:completion];
 }
 
 - (NSArray *)devidedPhotosByDate:(NSArray *)photos {

@@ -103,7 +103,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", sself.album.id_str];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];

@@ -176,8 +176,6 @@
         if (_photoHash != hash) return;
         
         if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
-            if (_photoHash != hash) return;
-            
             UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
             [self setImage:diskCachedImage hash:hash];
             
@@ -202,43 +200,38 @@
                 NSLog(@"%@", error.description);
                 return;
             }
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (sself.photoHash != hash) return;
+            
+            NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                });
+                
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                if (sself.photoHash != hash) return;
+                if (error) {
+//                    NSLog(@"%@", error.description);
+                    return;
+                }
+                UIImage *image = [UIImage imageWithData:data];
+                [sself setImage:image hash:hash];
                 
-                NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                    });
-                    
-                    typeof(wself) sself = wself;
-                    if (!sself) return;
-                    if (error) {
-//                        NSLog(@"%@", error.description);
-                        return;
-                    }
-                    UIImage *image = [UIImage imageWithData:data];
-                    [sself setImage:image hash:hash];
-                    
-                    [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
-                }];
-                [task resume];
-                sself.task = task;
-            });
+                [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+            }];
+            [task resume];
+            sself.task = task;
         }];
     });
 }
 
 - (void)setImage:(UIImage *)image hash:(NSUInteger)hash {
-    if (_photoHash != hash) {
-        return;
-    }
+    if (!image) return;
+    if (_photoHash != hash) return;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (_photoHash != hash) {
-            return;
-        }
+        if (_photoHash != hash) return;
         
         [_activityIndicatorView stopAnimating];
         _imageView.image = image;

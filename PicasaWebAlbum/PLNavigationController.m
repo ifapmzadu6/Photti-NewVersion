@@ -15,6 +15,7 @@
 #import "PLPageViewController.h"
 #import "PLAccessPhotoLibraryViewController.h"
 #import "PLAutoCreateAlbumViewController.h"
+#import "PLNewAlbumCreatedViewController.h"
 
 @interface PLNavigationController ()
 
@@ -28,9 +29,9 @@
         NSString *title = NSLocalizedString(@"Camera Roll", nil);
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
         
-        __weak typeof(self) wself = self;
-        if ([PLAssetsManager getAuthorizationStatus] != ALAuthorizationStatusAuthorized) {
+        if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
             PLAccessPhotoLibraryViewController *accessPhotoLibraryViewController = [[PLAccessPhotoLibraryViewController alloc] init];
+            __weak typeof(self) wself = self;
             accessPhotoLibraryViewController.completion = ^{
                 dispatch_async(dispatch_get_main_queue(), ^{
                     typeof(wself) sself = wself;
@@ -43,6 +44,10 @@
         else if ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeUnknown) {
             [self setAutoCreateAlbumViewController];
         }
+//        else if ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
+//            PLNewAlbumCreatedViewController *newAlbumCreatedViewController = [[PLNewAlbumCreatedViewController alloc] init];
+//            self.viewControllers = @[newAlbumCreatedViewController];
+//        }
         else {
             PLPageViewController *pageViewcontroller = [[PLPageViewController alloc] init];
             self.viewControllers = @[pageViewcontroller];            

@@ -64,7 +64,7 @@
 - (void)loadThumbnailImage {
     NSURL *url = [NSURL URLWithString:_photo.url];
     __weak typeof(self) wself = self;
-    [PLAssetsManager assetForURL:url resultBlock:^(ALAsset *asset) {
+    [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
         typeof(wself) sself = wself;
         if (!sself) return;
         if (!asset) return;
@@ -86,7 +86,7 @@
 - (void)loadScreenImage {
     NSURL *url = [NSURL URLWithString:_photo.url];
     __weak typeof(self) wself = self;
-    [PLAssetsManager assetForURL:url resultBlock:^(ALAsset *asset) {
+    [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
         typeof(wself) sself = wself;
         if (!sself) return;
         if (!asset) return;
@@ -107,7 +107,7 @@
 - (void)loadFullResolutionImage {
     NSURL *url = [NSURL URLWithString:_photo.url];
     __weak typeof(self) wself = self;
-    [PLAssetsManager assetForURL:url resultBlock:^(ALAsset *asset) {
+    [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
         typeof(wself) sself = wself;
         if (!sself) return;
         if (!asset) return;

@@ -78,7 +78,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                         album.tag_updated = date;
                     }
                     
-                    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+                    NSFetchRequest *request = [NSFetchRequest new];
                     request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
                     request.predicate = [NSPredicate predicateWithFormat:@"tag_updated != %@", date];
                     NSError *error;
@@ -143,7 +143,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                     NSString *totalResults = NULL_TO_NIL(totalResultsDic[@"text"]);
                     NSArray *photos = nil;
                     if ([totalResults longLongValue] > 0) {
-                        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+                        NSFetchRequest *request = [NSFetchRequest new];
                         request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
                         request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", albumID];
                         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
@@ -184,13 +184,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
     }];
 }
 
-+ (void)postCreatingNewAlbumRequestWithTitle:(NSString *)title
-                            summary:(NSString *)summary
-                           location:(NSString *)location
-                             access:(NSString *)access
-                          timestamp:(NSString *)timestamp
-                           keywords:(NSString *)keywords
-                         completion:(void (^)(PWAlbumObject *album, NSError *error))completion {
++ (void)postCreatingNewAlbumRequestWithTitle:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords completion:(void (^)(PWAlbumObject *album, NSError *error))completion {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
     void (^requestCompletion)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -224,7 +218,6 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
         };
         
         [PWCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
-        
             PWAlbumObject *album = [PWPicasaParser albumFromJson:entries context:context];
             
             if (completion) {
@@ -235,23 +228,10 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
         }];
     };
     
-    [PWPicasaPOSTRequest postCreatingNewAlbumRequestWithTitle:title
-                                             summary:summary
-                                            location:location
-                                              access:access
-                                           timestamp:timestamp
-                                            keywords:keywords
-                                          completion:requestCompletion];
+    [PWPicasaPOSTRequest postCreatingNewAlbumRequestWithTitle:title summary:summary location:location access:access timestamp:timestamp keywords:keywords completion:requestCompletion];
 }
 
-+ (void)putModifyingAlbumWithID:(NSString *)albumID
-                          title:(NSString *)title
-                        summary:(NSString *)summary
-                       location:(NSString *)location
-                         access:(NSString *)access
-                      timestamp:(NSString *)timestamp
-                       keywords:(NSString *)keywords
-                     completion:(void (^)(NSString *, NSSet *, NSError *))completion {
++ (void)putModifyingAlbumWithID:(NSString *)albumID title:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords completion:(void (^)(NSString *, NSSet *, NSError *))completion {
     
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
@@ -299,14 +279,7 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
         }];
     };
     
-    [PWPicasaPOSTRequest putModifyingAlbumWithID:albumID
-                                           title:title
-                                         summary:summary
-                                        location:location
-                                          access:access
-                                       timestamp:timestamp
-                                        keywords:keywords
-                                      completion:requestCompletion];
+    [PWPicasaPOSTRequest putModifyingAlbumWithID:albumID title:title summary:summary location:location access:access timestamp:timestamp keywords:keywords completion:requestCompletion];
 }
 
 + (void)deleteAlbum:(PWAlbumObject *)album completion:(void (^)(NSError *error))completion {

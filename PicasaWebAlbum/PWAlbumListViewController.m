@@ -101,7 +101,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];

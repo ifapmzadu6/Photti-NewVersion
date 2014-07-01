@@ -37,7 +37,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"Album", nil);
+        self.title = NSLocalizedString(@"Albums", nil);
     }
     return self;
 }
@@ -64,12 +64,12 @@
     [_indicatorView startAnimating];
     
     __weak typeof(self) wself = self;
-    [PLAssetsManager enumurateAssetsWithCompletion:^(NSError *error) {
+    [[PLAssetsManager sharedManager] enumurateAssetsWithCompletion:^(NSError *error) {
         [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            NSFetchRequest *request = [[NSFetchRequest alloc] init];
+            NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
             request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
             
@@ -328,7 +328,7 @@
 - (void)shareAlbum:(PLAlbumObject *)album {
     NSMutableArray *assets = [NSMutableArray array];
     for (PLPhotoObject *photo in album.photos) {
-        [PLAssetsManager assetForURL:[NSURL URLWithString:photo.url] resultBlock:^(ALAsset *asset) {
+        [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:photo.url] resultBlock:^(ALAsset *asset) {
             if (asset) {
                 [assets addObject:asset];
             }

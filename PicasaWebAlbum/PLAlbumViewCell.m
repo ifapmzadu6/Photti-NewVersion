@@ -171,32 +171,32 @@
             thumbnail = album.photos.firstObject;
         }
         NSURL *url = [NSURL URLWithString:thumbnail.url];
-        [PLAssetsManager assetForURL:url resultBlock:^(ALAsset *asset) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            if (sself.albumHash != hash) return;
-            
-            UIImage *image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
-            dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (sself.albumHash != hash) return;
                 
-                [sself.activityIndicatorView stopAnimating];
-                sself.imageView.image = image;
-            });
-        } failureBlock:^(NSError *error) {
-            
-        }];
+                UIImage *image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    if (sself.albumHash != hash) return;
+                    
+                    [sself.activityIndicatorView stopAnimating];
+                    sself.imageView.image = image;
+                });
+            } failureBlock:^(NSError *error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    [sself.activityIndicatorView stopAnimating];
+                });
+            }];
+        });
     }
     else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            if (sself.albumHash != hash) return;
-            
-            [sself.activityIndicatorView stopAnimating];
-        });
+        [_activityIndicatorView stopAnimating];
     }
 }
 

@@ -514,7 +514,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 
 #pragma mark Model
 - (void)localAlbumsSearchByName:(NSString *)name completion:(void (^)(NSArray *albums, NSError *error))completion {
-    [PLAssetsManager getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
+    [[PLAssetsManager sharedManager] getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
         NSArray *albums = [allAlbums filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name contains[c] %@", name]];
         if (completion) {
             completion(albums, error);
@@ -523,7 +523,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 }
 
 - (void)localAlbumsSearchByID:(NSString *)id_str completion:(void (^)(NSArray *albums, NSError *error))completion {
-    [PLAssetsManager getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
+    [[PLAssetsManager sharedManager] getAllAlbumsWithCompletion:^(NSArray *allAlbums, NSError *error) {
         NSArray *albums = [allAlbums filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
         if (completion) {
             completion(albums, error);
@@ -532,7 +532,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 }
 
 - (void)localPhotosSearchByName:(NSString *)name completion:(void (^)(NSArray *photos, NSError *error))completion {
-    [PLAssetsManager getAllPhotosWithCompletion:^(NSArray *allPhotos, NSError *error) {
+    [[PLAssetsManager sharedManager] getAllPhotosWithCompletion:^(NSArray *allPhotos, NSError *error) {
         NSArray *photos = [allPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"caption contains[c] %@", name]];
         if (completion) {
             completion(photos, error);
@@ -542,7 +542,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 
 - (void)webAlbumsSearchByName:(NSString *)name completion:(void (^)(NSArray *albums, NSError *error))completion {
     [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         request.predicate = [NSPredicate predicateWithFormat:@"title contains[c] %@", name];
@@ -556,7 +556,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 
 - (void)webAlbumsSearchByID:(NSString *)id_str completion:(void (^)(NSArray *albums, NSError *error))completion {
     [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];

@@ -153,13 +153,13 @@
 #pragma mark UIButtonAction
 - (void)accessButtonAction {
     __weak typeof(self) wself = self;
-    [PLAssetsManager testAccessPhotoLibraryWithCompletion:^(NSError *error) {
+    [[PLAssetsManager sharedManager] testAccessPhotoLibraryWithCompletion:^(NSError *error) {
         if (error) {
             NSLog(@"%@", error.description);
         }
         typeof(wself) sself = wself;
         if (!sself) return;
-        if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized) {
+        if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
             if (sself.completion) {
                 sself.completion();
             }
@@ -173,7 +173,7 @@
 
 #pragma mark OtherMethods
 - (void)setDescriptionLabelText {
-    if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized || [PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusNotDetermined) {
+    if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized || [ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusNotDetermined) {
         _descriptionLabel.text = NSLocalizedString(@"You can manage smartly your Photo Library photos, albums, and videos with Photti.", nil);
     }
     else {
@@ -182,7 +182,7 @@
 }
 
 - (void)updateAccessButton {
-    if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized || [PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusNotDetermined) {
+    if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized || [ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusNotDetermined) {
         _accessButton.alpha = 1.0f;
         _accessButton.enabled = YES;
     }

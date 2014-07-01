@@ -51,7 +51,7 @@
     NSString *id_str = NULL_TO_NIL(gphotoid[@"text"]);
     if (!id_str) return nil;
     
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
     request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
     NSError *error;

@@ -6,15 +6,15 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWLoundedCornerBadgeLabel.h"
+#import "PWRoundedCornerBadgeLabel.h"
 
-@interface PWLoundedCornerBadgeLabel ()
+@interface PWRoundedCornerBadgeLabel ()
 
 @property (strong, nonatomic) CALayer *badgeLayer;
 
 @end
 
-@implementation PWLoundedCornerBadgeLabel
+@implementation PWRoundedCornerBadgeLabel
 
 - (id)init {
     self = [super init];

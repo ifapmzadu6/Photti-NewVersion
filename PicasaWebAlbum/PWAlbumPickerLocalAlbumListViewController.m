@@ -35,7 +35,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"Album", nil);
+        self.title = NSLocalizedString(@"Albums", nil);
         
         NSString *title = NSLocalizedString(@"Camera Roll", nil);
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
@@ -76,7 +76,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
         
@@ -164,7 +164,7 @@
             NSDate *date = [NSDate date];
             NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:date];
             album.tag_date = adjustedDate;
-            album.timestamp = @((unsigned long)([adjustedDate timeIntervalSince1970]) * 1000);
+            album.timestamp = @((long long)([adjustedDate timeIntervalSince1970]) * 1000);
             album.import = date;
             album.update = date;
             album.tag_type = @(PLAlbumObjectTagTypeMyself);

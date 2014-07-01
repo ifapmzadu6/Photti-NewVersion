@@ -30,22 +30,9 @@ static NSString * const kPWPicasaAPILinkRelShare = @"alternate";
 
 + (void)authorizedURLRequest:(NSURL *)url completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion;
 
-+ (void)postCreatingNewAlbumRequestWithTitle:(NSString *)title
-                            summary:(NSString *)summary
-                           location:(NSString *)location
-                             access:(NSString *)access
-                          timestamp:(NSString *)timestamp
-                           keywords:(NSString *)keywords
-                                  completion:(void (^)(PWAlbumObject *album, NSError *error))completion;
++ (void)postCreatingNewAlbumRequestWithTitle:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords completion:(void (^)(PWAlbumObject *album, NSError *error))completion;
 
-+ (void)putModifyingAlbumWithID:(NSString *)albumID
-                          title:(NSString *)title
-                        summary:(NSString *)summary
-                       location:(NSString *)location
-                         access:(NSString *)access
-                      timestamp:(NSString *)timestamp
-                       keywords:(NSString *)keywords
-                     completion:(void (^)(NSString *newAccess, NSSet *link, NSError *error))completion;
++ (void)putModifyingAlbumWithID:(NSString *)albumID title:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords completion:(void (^)(NSString *newAccess, NSSet *link, NSError *error))completion;
 
 + (void)deleteAlbum:(PWAlbumObject *)album completion:(void (^)(NSError *error))completion;
 

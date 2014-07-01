@@ -37,7 +37,6 @@
     
     _imageScrollView = [[PWImageScrollView alloc] initWithFrame:self.view.bounds];
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _imageScrollView.handleSingleTapBlock = _handleSingleTapBlock;
     [self.view addSubview:_imageScrollView];
     
     _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -54,6 +53,14 @@
     if (_viewDidAppearBlock) {
         _viewDidAppearBlock();
     }
+    
+    _imageScrollView.handleSingleTapBlock = _handleSingleTapBlock;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    _imageScrollView.handleSingleTapBlock = nil;
 }
 
 - (void)dealloc {    

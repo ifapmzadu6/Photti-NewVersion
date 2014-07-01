@@ -23,14 +23,14 @@
 
 #import "SDImageCache.h"
 
-#import "PWLoundedCornerBadgeLabel.h"
+#import "PWRoundedCornerBadgeLabel.h"
 
 @interface PDTaskTableViewCell ()
 
 @property (strong, nonatomic) UIImageView *thumbnailImageView;
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UILabel *taskTypeLabel;
-@property (strong, nonatomic) PWLoundedCornerBadgeLabel *countLabel;
+@property (strong, nonatomic) PWRoundedCornerBadgeLabel *countLabel;
 
 @property (strong, nonatomic) UIImageView *subThumbnailImageView;
 @property (strong, nonatomic) UIImageView *subSubThumbnailImageView;
@@ -68,7 +68,7 @@
         _taskTypeLabel.font = [UIFont systemFontOfSize:10.0f];
         [self.contentView addSubview:_taskTypeLabel];
         
-        _countLabel = [[PWLoundedCornerBadgeLabel alloc] init];
+        _countLabel = [[PWRoundedCornerBadgeLabel alloc] init];
         _countLabel.font = [UIFont systemFontOfSize:15.0f];
         [self.contentView addSubview:_countLabel];
         
@@ -183,7 +183,7 @@
             if (!sself) return;
             if (sself.taskHash != hash) return;
             
-            NSFetchRequest *request = [[NSFetchRequest alloc] init];
+            NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
             NSError *error = nil;
@@ -228,7 +228,7 @@
             if (!sself) return;
             if (sself.taskHash != hash) return;
             
-            NSFetchRequest *request = [[NSFetchRequest alloc] init];
+            NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
             NSError *error = nil;
@@ -276,7 +276,7 @@
             NSString *photo_object_id_str = obj.photo_object_id_str;
             __block NSURL *url = nil;
             [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
-                NSFetchRequest *request = [[NSFetchRequest alloc] init];
+                NSFetchRequest *request = [NSFetchRequest new];
                 request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photo_object_id_str];
                 NSError *error = nil;
@@ -307,7 +307,7 @@
             if (!sself) return;
             if (sself.taskHash != hash) return;
             
-            NSFetchRequest *request = [[NSFetchRequest alloc] init];
+            NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", destination_album_id_str];
             NSError *error = nil;
@@ -331,45 +331,45 @@
 }
 
 - (void)loadThumbnailImageWithURLString:(NSString *)urlString hash:(NSUInteger)hash isSub:(BOOL)isSub {
-    if (!urlString) {
+    if (!urlString) return;
+    if (_taskHash != hash) return;
+    
+    UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
+    if (memoryCachedImage) {
+        if (isSub) {
+            _subDestiantionThumbnailImageView.image = memoryCachedImage;
+            _subDestiantionThumbnailImageView.alpha = 1.0f;
+        }
+        else {
+            _thumbnailImageView.image = memoryCachedImage;
+            _thumbnailImageView.alpha = 1.0f;
+        }
+        
         return;
     }
     
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
-        if (memoryCachedImage) {
-            if (isSub) {
-                [self setImage:memoryCachedImage toImageView:self.subDestiantionThumbnailImageView toAlpha:1.0f hash:hash];
-            }
-            else {
-                [self setImage:memoryCachedImage toImageView:self.thumbnailImageView toAlpha:1.0f hash:hash];
-            }
-            
-            return;
-        }
+        if (_taskHash != hash) return;
         
         if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
-            if (_taskHash != hash) return;
-            
             UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
             if (isSub) {
-                [self setImage:diskCachedImage toImageView:self.subDestiantionThumbnailImageView toAlpha:1.0f hash:hash];
+                [self setImage:diskCachedImage toImageView:_subDestiantionThumbnailImageView toAlpha:1.0f hash:hash];
             }
             else {
-                [self setImage:diskCachedImage toImageView:self.thumbnailImageView toAlpha:1.0f hash:hash];
+                [self setImage:diskCachedImage toImageView:_thumbnailImageView toAlpha:1.0f hash:hash];
             }
             
             return;
         }
         
         NSURLSessionDataTask *beforeTask = _task;
-        if (beforeTask) {
-            [beforeTask cancel];
-            _task = nil;
-        }
+        if (beforeTask) [beforeTask cancel];
         
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        });
         
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
@@ -381,23 +381,20 @@
             if (sself.taskHash != hash) return;
             
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                });
                 
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                if (error) {
-                    NSLog(@"%@", error.description);
-                    return;
-                }
+                if (error) return;
                 
                 UIImage *image = [UIImage imageWithData:data];
-                if (sself.taskHash == hash) {
-                    if (isSub) {
-                        [sself setImage:image toImageView:sself.subDestiantionThumbnailImageView toAlpha:1.0f hash:hash];
-                    }
-                    else {
-                        [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
-                    }
+                if (isSub) {
+                    [sself setImage:image toImageView:sself.subDestiantionThumbnailImageView toAlpha:1.0f hash:hash];
+                }
+                else {
+                    [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
                 }
                 
                 [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
@@ -415,7 +412,7 @@
     
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [PLAssetsManager assetForURL:assetUrl resultBlock:^(ALAsset *asset) {
+        [[PLAssetsManager sharedLibrary] assetForURL:assetUrl resultBlock:^(ALAsset *asset) {
             typeof(wself) sself = wself;
             if (!sself) return;
             
@@ -430,9 +427,8 @@
 }
 
 - (void)setImage:(UIImage *)image toImageView:(UIImageView *)imageView toAlpha:(CGFloat)alpha hash:(NSUInteger)hash {
-    if (_taskHash != hash) {
-        return;
-    }
+    if (!image) return;
+    if (_taskHash != hash) return;
     
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_main_queue(), ^{

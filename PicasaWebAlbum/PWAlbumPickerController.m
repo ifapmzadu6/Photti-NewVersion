@@ -35,7 +35,7 @@
     if (self) {
         _completion = completion;
         
-        if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized && [PLAssetsManager sharedManager].autoCreateAlbumType != PLAssetsManagerAutoCreateAlbumTypeUnknown) {
+        if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized && [PLAssetsManager sharedManager].autoCreateAlbumType != PLAssetsManagerAutoCreateAlbumTypeUnknown) {
             PWAlbumPickerLocalAlbumListViewController *localAlbumViewcontroller = [[PWAlbumPickerLocalAlbumListViewController alloc] init];
             _localNavigationController = [[PWAlbumPickerNavigationController alloc] initWithRootViewController:localAlbumViewcontroller];
         }

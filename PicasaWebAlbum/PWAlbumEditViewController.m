@@ -215,7 +215,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        sself.timestamp = [NSString stringWithFormat:@"%lu", (unsigned long)[date timeIntervalSince1970]];
+        sself.timestamp = [NSString stringWithFormat:@"%lld", (long long)[date timeIntervalSince1970]];
         [sself.tableView reloadRowsAtIndexPaths:sself.tableView.indexPathsForSelectedRows withRowAnimation:UITableViewRowAnimationAutomatic];
         
         [sself disableDatePicker];

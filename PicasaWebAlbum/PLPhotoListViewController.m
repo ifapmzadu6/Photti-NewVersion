@@ -72,7 +72,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"ANY albums = %@", sself.album];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_sort_index" ascending:YES]];
@@ -193,7 +193,7 @@
     for (NSManagedObjectID *photoURL in _selectedPhotoURLs) {
         __block PLPhotoObject *photoObject = nil;
         [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
-            NSFetchRequest *request = [[NSFetchRequest alloc] init];
+            NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"url = %@", photoURL];
             NSArray *objects = [context executeFetchRequest:request error:nil];
@@ -204,7 +204,7 @@
         if (!photoObject) return;
         
         __weak typeof(self) wself = self;
-        [PLAssetsManager syncAssetForURL:[NSURL URLWithString:photoObject.url] resultBlock:^(ALAsset *asset) {
+        [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:photoObject.url] resultBlock:^(ALAsset *asset) {
             typeof(wself) sself = wself;
             if (!sself) return;
             
@@ -552,7 +552,7 @@
 - (void)shareAlbum:(PLAlbumObject *)album {
     NSMutableArray *assets = [NSMutableArray array];
     for (PLPhotoObject *photo in album.photos) {
-        [PLAssetsManager assetForURL:[NSURL URLWithString:photo.url] resultBlock:^(ALAsset *asset) {
+        [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:photo.url] resultBlock:^(ALAsset *asset) {
             if (asset) {
                 [assets addObject:asset];
             }

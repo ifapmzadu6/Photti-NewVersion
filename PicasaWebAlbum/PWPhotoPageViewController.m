@@ -42,10 +42,7 @@
         
         self.delegate = self;
         self.dataSource = self;
-        [self setViewControllers:@[[self makePhotoViewController:index]]
-                                      direction:UIPageViewControllerNavigationDirectionForward
-                                       animated:NO
-                                     completion:nil];
+        [self setViewControllers:@[[self makePhotoViewController:index]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
         self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];        
     }
     return self;
@@ -189,6 +186,7 @@
             [UIView animateWithDuration:0.25f animations:^{
                 sself.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
             }];
+            sself.navigationController.interactivePopGestureRecognizer.enabled = YES;
         }
         else {
             [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
@@ -197,6 +195,7 @@
             [UIView animateWithDuration:0.25f animations:^{
                 sself.view.backgroundColor = [UIColor blackColor];
             }];
+            sself.navigationController.interactivePopGestureRecognizer.enabled = NO;
         }
     };
     

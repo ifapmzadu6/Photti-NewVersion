@@ -43,7 +43,7 @@
         
         NSString *titleOnNavigationBarString = [NSString stringWithFormat:NSLocalizedString(@"Select items to add to \"%@\".", nil), albumTitle];
         
-        if ([PLAssetsManager getAuthorizationStatus] == ALAuthorizationStatusAuthorized && [PLAssetsManager sharedManager].autoCreateAlbumType != PLAssetsManagerAutoCreateAlbumTypeUnknown) {
+        if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized && [PLAssetsManager sharedManager].autoCreateAlbumType != PLAssetsManagerAutoCreateAlbumTypeUnknown) {
             PWImagePickerLocalPageViewController *localPageViewController = [[PWImagePickerLocalPageViewController alloc] init];
             _localPageViewController = localPageViewController;
             PWImagePickerNavigationController *localNavigationcontroller = [[PWImagePickerNavigationController alloc] initWithRootViewController:localPageViewController];

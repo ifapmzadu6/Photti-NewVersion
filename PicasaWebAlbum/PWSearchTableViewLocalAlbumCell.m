@@ -89,7 +89,7 @@
     if (thumbnail) {
         NSURL *url = [NSURL URLWithString:thumbnail.url];
         __weak typeof(self) wself = self;
-        [PLAssetsManager assetForURL:url resultBlock:^(ALAsset *asset) {
+        [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (sself.urlHash != hash) return;

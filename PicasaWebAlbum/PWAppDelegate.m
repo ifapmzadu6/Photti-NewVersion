@@ -14,14 +14,19 @@
 
 #import "PDTaskManager.h"
 #import "PLAssetsManager.h"
+#import "PLDateFormatter.h"
 
 @implementation PWAppDelegate
+
+static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
     
-    [[NSUserDefaults standardUserDefaults] registerDefaults:@{kPDTaskManagerIsResizePhotosKey: @(YES)}];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{kPDTaskManagerIsResizePhotosKey: @(YES),
+                                                              kPWAppDelegateBackgroundFetchDateKey: [NSDate date]}];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -44,6 +49,9 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 //    NSLog(@"%s", __func__);
+    
+    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:kPWAppDelegateBackgroundFetchDateKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -60,9 +68,38 @@
 
 #pragma mark Background Fetch
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-//    NSLog(@"%s", __func__);
+    NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:[NSDate date]];
+    NSDate *beforeDate = [[NSUserDefaults standardUserDefaults] objectForKey:kPWAppDelegateBackgroundFetchDateKey];
+    if ([adjustedDate isEqualToDate:beforeDate]) {
+        completionHandler(UIBackgroundFetchResultNoData);
+        return;
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:adjustedDate forKey:kPWAppDelegateBackgroundFetchDateKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     
-    completionHandler(UIBackgroundFetchResultNoData);
+    [[PLAssetsManager sharedManager] checkNewAlbumBetweenStartDate:beforeDate endDate:adjustedDate completion:^(NSArray *newAlbumDates, NSError *error) {
+        if (error) {
+            NSLog(@"%@", error.description);
+            completionHandler(UIBackgroundFetchResultNoData);
+            return;
+        }
+        
+        if (newAlbumDates.count > 0) {
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.fireDate = [NSDate date];
+            notification.timeZone = [NSTimeZone systemTimeZone];
+            if (newAlbumDates.count == 1) {
+                notification.alertBody = NSLocalizedString(@"New Album was Created!", nil);
+            }
+            else {
+                notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"New %d Albums was Created!", nil), newAlbumDates.count];
+            }
+            notification.soundName = UILocalNotificationDefaultSoundName;
+            [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+        }
+        
+        completionHandler(UIBackgroundFetchResultNoData);
+    }];    
 }
 
 #pragma mark Background Transfer

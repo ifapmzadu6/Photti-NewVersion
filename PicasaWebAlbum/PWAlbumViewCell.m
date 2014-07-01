@@ -186,10 +186,7 @@
         }
         
         NSURLSessionDataTask *beforeTask = _task;
-        if (beforeTask) {
-            [beforeTask cancel];
-            _task = nil;
-        }
+        if (beforeTask) [beforeTask cancel];
         
         if (isNowLoading) return;
         
@@ -228,14 +225,11 @@
 }
 
 - (void)setImage:(UIImage *)image hash:(NSUInteger)hash {
-    if (_albumHash != hash) {
-        return;
-    }
+    if (!image) return;
+    if (_albumHash != hash) return;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (_albumHash != hash) {
-            return;
-        }
+        if (_albumHash != hash) return;
         
         [_activityIndicatorView stopAnimating];
         _imageView.image = image;

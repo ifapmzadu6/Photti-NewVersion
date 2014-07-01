@@ -8,7 +8,7 @@
 
 @import UIKit;
 
-@interface PWLoundedCornerBadgeLabel : UILabel
+@interface PWRoundedCornerBadgeLabel : UILabel
 
 @property (strong, nonatomic) UIColor *badgeBackgroundColor;
 @property (strong, nonatomic) UIColor *badgeBorderColor;

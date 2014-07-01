@@ -146,26 +146,26 @@
     
     NSURL *url = [NSURL URLWithString:photo.url];
     __weak typeof(self) wself = self;
-    [PLAssetsManager assetForURL:url resultBlock:^(ALAsset *asset) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if (sself.photoHash != hash) return;
-        
-        UIImage *image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (sself.photoHash != hash) return;
             
-            [sself.activityIndicatorView stopAnimating];
-            sself.imageView.image = image;
-            [self setNeedsLayout];
-        });
-        
-    } failureBlock:^(NSError *error) {
-        
-    }];
+            UIImage *image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                if (sself.photoHash != hash) return;
+                
+                [sself.activityIndicatorView stopAnimating];
+                sself.imageView.image = image;
+                [self setNeedsLayout];
+            });
+        } failureBlock:^(NSError *error) {
+        }];
+    });
 }
 
 @end

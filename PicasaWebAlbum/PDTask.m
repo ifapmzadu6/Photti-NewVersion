@@ -43,7 +43,7 @@ static NSString * const kPDTaskErrorDomain = @"PDTaskErrorDomain";
     
     __block NSString *assetUrlString = nil;
     [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
-        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", localPhotoObject.photo_object_id_str];
         NSError *error = nil;
@@ -62,7 +62,7 @@ static NSString * const kPDTaskErrorDomain = @"PDTaskErrorDomain";
     
     NSString *filePath = [PDTask makeUniquePathInTmpDir];
     localPhotoObject.prepared_body_filepath = filePath;
-    [PLAssetsManager syncAssetForURL:[NSURL URLWithString:assetUrlString] resultBlock:^(ALAsset *asset) {
+    [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:assetUrlString] resultBlock:^(ALAsset *asset) {
         if (!asset) {
             if (completion) {
                   completion([NSError errorWithDomain:kPDTaskErrorDomain code:0 userInfo:nil]);

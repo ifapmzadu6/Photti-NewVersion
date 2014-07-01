@@ -139,7 +139,7 @@
             button.frame = CGRectMake(0.0f, 0.0f, 160.0f, 34.0f);
             button.center = cell.contentView.center;
             button.titleLabel.font = [UIFont systemFontOfSize:15.0f];
-            [button setTitle:NSLocalizedString(@"Share Link", nil) forState:UIControlStateNormal];
+            [button setTitle:NSLocalizedString(@"Share the Link", nil) forState:UIControlStateNormal];
             [button setBackgroundImage:nil forState:UIControlStateNormal];
             [button setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintWebColor]] forState:UIControlStateHighlighted];
             [button setTitleColor:[PWColors getColor:PWColorsTypeTintWebColor] forState:UIControlStateNormal];
@@ -267,7 +267,8 @@
     static dispatch_once_t onceToken;
     static id dictionary;
     dispatch_once(&onceToken, ^{
-        dictionary = @{kPWPicasaAPIGphotoAccessPublic: NSLocalizedString(@"すべての人に公開", nil), kPWPicasaAPIGphotoAccessPrivate: NSLocalizedString(@"リンクを知っている人のみ公開", nil), kPWPicasaAPIGphotoAccessProtected: NSLocalizedString(@"非公開", nil)};
+        //すべての人に公開
+        dictionary = @{kPWPicasaAPIGphotoAccessPublic: NSLocalizedString(@"Public on the web", nil), kPWPicasaAPIGphotoAccessPrivate: NSLocalizedString(@"Anyone with the link", nil), kPWPicasaAPIGphotoAccessProtected: NSLocalizedString(@"Only you can access", nil)};
     });
     return dictionary;
 }
