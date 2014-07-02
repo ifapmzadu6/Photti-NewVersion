@@ -46,7 +46,7 @@
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PicasaLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.3f];
+    _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.667f];
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
     
@@ -85,9 +85,10 @@
         _loginButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_loginButton setTitle:NSLocalizedString(@"Login", nil) forState:UIControlStateNormal];
-    [_loginButton setTitleColor:[PWColors getColor:PWColorsTypeTintWebColor] forState:UIControlStateNormal];
-    [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-    [_loginButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintWebColor]] forState:UIControlStateHighlighted];
+    [_loginButton setTitleColor:[PWColors getColor:PWColorsTypeTintWebColor] forState:UIControlStateHighlighted];
+    [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_loginButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintWebColor]] forState:UIControlStateNormal];
+    [_loginButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _loginButton.clipsToBounds = YES;
     _loginButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintWebColor].CGColor;
     _loginButton.layer.borderWidth = 1.0f;

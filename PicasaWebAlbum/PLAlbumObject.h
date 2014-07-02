@@ -21,6 +21,7 @@
 @property (nonatomic, retain) NSDate * import;
 @property (nonatomic, retain) NSDate * update;
 @property (nonatomic, retain) NSNumber * tag_type;
+@property (nonatomic, retain) NSNumber * tag_uploading_type;
 @property (nonatomic, retain) NSDate * tag_date;
 @property (nonatomic, retain) NSDate * tag_enddate;
 @property (nonatomic, retain) NSNumber * edited;

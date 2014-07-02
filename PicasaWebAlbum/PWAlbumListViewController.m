@@ -386,32 +386,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     });
 }
 
-- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
-    
-    switch (type) {
-        case NSFetchedResultsChangeInsert:
-//            [_collectionView insertItemsAtIndexPaths:@[newIndexPath]];
-            break;
-            
-        case NSFetchedResultsChangeDelete:
-//            [_collectionView deleteItemsAtIndexPaths:@[indexPath]];
-            break;
-            
-        case NSFetchedResultsChangeUpdate:
-//            [_collectionView reloadItemsAtIndexPaths:@[indexPath]];
-            break;
-            
-        case NSFetchedResultsChangeMove:
-//            [_collectionView deleteItemsAtIndexPaths:@[indexPath]];
-//            [_collectionView insertItemsAtIndexPaths:@[indexPath]];
-//            [_collectionView moveItemAtIndexPath:indexPath toIndexPath:newIndexPath];
-            break;
-            
-        default:
-            break;
-    }
-}
-
 #pragma mark UIActionSheet
 - (void)showAlbumActionSheet:(PWAlbumObject *)album {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.title];
@@ -472,8 +446,8 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"本当に削除しますか？アルバム内の写真はすべて削除されます。", nil)];
-        [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"削除する", nil) handler:^{
+        UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.title]];
+        [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
             UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
             indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);

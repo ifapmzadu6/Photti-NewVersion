@@ -80,7 +80,7 @@
     NSString *sectionTitle = NSLocalizedString(@"Web Album Account", nil);
     [_tableView addSectionWithTitle:sectionTitle];
     
-    UIColor *tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    UIColor *tintColor = self.navigationController.navigationBar.tintColor;
     
     __weak typeof(self) wself = self;
     [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeDefault cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
@@ -99,16 +99,16 @@
             else {
                 [button setTitle:NSLocalizedString(@"Logout", nil) forState:UIControlStateNormal];
             }
-            [button setTitleColor:tintColor forState:UIControlStateNormal];
-            [button setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-            [button setBackgroundImage:nil forState:UIControlStateNormal];
-            [button setBackgroundImage:[PWIcons imageWithColor:tintColor] forState:UIControlStateHighlighted];
+            [button setTitleColor:tintColor forState:UIControlStateHighlighted];
+            [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
+            [button setBackgroundImage:[PWIcons imageWithColor:tintColor] forState:UIControlStateNormal];
             button.clipsToBounds = YES;
             button.layer.cornerRadius = 5.0f;
             button.layer.borderColor = tintColor.CGColor;
             button.layer.borderWidth = 1.0f;
-            [button sizeToFit];
-            button.frame = CGRectInset(button.frame, -12.0f, 0.0f);
+            CGSize buttonSize = [button sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+            button.frame = CGRectMake(0.0f, 0.0f, buttonSize.width + 24.0f, 28.0f);
             cell.accessoryView = button;
             
             if (error) {
@@ -225,16 +225,16 @@
         [button addTarget:sself action:@selector(openReviewOniTunesStore) forControlEvents:UIControlEventTouchUpInside];
         button.titleLabel.font = [UIFont systemFontOfSize:13.0f];
         [button setTitle:NSLocalizedString(@"OPEN", nil) forState:UIControlStateNormal];
-        [button setTitleColor:tintColor forState:UIControlStateNormal];
-        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-        [button setBackgroundImage:nil forState:UIControlStateNormal];
-        [button setBackgroundImage:[PWIcons imageWithColor:tintColor] forState:UIControlStateHighlighted];
+        [button setTitleColor:tintColor forState:UIControlStateHighlighted];
+        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[PWIcons imageWithColor:tintColor] forState:UIControlStateNormal];
         button.clipsToBounds = YES;
         button.layer.cornerRadius = 5.0f;
         button.layer.borderColor = tintColor.CGColor;
         button.layer.borderWidth = 1.0f;
-        [button sizeToFit];
-        button.frame = CGRectInset(button.frame, -12.0f, 0.0f);
+        CGSize buttonSize = [button sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+        button.frame = CGRectMake(0.0f, 0.0f, buttonSize.width + 24.0f, 28.0f);
         cell.accessoryView = button;
         
     } cellHeight:CGFLOAT_MIN didSelect:nil];
@@ -250,16 +250,16 @@
         [button addTarget:sself action:@selector(openTwitterButtonAction) forControlEvents:UIControlEventTouchUpInside];
         button.titleLabel.font = [UIFont systemFontOfSize:13.0f];
         [button setTitle:@"@Photti_dev" forState:UIControlStateNormal];
-        [button setTitleColor:tintColor forState:UIControlStateNormal];
-        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-        [button setBackgroundImage:nil forState:UIControlStateNormal];
-        [button setBackgroundImage:[PWIcons imageWithColor:tintColor] forState:UIControlStateHighlighted];
+        [button setTitleColor:tintColor forState:UIControlStateHighlighted];
+        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[PWIcons imageWithColor:tintColor] forState:UIControlStateNormal];
         button.clipsToBounds = YES;
         button.layer.cornerRadius = 5.0f;
         button.layer.borderColor = tintColor.CGColor;
         button.layer.borderWidth = 1.0f;
-        [button sizeToFit];
-        button.frame = CGRectInset(button.frame, -12.0f, 0.0f);
+        CGSize buttonSize = [button sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+        button.frame = CGRectMake(0.0f, 0.0f, buttonSize.width + 24.0f, 28.0f);
         cell.accessoryView = button;
         
     } cellHeight:CGFLOAT_MIN didSelect:nil];

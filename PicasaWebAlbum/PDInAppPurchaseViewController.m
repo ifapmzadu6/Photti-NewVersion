@@ -49,7 +49,7 @@
     
     _iconImageView = [[UIImageView alloc] init];
     _iconImageView.image = [[UIImage imageNamed:@"UploadLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.3f];
+    _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.667f];
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
     
@@ -105,9 +105,10 @@
     _purchaseButton.layer.borderWidth = 1.0f;
     _purchaseButton.layer.cornerRadius = 5.0f;
     _purchaseButton.clipsToBounds = YES;
-    [_purchaseButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
-    [_purchaseButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-    [_purchaseButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateHighlighted];
+    [_purchaseButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateHighlighted];
+    [_purchaseButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_purchaseButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateNormal];
+    [_purchaseButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _purchaseButton.enabled = NO;
     _purchaseButton.alpha = 0.5f;
     [self.view addSubview:_purchaseButton];
@@ -140,8 +141,7 @@
     [_activityIndicatorView startAnimating];
     
     if (![SKPaymentQueue canMakePayments]) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil) message:NSLocalizedString(@"In-App Purchase is restricted", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil) , nil];
-        [alert show];
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil) message:NSLocalizedString(@"In-App Purchase is restricted", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil) , nil] show];
     }
     else {
         __weak typeof(self) wself = self;

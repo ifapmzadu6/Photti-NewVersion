@@ -13,6 +13,7 @@
 #import "PLAssetsManager.h"
 
 #import "PLPageViewController.h"
+#import "PWBaseNavigationController.h"
 #import "PLAccessPhotoLibraryViewController.h"
 #import "PLAutoCreateAlbumViewController.h"
 #import "PLNewAlbumCreatedViewController.h"
@@ -52,6 +53,20 @@
             PLPageViewController *pageViewcontroller = [[PLPageViewController alloc] init];
             self.viewControllers = @[pageViewcontroller];            
         }
+        
+        __weak typeof(self) wself = self;
+        [PLAssetsManager sharedManager].libraryUpDateBlock = ^(NSDate *enumuratedDate, NSUInteger newAlbumCount) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            if (newAlbumCount == 0) return;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                PLNewAlbumCreatedViewController *viewController = [[PLNewAlbumCreatedViewController alloc] initWithEnumuratedDate:enumuratedDate];
+                PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+                [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+            });
+        };
     }
     return self;
 }

@@ -20,6 +20,7 @@
 @dynamic import;
 @dynamic update;
 @dynamic tag_type;
+@dynamic tag_uploading_type;
 @dynamic tag_date;
 @dynamic tag_enddate;
 @dynamic edited;

@@ -45,7 +45,7 @@
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PictureLargeDay"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.3f];
+    _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.667f];
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
     
@@ -62,7 +62,6 @@
     [self.view addSubview:_titleLabel];
     
     _descriptionLabel = [UILabel new];
-    //    _descriptionLabel.text = NSLocalizedString(@"Go to Settings > Privacy > Photos and switch Photti to ON to access Photo Library.", nil);
     _descriptionLabel.text = NSLocalizedString(@"Photti automatically create albums each day. When that is created, you are pushed a notification.", nil);
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _descriptionLabel.font = [UIFont systemFontOfSize:15.0f];
@@ -84,9 +83,10 @@
         _enableButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_enableButton setTitle:NSLocalizedString(@"Enable", nil) forState:UIControlStateNormal];
-    [_enableButton setTitleColor:[PWColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateNormal];
-    [_enableButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-    [_enableButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateHighlighted];
+    [_enableButton setTitleColor:[PWColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateHighlighted];
+    [_enableButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_enableButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateNormal];
+    [_enableButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _enableButton.clipsToBounds = YES;
     _enableButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
     _enableButton.layer.borderWidth = 1.0f;
@@ -104,10 +104,10 @@
     [_disableButton setTitle:NSLocalizedString(@"Disable", nil) forState:UIControlStateNormal];
     [_disableButton setTitleColor:[PWColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateNormal];
     [_disableButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-    [_disableButton setBackgroundImage:[PWIcons imageWithColor:[[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.5f]] forState:UIControlStateHighlighted];
+    [_disableButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateHighlighted];
     _disableButton.clipsToBounds = YES;
-//    _disableButton.layer.borderColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.3f].CGColor;
-//    _disableButton.layer.borderWidth = 1.0f;
+    _disableButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
+    _disableButton.layer.borderWidth = 1.0f;
     _disableButton.layer.cornerRadius = 5.0f;
     [self.view addSubview:_disableButton];
 }

@@ -152,7 +152,6 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
                         NSArray *deletePhotos = [context executeFetchRequest:request error:&error];
                         for (PWPhotoObject *photo in deletePhotos) {
                             [context deleteObject:photo];
-                            [context refreshObject:photo mergeChanges:YES];
                         }
                         
                         photos = [PWPicasaParser parseListOfPhotoFromJson:json context:context];

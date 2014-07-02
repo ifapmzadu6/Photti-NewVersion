@@ -44,7 +44,7 @@
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PictureLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.3f];
+    _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.667f];
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
     
@@ -82,9 +82,10 @@
         _accessButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_accessButton setTitle:NSLocalizedString(@"Access", nil) forState:UIControlStateNormal];
-    [_accessButton setTitleColor:[PWColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateNormal];
-    [_accessButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+    [_accessButton setTitleColor:[PWColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateHighlighted];
+    [_accessButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_accessButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateHighlighted];
+    [_accessButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateNormal];
     _accessButton.clipsToBounds = YES;
     _accessButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
     _accessButton.layer.borderWidth = 1.0f;

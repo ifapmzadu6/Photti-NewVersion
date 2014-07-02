@@ -9,6 +9,7 @@
         <attribute name="tag_date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="tag_enddate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="tag_type" optional="YES" attributeType="Integer 16" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="tag_uploading_type" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="update" optional="YES" attributeType="Date" indexed="YES" syncable="YES"/>
@@ -36,7 +37,7 @@
         <relationship name="thumbnailed" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PLAlbumObject" inverseName="thumbnail" inverseEntity="PLAlbumObject" syncable="YES"/>
     </entity>
     <elements>
-        <element name="PLAlbumObject" positionX="-54" positionY="-9" width="128" height="255"/>
+        <element name="PLAlbumObject" positionX="-54" positionY="-9" width="128" height="270"/>
         <element name="PLPhotoObject" positionX="-461" positionY="-133" width="128" height="300"/>
     </elements>
 </model>

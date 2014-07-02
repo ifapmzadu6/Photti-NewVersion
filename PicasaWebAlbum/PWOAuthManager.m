@@ -33,129 +33,71 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 - (id)init {
     self = [super init];
     if (self) {
-        [self authRefresh];
+        void (^block)() = ^{
+            _auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
+        };
+        
+        if ([NSThread isMainThread]) {
+            block();
+        }
+        else {
+            dispatch_sync(dispatch_get_main_queue(), block);
+        }
     }
     return self;
 }
 
-- (void)authRefresh {
-    void (^block)() = ^{
-        _auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
-    };
-    
-    if ([NSThread isMainThread]) {
-        block();
-    }
-    else {
-        dispatch_sync(dispatch_get_main_queue(), block);
-    }
-}
-
-+ (void)getAuthWithCompletion:(void (^)(GTMOAuth2Authentication *auth))completion {
-    void (^block)() = ^() {
-        GTMOAuth2Authentication *auth = [[PWOAuthManager sharedManager] auth];
-        if (![auth canAuthorize]) {
-            [[PWOAuthManager sharedManager] authRefresh];
-            auth = [[PWOAuthManager sharedManager] auth];
-        }
-        
-        if (completion) {
-            completion(auth);
-        }
-    };
-    
-    if ([NSThread isMainThread]) {
-        block();
-    }
-    else {
-        dispatch_sync(dispatch_get_main_queue(), block);
-    }
-}
-
-+ (void)authRefreshWithCompletion:(void (^)())completion {
-    void (^block)() = ^() {
-        [[PWOAuthManager sharedManager] authRefresh];
-        if (completion) {
-            completion();
-        }
-    };
-    
-    if ([NSThread isMainThread]) {
-        block();
-    }
-    else {
-        dispatch_sync(dispatch_get_main_queue(), block);
-    }
-}
-
 + (void)getAccessTokenWithCompletion:(void (^)(NSDictionary *, NSError *))completion {
-    [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
-        if (![auth canAuthorize]) {
-            if (completion) {
-                completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:401 userInfo:nil]);
-            }
-            return;
+    GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
+    if (![auth canAuthorize]) {
+        if (completion) {
+            completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:0 userInfo:nil]);
         }
-        
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
-        [auth authorizeRequest:request completionHandler:^(NSError *error) {
-            if (error) {
-                if (completion) {
-                    completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:401 userInfo:nil]);
-                }
+        return;
+    }
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
+    [auth authorizeRequest:request completionHandler:^(NSError *error) {
+        if (error) {
+            if (completion) {
+                completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:0 userInfo:nil]);
             }
-            else {
-                if (completion) {
-                    completion(request.allHTTPHeaderFields, nil);
-                }
+        }
+        else {
+            if (completion) {
+                completion(request.allHTTPHeaderFields, nil);
             }
-        }];
-    }];
-}
-
-+ (void)getRefreshedAccessTokenWithCompletion:(void (^)(NSDictionary *, NSError *))completion {
-    [PWOAuthManager authRefreshWithCompletion:^{
-        [PWOAuthManager getAccessTokenWithCompletion:completion];
+        }
     }];
 }
 
 + (void)getAuthorizeHTTPHeaderFields:(void (^)(NSDictionary *, NSError *))completion {
     [PWOAuthManager getAccessTokenWithCompletion:^(NSDictionary *headerFields, NSError *error) {
         if (error) {
-            [PWOAuthManager getRefreshedAccessTokenWithCompletion:^(NSDictionary *headerFields, NSError *error) {
-                if (error) {
-                    if (completion) {
-                        completion(nil, error);
-                    }
-                    return;
-                }
-                
-                if (completion) {
-                    completion(headerFields, nil);
-                }
-            }];
-            return;
+            if (completion) {
+                completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:0 userInfo:nil]);
+            }
         }
-        
-        if (completion) {
-            completion(headerFields, nil);
+        else {
+            if (completion) {
+                completion(headerFields, nil);
+            }
         }
     }];
 }
 
 + (void)getUserData:(void (^)(NSString *, NSError *))completion {
-    [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
-        if ([auth canAuthorize]) {
-            if (completion) {
-                completion(auth.userEmail, nil);
-            }
+    GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
+    if ([auth canAuthorize]) {
+        if (completion) {
+            completion(auth.userEmail, nil);
         }
-        else {
-            if (completion) {
-                completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:401 userInfo:nil]);
-            }
+    }
+    else {
+        if (completion) {
+            completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:0 userInfo:nil]);
         }
-    }];
+    }
 }
 
 + (BOOL)isLogined {
@@ -165,9 +107,8 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 + (void)logout {
     void (^block)() = ^() {
         [GTMOAuth2ViewControllerTouch removeAuthFromKeychainForName:PWKeyChainItemName];
-        [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
-            [GTMOAuth2ViewControllerTouch revokeTokenForGoogleAuthentication:auth];
-        }];
+        GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
+        [GTMOAuth2ViewControllerTouch revokeTokenForGoogleAuthentication:auth];
     };
     
     if ([NSThread isMainThread]) {
@@ -181,18 +122,15 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 + (void)loginViewControllerWithCompletion:(void (^)(UINavigationController *))completion finish:(void (^)())finish {
     void (^block)() = ^() {
         GTMOAuth2ViewControllerTouch *viewController = [GTMOAuth2ViewControllerTouch controllerWithScope:PWScope clientID:PWClientID clientSecret:PWClientSecret keychainItemName:PWKeyChainItemName completionHandler:^(GTMOAuth2ViewControllerTouch *viewController, GTMOAuth2Authentication *auth, NSError *error) {
+            [PWOAuthManager sharedManager].auth = auth;
             [viewController dismissViewControllerAnimated:YES completion:^{
-                [PWOAuthManager authRefreshWithCompletion:^{
-                    [PWOAuthManager getAuthWithCompletion:^(GTMOAuth2Authentication *auth) {
-                        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
-                        [auth authorizeRequest:request completionHandler:^(NSError *error) {
-                            if (!error) {
-                                if (finish) {
-                                    finish();
-                                }
-                            }
-                        }];
-                    }];
+                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
+                [auth authorizeRequest:request completionHandler:^(NSError *error) {
+                    if (!error) {
+                        if (finish) {
+                            finish();
+                        }
+                    }
                 }];
             }];
         }];

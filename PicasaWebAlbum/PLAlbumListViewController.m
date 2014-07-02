@@ -65,6 +65,10 @@
     
     __weak typeof(self) wself = self;
     [[PLAssetsManager sharedManager] enumurateAssetsWithCompletion:^(NSError *error) {
+        if (error) return;
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
         [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
             if (!sself) return;

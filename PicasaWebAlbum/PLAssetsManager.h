@@ -24,6 +24,7 @@ static NSString * const kPLAssetsManagerAssetCountKey = @"kPLAMACK";
 
 @property (nonatomic) PLAssetsManagerAutoCreateAlbumType autoCreateAlbumType;
 @property (nonatomic, readonly) BOOL isLibraryUpDated;
+@property (copy, nonatomic) void (^libraryUpDateBlock)(NSDate *enumuratedDate, NSUInteger newAlbumCount);
 
 + (PLAssetsManager *)sharedManager;
 + (ALAssetsLibrary *)sharedLibrary;

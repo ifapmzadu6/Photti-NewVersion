@@ -7,7 +7,10 @@
 //
 
 @import UIKit;
+@import CoreData;
 
-@interface PLNewAlbumCreatedViewController : UIViewController
+@interface PLNewAlbumCreatedViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+
+- (id)initWithEnumuratedDate:(NSDate *)date;
 
 @end

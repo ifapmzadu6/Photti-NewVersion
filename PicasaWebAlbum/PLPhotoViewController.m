@@ -64,23 +64,24 @@
 - (void)loadThumbnailImage {
     NSURL *url = [NSURL URLWithString:_photo.url];
     __weak typeof(self) wself = self;
-    [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if (!asset) return;
-        UIImage *image = [UIImage imageWithCGImage:asset.aspectRatioThumbnail];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
             typeof(wself) sself = wself;
             if (!sself) return;
+            if (!asset) return;
+            UIImage *image = [UIImage imageWithCGImage:asset.aspectRatioThumbnail];
             
-            [sself.imageScrollView setImage:image];
-        });
-        [sself loadScreenImage];
-        
-    } failureBlock:^(NSError *error) {
-        
-    }];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                [sself.imageScrollView setImage:image];
+            });
+            [sself loadScreenImage];
+            
+        } failureBlock:^(NSError *error) {
+        }];
+    });
 }
 
 - (void)loadScreenImage {

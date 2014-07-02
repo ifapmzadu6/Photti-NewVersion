@@ -150,21 +150,21 @@
         PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
         if ([tabBarController isToolbarHideen]) {
             [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-            [tabBarController setToolbarHidden:NO animated:YES completion:nil];
+            [sself.navigationController setNavigationBarHidden:NO animated:YES];
+            [tabBarController setToolbarFadeout:NO animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
                 sself.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
-                sself.navigationController.navigationBar.alpha = 1.0f;
             }];
+            sself.navigationController.interactivePopGestureRecognizer.enabled = YES;
         }
         else {
             [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-            [tabBarController setToolbarHidden:YES animated:YES completion:nil];
+            [sself.navigationController setNavigationBarHidden:YES animated:YES];
+            [tabBarController setToolbarFadeout:YES animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
                 sself.view.backgroundColor = [UIColor blackColor];
-                sself.navigationController.navigationBar.alpha = 0.0f;
-            } completion:^(BOOL finished) {
-                sself.navigationController.navigationBar.alpha = 0.0f;
             }];
+            sself.navigationController.interactivePopGestureRecognizer.enabled = NO;
         }
     };
     

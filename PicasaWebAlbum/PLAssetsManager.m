@@ -18,6 +18,7 @@
 
 @property (strong, nonatomic) ALAssetsLibrary *library;
 @property (nonatomic) BOOL isLibraryUpDated;
+@property (strong, nonatomic) NSDate *lastEnumuratedDate;
 
 @end
 
@@ -25,15 +26,6 @@
 
 static NSString * const kPLAssetsManagerAutoCreateAlbumTypeKey = @"PLAMACATK";
 static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManager.domain";
-
-static dispatch_queue_t assets_manager_queue() {
-    static dispatch_queue_t assets_manager_queue;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        assets_manager_queue = dispatch_queue_create("com.photti.plassetsmanager.queue", DISPATCH_QUEUE_SERIAL);
-    });
-    return assets_manager_queue;
-}
 
 + (PLAssetsManager *)sharedManager {
     static dispatch_once_t once;
@@ -79,7 +71,7 @@ static dispatch_queue_t assets_manager_queue() {
 
 #pragma mark testAccess
 - (void)testAccessPhotoLibraryWithCompletion:(void (^)(NSError *))completion {
-    [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:@""] resultBlock:^(ALAsset *asset) {
+    [_library assetForURL:[NSURL URLWithString:@""] resultBlock:^(ALAsset *asset) {
         if (completion) {
             completion(nil);
         }
@@ -93,36 +85,30 @@ static dispatch_queue_t assets_manager_queue() {
 - (void)getPhotosWithPredicate:(NSPredicate *)predicate completion:(void (^)(NSArray *, NSError *))completion {
     if (!completion) return;
     
-    __weak typeof(self) wself = self;
-    dispatch_async(assets_manager_queue(), ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
+    void (^block)(NSError *) = ^(NSError *error){
+        if (error) {
+            completion(nil, error);
+            return;
+        }
         
-        void (^block)(NSError *) = ^(NSError *error){
-            if (error) {
-                completion(nil, error);
-                return;
-            }
+        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            NSFetchRequest *request = [NSFetchRequest new];
+            request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+            request.predicate = predicate;
+            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
+            NSError *error = nil;
+            NSArray *allphotos = [context executeFetchRequest:request error:&error];
             
-            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-                NSFetchRequest *request = [NSFetchRequest new];
-                request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                request.predicate = predicate;
-                request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
-                NSError *error = nil;
-                NSArray *allphotos = [context executeFetchRequest:request error:&error];
-                
-                completion(allphotos, error);
-            }];
-        };
-        
-        if (sself.isLibraryUpDated) {
-            block(nil);
-        }
-        else {
-            [sself enumurateAssetsWithCompletion:block];
-        }
-    });
+            completion(allphotos, error);
+        }];
+    };
+    
+    if (_isLibraryUpDated) {
+        block(nil);
+    }
+    else {
+        [self enumurateAssetsWithCompletion:block];
+    }
 }
 
 - (void)getAllPhotosWithCompletion:(void (^)(NSArray *, NSError *))completion {
@@ -136,36 +122,30 @@ static dispatch_queue_t assets_manager_queue() {
 - (void)getAlbumWithPredicate:(NSPredicate *)predicate completion:(void (^)(NSArray *, NSError *))completion {
     if (!completion) return;
     
-    __weak typeof(self) wself = self;
-    dispatch_async(assets_manager_queue(), ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
+    void (^block)(NSError *) = ^(NSError *error){
+        if (error) {
+            completion(nil, error);
+            return;
+        }
         
-        void (^block)(NSError *) = ^(NSError *error){
-            if (error) {
-                completion(nil, error);
-                return;
-            }
+        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            NSFetchRequest *request = [NSFetchRequest new];
+            request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+            request.predicate = predicate;
+            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:YES]];
+            NSError *error = nil;
+            NSArray *allphotos = [context executeFetchRequest:request error:&error];
             
-            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-                NSFetchRequest *request = [NSFetchRequest new];
-                request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-                request.predicate = predicate;
-                request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:YES]];
-                NSError *error = nil;
-                NSArray *allphotos = [context executeFetchRequest:request error:&error];
-                
-                completion(allphotos, error);
-            }];
-        };
-        
-        if (sself.isLibraryUpDated) {
-            block(nil);
-        }
-        else {
-            [sself enumurateAssetsWithCompletion:block];
-        }
-    });
+            completion(allphotos, error);
+        }];
+    };
+    
+    if (_isLibraryUpDated) {
+        block(nil);
+    }
+    else {
+        [self enumurateAssetsWithCompletion:block];
+    }
 }
 
 - (void)getAllAlbumsWithCompletion:(void (^)(NSArray *, NSError *))completion {
@@ -229,24 +209,27 @@ static dispatch_queue_t assets_manager_queue() {
     }
     
     __weak typeof(self) wself = self;
-    dispatch_async(assets_manager_queue(), ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        if (sself.isLibraryUpDated) {
-            if (completion) {
-                completion(nil);
-            }
-            return;
+    if (_isLibraryUpDated) {
+        if (completion) {
+            completion(nil);
         }
-        sself.isLibraryUpDated = YES;
-        
-        NSDate *enumurateDate = [NSDate date];
-        
+        return;
+    }
+    _isLibraryUpDated = YES;
+    
+    NSDate *date = [NSDate date];
+    NSTimeZone *tz = [NSTimeZone defaultTimeZone];
+    NSInteger seconds = -[tz secondsFromGMTForDate:date];
+    NSDate *enumurateDate = [NSDate dateWithTimeInterval:seconds sinceDate:date];
+    _lastEnumuratedDate = enumurateDate;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         // PhotoStreamはiCloud
         ALAssetsGroupType assetsGroupType = ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces | ALAssetsGroupSavedPhotos;
-        
-        [sself.library enumerateGroupsWithTypes:assetsGroupType usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+        [_library enumerateGroupsWithTypes:assetsGroupType usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (![sself.lastEnumuratedDate isEqualToDate:enumurateDate]) return;
             if (group) {
                 NSString *id_str = [group valueForProperty:ALAssetsGroupPropertyPersistentID];
                 NSString *name = [group valueForProperty:ALAssetsGroupPropertyName];
@@ -277,6 +260,9 @@ static dispatch_queue_t assets_manager_queue() {
                 }];
                 
                 [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    if (![sself.lastEnumuratedDate isEqualToDate:enumurateDate]) return;
                     if (!result) return;
                     
                     ALAssetRepresentation *representation = result.defaultRepresentation;
@@ -295,13 +281,13 @@ static dispatch_queue_t assets_manager_queue() {
                         if (tmpphotos.count > 0) {
                             PLPhotoObject *photo = tmpphotos.firstObject;
                             photo.update = enumurateDate;
-                            return;
                         }
-                        
-                        PLPhotoObject *photo = [PLAssetsManager makeNewPhotoWithURL:url dimensions:dimensions filename:filename type:type date:date location:location enumurateDate:enumurateDate albumType:albumType context:context];
-                        
-                        photo.tag_sort_index = @(album.photos.count);
-                        [album addPhotosObject:photo];
+                        else {
+                            PLPhotoObject *photo = [PLAssetsManager makeNewPhotoWithURL:url dimensions:dimensions filename:filename type:type date:date location:location enumurateDate:enumurateDate albumType:albumType context:context];
+                            
+                            photo.tag_sort_index = @(album.photos.count);
+                            [album addPhotosObject:photo];
+                        }
                     }];
                 }];
             }
@@ -321,8 +307,10 @@ static dispatch_queue_t assets_manager_queue() {
                     for (PLPhotoObject *photo in outdatedPhotos) {
                         [context deleteObject:photo];
                     }
+                    
                     //NSLog(@"removed = %lu", (unsigned long)outdatedPhotos.count);
                     
+                    NSInteger newAutoCreatAlbumCount = 0;
                     if (sself.autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
                         //今回の読み込みで追加された新規写真
                         NSFetchRequest *newPhotoRequest = [[NSFetchRequest alloc] init];
@@ -360,6 +348,7 @@ static dispatch_queue_t assets_manager_queue() {
                                     [album addPhotosObject:newPhoto];
                                     
                                     [autoCreatedAlbums addObject:album];
+                                    newAutoCreatAlbumCount++;
                                 }
                             }
                         }
@@ -369,6 +358,9 @@ static dispatch_queue_t assets_manager_queue() {
                     
                     if (completion) {
                         completion(error);
+                    }
+                    if (sself.libraryUpDateBlock) {
+                        sself.libraryUpDateBlock(enumurateDate, newAutoCreatAlbumCount);
                     }
                 }];
             }
@@ -403,7 +395,7 @@ static dispatch_queue_t assets_manager_queue() {
 + (PLAlbumObject *)makeNewAutoCreateAlbumWithEnumurateDate:(NSDate *)enumurateDate adjustedDate:(NSDate *)adjustedDate context:(NSManagedObjectContext *)context {
     PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
     album.id_str = [PWSnowFlake generateUniqueIDString];
-    album.name = [[PLDateFormatter fullStringFormatter] stringFromDate:adjustedDate];
+    album.name = [[PLDateFormatter formatter] stringFromDate:adjustedDate];
     album.tag_date = adjustedDate;
     album.timestamp = @((long long)([adjustedDate timeIntervalSince1970]) * 1000);
     album.import = enumurateDate;
