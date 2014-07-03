@@ -15,6 +15,7 @@
 
 @dynamic caption;
 @dynamic date;
+@dynamic duration;
 @dynamic filename;
 @dynamic height;
 @dynamic id_str;

@@ -15,6 +15,7 @@
 
 @property (nonatomic, retain) NSString * caption;
 @property (nonatomic, retain) NSDate * date;
+@property (nonatomic, retain) NSNumber * duration;
 @property (nonatomic, retain) NSString * filename;
 @property (nonatomic, retain) NSNumber * height;
 @property (nonatomic, retain) NSString * id_str;

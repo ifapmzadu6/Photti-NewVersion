@@ -10,16 +10,10 @@
 
 @interface PLDateFormatter : NSObject
 
-+ (id)sharedManager;
-
 + (NSDateFormatter *)formatter;
-
 + (NSDateFormatter *)mmmddFormatter;
-
-+ (NSDateFormatter *)fullStringFormatter;
-
 + (NSDate *)adjustZeroClock:(NSDate *)date;
-
 + (NSDate *)adjustZeroYear:(NSDate *)date;
++ (NSString *)arrangeDuration:(double)duration;
 
 @end

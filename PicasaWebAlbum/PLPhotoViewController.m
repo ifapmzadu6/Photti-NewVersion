@@ -41,8 +41,7 @@
     [super viewDidLoad];
     
     if ([_photo.type isEqualToString:ALAssetTypePhoto]) {
-        _imageScrollView = [[PWImageScrollView alloc] initWithFrame:self.view.bounds];
-        _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        _imageScrollView = [[PWImageScrollView alloc] init];
         __weak typeof(self) wself = self;
         _imageScrollView.handleFirstZoomBlock = ^{
             typeof(wself) sself = wself;
@@ -59,9 +58,7 @@
         _moviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:videoUrl];
         _moviePlayerController.controlStyle = MPMovieControlStyleNone;
         _moviePlayerController.scalingMode = MPMovieScalingModeAspectFit;
-        _moviePlayerController.view.frame = self.view.bounds;
         _moviePlayerController.shouldAutoplay = NO;
-        _moviePlayerController.view.autoresizesSubviews = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self.view addSubview:_moviePlayerController.view];
         
         [_moviePlayerController prepareToPlay];
@@ -69,9 +66,7 @@
         _videoButton = [UIButton new];
         [_videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
         _videoButton.frame = CGRectMake(0.0f, 0.0f, 75.0f, 75.0f);
-        _videoButton.center = self.view.center;
-        _videoButton.autoresizesSubviews = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
-        [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor whiteColor] size:CGSizeMake(120, 120)] forState:UIControlStateNormal];
+        [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor whiteColor] size:75.0f] forState:UIControlStateNormal];
         [self.view addSubview:_videoButton];
     }
 }
@@ -82,6 +77,16 @@
     if (_viewDidAppearBlock) {
         _viewDidAppearBlock();
     }
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    
+    CGRect rect = self.view.bounds;
+    
+    _imageScrollView.frame = rect;
+    _moviePlayerController.view.frame = rect;
+    _videoButton.center = self.view.center;
 }
 
 - (void)didReceiveMemoryWarning {

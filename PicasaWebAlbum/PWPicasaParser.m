@@ -302,6 +302,8 @@
 #endif
     }
     
+    photo.gphoto = [PWPicasaParser gphotoFromJson:json context:context];
+    
     if (photo.media) {
         PWPhotoMediaThumbnailObject *thumbnailObject = photo.media.thumbnail.array.firstObject;
         photo.tag_thumbnail_url = thumbnailObject.url;
@@ -394,6 +396,18 @@
 #ifdef DEBUG_LOCAL
         NSLog(@"gphoto.user = %@", gphoto.user);
 #endif
+    }
+    NSDictionary *originalvideo = NULL_TO_NIL(json[@"gphoto:originalvideo"]);
+    if (originalvideo) {
+        gphoto.originalvideo_audioCodec = NULL_TO_NIL(originalvideo[@"audioCodec"]);
+        gphoto.originalvideo_channels = NULL_TO_NIL(originalvideo[@"channels"]);
+        gphoto.originalvideo_duration = NULL_TO_NIL(originalvideo[@"duration"]);
+        gphoto.originalvideo_fps = NULL_TO_NIL(originalvideo[@"fps"]);
+        gphoto.originalvideo_height = NULL_TO_NIL(originalvideo[@"height"]);
+        gphoto.originalvideo_samplingrate = NULL_TO_NIL(originalvideo[@"samplingrate"]);
+        gphoto.originalvideo_type = NULL_TO_NIL(originalvideo[@"type"]);
+        gphoto.originalvideo_videoCodec = NULL_TO_NIL(originalvideo[@"videoCodec"]);
+        gphoto.originalvideo_width = NULL_TO_NIL(originalvideo[@"width"]);
     }
     
     return gphoto;

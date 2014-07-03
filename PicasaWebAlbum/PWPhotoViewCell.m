@@ -10,12 +10,17 @@
 
 #import "PWPicasaAPI.h"
 #import "PWColors.h"
+#import "PWIcons.h"
+#import "PLDateFormatter.h"
 #import "Reachability.h"
 #import "SDImageCache.h"
 
 @interface PWPhotoViewCell ()
 
 @property (strong, nonatomic) UIImageView *imageView;
+@property (strong, nonatomic) UIImageView *videoBackgroundView;
+@property (strong, nonatomic) UIImageView *videoIconView;
+@property (strong, nonatomic) UILabel *videoDurationLabel;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIView *overrayView;
 @property (strong, nonatomic) UIImageView *checkMark;
@@ -57,6 +62,25 @@
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.contentView addSubview:_imageView];
+    
+    _videoBackgroundView = [[UIImageView alloc] init];
+    _videoBackgroundView.image = [PWIcons gradientVerticalFromColor:UIColor.clearColor toColor:UIColor.blackColor size:CGSizeMake(200.0f, 200.0f)];
+    _videoBackgroundView.hidden = YES;
+    [self.contentView addSubview:_videoBackgroundView];
+    
+    _videoIconView = [[UIImageView alloc] init];
+    _videoIconView.image = [PWIcons videoIconWithColor:[UIColor whiteColor] size:CGSizeMake(94.0f, 50.0f)];
+    _videoIconView.contentMode = UIViewContentModeScaleAspectFit;
+    _videoIconView.hidden = YES;
+    [self.contentView addSubview:_videoIconView];
+    
+    _videoDurationLabel = [[UILabel alloc] init];
+    _videoDurationLabel.text = @"5:21";
+    _videoDurationLabel.font = [UIFont systemFontOfSize:12.0f];
+    _videoDurationLabel.textColor = [UIColor whiteColor];
+    _videoDurationLabel.textAlignment = NSTextAlignmentRight;
+    _videoDurationLabel.hidden = YES;
+    [self.contentView addSubview:_videoDurationLabel];
     
     _overrayView = [[UIView alloc] init];
     _overrayView.alpha = 0.0f;
@@ -137,6 +161,11 @@
             _imageView.frame = CGRectZero;
         }
     }
+    
+    _videoBackgroundView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 20.0f, CGRectGetWidth(rect), 20.0f);
+    _videoIconView.frame = CGRectMake(5.0f, CGRectGetHeight(rect) - 14.0f, 16.0f, 8.0f);
+    _videoDurationLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 20.0f, CGRectGetWidth(rect) - 5.0f, 20.0f);
+    
     _activityIndicatorView.center = self.contentView.center;
     _overrayView.frame = _imageView.frame;
     _checkMark.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 32.0f, CGRectGetMaxY(_imageView.frame) - 32.0f, 28.0f, 28.0f);
@@ -156,6 +185,19 @@
     
     if (!photo) return;
     if (photo.managedObjectContext == nil) return;
+    
+    NSString *durationString = photo.gphoto.originalvideo_duration;
+    if (!durationString) {
+        _videoBackgroundView.hidden = YES;
+        _videoDurationLabel.hidden = YES;
+        _videoIconView.hidden = YES;
+    }
+    else {
+        _videoBackgroundView.hidden = NO;
+        _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
+        _videoDurationLabel.hidden = NO;
+        _videoIconView.hidden = NO;
+    }
     
     NSString *urlString = photo.tag_thumbnail_url;
     if (!urlString) return;

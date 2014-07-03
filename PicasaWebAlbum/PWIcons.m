@@ -47,6 +47,20 @@
     return resizedImage;
 }
 
++ (UIImage *)gradientVerticalFromColor:(UIColor *)fromColor toColor:(UIColor *)toColor size:(CGSize)size {
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0.0f);
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGFloat gradientLocations[] = {0, 1};
+    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)@[(id)fromColor.CGColor, (id)toColor.CGColor], gradientLocations);
+    CGContextDrawLinearGradient(context, gradient, CGPointMake(0, 0), CGPointMake(0, size.height), 0);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
+
 
 + (UIImage *)arrowIconWithColor:(UIColor *)color size:(CGSize)size {
     if (CGSizeEqualToSize(CGSizeZero, size)) return nil;
@@ -87,44 +101,76 @@
     return defaultImage;
 }
 
-+ (UIImage *)videoButtonIconWithColor:(UIColor *)color size:(CGSize)size {
-    UIGraphicsBeginImageContextWithOptions(size, NO, 0.0f);
++ (UIImage *)videoButtonIconWithColor:(UIColor *)color size:(CGFloat)size {
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(size, size), NO, 0.0f);
     CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGFloat scale = size / 120.0f;
     
     //// Color Declarations
     UIColor* color2 = [UIColor colorWithRed: 0.0f green: 0.0f blue: 0.0f alpha: 0.2f];
     
     //// Bezier Drawing
     UIBezierPath* bezierPath = UIBezierPath.bezierPath;
-    [bezierPath moveToPoint: CGPointMake(47.5f, 38.35f)];
-    [bezierPath addLineToPoint: CGPointMake(47.5f, 81.65f)];
-    [bezierPath addLineToPoint: CGPointMake(85.0f, 60.0f)];
-    [bezierPath addLineToPoint: CGPointMake(47.5f, 38.35f)];
+    [bezierPath moveToPoint: CGPointMake(47.5f*scale, 38.35f*scale)];
+    [bezierPath addLineToPoint: CGPointMake(47.5f*scale, 81.65f*scale)];
+    [bezierPath addLineToPoint: CGPointMake(85.0f*scale, 60.0f*scale)];
+    [bezierPath addLineToPoint: CGPointMake(47.5f*scale, 38.35f*scale)];
     [bezierPath closePath];
-    [bezierPath moveToPoint: CGPointMake(102.43f, 17.57f)];
-    [bezierPath addCurveToPoint: CGPointMake(102.43f, 102.43f) controlPoint1: CGPointMake(125.86f, 41.01f) controlPoint2: CGPointMake(125.86f, 78.99f)];
-    [bezierPath addCurveToPoint: CGPointMake(17.57f, 102.43f) controlPoint1: CGPointMake(78.99f, 125.86f) controlPoint2: CGPointMake(41.01f, 125.86f)];
-    [bezierPath addCurveToPoint: CGPointMake(17.57f, 17.57f) controlPoint1: CGPointMake(-5.86f, 78.99f) controlPoint2: CGPointMake(-5.86f, 41.01f)];
-    [bezierPath addCurveToPoint: CGPointMake(102.43f, 17.57f) controlPoint1: CGPointMake(41.01f, -5.86f) controlPoint2: CGPointMake(78.99f, -5.86f)];
+    [bezierPath moveToPoint: CGPointMake(102.43f*scale, 17.57f*scale)];
+    [bezierPath addCurveToPoint: CGPointMake(102.43f*scale, 102.43f*scale) controlPoint1: CGPointMake(125.86f*scale, 41.01f*scale) controlPoint2: CGPointMake(125.86f*scale, 78.99f*scale)];
+    [bezierPath addCurveToPoint: CGPointMake(17.57f*scale, 102.43f*scale) controlPoint1: CGPointMake(78.99f*scale, 125.86f*scale) controlPoint2: CGPointMake(41.01f*scale, 125.86f*scale)];
+    [bezierPath addCurveToPoint: CGPointMake(17.57f*scale, 17.57f*scale) controlPoint1: CGPointMake(-5.86f*scale, 78.99f*scale) controlPoint2: CGPointMake(-5.86f*scale, 41.01f*scale)];
+    [bezierPath addCurveToPoint: CGPointMake(102.43f*scale, 17.57f*scale) controlPoint1: CGPointMake(41.01f*scale, -5.86f*scale) controlPoint2: CGPointMake(78.99f*scale, -5.86f*scale)];
     [bezierPath closePath];
     [color setFill];
     [bezierPath fill];
     
     //// Polygon Drawing
     CGContextSaveGState(context);
-    CGContextTranslateCTM(context, 85.0f, 35.0f);
+    CGContextTranslateCTM(context, 85.0f*scale, 35.0f*scale);
     CGContextRotateCTM(context, 90.0f * M_PI / 180.0f);
     
     UIBezierPath* polygonPath = UIBezierPath.bezierPath;
-    [polygonPath moveToPoint: CGPointMake(25.0f, 0.0f)];
-    [polygonPath addLineToPoint: CGPointMake(46.65f, 37.5f)];
-    [polygonPath addLineToPoint: CGPointMake(3.35f, 37.5f)];
+    [polygonPath moveToPoint: CGPointMake(25.0f*scale, 0.0f*scale)];
+    [polygonPath addLineToPoint: CGPointMake(46.65f*scale, 37.5f*scale)];
+    [polygonPath addLineToPoint: CGPointMake(3.35f*scale, 37.5f*scale)];
     [polygonPath closePath];
     [color2 setFill];
     [polygonPath fill];
     
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     CGContextRestoreGState(context);
+    UIGraphicsEndImageContext();
+    return image;
+}
+
++ (UIImage *)videoIconWithColor:(UIColor *)color size:(CGSize)size {
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0.0f);
+//    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGFloat widthScale = size.width / 100.0f;
+    CGFloat heightScale = size.height / 50.0f;
+    
+    //// Rectangle Drawing
+    UIBezierPath* rectanglePath = [UIBezierPath bezierPathWithRoundedRect: CGRectMake(0, 0, 60.0f*widthScale, 50.0f*heightScale) cornerRadius: 10*heightScale];
+    [color setFill];
+    [rectanglePath fill];
+    
+    //// Bezier Drawing
+    UIBezierPath* bezierPath = UIBezierPath.bezierPath;
+    [bezierPath moveToPoint: CGPointMake(100*widthScale, 0)];
+    [bezierPath addCurveToPoint: CGPointMake(100*widthScale, 50*heightScale) controlPoint1: CGPointMake(100*widthScale, 0) controlPoint2: CGPointMake(100*widthScale, 50*heightScale)];
+    [bezierPath addCurveToPoint: CGPointMake(70*widthScale, 28.53*heightScale) controlPoint1: CGPointMake(100*widthScale, 50*heightScale) controlPoint2: CGPointMake(79.63*widthScale, 35.43*heightScale)];
+    [bezierPath addCurveToPoint: CGPointMake(70*widthScale, 21.47*heightScale) controlPoint1: CGPointMake(70*widthScale, 26.33*heightScale) controlPoint2: CGPointMake(70*widthScale, 23.67*heightScale)];
+    [bezierPath addCurveToPoint: CGPointMake(100*widthScale, 0) controlPoint1: CGPointMake(79.63*widthScale, 14.57*heightScale) controlPoint2: CGPointMake(100*widthScale, 0)];
+    [bezierPath addLineToPoint: CGPointMake(100*widthScale, 0)];
+    [bezierPath closePath];
+    [bezierPath closePath];
+    [color setFill];
+    [bezierPath fill];
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return image;
 }

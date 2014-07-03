@@ -270,6 +270,10 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     CGSize dimensions = representation.dimensions;
                     NSString *filename = representation.filename;
                     NSString *type = [result valueForProperty:ALAssetPropertyType];
+                    NSNumber *duration = nil;
+                    if ([type isEqualToString:ALAssetTypeVideo]) {
+                        duration = [result valueForProperty:ALAssetPropertyDuration];
+                    }
                     NSDate *date = [result valueForProperty:ALAssetPropertyDate];
                     CLLocation *location = [result valueForProperty:ALAssetPropertyLocation];
                     [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
@@ -283,7 +287,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                             photo.update = enumurateDate;
                         }
                         else {
-                            PLPhotoObject *photo = [PLAssetsManager makeNewPhotoWithURL:url dimensions:dimensions filename:filename type:type date:date location:location enumurateDate:enumurateDate albumType:albumType context:context];
+                            PLPhotoObject *photo = [PLAssetsManager makeNewPhotoWithURL:url dimensions:dimensions filename:filename type:type date:date duration:duration location:location enumurateDate:enumurateDate albumType:albumType context:context];
                             
                             photo.tag_sort_index = @(album.photos.count);
                             [album addPhotosObject:photo];
@@ -373,7 +377,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
 }
 
 #pragma mark CoreDataMethods
-+ (PLPhotoObject *)makeNewPhotoWithURL:(NSURL *)url dimensions:(CGSize)dimensions filename:(NSString *)filename type:(NSString *)type date:(NSDate *)date location:(CLLocation *)location enumurateDate:(NSDate *)enumurateDate albumType:(NSNumber *)albumType context:(NSManagedObjectContext *)context {
++ (PLPhotoObject *)makeNewPhotoWithURL:(NSURL *)url dimensions:(CGSize)dimensions filename:(NSString *)filename type:(NSString *)type date:(NSDate *)date duration:(NSNumber *)duration location:(CLLocation *)location enumurateDate:(NSDate *)enumurateDate albumType:(NSNumber *)albumType context:(NSManagedObjectContext *)context {
     PLPhotoObject *photo = [NSEntityDescription insertNewObjectForEntityForName:kPLPhotoObjectName inManagedObjectContext:context];
     photo.url = url.absoluteString;
     photo.width = @(dimensions.width);
@@ -382,6 +386,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
     photo.type = type;
     photo.timestamp = @((long long)([date timeIntervalSince1970]) * 1000);
     photo.date = date;
+    photo.duration = duration;
     photo.latitude = @(location.coordinate.latitude);
     photo.longitude = @(location.coordinate.longitude);
     photo.update = enumurateDate;
