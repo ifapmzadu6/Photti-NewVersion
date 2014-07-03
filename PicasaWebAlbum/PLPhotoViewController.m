@@ -6,9 +6,12 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
+@import MediaPlayer;
+
 #import "PLPhotoViewController.h"
 
 #import "PWColors.h"
+#import "PWIcons.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
 #import "SDImageCache.h"
@@ -18,6 +21,9 @@
 @interface PLPhotoViewController ()
 
 @property (strong, nonatomic) PWImageScrollView *imageScrollView;
+
+@property (strong, nonatomic) MPMoviePlayerController *moviePlayerController;
+@property (strong, nonatomic) UIButton *videoButton;
 
 @end
 
@@ -34,18 +40,40 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _imageScrollView = [[PWImageScrollView alloc] initWithFrame:self.view.bounds];
-    _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    __weak typeof(self) wself = self;
-    _imageScrollView.handleFirstZoomBlock = ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [sself loadFullResolutionImage];
-    };
-    [_imageScrollView setHandleSingleTapBlock:_handleSingleTapBlock];
-    [self.view addSubview:_imageScrollView];
-    
-    [self loadThumbnailImage];
+    if ([_photo.type isEqualToString:ALAssetTypePhoto]) {
+        _imageScrollView = [[PWImageScrollView alloc] initWithFrame:self.view.bounds];
+        _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        __weak typeof(self) wself = self;
+        _imageScrollView.handleFirstZoomBlock = ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself loadFullResolutionImage];
+        };
+        [_imageScrollView setHandleSingleTapBlock:_handleSingleTapBlock];
+        [self.view addSubview:_imageScrollView];
+        
+        [self loadThumbnailImage];
+    }
+    else if ([_photo.type isEqualToString:ALAssetTypeVideo]) {
+        NSURL *videoUrl = [NSURL URLWithString:_photo.url];
+        _moviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:videoUrl];
+        _moviePlayerController.controlStyle = MPMovieControlStyleNone;
+        _moviePlayerController.scalingMode = MPMovieScalingModeAspectFit;
+        _moviePlayerController.view.frame = self.view.bounds;
+        _moviePlayerController.shouldAutoplay = NO;
+        _moviePlayerController.view.autoresizesSubviews = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.view addSubview:_moviePlayerController.view];
+        
+        [_moviePlayerController prepareToPlay];
+        
+        _videoButton = [UIButton new];
+        [_videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
+        _videoButton.frame = CGRectMake(0.0f, 0.0f, 75.0f, 75.0f);
+        _videoButton.center = self.view.center;
+        _videoButton.autoresizesSubviews = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
+        [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor whiteColor] size:CGSizeMake(120, 120)] forState:UIControlStateNormal];
+        [self.view addSubview:_videoButton];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -58,6 +86,11 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+#pragma mark UIButton
+- (void)videoButtonAction {
+    
 }
 
 #pragma mark LoadImage

@@ -46,7 +46,7 @@
             [self setAutoCreateAlbumViewController];
         }
 //        else if ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
-//            PLNewAlbumCreatedViewController *newAlbumCreatedViewController = [[PLNewAlbumCreatedViewController alloc] init];
+//            PLNewAlbumCreatedViewController *newAlbumCreatedViewController = [[PLNewAlbumCreatedViewController alloc] initWithEnumuratedDate:nil];
 //            self.viewControllers = @[newAlbumCreatedViewController];
 //        }
         else {

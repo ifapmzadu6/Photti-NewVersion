@@ -99,7 +99,9 @@
     
     _collectionView.frame = CGRectMake(10.0f, 0.0f, rect.size.width - 20.0f, rect.size.height);
     
-    NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
+    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
+        return obj1.row > obj2.row;
+    }];
     NSIndexPath *indexPath = nil;
     if (indexPaths.count) {
         indexPath = indexPaths[indexPaths.count / 2];

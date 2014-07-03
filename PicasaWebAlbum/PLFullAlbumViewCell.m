@@ -41,14 +41,16 @@
 }
 
 - (void)initializetion {
-    self.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
-    
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.contentView addSubview:_activityIndicatorView];
     
     _imageView = [[UIImageView alloc] init];
-    _imageView.clipsToBounds = YES;
-    _imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _imageView.clipsToBounds = NO;
+    _imageView.contentMode = UIViewContentModeScaleAspectFit;
+    _imageView.layer.shadowOffset = CGSizeMake(0.0f, 5.0f);
+    _imageView.layer.shadowColor = [UIColor blackColor].CGColor;
+    _imageView.layer.shadowRadius = 5.0f;
+    _imageView.layer.shadowOpacity = 0.3f;
     [self.contentView addSubview:_imageView];
 }
 
@@ -56,7 +58,7 @@
     [super layoutSubviews];
     CGRect rect = self.contentView.bounds;
     
-    _imageView.frame = CGRectMake(0.0f, 0.0f, rect.size.width, ceilf(rect.size.width * 3.0f / 4.0f));
+    _imageView.frame = rect;
     
     _activityIndicatorView.center = _imageView.center;
 }

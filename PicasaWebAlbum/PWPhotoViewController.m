@@ -8,6 +8,8 @@
 
 #import "PWPhotoViewController.h"
 
+@import MediaPlayer;
+
 #import "PWColors.h"
 #import "PWPicasaAPI.h"
 #import "SDImageCache.h"
@@ -16,6 +18,8 @@
 @interface PWPhotoViewController ()
 
 @property (strong, nonatomic) PWImageScrollView *imageScrollView;
+@property (strong, nonatomic) MPMoviePlayerController *moviePlayerController;
+@property (strong, nonatomic) UIButton *videoButton;
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
 @property (weak, nonatomic) NSURLSessionDataTask *task;

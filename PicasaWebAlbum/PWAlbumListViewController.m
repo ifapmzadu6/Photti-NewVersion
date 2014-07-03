@@ -161,7 +161,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     
     _collectionView.frame = rect;
     
-    NSArray *indexPaths = _collectionView.indexPathsForVisibleItems;
+    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
+        return obj1.row > obj2.row;
+    }];
     NSIndexPath *indexPath = nil;
     if (indexPaths.count) {
         indexPath = indexPaths[indexPaths.count / 2];
