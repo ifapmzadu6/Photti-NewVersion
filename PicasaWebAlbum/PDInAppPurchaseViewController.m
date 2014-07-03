@@ -50,7 +50,7 @@
         view.exclusiveTouch = YES;
     }
     
-    _iconImageView = [[UIImageView alloc] init];
+    _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"UploadLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.667f];
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;

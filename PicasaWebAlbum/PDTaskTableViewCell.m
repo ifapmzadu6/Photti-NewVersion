@@ -53,7 +53,7 @@
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         self.showsReorderControl = YES;
         
-        _thumbnailImageView = [[UIImageView alloc] init];
+        _thumbnailImageView = [UIImageView new];
         _thumbnailImageView.clipsToBounds = YES;
         _thumbnailImageView.contentMode = UIViewContentModeScaleAspectFill;
         _thumbnailImageView.alpha = 0.0f;
@@ -72,22 +72,22 @@
         _countLabel.font = [UIFont systemFontOfSize:15.0f];
         [self.contentView addSubview:_countLabel];
         
-        _subThumbnailImageView = [[UIImageView alloc] init];
+        _subThumbnailImageView = [UIImageView new];
         _subThumbnailImageView.clipsToBounds = YES;
         _subThumbnailImageView.contentMode = UIViewContentModeScaleAspectFill;
         _subThumbnailImageView.alpha = 0.0f;
         [self.contentView insertSubview:_subThumbnailImageView belowSubview:_thumbnailImageView];
         
-        _subSubThumbnailImageView = [[UIImageView alloc] init];
+        _subSubThumbnailImageView = [UIImageView new];
         _subSubThumbnailImageView.clipsToBounds = YES;
         _subSubThumbnailImageView.contentMode = UIViewContentModeScaleAspectFill;
         _subSubThumbnailImageView.alpha = 1.0f;
         [self.contentView insertSubview:_subSubThumbnailImageView belowSubview:_thumbnailImageView];
         
-        _subArrowIcon = [[UIImageView alloc] init];
+        _subArrowIcon = [UIImageView new];
         [self.contentView addSubview:_subArrowIcon];
         
-        _subDestiantionThumbnailImageView = [[UIImageView alloc] init];
+        _subDestiantionThumbnailImageView = [UIImageView new];
         _subDestiantionThumbnailImageView.clipsToBounds = YES;
         _subDestiantionThumbnailImageView.contentMode = UIViewContentModeScaleAspectFill;
         _subDestiantionThumbnailImageView.alpha = 0.0f;

@@ -32,7 +32,7 @@
     }
     
     // saving own frame, that will be modified
-    CGRect newFrame = self.frame;
+    CGRect newFrame = self.bounds;
     
     // if refresh control is fully or partially behind UINavigationBar
     if (scrollView.contentOffset.y + _topContentInset > -newFrame.size.height) {

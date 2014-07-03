@@ -44,7 +44,7 @@
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.contentView addSubview:_activityIndicatorView];
     
-    _imageView = [[UIImageView alloc] init];
+    _imageView = [UIImageView new];
     _imageView.clipsToBounds = NO;
     _imageView.contentMode = UIViewContentModeScaleAspectFit;
     _imageView.layer.shadowOffset = CGSizeMake(0.0f, 5.0f);

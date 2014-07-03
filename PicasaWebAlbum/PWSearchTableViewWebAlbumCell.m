@@ -56,7 +56,7 @@
     _titleLabel.textColor = [UIColor whiteColor];
     [self.contentView addSubview:_titleLabel];
     
-    _thumbnailImageView = [[UIImageView alloc] init];
+    _thumbnailImageView = [UIImageView new];
     _thumbnailImageView.contentMode = UIViewContentModeScaleAspectFill;
     _thumbnailImageView.clipsToBounds = YES;
     [self.contentView addSubview:_thumbnailImageView];

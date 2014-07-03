@@ -108,7 +108,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackDidFinish:) name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayerController];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackStateChanged:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:_moviePlayerController];
     
-    _moviePlayerPlaceholderView = [[UIImageView alloc] init];
+    _moviePlayerPlaceholderView = [UIImageView new];
     _moviePlayerPlaceholderView.image = _imageScrollView.image;
     _moviePlayerPlaceholderView.contentMode = UIViewContentModeScaleAspectFit;
     _moviePlayerPlaceholderView.frame = _moviePlayerController.view.frame;

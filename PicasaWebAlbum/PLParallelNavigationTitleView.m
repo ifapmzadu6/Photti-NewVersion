@@ -42,7 +42,7 @@
 - (void)initialization {
     _isDisableLayoutSubViews = NO;
     
-    _clipBackgroundView = [[UIView alloc] init];
+    _clipBackgroundView = [UIView new];
     _clipBackgroundView.clipsToBounds = YES;
     [self addSubview:_clipBackgroundView];
     

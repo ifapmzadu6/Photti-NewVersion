@@ -54,7 +54,7 @@
     
     [self addSubview:_toolbar];
     
-    _toolbarBottomLineView = [[UIView alloc] init];
+    _toolbarBottomLineView = [UIView new];
     _toolbarBottomLineView.backgroundColor = [UIColor colorWithWhite:0.75f alpha:1.0f];
     [self addSubview:_toolbarBottomLineView];
 }

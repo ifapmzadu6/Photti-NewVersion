@@ -127,7 +127,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _searchBarBackgroundView = [[UIView alloc] init];
+    _searchBarBackgroundView = [UIView new];
     _searchBarBackgroundView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _searchBarBackgroundView.alpha = 0.0f;
     _searchBarBackgroundView.exclusiveTouch = YES;
@@ -150,7 +150,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     _cancelButton.exclusiveTouch = YES;
     [_searchBarBackgroundView addSubview:_cancelButton];
     
-    _backbroundView = [[UIImageView alloc] init];
+    _backbroundView = [UIImageView new];
     _backbroundView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
     _backbroundView.alpha = 0.0;
     _backbroundView.userInteractionEnabled = YES;

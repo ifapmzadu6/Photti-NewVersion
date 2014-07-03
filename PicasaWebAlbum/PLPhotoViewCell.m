@@ -52,17 +52,17 @@
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.contentView addSubview:_activityIndicatorView];
     
-    _imageView = [[UIImageView alloc] init];
+    _imageView = [UIImageView new];
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.contentView addSubview:_imageView];
     
-    _videoBackgroundView = [[UIImageView alloc] init];
+    _videoBackgroundView = [UIImageView new];
     _videoBackgroundView.image = [PWIcons gradientVerticalFromColor:UIColor.clearColor toColor:UIColor.blackColor size:CGSizeMake(200.0f, 200.0f)];
     _videoBackgroundView.hidden = YES;
     [self.contentView addSubview:_videoBackgroundView];
     
-    _videoIconView = [[UIImageView alloc] init];
+    _videoIconView = [UIImageView new];
     _videoIconView.image = [PWIcons videoIconWithColor:[UIColor whiteColor] size:CGSizeMake(94.0f, 50.0f)];
     _videoIconView.contentMode = UIViewContentModeScaleAspectFit;
     _videoIconView.hidden = YES;
@@ -76,11 +76,11 @@
     _videoDurationLabel.hidden = YES;
     [self.contentView addSubview:_videoDurationLabel];
     
-    _overrayView = [[UIView alloc] init];
+    _overrayView = [UIView new];
     _overrayView.alpha = 0.0f;
     [self.contentView addSubview:_overrayView];
     
-    _checkMark = [[UIImageView alloc] init];
+    _checkMark = [UIImageView new];
     _checkMark.image = [UIImage imageNamed:@"CheckMark"];
     _checkMark.alpha = 0.0f;
     [self.contentView addSubview:_checkMark];

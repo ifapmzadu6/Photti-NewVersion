@@ -54,7 +54,7 @@
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.contentView addSubview:_activityIndicatorView];
     
-    _imageView = [[UIImageView alloc] init];
+    _imageView = [UIImageView new];
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.contentView addSubview:_imageView];
@@ -79,7 +79,7 @@
     [_actionButton setBackgroundImage:[PWIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.05f]] forState:UIControlStateHighlighted];
     [self.contentView addSubview:_actionButton];
     
-    _overrayView = [[UIView alloc] init];
+    _overrayView = [UIView new];
     _overrayView.alpha = 0.0f;
     _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.1f];
     [self.contentView addSubview:_overrayView];

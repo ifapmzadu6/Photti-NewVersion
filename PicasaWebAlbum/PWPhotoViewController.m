@@ -100,6 +100,7 @@
 
 #pragma mark UIButton
 - (void)videoButtonAction {
+    // TODO: 通信速度によって切り替える
     NSArray *contents = [_photo.media.content.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @"video/mpeg4"]];
     PWPhotoMediaContentObject *content = contents.lastObject;
     
@@ -124,14 +125,14 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackDidFinish:) name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayerController];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackStateChanged:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:_moviePlayerController];
     
-    _moviePlayerPlaceholderView = [[UIImageView alloc] init];
+    _moviePlayerPlaceholderView = [UIImageView new];
     _moviePlayerPlaceholderView.image = _imageScrollView.image;
     _moviePlayerPlaceholderView.contentMode = UIViewContentModeScaleAspectFit;
     _moviePlayerPlaceholderView.frame = _moviePlayerController.view.frame;
     _moviePlayerPlaceholderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [_moviePlayerController.view addSubview:_moviePlayerPlaceholderView];
     
-    UIImageView *videoButtonImageView = [[UIImageView alloc] init];
+    UIImageView *videoButtonImageView = [UIImageView new];
     videoButtonImageView.image = [PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:92.0f];
     videoButtonImageView.frame = CGRectMake(0.0f, 0.0f, 92.0f, 92.0f);
     videoButtonImageView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
