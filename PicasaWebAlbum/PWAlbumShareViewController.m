@@ -46,10 +46,14 @@
     _tableView.dataSource = self;
     _tableView.delegate = self;
     _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
     
     UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
     self.navigationItem.leftBarButtonItem = doneBarButtonItem;
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
     
     self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
@@ -148,6 +152,7 @@
             button.layer.borderColor = [PWColors getColor:PWColorsTypeTintWebColor].CGColor;
             button.layer.borderWidth = 1.0f;
             button.layer.cornerRadius = 5.0f;
+            button.exclusiveTouch = YES;
             [cell.contentView addSubview:button];
             
             NSString *link = nil;

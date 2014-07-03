@@ -20,6 +20,7 @@
     _webView = [[UIWebView alloc] init];
     _webView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     _webView.scalesPageToFit = true;
+    _webView.exclusiveTouch = YES;
     self.view = _webView;
 }
 

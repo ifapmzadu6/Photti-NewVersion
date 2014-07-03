@@ -44,12 +44,16 @@
     
     UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
     self.navigationItem.rightBarButtonItem = doneBarButtonItem;
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
     
     _tableView = [[KKStaticTableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.cellTextFont = [UIFont systemFontOfSize:15.0f];
     _tableView.cellDetailTextFontTypeValue1 = [UIFont systemFontOfSize:15.0f];
     _tableView.cellDetailTextFontTypeSubTitle = [UIFont systemFontOfSize:13.0f];
     _tableView.cellDetailTextColor = [UIColor colorWithWhite:0.5f alpha:1.0f];
+    _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
     
     [self setUpWebAlbumSection];

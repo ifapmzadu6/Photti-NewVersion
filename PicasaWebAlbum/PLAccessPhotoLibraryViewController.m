@@ -41,6 +41,9 @@
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareBarButtonAction)];
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PictureLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -90,6 +93,7 @@
     _accessButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
     _accessButton.layer.borderWidth = 1.0f;
     _accessButton.layer.cornerRadius = 5.0f;
+    _accessButton.exclusiveTouch = YES;
     [self.view addSubview:_accessButton];
     
     [self updateAccessButton];

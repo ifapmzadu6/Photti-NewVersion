@@ -39,6 +39,7 @@
     _tableView.delegate = self;
     _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
 }
 

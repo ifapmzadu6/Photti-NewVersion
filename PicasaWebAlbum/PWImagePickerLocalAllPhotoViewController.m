@@ -59,6 +59,7 @@
     _collectionView.clipsToBounds = NO;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.allowsMultipleSelection = YES;
+    _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     _headerViews = [NSMutableDictionary dictionary];

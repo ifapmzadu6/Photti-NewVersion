@@ -61,6 +61,10 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     UIBarButtonItem *doneBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
     self.navigationItem.rightBarButtonItem = doneBarButtonitem;
     
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
+    
     //ScrollViewDelegate
     [self.view.subviews.firstObject setDelegate:self];
     

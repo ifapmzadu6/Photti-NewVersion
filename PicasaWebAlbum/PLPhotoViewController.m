@@ -59,6 +59,7 @@
         _moviePlayerController.controlStyle = MPMovieControlStyleNone;
         _moviePlayerController.scalingMode = MPMovieScalingModeAspectFit;
         _moviePlayerController.shouldAutoplay = NO;
+        _moviePlayerController.view.exclusiveTouch = YES;
         [self.view addSubview:_moviePlayerController.view];
         
         [_moviePlayerController prepareToPlay];
@@ -67,6 +68,7 @@
         [_videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
         _videoButton.frame = CGRectMake(0.0f, 0.0f, 75.0f, 75.0f);
         [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor whiteColor] size:75.0f] forState:UIControlStateNormal];
+        _videoButton.exclusiveTouch = YES;
         [self.view addSubview:_videoButton];
     }
 }

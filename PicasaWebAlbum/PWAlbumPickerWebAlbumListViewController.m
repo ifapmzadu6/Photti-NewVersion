@@ -51,6 +51,7 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 10.0f, 0.0f, 10.0f);
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
@@ -67,6 +68,9 @@
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
     addBarButtonItem.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     self.navigationItem.rightBarButtonItem = addBarButtonItem;
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
     
     [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];

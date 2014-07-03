@@ -59,6 +59,7 @@
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
     _collectionView.clipsToBounds = NO;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
@@ -66,6 +67,9 @@
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
     addBarButtonItem.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     self.navigationItem.rightBarButtonItem = addBarButtonItem;
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
     
     _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_indicatorView];

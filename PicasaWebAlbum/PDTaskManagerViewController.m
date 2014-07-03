@@ -68,12 +68,17 @@
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
+    
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
     [_tableView registerClass:[PDTaskTableViewCell class] forCellReuseIdentifier:@"Cell"];
     _tableView.rowHeight = 56.0f;
     _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
     
     [self loadData];

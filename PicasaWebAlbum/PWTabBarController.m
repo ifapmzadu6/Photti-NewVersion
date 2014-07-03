@@ -48,6 +48,7 @@ static const CGFloat animationDuration = 0.25f;
         self.delegate = self;
         
         _toolbar = [[UIToolbar alloc] init];
+        _toolbar.exclusiveTouch = YES;
         [self.view addSubview:_toolbar];
         
         _toolbar.alpha = 0.0f;
@@ -55,6 +56,7 @@ static const CGFloat animationDuration = 0.25f;
         
         _actionToolbar = [[UIToolbar alloc] init];
         _actionToolbar.barTintColor = [UIColor blackColor];
+        _actionToolbar.exclusiveTouch = YES;
         [self.view addSubview:_actionToolbar];
         
         _actionToolbar.alpha = 0.0f;
@@ -64,6 +66,7 @@ static const CGFloat animationDuration = 0.25f;
         _actionNavigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor colorWithWhite:0.8f alpha:1.0f]};
         _actionNavigationBar.barTintColor = [UIColor blackColor];
         _actionNavigationBar.delegate = self;
+        _actionNavigationBar.exclusiveTouch = YES;
         [self.view addSubview:_actionNavigationBar];
         
         _actionNavigationBar.alpha = 0.0f;

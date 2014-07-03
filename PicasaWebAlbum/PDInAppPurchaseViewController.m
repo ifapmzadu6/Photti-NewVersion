@@ -47,6 +47,10 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareBarButtonAction)];
     
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
+    
     _iconImageView = [[UIImageView alloc] init];
     _iconImageView.image = [[UIImage imageNamed:@"UploadLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.667f];
@@ -111,6 +115,7 @@
     [_purchaseButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _purchaseButton.enabled = NO;
     _purchaseButton.alpha = 0.5f;
+    _purchaseButton.exclusiveTouch = YES;
     [self.view addSubview:_purchaseButton];
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -128,6 +133,7 @@
     [_restoreButton setTitle:NSLocalizedString(@"Restore purchase", NSLocalizedString) forState:UIControlStateNormal];
     [_restoreButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
     [_restoreButton setTitleColor:[[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
+    _restoreButton.exclusiveTouch = YES;
     [self.view addSubview:_restoreButton];
 }
 

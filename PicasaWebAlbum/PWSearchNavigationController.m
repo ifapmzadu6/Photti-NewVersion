@@ -130,6 +130,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     _searchBarBackgroundView = [[UIView alloc] init];
     _searchBarBackgroundView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _searchBarBackgroundView.alpha = 0.0f;
+    _searchBarBackgroundView.exclusiveTouch = YES;
     [self.view addSubview:_searchBarBackgroundView];
     
     _searchBar = [[UISearchBar alloc] init];
@@ -137,6 +138,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     _searchBar.delegate = self;
     _searchBar.showsCancelButton = NO;
     _searchBar.placeholder = NSLocalizedString(@"Search", nil);
+    _searchBar.exclusiveTouch = YES;
     [_searchBarBackgroundView addSubview:_searchBar];
     
     _cancelButton = [UIButton new];
@@ -145,12 +147,14 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     [_cancelButton setTitle:NSLocalizedString(@"Cancel", nil) forState:UIControlStateNormal];
     [_cancelButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
     [_cancelButton setTitleColor:[[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.2f]  forState:UIControlStateHighlighted];
+    _cancelButton.exclusiveTouch = YES;
     [_searchBarBackgroundView addSubview:_cancelButton];
     
     _backbroundView = [[UIImageView alloc] init];
     _backbroundView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
     _backbroundView.alpha = 0.0;
     _backbroundView.userInteractionEnabled = YES;
+    _backbroundView.exclusiveTouch = YES;
     [self.view addSubview:_backbroundView];
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
@@ -162,6 +166,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     [_tableView registerClass:[PWSearchTableViewWebAlbumCell class] forCellReuseIdentifier:PWSearchNavigationControllerWebAlbumCell];
     [_tableView registerClass:[PWSearchTableViewLocalAlbumCell class] forCellReuseIdentifier:PWSearchNavigationControllerLocalAlbumCell];
     _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+    _tableView.exclusiveTouch = YES;
     [_backbroundView addSubview:_tableView];
 }
 

@@ -73,6 +73,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 10.0f, 0.0f, 10.0f);
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];

@@ -42,6 +42,9 @@
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareBarButtonAction)];
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PictureLargeDay"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -91,6 +94,7 @@
     _enableButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
     _enableButton.layer.borderWidth = 1.0f;
     _enableButton.layer.cornerRadius = 5.0f;
+    _enableButton.exclusiveTouch = YES;
     [self.view addSubview:_enableButton];
     
     _disableButton = [UIButton new];
@@ -109,6 +113,7 @@
     _disableButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
     _disableButton.layer.borderWidth = 1.0f;
     _disableButton.layer.cornerRadius = 5.0f;
+    _disableButton.exclusiveTouch = YES;
     [self.view addSubview:_disableButton];
 }
 

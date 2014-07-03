@@ -43,6 +43,9 @@
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareBarButtonAction)];
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PicasaLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -93,6 +96,7 @@
     _loginButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintWebColor].CGColor;
     _loginButton.layer.borderWidth = 1.0f;
     _loginButton.layer.cornerRadius = 5.0f;
+    _loginButton.exclusiveTouch = YES;
     [self.view addSubview:_loginButton];
 }
 

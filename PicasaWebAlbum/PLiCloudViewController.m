@@ -75,6 +75,7 @@
     _collectionView.scrollsToTop = NO;
     _collectionView.clipsToBounds = NO;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     __weak typeof(self) wself = self;

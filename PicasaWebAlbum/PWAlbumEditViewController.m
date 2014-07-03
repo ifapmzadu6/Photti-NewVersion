@@ -50,6 +50,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     _tableView.delegate = self;
     _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+    _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
     
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
@@ -58,6 +59,10 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     UIBarButtonItem *saveBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Save", nil) style:UIBarButtonItemStylePlain target:self action:@selector(saveBarButtonAction)];
     [saveBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
     self.navigationItem.rightBarButtonItem = saveBarButtonItem;
+    
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
     
     self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
@@ -164,6 +169,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
         
         return YES;
     }];
+    textField.exclusiveTouch = YES;
     
     _textField = textField;
     

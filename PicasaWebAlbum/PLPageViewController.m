@@ -294,6 +294,10 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         
         UIBarButtonItem *allPhotoSelectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select", nil) style:UIBarButtonItemStylePlain target:sself action:@selector(allPhotoSelectBarButtonAction)];
         [sself.navigationItem setLeftBarButtonItem:allPhotoSelectBarButtonItem animated:YES];
+        
+        for (UIView *view in sself.navigationController.navigationBar.subviews) {
+            view.exclusiveTouch = YES;
+        }
     }];
     [allPhotosViewController setHeaderViewDidTapBlock:^(BOOL isSelectMode) {
         typeof(wself) sself = wself;
@@ -322,6 +326,10 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         
         UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
         [sself.navigationItem setLeftBarButtonItem:settingsBarButtonItem animated:YES];
+        
+        for (UIView *view in sself.navigationController.navigationBar.subviews) {
+            view.exclusiveTouch = YES;
+        }
     }];
     
     PLiCloudViewController *iCloudViewController = [[PLiCloudViewController alloc] init];
@@ -338,6 +346,10 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         
 //        UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"選択", nil) style:UIBarButtonItemStylePlain target:sself action:@selector(selectBarButtonAction)];
 //        [sself.navigationItem setLeftBarButtonItem:selectBarButtonItem animated:YES];
+        
+        for (UIView *view in sself.navigationController.navigationBar.subviews) {
+            view.exclusiveTouch = YES;
+        }
     }];
     
     return @[allPhotosViewController, albumListViewController, iCloudViewController];

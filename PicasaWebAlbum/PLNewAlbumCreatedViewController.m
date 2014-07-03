@@ -68,6 +68,14 @@
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
+    UIBarButtonItem *skipBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Skip All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(skipBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = skipBarButtonItem;
+    UIBarButtonItem *uploadAllButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Upload All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(uploadAllButtonAction)];
+    self.navigationItem.rightBarButtonItem = uploadAllButtonItem;
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
+    
     [self.view addSubview:_collectionView];
     
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
@@ -82,6 +90,7 @@
     _collectionView.clipsToBounds = NO;
     _collectionView.userInteractionEnabled = NO;
 //    _collectionView.contentInset = UIEdgeInsetsMake(0.0f, 300.0f, 0.0f, 300.0f);
+    _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     _createdNewAlbumLabel = [UILabel new];
@@ -104,6 +113,7 @@
     _uploadButton.layer.cornerRadius = 5.0f;
     _uploadButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
     _uploadButton.layer.borderWidth = 1.0f;
+    _uploadButton.exclusiveTouch = YES;
     [self.view addSubview:_uploadButton];
     
     _skipButton = [UIButton new];
@@ -114,13 +124,8 @@
     [_skipButton setBackgroundImage:[PWIcons imageWithColor:[[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.5f]] forState:UIControlStateHighlighted];
     _skipButton.clipsToBounds = YES;
     _skipButton.layer.cornerRadius = 5.0f;
+    _skipButton.exclusiveTouch = YES;
     [self.view addSubview:_skipButton];
-    
-    UIBarButtonItem *skipBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Skip All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(skipBarButtonAction)];
-    self.navigationItem.leftBarButtonItem = skipBarButtonItem;
-    
-    UIBarButtonItem *uploadAllButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Upload All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(uploadAllButtonAction)];
-    self.navigationItem.rightBarButtonItem = uploadAllButtonItem;
 }
 
 - (void)viewWillLayoutSubviews {
