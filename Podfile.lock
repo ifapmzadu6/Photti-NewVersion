@@ -14,10 +14,10 @@ PODS:
   - BlocksKit/UIKit (2.2.3):
     - BlocksKit/Core
     - BlocksKit/DynamicDelegate
-  - CocoaLumberjack (1.9.0):
+  - CocoaLumberjack (1.9.1):
     - CocoaLumberjack/Extensions
-  - CocoaLumberjack/Core (1.9.0)
-  - CocoaLumberjack/Extensions (1.9.0):
+  - CocoaLumberjack/Core (1.9.1)
+  - CocoaLumberjack/Extensions (1.9.1):
     - CocoaLumberjack/Core
   - GData (1.12.0):
     - GData/Core
@@ -35,6 +35,7 @@ PODS:
     - GTMHTTPFetcher
   - GTMHTTPFetcher (0.1.0)
   - LXReorderableCollectionViewFlowLayout (0.1.1)
+  - Reachability (3.1.1)
   - SDWebImage (3.6):
     - SDWebImage/Core
   - SDWebImage/Core (3.6)
@@ -46,17 +47,19 @@ DEPENDENCIES:
   - GData
   - GPUImage
   - LXReorderableCollectionViewFlowLayout
+  - Reachability
   - SDWebImage
   - SFHFKeychainUtils
 
 SPEC CHECKSUMS:
   BlocksKit: 07c8a80f04275efac6a5f8b973782489c083a182
-  CocoaLumberjack: 5766cdd1d0a24bcf15a133c6023747346bf786dd
+  CocoaLumberjack: 94accd5749f5c5d15134c8d50f34a973aed8ef69
   GData: 99d19dd8ee328ce77d12d504ddf9b0e0a6e3bc0d
   GPUImage: ac2bde5f4dbea02a81ced6313964cec1f2043ca9
   gtm-oauth2: 64f2d404a50676ab63b5437a02a7567da8f8b7fa
   GTMHTTPFetcher: 0f02d5a5803dd08736462981064de6a7f59cf9bd
   LXReorderableCollectionViewFlowLayout: b4e25543263e27d4c147109ae5ead01cc9119f23
+  Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
   SDWebImage: c6989652c1cdf27cbdf3f56957e2030f825af5bc
   SFHFKeychainUtils: 6fdda05a86d035db406c7662ec1054814b68f0fd
 

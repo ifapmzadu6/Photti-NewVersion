@@ -10,3 +10,4 @@ pod 'GPUImage', :inhibit_warnings => true
 pod 'SDWebImage', :inhibit_warnings => true
 pod 'LXReorderableCollectionViewFlowLayout', :inhibit_warnings => true
 pod 'SFHFKeychainUtils', :inhibit_warnings => true
+pod 'Reachability', :inhibit_warnings => true
