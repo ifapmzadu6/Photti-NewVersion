@@ -60,6 +60,7 @@
     [_selectButton setTitleColor:[PWColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateNormal];
     [_selectButton setTitleColor:[[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
     _selectButton.hitEdgeInsets = UIEdgeInsetsMake(0.0f, -30.0f, 0.0f, 0.0f);
+    _selectButton.exclusiveTouch = YES;
     [self addSubview:_selectButton];
     
     _isDeselectButton = NO;

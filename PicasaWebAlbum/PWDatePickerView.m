@@ -40,6 +40,7 @@
     
     _datePicker = [[UIDatePicker alloc] init];
     _datePicker.datePickerMode = UIDatePickerModeDate;
+    _datePicker.exclusiveTouch = YES;
     [self addSubview:_datePicker];
     
     _toolbar = [[UIToolbar alloc] init];
@@ -47,6 +48,10 @@
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     _toolbar.items = @[cancelBarButtonItem, flexibleSpace, doneBarButtonItem];
+    for (UIView *view in _toolbar.subviews) {
+        view.exclusiveTouch = YES;
+    }
+    
     [self addSubview:_toolbar];
     
     _toolbarBottomLineView = [[UIView alloc] init];

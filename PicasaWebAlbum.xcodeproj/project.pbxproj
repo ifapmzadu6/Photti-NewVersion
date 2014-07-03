@@ -47,7 +47,6 @@
 		713300B619404B130061DBA3 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 713300B519404B130061DBA3 /* MobileCoreServices.framework */; };
 		713300B919417E7F0061DBA3 /* PDLocalPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 713300B819417E7F0061DBA3 /* PDLocalPhotoObject.m */; };
 		7133202B1921D29000A27B3C /* PWNewAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7133202A1921D29000A27B3C /* PWNewAlbumEditViewController.m */; };
-		7133202F1921E42000A27B3C /* PWPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7133202E1921E42000A27B3C /* PWPickerView.m */; };
 		713320331921E4AF00A27B3C /* PWDatePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 713320321921E4AF00A27B3C /* PWDatePickerView.m */; };
 		7133203A1921F98900A27B3C /* PWSelectItemFromArrayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 713320391921F98900A27B3C /* PWSelectItemFromArrayViewController.m */; };
 		7133203E19225E9F00A27B3C /* PWAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7133203D19225E9F00A27B3C /* PWAlbumEditViewController.m */; };
@@ -75,7 +74,6 @@
 		71649BF1195907A400009C1F /* PDInAppPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 71649BF0195907A400009C1F /* PDInAppPurchase.m */; };
 		7177479F1936F5A8005179B6 /* PDModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7177479D1936F5A8005179B6 /* PDModel.xcdatamodeld */; };
 		718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */; };
-		7195523219269FB8003EA9AF /* PWAlbumEditViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7195523119269FB8003EA9AF /* PWAlbumEditViewCell.m */; };
 		7195523619273138003EA9AF /* PWAlbumShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7195523519273138003EA9AF /* PWAlbumShareViewController.m */; };
 		7195523E1928FB3F003EA9AF /* PLModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7195523C1928FB3F003EA9AF /* PLModel.xcdatamodeld */; };
 		719552411928FD4C003EA9AF /* PLAssetsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 719552401928FD4C003EA9AF /* PLAssetsManager.m */; };
@@ -229,8 +227,6 @@
 		713300B819417E7F0061DBA3 /* PDLocalPhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDLocalPhotoObject.m; sourceTree = "<group>"; };
 		713320291921D29000A27B3C /* PWNewAlbumEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWNewAlbumEditViewController.h; sourceTree = "<group>"; };
 		7133202A1921D29000A27B3C /* PWNewAlbumEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWNewAlbumEditViewController.m; sourceTree = "<group>"; };
-		7133202D1921E42000A27B3C /* PWPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPickerView.h; sourceTree = "<group>"; };
-		7133202E1921E42000A27B3C /* PWPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPickerView.m; sourceTree = "<group>"; };
 		713320311921E4AF00A27B3C /* PWDatePickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWDatePickerView.h; sourceTree = "<group>"; };
 		713320321921E4AF00A27B3C /* PWDatePickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWDatePickerView.m; sourceTree = "<group>"; };
 		713320381921F98900A27B3C /* PWSelectItemFromArrayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSelectItemFromArrayViewController.h; sourceTree = "<group>"; };
@@ -284,8 +280,6 @@
 		7177479E1936F5A8005179B6 /* PDModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PDModel.xcdatamodel; sourceTree = "<group>"; };
 		718A0917194D301500480E57 /* PWRoundedCornerBadgeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWRoundedCornerBadgeLabel.h; sourceTree = "<group>"; };
 		718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWRoundedCornerBadgeLabel.m; sourceTree = "<group>"; };
-		7195523019269FB8003EA9AF /* PWAlbumEditViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumEditViewCell.h; sourceTree = "<group>"; };
-		7195523119269FB8003EA9AF /* PWAlbumEditViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlbumEditViewCell.m; sourceTree = "<group>"; };
 		7195523419273138003EA9AF /* PWAlbumShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumShareViewController.h; sourceTree = "<group>"; };
 		7195523519273138003EA9AF /* PWAlbumShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlbumShareViewController.m; sourceTree = "<group>"; };
 		7195523D1928FB3F003EA9AF /* PLModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PLModel.xcdatamodel; sourceTree = "<group>"; };
@@ -735,15 +729,6 @@
 			name = PWNewAlbumEditViewController;
 			sourceTree = "<group>";
 		};
-		7133202C1921E40400A27B3C /* PWPickerView */ = {
-			isa = PBXGroup;
-			children = (
-				7133202D1921E42000A27B3C /* PWPickerView.h */,
-				7133202E1921E42000A27B3C /* PWPickerView.m */,
-			);
-			name = PWPickerView;
-			sourceTree = "<group>";
-		};
 		713320301921E48C00A27B3C /* PWDatePickerView */ = {
 			isa = PBXGroup;
 			children = (
@@ -987,15 +972,6 @@
 				718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */,
 			);
 			name = PWRoundedCornerBadgeLabel;
-			sourceTree = "<group>";
-		};
-		7195522119269F9D003EA9AF /* PWAlbumEditViewCell */ = {
-			isa = PBXGroup;
-			children = (
-				7195523019269FB8003EA9AF /* PWAlbumEditViewCell.h */,
-				7195523119269FB8003EA9AF /* PWAlbumEditViewCell.m */,
-			);
-			name = PWAlbumEditViewCell;
 			sourceTree = "<group>";
 		};
 		7195523319273112003EA9AF /* PWAlbumShareViewController */ = {
@@ -1452,12 +1428,10 @@
 				71349C98192CF2D8003CC2AA /* PLParallelNavigationTitleView */,
 				71349CAE192DF789003CC2AA /* PLPhotoViewCell */,
 				71349CB2192EEA8D003CC2AA /* PLPhotoViewHeaderView */,
-				7195522119269F9D003EA9AF /* PWAlbumEditViewCell */,
 				719D92511918D81E00B75D8B /* PWAlbumViewCell */,
 				713320301921E48C00A27B3C /* PWDatePickerView */,
 				71958C60191B9B2300CFC15F /* PWImageScrollView */,
 				71A254651919523E009914F7 /* PWPhotoViewCell */,
-				7133202C1921E40400A27B3C /* PWPickerView */,
 				712E03A3191DAD690035D9E0 /* PWRefreshControl */,
 				718A0916194D2FE500480E57 /* PWRoundedCornerBadgeLabel */,
 				71CD06101930EDC200BECF6B /* PWSearchTableViewLocalAlbumCell */,
@@ -1744,7 +1718,6 @@
 				713300A0194039380061DBA3 /* PDLocalToWebAlbumTaskObject.m in Sources */,
 				714318DC193E04300066A1F8 /* PDTaskManagerViewController.m in Sources */,
 				71A254701919CFF5009914F7 /* PWSearchNavigationController.m in Sources */,
-				7133202F1921E42000A27B3C /* PWPickerView.m in Sources */,
 				718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */,
 				71CD06171931799D00BECF6B /* PWSnowFlake.m in Sources */,
 				719CFE5519599F11008B4308 /* PWShareAction.m in Sources */,
@@ -1782,7 +1755,6 @@
 				71649BF1195907A400009C1F /* PDInAppPurchase.m in Sources */,
 				71388289193E30AC009AFB1F /* PDTask.m in Sources */,
 				711FE8F91961C62A00AF296B /* PLNewAlbumCreatedViewController.m in Sources */,
-				7195523219269FB8003EA9AF /* PWAlbumEditViewCell.m in Sources */,
 				71A25464191940B0009914F7 /* PWPhotoListViewController.m in Sources */,
 				71349CC0192F245A003CC2AA /* PLCollectionFooterView.m in Sources */,
 				71A2546C19195EDB009914F7 /* PWNavigationController.m in Sources */,
