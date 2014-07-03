@@ -137,7 +137,6 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     _searchBar.delegate = self;
     _searchBar.showsCancelButton = NO;
     _searchBar.placeholder = NSLocalizedString(@"Search", nil);
-    _searchBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
     [_searchBarBackgroundView addSubview:_searchBar];
     
     _cancelButton = [UIButton new];
@@ -244,6 +243,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     [self.view bringSubviewToFront:_tableView];
     [self.view bringSubviewToFront:_searchBarBackgroundView];
     [_searchBar becomeFirstResponder];
+    _searchBar.tintColor = self.view.tintColor;
     if (!_searchBar.text || [_searchBar.text isEqualToString:@""]) {
         _isShowHistory = YES;
         _items = @[];
@@ -251,6 +251,9 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         
         [self getHistory];
     }
+    
+    [_cancelButton setTitleColor:self.view.tintColor forState:UIControlStateNormal];
+    [_cancelButton setTitleColor:[self.view.tintColor colorWithAlphaComponent:0.2f]  forState:UIControlStateHighlighted];
     
     [UIView animateWithDuration:0.25f animations:^{
         _backbroundView.alpha = 1.0f;

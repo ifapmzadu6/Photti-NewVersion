@@ -313,6 +313,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [tabBarController setTabBarHidden:YES animated:YES completion:nil];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
+    navigationController.view.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;
