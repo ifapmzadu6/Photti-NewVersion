@@ -14,6 +14,6 @@
 @property (copy, nonatomic) void (^handleDoubleTapBlock)();
 @property (copy, nonatomic) void (^handleFirstZoomBlock)();
 
-- (void)setImage:(UIImage *)image;
+@property (strong, nonatomic) UIImage *image;
 
 @end
