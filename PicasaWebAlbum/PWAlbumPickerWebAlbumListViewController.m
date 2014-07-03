@@ -223,7 +223,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         return 8.0f;
     }
-    return 1.0f;
+    return 20.0f;
 }
 
 #pragma mark UICollectionViewDelegate

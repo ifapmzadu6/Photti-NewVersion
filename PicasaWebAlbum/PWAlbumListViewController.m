@@ -270,7 +270,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         return 8.0f;
     }
-    return 1.0f;
+    return 20.0f;
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
@@ -335,6 +335,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         [sself loadDataWithStartIndex:0];
     };
     PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
