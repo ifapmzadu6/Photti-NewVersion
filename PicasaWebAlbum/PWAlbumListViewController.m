@@ -16,6 +16,7 @@
 #import "PLCollectionFooterView.h"
 #import "BlocksKit+UIKit.h"
 #import "PWSnowFlake.h"
+#import "SDImageCache.h"
 
 #import "PDTaskManager.h"
 
@@ -288,9 +289,22 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
-    if (!_isNowRequesting) {
-        [self loadDataWithStartIndex:0];
+    if (_isNowRequesting) {
+        return;
     }
+    
+    [self loadDataWithStartIndex:0];
+    
+    [self moveImageCacheFromDiskToMemoryAtVisibleCells];
+}
+
+- (void)moveImageCacheFromDiskToMemoryAtVisibleCells {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        for (PWAlbumViewCell *cell in _collectionView.visibleCells) {
+            NSString *thumbnailUrl = cell.album.tag_thumbnail_url;
+            [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:thumbnailUrl];
+        }
+    });
 }
 
 #pragma mark BarButtonAction

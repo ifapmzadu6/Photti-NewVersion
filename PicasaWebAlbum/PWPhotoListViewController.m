@@ -13,6 +13,7 @@
 #import "PWString.h"
 #import "PWRefreshControl.h"
 #import "BlocksKit+UIKit.h"
+#import "SDImageCache.h"
 #import "PDTaskManager.h"
 
 #import "PWPhotoViewCell.h"
@@ -290,9 +291,22 @@
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
-    if (!_isNowRequesting) {
-        [self reloadData];
+    if (_isNowRequesting) {
+        return;
     }
+    
+    [self reloadData];
+    
+    [self moveImageCacheFromDiskToMemoryAtVisibleCells];
+}
+
+- (void)moveImageCacheFromDiskToMemoryAtVisibleCells {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
+            NSString *thumbnailUrl = cell.photo.tag_thumbnail_url;
+            [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:thumbnailUrl];
+        }
+    });
 }
 
 #pragma mark UICollectionViewDataSource
