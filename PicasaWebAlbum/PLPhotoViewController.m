@@ -42,7 +42,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _imageScrollView = [[PWImageScrollView alloc] init];
+    _imageScrollView = [[PWImageScrollView alloc] initWithFrame:self.view.bounds];
+    _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     __weak typeof(self) wself = self;
     _imageScrollView.handleFirstZoomBlock = ^{
         typeof(wself) sself = wself;
@@ -75,9 +76,6 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-    CGRect rect = self.view.bounds;
-    
-    _imageScrollView.frame = rect;
     _videoButton.center = self.view.center;
 }
 

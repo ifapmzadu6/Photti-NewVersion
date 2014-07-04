@@ -162,9 +162,10 @@
         }
     }
     
-    _videoBackgroundView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 20.0f, CGRectGetWidth(rect), 20.0f);
-    _videoIconView.frame = CGRectMake(5.0f, CGRectGetHeight(rect) - 14.0f, 16.0f, 8.0f);
-    _videoDurationLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 20.0f, CGRectGetWidth(rect) - 5.0f, 20.0f);
+    CGRect imageFrame = _imageView.frame;
+    _videoBackgroundView.frame = CGRectMake(CGRectGetMinX(imageFrame), CGRectGetHeight(imageFrame) - 20.0f, CGRectGetWidth(imageFrame), 20.0f);
+    _videoIconView.frame = CGRectMake(CGRectGetMinX(imageFrame) + 5.0f, CGRectGetHeight(imageFrame) - 14.0f, 16.0f, 8.0f);
+    _videoDurationLabel.frame = CGRectMake(CGRectGetMinX(imageFrame), CGRectGetHeight(imageFrame) - 20.0f, CGRectGetWidth(imageFrame) - 5.0f, 20.0f);
     
     _activityIndicatorView.center = self.contentView.center;
     _overrayView.frame = _imageView.frame;
