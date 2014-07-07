@@ -68,27 +68,16 @@
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
-    __weak typeof(self) wself = self;
-    [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-        request.predicate = [NSPredicate predicateWithFormat:@"ANY albums = %@", sself.album];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_sort_index" ascending:YES]];
-        
-        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-        sself.fetchedResultsController.delegate = sself;
-        
-        [sself.fetchedResultsController performFetch:nil];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
-                [sself.collectionView reloadData];
-            }
-        });
-    }];
+    NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY albums = %@", _album];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_sort_index" ascending:YES]];
+    
+    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+    _fetchedResultsController.delegate = self;
+    
+    [_fetchedResultsController performFetch:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -195,7 +184,8 @@
     __block NSMutableArray *assets = @[].mutableCopy;
     for (NSManagedObjectID *photoURL in _selectedPhotoURLs) {
         __block PLPhotoObject *photoObject = nil;
-        [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+        [context performBlock:^{
             NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"url = %@", photoURL];
@@ -280,7 +270,8 @@
             }];
         }
         else {
-            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
+            [context performBlock:^{
                 PLAlbumObject *albumObject = (PLAlbumObject *)album;
                 
                 for (PLPhotoObject *photoObject in selectLocalPhotos) {
@@ -510,7 +501,8 @@
         textField.text = album.name;
         [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
         [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
-            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
+            [context performBlock:^{
                 album.name = textField.text;
                 
                 [context save:nil];
@@ -542,7 +534,8 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
+        [context performBlock:^{
             [context deleteObject:album];
             [context save:nil];
         }];

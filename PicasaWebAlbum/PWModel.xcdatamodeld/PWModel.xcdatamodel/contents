@@ -124,6 +124,7 @@
         <attribute name="tag_originalimage_url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="tag_screenimage_url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="tag_thumbnail_url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tag_type" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="updated" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="exif" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWPhotoExitManagedObject" inverseName="photo" inverseEntity="PWPhotoExitManagedObject" syncable="YES"/>
@@ -135,10 +136,10 @@
         <element name="PWAlbumManagedObject" positionX="-63" positionY="-18" width="128" height="360"/>
         <element name="PWGPhotoManagedObject" positionX="-36" positionY="54" width="128" height="630"/>
         <element name="PWLinkManagedObject" positionX="0" positionY="171" width="128" height="118"/>
-        <element name="PWMediaContentManagedObject" positionX="-45" positionY="36" width="128" height="135"/>
+        <element name="PWMediaContentManagedObject" positionX="-45" positionY="36" width="128" height="133"/>
         <element name="PWMediaManagedObject" positionX="-36" positionY="81" width="128" height="165"/>
-        <element name="PWMediaThumbnailManagedObject" positionX="-27" positionY="72" width="128" height="105"/>
+        <element name="PWMediaThumbnailManagedObject" positionX="-27" positionY="72" width="128" height="103"/>
         <element name="PWPhotoExitManagedObject" positionX="18" positionY="180" width="128" height="208"/>
-        <element name="PWPhotoManagedObject" positionX="-54" positionY="45" width="128" height="360"/>
+        <element name="PWPhotoManagedObject" positionX="-54" positionY="45" width="128" height="375"/>
     </elements>
 </model>

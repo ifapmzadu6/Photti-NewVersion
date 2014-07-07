@@ -13,7 +13,6 @@
 static NSString * const PWPostURL = @"https://picasaweb.google.com/data/feed/api/user/default";
 static NSString * const PWPutAlbumURL = @"https://picasaweb.google.com/data/entry/api/user/default/albumid";
 static NSString * const PWDeleteAlbumURL = @"https://picasaweb.google.com/data/entry/api/user/default/albumid";
-
 static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/entry/api/user/default";
 
 @interface PWPicasaPOSTRequest ()
@@ -22,13 +21,7 @@ static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/e
 
 @implementation PWPicasaPOSTRequest
 
-+ (void)postCreatingNewAlbumRequestWithTitle:(NSString *)title
-                            summary:(NSString *)summary
-                           location:(NSString *)location
-                             access:(NSString *)access
-                          timestamp:(NSString *)timestamp
-                           keywords:(NSString *)keywords
-                         completion:(void (^)(NSData *, NSURLResponse *, NSError *))completion {
++ (void)postCreatingNewAlbumRequestWithTitle:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords completion:(void (^)(NSData *, NSURLResponse *, NSError *))completion {
     [PWOAuthManager getAuthorizeHTTPHeaderFields:^(NSDictionary *headerFields, NSError *error) {
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:PWPostURL]];
         request.HTTPMethod = @"POST";
@@ -37,21 +30,14 @@ static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/e
         request.HTTPBody = bodyData;
         request.allHTTPHeaderFields = headerFields;
         [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
-        [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)bodyData.length] forHTTPHeaderField:@"Content-Length"];
+        [request addValue:[NSString stringWithFormat:@"%ld", (long)bodyData.length] forHTTPHeaderField:@"Content-Length"];
         [request addValue:@"application/atom+xml" forHTTPHeaderField:@"Content-Type"];
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
         [task resume];
     }];
 }
 
-+ (void)putModifyingAlbumWithID:(NSString *)albumID
-                          title:(NSString *)title
-                        summary:(NSString *)summary
-                       location:(NSString *)location
-                         access:(NSString *)access
-                      timestamp:(NSString *)timestamp
-                       keywords:(NSString *)keywords
-                     completion:(void (^)(NSData *, NSURLResponse *, NSError *))completion {
++ (void)putModifyingAlbumWithID:(NSString *)albumID title:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords completion:(void (^)(NSData *, NSURLResponse *, NSError *))completion {
     [PWOAuthManager getAuthorizeHTTPHeaderFields:^(NSDictionary *headerFields, NSError *error) {
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", PWPutAlbumURL, albumID]];
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -61,7 +47,7 @@ static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/e
         request.HTTPBody = bodyData;
         request.allHTTPHeaderFields = headerFields;
         [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
-        [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)bodyData.length] forHTTPHeaderField:@"Content-Length"];
+        [request addValue:[NSString stringWithFormat:@"%ld", (long)bodyData.length] forHTTPHeaderField:@"Content-Length"];
         [request addValue:@"keep-alive" forHTTPHeaderField:@"Connection"];
         [request addValue:@"no-cache" forHTTPHeaderField:@"Cache-Control"];
         [request addValue:@"*" forHTTPHeaderField:@"If-Match"];
@@ -85,7 +71,6 @@ static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/e
 }
 
 
-
 + (void)deletePhotoWithAlbumID:(NSString *)albumID photoID:(NSString *)photoID completion:(void (^)(NSData *, NSURLResponse *, NSError *))completion {
     [PWOAuthManager getAuthorizeHTTPHeaderFields:^(NSDictionary *headerFields, NSError *error) {
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/albumid/%@/photoid/%@", PWDeletePhotoURL, albumID, photoID]];
@@ -103,18 +88,13 @@ static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/e
 
 
 
+#pragma mark Methods
 
 static NSString * const PWCreatingAlbumEntry = @"<entry xmlns='http://www.w3.org/2005/Atom' xmlns:gphoto='http://schemas.google.com/photos/2007' xmlns:media='http://search.yahoo.com/mrss/'>";
 static NSString * const PWCreatingAlbumCategory = @"<category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/photos/2007#album'/>";
 static NSString * const PWCreatingAlbumEndEntry = @"</entry>";
 
-+ (NSString *)makeBodyWithGPhotoID:(NSString *)gphotoID
-                             Title:(NSString *)title
-                           summary:(NSString *)summary
-                          location:(NSString *)location
-                            access:(NSString *)access
-                         timestamp:(NSString *)timestamp
-                          keywords:(NSString *)keywords {
++ (NSString *)makeBodyWithGPhotoID:(NSString *)gphotoID Title:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords {
     NSMutableString *body = [[NSMutableString alloc] init];
     [body appendString:PWCreatingAlbumEntry];
     [body appendString:PWCreatingAlbumCategory];

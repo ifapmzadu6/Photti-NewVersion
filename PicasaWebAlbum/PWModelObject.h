@@ -33,4 +33,10 @@ static NSString * const kPWMediaThumbnailManagedObjectName = @"PWMediaThumbnailM
 static NSString * const kPWPhotoExitManagedObjectName = @"PWPhotoExitManagedObject";
 static NSString * const kPWPhotoManagedObjectName = @"PWPhotoManagedObject";
 
+typedef enum _PWPhotoManagedObjectType {
+    PWPhotoManagedObjectTypeUnknown,
+    PWPhotoManagedObjectTypePhoto,
+    PWPhotoManagedObjectTypeVideo
+} PWPhotoManagedObjectType;
+
 #endif

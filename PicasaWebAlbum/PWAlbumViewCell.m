@@ -26,7 +26,6 @@
 @property (strong, nonatomic) UIView *overrayView;
 
 @property (nonatomic) NSUInteger albumHash;
-@property (weak, nonatomic) NSURLSessionDataTask *task;
 
 @end
 
@@ -89,13 +88,6 @@
     [self addGestureRecognizer:gestureRecognizer];
 }
 
-- (void)dealloc {
-    NSURLSessionDataTask *task = _task;
-    if (task) {
-        [task cancel];
-    }
-}
-
 - (void)setSelected:(BOOL)selected {
     [super setSelected:selected];
     
@@ -149,7 +141,6 @@
     _numPhotosLabel.text = nil;
     
     if (!album) return;
-    if (album.managedObjectContext == nil) return;
     
     _titleLabel.text = album.title;
     [self setTitleLabelFrame];
@@ -176,6 +167,7 @@
     _imageView.alpha = 0.0f;
     [_activityIndicatorView startAnimating];
     
+    __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (_albumHash != hash) return;
         if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
@@ -185,16 +177,10 @@
             return;
         }
         
-        NSURLSessionDataTask *beforeTask = _task;
-        if (beforeTask) [beforeTask cancel];
-        
         if (isNowLoading) return;
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-        });
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         
-        __weak typeof(self) wself = self;
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
                 NSLog(@"%@", error.description);
@@ -205,9 +191,7 @@
             if (sself.albumHash != hash) return;
             
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                });
+                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
                 
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -216,10 +200,11 @@
                 UIImage *image = [UIImage imageWithData:data];
                 [sself setImage:image hash:hash];
                 
-                [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                if (image && urlString) {
+                    [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                }
             }];
             [task resume];
-            sself.task = task;
         }];
     });
 }

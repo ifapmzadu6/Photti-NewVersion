@@ -8,9 +8,7 @@
 
 #import "PWPicasaParser.h"
 
-#define NULL_TO_NIL(obj) ({ __typeof__ (obj) __obj = (obj); __obj == [NSNull null] ? nil : obj; })
-
-//#define DEBUG_LOCAL
+#define NtN(obj) ({ __typeof__ (obj) __obj = (obj); __obj == [NSNull null] ? nil : obj; })
 
 @interface PWPicasaParser ()
 
@@ -18,148 +16,127 @@
 
 @implementation PWPicasaParser
 
-+ (NSArray *)parseListOfAlbumFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
+static NSString * const PWXMLNode = @"text";
+
++ (NSArray *)parseListOfAlbumFromJson:(NSDictionary *)json isDelete:(BOOL)isDelete context:(NSManagedObjectContext *)context {
     if (!json) return nil;
     //    NSLog(@"%@", json);
     
-    NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
-    if (!feed) return nil;
-    id entries = NULL_TO_NIL(feed[@"entry"]);
+    NSDictionary *feed = NtN(json[@"feed"]);
+    id entries = nil;
+    if (feed) {
+        entries = NtN(feed[@"entry"]);
+    }
+    if (!entries) {
+        entries = NtN(json[@"entry"]);
+    }
     if (!entries) return nil;
     
-    NSMutableArray *albums = [NSMutableArray array];
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+    NSError *error = nil;
+    NSMutableArray *existingAlbums = [context executeFetchRequest:request error:&error].mutableCopy;
+    
+    NSMutableArray *albums = @[].mutableCopy;
     if ([entries isKindOfClass:[NSArray class]]) {
         for (NSDictionary *entry in entries) {
-            PWAlbumObject *album = [PWPicasaParser albumFromJson:entry context:context];
+            PWAlbumObject *album = [PWPicasaParser albumFromJson:entry existingAlbums:existingAlbums context:context];
             [albums addObject:album];
+            if ([existingAlbums containsObject:album]) {
+                [existingAlbums removeObject:album];
+            }
         }
     }
     else if ([entries isKindOfClass:[NSDictionary class]]) {
-        PWAlbumObject *album = [PWPicasaParser albumFromJson:entries context:context];
+        PWAlbumObject *album = [PWPicasaParser albumFromJson:entries existingAlbums:existingAlbums context:context];
         [albums addObject:album];
+        if ([existingAlbums containsObject:album]) {
+            [existingAlbums removeObject:album];
+        }
+    }
+    
+    if (isDelete) {
+        for (PWAlbumObject *albumObject in existingAlbums) {
+            [context deleteObject:albumObject];
+        }
     }
     
     return albums;
 }
 
-+ (PWAlbumObject *)albumFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
++ (PWAlbumObject *)albumFromJson:(NSDictionary *)json existingAlbums:(NSMutableArray *)existingAlbums context:(NSManagedObjectContext *)context {
     if (!json) return nil;
     //    NSLog(@"%@", json);
     
-    NSDictionary *gphotoid = NULL_TO_NIL(json[@"gphoto:id"]);
+    NSDictionary *gphotoid = NtN(json[@"gphoto:id"]);
     if (!gphotoid) return nil;
-    NSString *id_str = NULL_TO_NIL(gphotoid[@"text"]);
+    NSString *id_str = NtN(gphotoid[PWXMLNode]);
     if (!id_str) return nil;
+    NSString *updated = NtN(NtN(json[@"updated"])[PWXMLNode]);
+    if (!updated) return nil;
     
-    NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-    NSError *error;
-    NSArray *albums = [context executeFetchRequest:request error:&error];
+    NSArray *tmpExistingAlbums = [existingAlbums filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
     PWAlbumObject *album = nil;
-    if (albums.count) {
-        album = albums.firstObject;
+    if (tmpExistingAlbums.count > 0) {
+        PWAlbumObject *existingAlbum = tmpExistingAlbums.firstObject;
+        if ([updated isEqualToString:existingAlbum.updated]) {
+            return existingAlbum;
+        }
+        else {
+            album = existingAlbum;
+        }
     }
     else {
         album = [NSEntityDescription insertNewObjectForEntityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
     }
     
     album.id_str = id_str;
-#ifdef DEBUG_LOCAL
-    NSLog(@"album.id_str = %@", album.id_str);
-#endif
-    NSDictionary *author = NULL_TO_NIL(json[@"author"]);
+    NSDictionary *author = NtN(json[@"author"]);
     if (author) {
-        NSDictionary *name = NULL_TO_NIL(author[@"name"]);
-        album.author_name = NULL_TO_NIL(name[@"text"]);
-        NSDictionary *uri = NULL_TO_NIL(author[@"uri"]);
-        album.author_url = NULL_TO_NIL(uri[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"album.author_name = %@", album.author_name);
-        NSLog(@"album.author_url = %@", album.author_url);
-#endif
+        NSString *name = NtN(NtN(author[@"name"])[PWXMLNode]);
+        if (name && ![name isEqualToString:album.author_name]) {
+            album.author_name = name;
+        }
+        NSString *uri = NtN(NtN(author[@"uri"])[PWXMLNode]);
+        if (uri && ![uri isEqualToString:album.author_url]) {
+            album.author_url = uri;
+        }
     }
-    else {
-        album.author_name = nil;
-        album.author_url = nil;
-    }
-    NSDictionary *category = NULL_TO_NIL(json[@"category"]);
+    NSDictionary *category = NtN(json[@"category"]);
     if (category) {
-        album.category_scheme = NULL_TO_NIL(category[@"scheme"]);
-        album.category_term = NULL_TO_NIL(category[@"term"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"album.category_scheme = %@", album.category_scheme);
-        NSLog(@"album.category_term = %@", album.category_term);
-#endif
+        NSString *scheme = NtN(category[@"scheme"]);
+        if (scheme && ![scheme isEqualToString:album.category_scheme]) {
+            album.category_scheme = scheme;
+        }
+        NSString *term = NtN(category[@"term"]);
+        if (term && ![term isEqualToString:album.category_term]) {
+            album.category_term = term;
+        }
     }
-    else {
-        album.category_scheme = nil;
-        album.category_term = nil;
+    NSString *published = NtN(NtN(json[@"published"])[PWXMLNode]);
+    if (published && ![published isEqualToString:album.published]) {
+        album.published = published;
     }
-    NSDictionary *published = NULL_TO_NIL(json[@"published"]);
-    if (published) {
-        album.published = NULL_TO_NIL(published[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"album.published = %@", album.published);
-#endif
+    NSString *rights = NtN(NtN(json[@"rights"])[PWXMLNode]);
+    if (rights && ![rights isEqualToString:album.rights]) {
+        album.rights = rights;
     }
-    else {
-        album.published = nil;
+    NSString *summary = NtN(NtN(json[@"summary"])[PWXMLNode]);
+    if (summary && ![summary isEqualToString:album.summary]) {
+        album.summary = summary;
     }
-    NSDictionary *rights = NULL_TO_NIL(json[@"rights"]);
-    if (rights) {
-        album.rights = NULL_TO_NIL(rights[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"album.rights = %@", album.rights);
-#endif
+    NSString *title = NtN(NtN(json[@"title"])[PWXMLNode]);
+    if (title && ![title isEqualToString:album.title]) {
+        album.title = title;
     }
-    else {
-        album.rights = nil;
-    }
-    NSDictionary *summary = NULL_TO_NIL(json[@"summary"]);
-    if (summary) {
-        album.summary = NULL_TO_NIL(summary[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"album.summary = %@", album.summary);
-#endif
-    }
-    else {
-        album.summary = nil;
-    }
-    NSDictionary *title = NULL_TO_NIL(json[@"title"]);
-    if (title) {
-        album.title = NULL_TO_NIL(title[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"album.title = %@", album.title);
-#endif
-    }
-    else {
-        album.title = nil;
-    }
-    NSDictionary *updated = NULL_TO_NIL(json[@"updated"]);
-    if (updated) {
-        album.updated = NULL_TO_NIL(updated[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"album.updated = %@", album.updated);
-#endif
-    }
-    else {
-        album.updated = nil;
-    }
-    NSArray *links = NULL_TO_NIL(json[@"link"]);
+    NSArray *links = NtN(json[@"link"]);
     album.link = [NSSet set];
     for (NSDictionary *linkJson in links) {
         PWPhotoLinkObject *link = [PWPicasaParser linkFromJson:linkJson context:context];
         [album addLinkObject:link];
     }
     album.gphoto = [PWPicasaParser gphotoFromJson:json context:context];
-    NSDictionary *media = NULL_TO_NIL(json[@"media:group"]);
-    if (media) {
-        album.media = [PWPicasaParser mediaFromJson:media context:context];
-    }
-    else {
-        album.media = nil;
-    }
+    album.media = [PWPicasaParser mediaFromJson:NtN(json[@"media:group"]) context:context];
     
     if (album.gphoto) {
         album.tag_numphotos = album.gphoto.numphotos;
@@ -172,92 +149,119 @@
     return album;
 }
 
-+ (NSArray *)parseListOfPhotoFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
-    NSDictionary *feed = NULL_TO_NIL(json[@"feed"]);
++ (NSArray *)parseListOfPhotoFromJson:(NSDictionary *)json albumID:(NSString *)albumID context:(NSManagedObjectContext *)context {
+    NSDictionary *feed = NtN(json[@"feed"]);
     if (!feed) return nil;
-    id entries = NULL_TO_NIL(feed[@"entry"]);
+    id entries = NtN(feed[@"entry"]);
+    if (!entries) {
+        entries = NtN(json[@"entry"]);
+    }
     if (!entries) return nil;
     
+    NSMutableArray *existingPhotos = @[].mutableCopy;
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+    request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", albumID];
+    NSError *error = nil;
+    NSArray *objects = [context executeFetchRequest:request error:&error];
+    [existingPhotos addObjectsFromArray:objects];
+    
     NSMutableArray *photos = [NSMutableArray array];
-    @autoreleasepool {
-        if ([entries isKindOfClass:[NSArray class]]) {
-            for (NSDictionary *entry in entries) {
-                PWPhotoObject *photo = [PWPicasaParser photoFromJson:entry context:context];
+    if ([entries isKindOfClass:[NSArray class]]) {
+        for (NSDictionary *entry in entries) {
+            PWPhotoObject *photo = [PWPicasaParser photoFromJson:entry existingPhotos:existingPhotos context:context];
+            if (photo) {
                 [photos addObject:photo];
+                if ([existingPhotos containsObject:photo]) {
+                    [existingPhotos removeObject:photo];
+                }
             }
         }
-        else if ([entries isKindOfClass:[NSDictionary class]]) {
-            PWPhotoObject *photo = [PWPicasaParser photoFromJson:entries context:context];
+    }
+    else if ([entries isKindOfClass:[NSDictionary class]]) {
+        PWPhotoObject *photo = [PWPicasaParser photoFromJson:entries existingPhotos:existingPhotos context:context];
+        if (photo) {
             [photos addObject:photo];
+            if ([existingPhotos containsObject:photo]) {
+                [existingPhotos removeObject:photo];
+            }
+        }
+    }
+    
+    if (existingPhotos.count > 0) {
+        for (PWPhotoObject *photoObject in existingPhotos) {
+            [context deleteObject:photoObject];
         }
     }
     
     return photos;
 }
 
-+ (PWPhotoObject *)photoFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
++ (PWPhotoObject *)photoFromJson:(NSDictionary *)json existingPhotos:(NSMutableArray *)existingPhotos context:(NSManagedObjectContext *)context {
     if (!json) return nil;
 //    NSLog(@"%@", json);
-    NSDictionary *gphotoid = NULL_TO_NIL(json[@"gphoto:id"]);
+    NSDictionary *gphotoid = NtN(json[@"gphoto:id"]);
     if (!gphotoid) return nil;
-    NSString *id_str = NULL_TO_NIL(gphotoid[@"text"]);
+    NSString *id_str = NtN(gphotoid[PWXMLNode]);
     if (!id_str) return nil;
+    NSString *updated = NtN(NtN(json[@"updated"])[PWXMLNode]);
+    if (!updated) return nil;
     
-    PWPhotoObject *photo = [NSEntityDescription insertNewObjectForEntityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-    
-    NSDictionary *albumid = NULL_TO_NIL(json[@"gphoto:albumid"]);
-    if (albumid) {
-        photo.albumid = NULL_TO_NIL(albumid[@"text"]);
-    }
-    NSDictionary *appEdited = NULL_TO_NIL(json[@"app:edited"]);
-    if (appEdited) {
-        photo.app_edited = NULL_TO_NIL(appEdited[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"photo.app_edited = %@", photo.app_edited);
-#endif
-    }
-    NSDictionary *category = NULL_TO_NIL(json[@"category"]);
-    if (category) {
-        photo.category_cheme = NULL_TO_NIL(category[@"scheme"]);
-        photo.category_term = NULL_TO_NIL(category[@"term"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"photo.category_cheme = %@", photo.category_cheme);
-        NSLog(@"photo.category_term = %@", photo.category_term);
-#endif
-    }
-    NSDictionary *content = NULL_TO_NIL(json[@"content"]);
-    if (context) {
-        photo.content_src = NULL_TO_NIL(content[@"src"]);
-        photo.content_type = NULL_TO_NIL(content[@"type"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"photo.content_src = %@", photo.content_src);
-        NSLog(@"photo.content_type = %@", photo.content_type);
-#endif
-    }
-    NSDictionary *exifTags = NULL_TO_NIL(json[@"exif:tags"]);
-    if (exifTags) {
-        photo.exif = [PWPicasaParser exifFromJson:exifTags context:context];
-    }
-    NSDictionary *georssWhere = NULL_TO_NIL(json[@"georss:where"]);
-    if (georssWhere) {
-        NSDictionary *gmlPoint = NULL_TO_NIL(georssWhere[@"gml:Point"]);
-        if (gmlPoint) {
-            NSDictionary *gmlPos = NULL_TO_NIL(gmlPoint[@"gml:pos"]);
-            if (gmlPos) {
-                photo.pos = NULL_TO_NIL(gmlPos[@"text"]);
-#ifdef DEBUG_LOCAL
-                NSLog(@"photo.pos = %@", photo.pos);
-#endif
-            }
+    PWPhotoObject *photo = nil;
+    NSArray *tmpExistingPhotos = [existingPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+    if (tmpExistingPhotos.count > 0) {
+        PWPhotoObject *existingPhoto = tmpExistingPhotos.firstObject;
+        if ([updated isEqualToString:existingPhoto.updated]) {
+            return existingPhoto;
+        }
+        else {
+            photo = existingPhoto;
         }
     }
-    if (id_str) {
-        photo.id_str = id_str;
-#ifdef DEBUG_LOCAL
-        NSLog(@"photo.id_str = %@", photo.id_str);
-#endif
+    else {
+        photo = [NSEntityDescription insertNewObjectForEntityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
     }
-    id links = NULL_TO_NIL(json[@"link"]);
+    
+    NSString *albumid = NtN(NtN(json[@"gphoto:albumid"])[PWXMLNode]);
+    if (albumid && ![albumid isEqualToString:photo.albumid]) {
+        photo.albumid = albumid;
+    }
+    NSString *appEdited = NtN(NtN(json[@"app:edited"])[PWXMLNode]);
+    if (appEdited && ![appEdited isEqualToString:photo.app_edited]) {
+        photo.app_edited = appEdited;
+    }
+    NSDictionary *category = NtN(json[@"category"]);
+    if (category) {
+        NSString *cheme = NtN(category[@"scheme"]);
+        if (cheme && ![cheme isEqualToString:photo.category_cheme]) {
+            photo.category_cheme = cheme;
+        }
+        NSString *term = NtN(category[@"term"]);
+        if (term && ![term isEqualToString:photo.category_term]) {
+            photo.category_term = term;
+        }
+    }
+    NSDictionary *content = NtN(json[@"content"]);
+    if (context) {
+        NSString *src = NtN(content[@"src"]);
+        if (src && ![src isEqualToString:photo.content_src]) {
+            photo.content_src = src;
+        }
+        NSString *type = NtN(content[@"type"]);
+        if (type && ![type isEqualToString:photo.content_type]) {
+            photo.content_type = type;
+        }
+    }
+    photo.exif = [PWPicasaParser exifFromJson:NtN(json[@"exif:tags"]) context:context];
+    
+    NSString *pos = NtN(NtN(NtN(NtN(json[@"georss:where"])[@"gml:Point"])[@"gml:pos"])[PWXMLNode]);
+    if (pos && ![pos isEqualToString:photo.pos]) {
+        photo.pos = pos;
+    }
+    if (id_str && ![id_str isEqualToString:photo.id_str]) {
+        photo.id_str = id_str;
+    }
+    id links = NtN(json[@"link"]);
     photo.link = [NSOrderedSet orderedSet];
     if ([links isKindOfClass:[NSArray class]]) {
         for (NSDictionary *linkJson in links) {
@@ -269,40 +273,30 @@
         PWPhotoLinkObject *link = [PWPicasaParser linkFromJson:links context:context];
         [photo addLinkObject:link];
     }
-    NSDictionary *media = NULL_TO_NIL(json[@"media:group"]);
-    if (media) {
-        photo.media = [PWPicasaParser mediaFromJson:media context:context];
+    photo.media = [PWPicasaParser mediaFromJson:NtN(json[@"media:group"]) context:context];
+    NSString *published = NtN(NtN(json[@"published"])[PWXMLNode]);
+    if (published && ![published isEqualToString:photo.published]) {
+        photo.published = published;
     }
-    NSDictionary *published = NULL_TO_NIL(json[@"published"]);
-    if (published) {
-        photo.published = NULL_TO_NIL(published[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"photo.published = %@", photo.published);
-#endif
+    NSString *summary = NtN(NtN(json[@"summary"])[PWXMLNode]);
+    if (summary && ![summary isEqualToString:photo.summary]) {
+        photo.summary = summary;
     }
-    NSDictionary *summary = NULL_TO_NIL(json[@"summary"]);
-    if (summary) {
-        photo.summary = NULL_TO_NIL(summary[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"photo.summary = %@", photo.summary);
-#endif
+    NSString *title = NtN(NtN(json[@"title"])[PWXMLNode]);
+    if (title && ![title isEqualToString:photo.title]) {
+        photo.title = title;
     }
-    NSDictionary *title = NULL_TO_NIL(json[@"title"]);
-    if (title) {
-        photo.title = NULL_TO_NIL(title[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"photo.title = %@", photo.title);
-#endif
-    }
-    NSDictionary *updated = NULL_TO_NIL(json[@"updated"]);
-    if (updated) {
-        photo.updated = NULL_TO_NIL(updated[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"photo.updated = %@", photo.updated);
-#endif
-    }
-    
+    photo.updated = updated;
     photo.gphoto = [PWPicasaParser gphotoFromJson:json context:context];
+    
+    if (photo.gphoto) {
+        if (photo.gphoto.originalvideo_duration) {
+            photo.tag_type = @(PWPhotoManagedObjectTypeVideo);
+        }
+        else {
+            photo.tag_type = @(PWPhotoManagedObjectTypePhoto);
+        }
+    }
     
     if (photo.media) {
         PWPhotoMediaThumbnailObject *thumbnailObject = photo.media.thumbnail.array.firstObject;
@@ -318,19 +312,13 @@
 
 + (PWPhotoLinkObject *)linkFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
     if (!json) return nil;
-    //    NSLog(@"%@", json);
+//    NSLog(@"%@", json);
     
     PWPhotoLinkObject *link = [NSEntityDescription insertNewObjectForEntityForName:kPWLinkManagedObjectName inManagedObjectContext:context];
     
-    link.href = NULL_TO_NIL(json[@"href"]);
-    link.rel = NULL_TO_NIL(json[@"rel"]);
-    link.type = NULL_TO_NIL(json[@"type"]);
-    
-#ifdef DEBUG_LOCAL
-    NSLog(@"link.href = %@", link.href);
-    NSLog(@"link.rel = %@", link.rel);
-    NSLog(@"link.type = %@", link.type);
-#endif
+    link.href = NtN(json[@"href"]);
+    link.rel = NtN(json[@"rel"]);
+    link.type = NtN(json[@"type"]);
     
     return link;
 }
@@ -341,73 +329,49 @@
     
     PWGPhotoObject *gphoto = [NSEntityDescription insertNewObjectForEntityForName:kPWGPhotoManagedObjectName inManagedObjectContext:context];
     
-    NSDictionary *access = NULL_TO_NIL(json[@"gphoto:access"]);
-    if (access) {
-        gphoto.access = NULL_TO_NIL(access[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"gphoto.access = %@", gphoto.access);
-#endif
+    NSString *access = NtN(NtN(json[@"gphoto:access"])[PWXMLNode]);
+    if (access && ![access isEqualToString:gphoto.access]) {
+        gphoto.access = access;
     }
-    NSDictionary *albumType = NULL_TO_NIL(json[@"gphoto:albumType"]);
-    if (albumType) {
-        gphoto.albumType = NULL_TO_NIL(albumType[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"gphoto.albumType = %@", gphoto.albumType);
-#endif
+    NSString *albumType = NtN(NtN(json[@"gphoto:albumType"])[PWXMLNode]);
+    if (albumType && ![albumType isEqualToString:gphoto.albumType]) {
+        gphoto.albumType = albumType;
     }
-    NSDictionary *id_str = NULL_TO_NIL(json[@"gphoto:id"]);
-    if (id_str) {
-        gphoto.id_str = NULL_TO_NIL(id_str[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"gphoto.id_str = %@", gphoto.id_str);
-#endif
+    NSString *id_str = NtN(NtN(json[@"gphoto:id"])[PWXMLNode]);
+    if (id_str && ![id_str isEqualToString:gphoto.name]) {
+        gphoto.id_str = id_str;
     }
-    NSDictionary *name = NULL_TO_NIL(json[@"gphoto:name"]);
-    if (name) {
-        gphoto.name = NULL_TO_NIL(name[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"gphoto.name = %@", gphoto.name);
-#endif
+    NSString *name = NtN(NtN(json[@"gphoto:name"])[PWXMLNode]);
+    if (name && ![name isEqualToString:gphoto.name]) {
+        gphoto.name = name;
     }
-    NSDictionary *nickname = NULL_TO_NIL(json[@"gphoto:nickname"]);
-    if (nickname) {
-        gphoto.nickname = NULL_TO_NIL(nickname[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"gphoto.nickname = %@", gphoto.nickname);
-#endif
+    NSString *nickname = NtN(NtN(json[@"gphoto:nickname"])[PWXMLNode]);
+    if (nickname && ![nickname isEqualToString:gphoto.nickname]) {
+        gphoto.nickname = nickname;
     }
-    NSDictionary *numphotos = NULL_TO_NIL(json[@"gphoto:numphotos"]);
-    if (numphotos) {
-        gphoto.numphotos = NULL_TO_NIL(numphotos[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"gphoto.numphotos = %@", gphoto.numphotos);
-#endif
+    NSString *numphotos = NtN(NtN(json[@"gphoto:numphotos"])[PWXMLNode]);
+    if (numphotos && ![numphotos isEqualToString:gphoto.numphotos]) {
+        gphoto.numphotos = numphotos;
     }
-    NSDictionary *timestamp = NULL_TO_NIL(json[@"gphoto:timestamp"]);
-    if (timestamp) {
-        gphoto.timestamp = NULL_TO_NIL(timestamp[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"gphoto.timestamp = %@", gphoto.timestamp);
-#endif
+    NSString *timestamp = NtN(NtN(json[@"gphoto:timestamp"])[PWXMLNode]);
+    if (timestamp && ![timestamp isEqualToString:gphoto.timestamp]) {
+        gphoto.timestamp = timestamp;
     }
-    NSDictionary *user = NULL_TO_NIL(json[@"gphoto:user"]);
+    NSDictionary *user = NtN(json[@"gphoto:user"]);
     if (user) {
-        gphoto.user = NULL_TO_NIL(user[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"gphoto.user = %@", gphoto.user);
-#endif
+        gphoto.user = NtN(user[PWXMLNode]);
     }
-    NSDictionary *originalvideo = NULL_TO_NIL(json[@"gphoto:originalvideo"]);
+    NSDictionary *originalvideo = NtN(json[@"gphoto:originalvideo"]);
     if (originalvideo) {
-        gphoto.originalvideo_audioCodec = NULL_TO_NIL(originalvideo[@"audioCodec"]);
-        gphoto.originalvideo_channels = NULL_TO_NIL(originalvideo[@"channels"]);
-        gphoto.originalvideo_duration = NULL_TO_NIL(originalvideo[@"duration"]);
-        gphoto.originalvideo_fps = NULL_TO_NIL(originalvideo[@"fps"]);
-        gphoto.originalvideo_height = NULL_TO_NIL(originalvideo[@"height"]);
-        gphoto.originalvideo_samplingrate = NULL_TO_NIL(originalvideo[@"samplingrate"]);
-        gphoto.originalvideo_type = NULL_TO_NIL(originalvideo[@"type"]);
-        gphoto.originalvideo_videoCodec = NULL_TO_NIL(originalvideo[@"videoCodec"]);
-        gphoto.originalvideo_width = NULL_TO_NIL(originalvideo[@"width"]);
+        gphoto.originalvideo_audioCodec = NtN(originalvideo[@"audioCodec"]);
+        gphoto.originalvideo_channels = NtN(originalvideo[@"channels"]);
+        gphoto.originalvideo_duration = NtN(originalvideo[@"duration"]);
+        gphoto.originalvideo_fps = NtN(originalvideo[@"fps"]);
+        gphoto.originalvideo_height = NtN(originalvideo[@"height"]);
+        gphoto.originalvideo_samplingrate = NtN(originalvideo[@"samplingrate"]);
+        gphoto.originalvideo_type = NtN(originalvideo[@"type"]);
+        gphoto.originalvideo_videoCodec = NtN(originalvideo[@"videoCodec"]);
+        gphoto.originalvideo_width = NtN(originalvideo[@"width"]);
     }
     
     return gphoto;
@@ -419,7 +383,7 @@
     
     PWPhotoMediaObject *media = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaManagedObjectName inManagedObjectContext:context];
     
-    id contents = NULL_TO_NIL(json[@"media:content"]);
+    id contents = NtN(json[@"media:content"]);
     if ([contents isKindOfClass:[NSArray class]]) {
         for (NSDictionary *contentJson in contents) {
             PWPhotoMediaContentObject *content = [PWPicasaParser mediaContentFromJson:contentJson context:context];
@@ -430,28 +394,19 @@
         PWPhotoMediaContentObject *content = [PWPicasaParser mediaContentFromJson:contents context:context];
         [media addContentObject:content];
     }
-    NSDictionary *credit = NULL_TO_NIL(json[@"media:credit"]);
-    if (credit) {
-        media.credit = NULL_TO_NIL(credit[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"media.credit = %@", media.credit);
-#endif
+    NSString *credit = NtN(NtN(json[@"media:credit"])[PWXMLNode]);
+    if (credit && ![credit isEqualToString:media.credit]) {
+        media.credit = credit;
     }
-    NSDictionary *description = NULL_TO_NIL(json[@"media:description"]);
-    if (description) {
-        media.description_text = NULL_TO_NIL(description[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"media.description_text = %@", media.description_text);
-#endif
+    NSString *description = NtN(NtN(json[@"media:description"])[PWXMLNode]);
+    if (description && ![description isEqualToString:media.description]) {
+        media.description_text = description;
     }
-    NSDictionary *keywords = NULL_TO_NIL(json[@"media:keywords"]);
-    if (keywords) {
-        media.keywords = NULL_TO_NIL(keywords[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"media.keywords = %@", media.keywords);
-#endif
+    NSString *keywords = NtN(NtN(json[@"media:keywords"])[PWXMLNode]);
+    if (keywords && ![keywords isEqualToString:media.keywords]) {
+        media.keywords = keywords;
     }
-    id thumbnails = NULL_TO_NIL(json[@"media:thumbnail"]);
+    id thumbnails = NtN(json[@"media:thumbnail"]);
     if ([thumbnails isKindOfClass:[NSArray class]]) {
         for (NSDictionary *thumbnailJson in thumbnails) {
             PWPhotoMediaThumbnailObject *thumbnail = [PWPicasaParser mediaThumbnailFromJson:thumbnailJson context:context];
@@ -462,12 +417,9 @@
         PWPhotoMediaThumbnailObject *thumbnail = [PWPicasaParser mediaThumbnailFromJson:thumbnails context:context];
         [media addThumbnailObject:thumbnail];
     }
-    NSDictionary *title = NULL_TO_NIL(json[@"media:title"]);
-    if (title) {
-        media.title = NULL_TO_NIL(title[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"media.title = %@", media.title);
-#endif
+    NSString *title = NtN(NtN(json[@"media:title"])[PWXMLNode]);
+    if (title && ![title isEqualToString:media.title]) {
+        media.title = title;
     }
     
     return media;
@@ -479,21 +431,17 @@
     
     PWPhotoMediaContentObject *content = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaContentManagedObjectName inManagedObjectContext:context];
     
-    NSString *height = NULL_TO_NIL(json[@"height"]);
-    content.height = @([height integerValue]);
-    content.medium = NULL_TO_NIL(json[@"medium"]);
-    content.type = NULL_TO_NIL(json[@"type"]);
-    content.url = NULL_TO_NIL(json[@"url"]);
-    NSString *width = NULL_TO_NIL(json[@"width"]);
-    content.width = @([width integerValue]);
-    
-#ifdef DEBUG_LOCAL
-    NSLog(@"content.height = %@", content.height);
-    NSLog(@"content.medium = %@", content.medium);
-    NSLog(@"content.type = %@", content.type);
-    NSLog(@"content.url = %@", content.url);
-    NSLog(@"content.width = %@", content.width);
-#endif
+    NSString *height = NtN(json[@"height"]);
+    if (height) {
+        content.height = @(height.integerValue);
+    }
+    content.medium = NtN(json[@"medium"]);
+    content.type = NtN(json[@"type"]);
+    content.url = NtN(json[@"url"]);
+    NSString *width = NtN(json[@"width"]);
+    if (width) {
+        content.width = @(width.integerValue);
+    }
     
     return content;
 }
@@ -504,17 +452,15 @@
     
     PWPhotoMediaThumbnailObject *thumbnail = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaThumbnailManagedObjectName inManagedObjectContext:context];
     
-    NSString *height = NULL_TO_NIL(json[@"height"]);
-    thumbnail.height = [NSNumber numberWithInteger:[height integerValue]];
-    NSString *width = NULL_TO_NIL(json[@"width"]);
-    thumbnail.width = [NSNumber numberWithInteger:[width integerValue]];
-    thumbnail.url = NULL_TO_NIL(json[@"url"]);
-    
-#ifdef DEBUG_LOCAL
-    NSLog(@"thumbnail.height = %@", thumbnail.height);
-    NSLog(@"thumbnail.width = %@", thumbnail.width);
-    NSLog(@"thumbnail.url = %@", thumbnail.url);
-#endif
+    NSString *height = NtN(json[@"height"]);
+    if (height) {
+        thumbnail.height = [NSNumber numberWithInteger:height.integerValue];
+    }
+    NSString *width = NtN(json[@"width"]);
+    if (width) {
+        thumbnail.width = [NSNumber numberWithInteger:width.integerValue];
+    }
+    thumbnail.url = NtN(json[@"url"]);
     
     return thumbnail;
 }
@@ -525,75 +471,45 @@
     
     PWPhotoExitObject *exif = [NSEntityDescription insertNewObjectForEntityForName:kPWPhotoExitManagedObjectName inManagedObjectContext:context];
     
-    NSDictionary *distance = NULL_TO_NIL(json[@"exif:distance"]);
-    if (distance) {
-        exif.distance = NULL_TO_NIL(distance[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"exif.distance = %@", exif.distance);
-#endif
+    NSString *distance = NtN(NtN(json[@"exif:distance"])[PWXMLNode]);
+    if (distance && ![distance isEqualToString:exif.distance]) {
+        exif.distance = distance;
     }
-    NSDictionary *exposure = NULL_TO_NIL(json[@"exif:exposure"]);
-    if (exposure) {
-        exif.exposure = NULL_TO_NIL(exposure[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"exif.exposure = %@", exif.exposure);
-#endif
+    NSString *exposure = NtN(NtN(json[@"exif:exposure"])[PWXMLNode]);
+    if (exposure && ![exposure isEqualToString:exif.exposure]) {
+        exif.exposure = exposure;
     }
-    NSDictionary *flash = NULL_TO_NIL(json[@"exif:flash"]);
-    if (flash) {
-        exif.flash = NULL_TO_NIL(flash[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"exif.flash = %@", exif.flash);
-#endif
+    NSString *flash = NtN(NtN(json[@"exif:flash"])[PWXMLNode]);
+    if (flash && ![flash isEqualToString:exif.flash]) {
+        exif.flash = flash;
     }
-    NSDictionary *focallength = NULL_TO_NIL(json[@"exif:focallength"]);
-    if (focallength) {
-        exif.focallength = NULL_TO_NIL(focallength[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"exif.focallength = %@", exif.focallength);
-#endif
+    NSString *focallength = NtN(NtN(json[@"exif:focallength"])[PWXMLNode]);
+    if (focallength && ![focallength isEqualToString:exif.focallength]) {
+        exif.focallength = focallength;
     }
-    NSDictionary *fstop = NULL_TO_NIL(json[@"exif:fstop"]);
-    if (fstop) {
-        exif.fstop = NULL_TO_NIL(fstop[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"exif.fstop = %@", exif.fstop);
-#endif
+    NSString *fstop = NtN(NtN(json[@"exif:fstop"])[PWXMLNode]);
+    if (fstop && ![fstop isEqualToString:exif.fstop]) {
+        exif.fstop = fstop;
     }
-    NSDictionary *imageUniqueID = NULL_TO_NIL(json[@"exif:imageUniqueID"]);
-    if (imageUniqueID) {
-        exif.imageUniqueID = NULL_TO_NIL(imageUniqueID[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"exif.imageUniqueID = %@", exif.imageUniqueID);
-#endif
+    NSString *imageUniqueID = NtN(NtN(json[@"exif:imageUniqueID"])[PWXMLNode]);
+    if (imageUniqueID && ![imageUniqueID isEqualToString:exif.imageUniqueID]) {
+        exif.imageUniqueID = imageUniqueID;
     }
-    NSDictionary *iso = NULL_TO_NIL(json[@"exif:iso"]);
-    if (iso) {
-        exif.iso = NULL_TO_NIL(iso[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"exif.iso = %@", exif.iso);
-#endif
+    NSString *iso = NtN(NtN(json[@"exif:iso"])[PWXMLNode]);
+    if (iso && ![iso isEqualToString:exif.iso]) {
+        exif.iso = iso;
     }
-    NSDictionary *make = NULL_TO_NIL(json[@"exif:make"]);
-    if (make) {
-        exif.make = NULL_TO_NIL(make[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"exif.make = %@", exif.make);
-#endif
+    NSString *make = NtN(NtN(json[@"exif:make"])[PWXMLNode]);
+    if (make && ![make isEqualToString:exif.make]) {
+        exif.make = make;
     }
-    NSDictionary *model = NULL_TO_NIL(json[@"exif:model"]);
-    if (model) {
-        exif.model = NULL_TO_NIL(model[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"exif.model = %@", exif.model);
-#endif
+    NSString *model = NtN(NtN(json[@"exif:model"])[PWXMLNode]);
+    if (model && ![model isEqualToString:exif.model]) {
+        exif.model = model;
     }
-    NSDictionary *time = NULL_TO_NIL(json[@"exif:time"]);
-    if (time) {
-        exif.time = NULL_TO_NIL(time[@"text"]);
-#ifdef DEBUG_LOCAL
-        NSLog(@"exif.time = %@", exif.time);
-#endif
+    NSString *time = NtN(NtN(json[@"exif:time"])[PWXMLNode]);
+    if (time && ![time isEqualToString:exif.time]) {
+        exif.time = time;
     }
     
     return exif;

@@ -30,6 +30,7 @@
 @property (nonatomic, retain) NSString * tag_originalimage_url;
 @property (nonatomic, retain) NSString * tag_screenimage_url;
 @property (nonatomic, retain) NSString * tag_thumbnail_url;
+@property (nonatomic, retain) NSNumber * tag_type;
 @property (nonatomic, retain) PWPhotoExitObject *exif;
 @property (nonatomic, retain) PWGPhotoObject *gphoto;
 @property (nonatomic, retain) NSOrderedSet *link;

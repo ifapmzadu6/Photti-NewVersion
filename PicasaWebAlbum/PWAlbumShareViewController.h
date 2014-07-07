@@ -12,7 +12,7 @@
 
 @interface PWAlbumShareViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
-@property (copy, nonatomic) void (^changedAlbumBlock)(NSString *newAccess, NSSet *link);
+@property (copy, nonatomic) void (^changedAlbumBlock)();
 
 - (id)initWithAlbum:(PWAlbumObject *)album;
 

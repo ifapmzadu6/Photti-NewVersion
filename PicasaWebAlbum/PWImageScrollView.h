@@ -15,5 +15,6 @@
 @property (copy, nonatomic) void (^handleFirstZoomBlock)();
 
 @property (strong, nonatomic) UIImage *image;
+@property (nonatomic) BOOL isDisableZoom;
 
 @end

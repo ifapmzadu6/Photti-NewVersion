@@ -177,11 +177,8 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
             title = NSLocalizedString(@"New Album", nil);
         }
         
-        __weak typeof(self) wself = self;
-        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
+        NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
+        [context performBlock:^{
             PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
             album.id_str = [PWSnowFlake generateUniqueIDString];
             album.name = NSLocalizedString(@"New Album", nil);

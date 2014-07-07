@@ -10,22 +10,25 @@
 
 #import "PWOAuthManager.h"
 
-static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/api/user/default";
-
 @interface PWPicasaGETRequest ()
 
 @end
 
 @implementation PWPicasaGETRequest
 
+static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/api/user/default";
+static NSString * const PWPicasaGETRequestAlbumThumbnailSizeName = @"320u";
+static NSString * const PWPicasaGETRequestPhotoThumbnailSizeName = @"288u";
+static NSString * const PWPicasaGETRequestPhotoThumbnailMaxSizeName = @"1024";
+
 + (void)getListOfAlbumsWithIndex:(NSUInteger)index completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion {
-    NSURL *url = [PWPicasaGETRequest urlWithUrlString:PWGETListURL param:@{@"thumbsize": @"320u"}];
+    NSURL *url = [PWPicasaGETRequest urlWithUrlString:PWGETListURL param:@{@"thumbsize": PWPicasaGETRequestAlbumThumbnailSizeName}];
     [PWPicasaGETRequest authorizedGETRequestWithURL:url completion:completion];
 }
 
 + (void)getListOfPhotosInAlbumWithAlbumID:(NSString *)albumID index:(NSUInteger)index completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion {
     NSString *urlString = [NSString stringWithFormat:@"%@/albumid/%@", PWGETListURL, albumID];
-    NSURL *url = [PWPicasaGETRequest urlWithUrlString:urlString param:@{@"thumbsize": @"288u", @"imgmax": @"1024"}];
+    NSURL *url = [PWPicasaGETRequest urlWithUrlString:urlString param:@{@"thumbsize": PWPicasaGETRequestPhotoThumbnailSizeName, @"imgmax": PWPicasaGETRequestPhotoThumbnailMaxSizeName}];
     [PWPicasaGETRequest authorizedGETRequestWithURL:url completion:completion];
 }
 

@@ -145,6 +145,10 @@
         switchControl.on = ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable);
         cell.accessoryView = switchControl;
         
+        if ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeUnknown) {
+            switchControl.enabled = NO;
+            cell.textLabel.alpha = 0.3f;
+        }
     } cellHeight:CGFLOAT_MIN didSelect:nil];
 }
 

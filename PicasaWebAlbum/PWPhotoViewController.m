@@ -55,11 +55,19 @@
     
     [self loadImage];
     
-    if (_photo.gphoto.originalvideo_duration) {
+    if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+        _imageScrollView.isDisableZoom = NO;
+        
         _videoButton = [UIButton new];
         [_videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
-        _videoButton.frame = CGRectMake(0.0f, 0.0f, 92.0f, 92.0f);
-        [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:92.0f] forState:UIControlStateNormal];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            _videoButton.frame = CGRectMake(0.0f, 0.0f, 92.0f, 92.0f);
+            [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:92.0f] forState:UIControlStateNormal];
+        }
+        else {
+            _videoButton.frame = CGRectMake(0.0f, 0.0f, 155.0f, 155.0f);
+            [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:155.0f] forState:UIControlStateNormal];
+        }
         _videoButton.exclusiveTouch = YES;
         [self.view addSubview:_videoButton];
     }
@@ -118,8 +126,6 @@
     _moviePlayerController.fullscreen = YES;
     _moviePlayerController.scalingMode = MPMovieScalingModeAspectFit;
     _moviePlayerController.shouldAutoplay = YES;
-    _moviePlayerController.view.exclusiveTouch = YES;
-    _moviePlayerController.view.userInteractionEnabled = YES;
     [self.tabBarController.view addSubview:_moviePlayerController.view];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackDidFinish:) name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayerController];
@@ -230,9 +236,7 @@
             return;
         }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-        });
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
@@ -263,10 +267,11 @@
                     [sself loadScreenResolutionImage];
                 });
                 
-                [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                if (image && urlString) {
+                    [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                }
             }];
             [task resume];
-            
             sself.task = task;
         }];
     });
@@ -276,6 +281,7 @@
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
     NSString *urlString = _photo.tag_screenimage_url;
+    if (!urlString) return;
     NSURL *url = [NSURL URLWithString:urlString];
     __weak typeof(self) wself = self;
     [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
@@ -287,10 +293,7 @@
         }
         
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
             if (error) {
-                NSLog(@"%@", error.description);
                 return;
             }
             
@@ -304,7 +307,9 @@
                 [sself.imageScrollView setImage:image];
             });
             
-            [sself.photoViewCache setObject:image forKey:urlString];
+            if (image && urlString) {
+                [sself.photoViewCache setObject:image forKey:urlString];
+            }
         }];
         [task resume];
         sself.task = task;

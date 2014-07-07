@@ -221,7 +221,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        sself.timestamp = [NSString stringWithFormat:@"%lld", (long long)[date timeIntervalSince1970]];
+        sself.timestamp = [NSString stringWithFormat:@"%lld", (long long)[date timeIntervalSince1970] * 1000];
         [sself.tableView reloadRowsAtIndexPaths:sself.tableView.indexPathsForSelectedRows withRowAnimation:UITableViewRowAnimationAutomatic];
         
         [sself disableDatePicker];
@@ -292,7 +292,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
                                   access:kPWPicasaAPIGphotoAccessProtected
                                timestamp:_timestamp
                                 keywords:_album.media.keywords
-                              completion:^(NSString *newAccess, NSSet *link, NSError *error) {
+                              completion:^(NSError *error) {
                                   if (error) {
                                       NSLog(@"%@", error.description);
                                       dispatch_async(dispatch_get_main_queue(), ^{

@@ -75,25 +75,17 @@
     [self.view addSubview:_indicatorView];
     [_indicatorView startAnimating];
     
-    __weak typeof(self) wself = self;
-    [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
-        
-        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-        sself.fetchedResultsController.delegate = sself;
-        
-        [sself.fetchedResultsController performFetch:nil];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.indicatorView stopAnimating];
-            [sself.collectionView reloadData];
-        });
-    }];
+    NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
+    
+    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+    _fetchedResultsController.delegate = self;
+    
+    [_fetchedResultsController performFetch:nil];
+    
+    [_indicatorView stopAnimating];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -149,6 +141,7 @@
     alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
     [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
     __weak UIAlertView *wAlertView = alertView;
+    __weak typeof(self) wself = self;
     [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
         UIAlertView *sAlertView = wAlertView;
         if (!sAlertView) return;
@@ -159,8 +152,8 @@
             title = NSLocalizedString(@"新規アルバム", nil);
         }
         
-        __weak typeof(self) wself = self;
-        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
+        [context performBlock:^{
             typeof(wself) sself = wself;
             if (!sself) return;
             

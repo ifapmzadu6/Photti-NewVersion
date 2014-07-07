@@ -39,7 +39,6 @@
 @property (strong, nonatomic) UILabel *subTitleLabel;
 
 @property (nonatomic) NSUInteger taskHash;
-@property (weak, nonatomic) NSURLSessionDataTask *task;
 
 @property (nonatomic) BOOL isPhotosTask;
 
@@ -178,28 +177,20 @@
         _taskTypeLabel.textColor = [PWColors getColor:PWColorsTypeTintLocalColor];
         _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.count.integerValue];
         
-        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            if (sself.taskHash != hash) return;
-            
+        [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
             NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+            request.fetchLimit = 1;
             NSError *error = nil;
             NSArray *objects = [context executeFetchRequest:request error:&error];
             if (objects.count == 0) {
                 return;
             }
             PWAlbumObject *albumObject = objects.firstObject;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                if (sself.taskHash != hash) return;
-                sself.titleLabel.text = albumObject.title;
-            });
+            self.titleLabel.text = albumObject.title;
             
-            [sself loadThumbnailImageWithURLString:albumObject.tag_thumbnail_url hash:hash isSub:NO];
+            [self loadThumbnailImageWithURLString:albumObject.tag_thumbnail_url hash:hash isSub:NO];
         }];
     }
     else if ([taskObject isKindOfClass:[PDWebToLocalPhotosTaskObject class]]) {
@@ -223,7 +214,8 @@
         _taskTypeLabel.textColor = [PWColors getColor:PWColorsTypeTintWebColor];
         _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.count.integerValue];
         
-        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+        [context performBlock:^{
             typeof(wself) sself = wself;
             if (!sself) return;
             if (sself.taskHash != hash) return;
@@ -275,7 +267,8 @@
             
             NSString *photo_object_id_str = obj.photo_object_id_str;
             __block NSURL *url = nil;
-            [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+            NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+            [context performBlockAndWait:^{
                 NSFetchRequest *request = [NSFetchRequest new];
                 request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                 request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photo_object_id_str];
@@ -302,28 +295,20 @@
             }];
         }];
         
-        [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            if (sself.taskHash != hash) return;
-            
+        [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
             NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", destination_album_id_str];
+            request.fetchLimit = 1;
             NSError *error = nil;
             NSArray *objects = [context executeFetchRequest:request error:&error];
             if (objects.count == 0) {
                 return;
             }
             PWAlbumObject *albumObject = objects.firstObject;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                if (sself.taskHash != hash) return;
-                sself.subTitleLabel.text = albumObject.title;
-            });
+            self.subTitleLabel.text = albumObject.title;
             
-            [sself loadThumbnailImageWithURLString:albumObject.tag_thumbnail_url hash:hash isSub:YES];
+            [self loadThumbnailImageWithURLString:albumObject.tag_thumbnail_url hash:hash isSub:YES];
         }];
     }
     
@@ -363,13 +348,8 @@
             
             return;
         }
-        
-        NSURLSessionDataTask *beforeTask = _task;
-        if (beforeTask) [beforeTask cancel];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-        });
+                
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
@@ -381,9 +361,7 @@
             if (sself.taskHash != hash) return;
             
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                });
+                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
                 
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -397,10 +375,11 @@
                     [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
                 }
                 
-                [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                if (image && urlString) {
+                    [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                }
             }];
             [task resume];
-            sself.task = task;
         }];
     });
 }

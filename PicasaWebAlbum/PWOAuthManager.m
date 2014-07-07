@@ -48,27 +48,36 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 }
 
 + (void)getAccessTokenWithCompletion:(void (^)(NSDictionary *, NSError *))completion {
-    GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
-    if (![auth canAuthorize]) {
-        if (completion) {
-            completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:0 userInfo:nil]);
-        }
-        return;
-    }
-    
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
-    [auth authorizeRequest:request completionHandler:^(NSError *error) {
-        if (error) {
+    void (^block)() = ^(){
+        GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
+        if (![auth canAuthorize]) {
             if (completion) {
                 completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:0 userInfo:nil]);
             }
+            return;
         }
-        else {
-            if (completion) {
-                completion(request.allHTTPHeaderFields, nil);
+        
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
+        [auth authorizeRequest:request completionHandler:^(NSError *error) {
+            if (error) {
+                if (completion) {
+                    completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:0 userInfo:nil]);
+                }
             }
-        }
-    }];
+            else {
+                if (completion) {
+                    completion(request.allHTTPHeaderFields, nil);
+                }
+            }
+        }];
+    };
+    
+    if ([NSThread isMainThread]) {
+        block();
+    }
+    else {
+        dispatch_async(dispatch_get_main_queue(), block);
+    }
 }
 
 + (void)getAuthorizeHTTPHeaderFields:(void (^)(NSDictionary *, NSError *))completion {

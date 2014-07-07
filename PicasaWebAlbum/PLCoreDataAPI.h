@@ -11,7 +11,7 @@
 
 @interface PLCoreDataAPI : NSObject
 
-+ (void)asyncBlock:(void (^)(NSManagedObjectContext *context))block;
-+ (void)syncBlock:(void (^)(NSManagedObjectContext *context))block;
++ (NSManagedObjectContext *)readContext;
++ (NSManagedObjectContext *)writeContext;
 
 @end

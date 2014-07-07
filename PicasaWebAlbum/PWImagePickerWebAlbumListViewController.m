@@ -74,32 +74,25 @@
     [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];
     
-    __weak typeof(self) wself = self;
-    [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-        NSError *error = nil;
-        [sself.fetchedResultsController performFetch:&error];
-        if (error) {
-            NSLog(@"%@", error.description);
-            return;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (sself.fetchedResultsController.fetchedObjects.count > 0) {
-                [sself.activityIndicatorView stopAnimating];
-            }
-            
-            [sself.collectionView reloadData];
-            
-            [sself reloadData];
-        });
-    }];
+    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+    NSError *error = nil;
+    [_fetchedResultsController performFetch:&error];
+    if (error) {
+        NSLog(@"%@", error.description);
+        return;
+    }
+    
+    if (_fetchedResultsController.fetchedObjects.count > 0) {
+        [_activityIndicatorView stopAnimating];
+    }
+    
+    [_collectionView reloadData];
+    
+    [self reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

@@ -32,6 +32,7 @@
 @dynamic tag_originalimage_url;
 @dynamic tag_screenimage_url;
 @dynamic tag_thumbnail_url;
+@dynamic tag_type;
 @dynamic exif;
 @dynamic gphoto;
 @dynamic link;

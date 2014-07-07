@@ -13,11 +13,11 @@
 
 @interface PWPicasaParser : NSObject
 
-+ (NSArray *)parseListOfAlbumFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context;
++ (NSArray *)parseListOfAlbumFromJson:(NSDictionary *)json isDelete:(BOOL)isDelete context:(NSManagedObjectContext *)context;
 
-+ (PWAlbumObject *)albumFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context;
++ (PWAlbumObject *)albumFromJson:(NSDictionary *)json existingAlbums:(NSMutableArray *)existingAlbums context:(NSManagedObjectContext *)context;
 
-+ (NSArray *)parseListOfPhotoFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context;
++ (NSArray *)parseListOfPhotoFromJson:(NSDictionary *)json albumID:(NSString *)albumID context:(NSManagedObjectContext *)context;
 
 + (PWPhotoLinkObject *)linkFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context;
 

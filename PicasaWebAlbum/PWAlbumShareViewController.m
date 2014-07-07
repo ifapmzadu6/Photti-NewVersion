@@ -116,22 +116,24 @@
         if (indexPath.row == 0) {
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.textLabel.font = [UIFont systemFontOfSize:15.0f];
-            NSString *link = nil;
-            if (![_album.gphoto.access isEqualToString:kPWPicasaAPIGphotoAccessProtected]) {
-                for (PWPhotoLinkObject *linkObject in _album.link) {
-                    if ([linkObject.rel isEqualToString:kPWPicasaAPILinkRelShare]) {
-                        link = linkObject.href;
+            [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
+                NSString *link = nil;
+                if (![_album.gphoto.access isEqualToString:kPWPicasaAPIGphotoAccessProtected]) {
+                    for (PWPhotoLinkObject *linkObject in _album.link) {
+                        if ([linkObject.rel isEqualToString:kPWPicasaAPILinkRelShare]) {
+                            link = linkObject.href;
+                        }
                     }
                 }
-            }
-            if (!link) {
-                cell.textLabel.text = @"http://";
-                cell.textLabel.textColor = [[PWColors getColor:PWColorsTypeTextColor] colorWithAlphaComponent:0.5f];
-            }
-            else {
-                cell.textLabel.text = link;
-                cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
-            }
+                if (!link) {
+                    cell.textLabel.text = @"http://";
+                    cell.textLabel.textColor = [[PWColors getColor:PWColorsTypeTextColor] colorWithAlphaComponent:0.5f];
+                }
+                else {
+                    cell.textLabel.text = link;
+                    cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+                }
+            }];
         }
         else {
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -155,18 +157,20 @@
             button.exclusiveTouch = YES;
             [cell.contentView addSubview:button];
             
-            NSString *link = nil;
-            if (![_album.gphoto.access isEqualToString:kPWPicasaAPIGphotoAccessProtected]) {
-                for (PWPhotoLinkObject *linkObject in _album.link) {
-                    if ([linkObject.rel isEqualToString:kPWPicasaAPILinkRelShare]) {
-                        link = linkObject.href;
+            [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
+                NSString *link = nil;
+                if (![_album.gphoto.access isEqualToString:kPWPicasaAPIGphotoAccessProtected]) {
+                    for (PWPhotoLinkObject *linkObject in _album.link) {
+                        if ([linkObject.rel isEqualToString:kPWPicasaAPILinkRelShare]) {
+                            link = linkObject.href;
+                        }
                     }
                 }
-            }
-            if (!link) {
-                button.alpha = 0.334f;
-                button.userInteractionEnabled = NO;
-            }
+                if (!link) {
+                    button.alpha = 0.334f;
+                    button.userInteractionEnabled = NO;
+                }
+            }];
         }
     }
     
@@ -204,7 +208,7 @@
                                       access:access
                                    timestamp:nil
                                     keywords:nil
-                                  completion:^(NSString *newAccess, NSSet *link, NSError *error) {
+                                  completion:^(NSError *error) {
                                       typeof(wself) sself = wself;
                                       if (!sself) return;
                                       if (error) {
@@ -217,9 +221,6 @@
                                           return;
                                       }
                                       
-                                      sself.album.gphoto.access = newAccess;
-                                      sself.album.link = link;
-                                      
                                       dispatch_async(dispatch_get_main_queue(), ^{
                                           [alertView dismissWithClickedButtonIndex:0 animated:YES];
                                           
@@ -228,10 +229,8 @@
                                       });
                                       
                                       if (sself.changedAlbumBlock) {
-                                          sself.changedAlbumBlock(newAccess, link);
+                                          sself.changedAlbumBlock();
                                       }
-                                      
-                                      NSLog(@"Success!");
                                   }];
     }
 }

@@ -139,7 +139,9 @@
                 UIImage *image = [UIImage imageWithData:data];
                 [sself setImage:image hash:hash];
                 
-                [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                if (image && urlString) {
+                    [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                }
             }];
             [task resume];
             

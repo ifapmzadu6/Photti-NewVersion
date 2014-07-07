@@ -15,59 +15,48 @@
 
 @implementation PLCoreDataAPI
 
-static dispatch_queue_t pl_coredata_queue() {
-    static dispatch_queue_t pl_coredata_queue;
++ (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
+    static NSPersistentStoreCoordinator *persistentStoreCoordinator;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        pl_coredata_queue = dispatch_queue_create("com.photti.plcoredata", DISPATCH_QUEUE_SERIAL);
+        NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PLModel" withExtension:@"momd"];
+        NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+        
+        NSURL *storeURL = [[PLCoreDataAPI applicationDocumentsDirectory] URLByAppendingPathComponent:@"PLModel.sqlite"];
+        
+        NSPersistentStoreCoordinator *tmpPersistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+        
+        NSError *error = nil;
+        if (![tmpPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+            
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            abort();
+        }
+        
+        persistentStoreCoordinator = tmpPersistentStoreCoordinator;
     });
-    return pl_coredata_queue;
+    return persistentStoreCoordinator;
 }
 
-+ (NSManagedObjectContext *)context {
++ (NSManagedObjectContext *)readContext {
     static NSManagedObjectContext *context;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        dispatch_sync(pl_coredata_queue(), ^{
-            NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PLModel" withExtension:@"momd"];
-            NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+        NSPersistentStoreCoordinator *coordinator = [PLCoreDataAPI persistentStoreCoordinator];
+        if (coordinator != nil) {
+            NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+            managedObjectContext.persistentStoreCoordinator = coordinator;
             
-            NSURL *storeURL = [[PLCoreDataAPI applicationDocumentsDirectory] URLByAppendingPathComponent:@"PLModel.sqlite"];
-            
-            NSError *error = nil;
-            NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
-            if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
-                
-                NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-                abort();
-            }
-            
-            NSPersistentStoreCoordinator *coordinator = persistentStoreCoordinator;
-            if (coordinator != nil) {
-                NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
-                managedObjectContext.persistentStoreCoordinator = coordinator;
-                
-                context = managedObjectContext;
-            }
-        });
+            context = managedObjectContext;
+        }
     });
     return context;
 }
 
-+ (void)syncBlock:(void (^)(NSManagedObjectContext *))block {
-    if (!block) return;
-    id context = [PLCoreDataAPI context];
-    dispatch_sync(pl_coredata_queue(), ^{
-        block(context);
-    });
-}
-
-+ (void)asyncBlock:(void (^)(NSManagedObjectContext *))block {
-    if (!block) return;
-    id context = [PLCoreDataAPI context];
-    dispatch_async(pl_coredata_queue(), ^{
-        block(context);
-    });
++ (NSManagedObjectContext *)writeContext {
+    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    context.parentContext = [PLCoreDataAPI readContext];
+    return context;
 }
 
 #pragma mark - Application's Documents directory

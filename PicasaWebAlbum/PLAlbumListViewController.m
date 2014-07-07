@@ -70,32 +70,27 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
+        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+        NSFetchRequest *request = [NSFetchRequest new];
+        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
+        
+        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        sself.fetchedResultsController.delegate = sself;
+        
+        [sself.fetchedResultsController performFetch:&error];
+        if (error) {
+            NSLog(@"%@", error.description);
+            return;
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sself.indicatorView stopAnimating];
             
-            NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
-            
-            sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-            sself.fetchedResultsController.delegate = sself;
-            
-            NSError *error = nil;
-            [sself.fetchedResultsController performFetch:&error];
-            if (error) {
-                NSLog(@"%@", error.description);
-                return;
+            if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
+                [sself.collectionView reloadData];
             }
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [sself.indicatorView stopAnimating];
-                
-                if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
-                    [sself.collectionView reloadData];
-                }
-            });
-        }];
+        });
     }];
 }
 
@@ -290,7 +285,8 @@
         textField.text = album.name;
         [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
         [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
-            [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+            NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
+            [context performBlock:^{
                 album.name = textField.text;
                 
                 [context save:nil];
@@ -322,7 +318,8 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
+        [context performBlock:^{
             [context deleteObject:album];
             [context save:nil];
         }];

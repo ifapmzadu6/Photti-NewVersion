@@ -35,30 +35,16 @@
     if (self) {
         self.title = NSLocalizedString(@"New Albums", nil);
         
-        __weak typeof(self) wself = self;
-        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-//            request.predicate = [NSPredicate predicateWithFormat:@"(import = %@) AND (tag_uploading_type = %@)", date, @(PLAlbumObjectTagUploadingTypeUnknown)];
-            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
-            sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-            sself.fetchedResultsController.delegate = sself;
-            
-            NSError *error = nil;
-            [sself.fetchedResultsController performFetch:&error];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (sself.collectionView) {
-                    if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
-                        [sself.collectionView reloadData];
-                        [sself.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
-                    }
-                }
-            });
-        }];
+        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+        NSFetchRequest *request = [NSFetchRequest new];
+        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+        //            request.predicate = [NSPredicate predicateWithFormat:@"(import = %@) AND (tag_uploading_type = %@)", date, @(PLAlbumObjectTagUploadingTypeUnknown)];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
+        _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        _fetchedResultsController.delegate = self;
+        
+        NSError *error = nil;
+        [_fetchedResultsController performFetch:&error];        
     }
     return self;
 }

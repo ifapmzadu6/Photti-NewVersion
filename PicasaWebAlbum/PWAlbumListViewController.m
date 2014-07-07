@@ -42,7 +42,6 @@
 @property (nonatomic) BOOL isNowRequesting;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-@property (nonatomic) BOOL isChangingContext;
 
 @end
 
@@ -96,37 +95,28 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     }
     
     [_refreshControl beginRefreshing];
-    [_activityIndicatorView startAnimating];
     
-    __weak typeof(self) wself = self;
-    [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-        sself.fetchedResultsController.delegate = sself;
-        NSError *error = nil;
-        [sself.fetchedResultsController performFetch:&error];
-        if (error) {
-            NSLog(@"%@", error.description);
-            return;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (sself.fetchedResultsController.fetchedObjects.count > 0) {
-                [sself.activityIndicatorView stopAnimating];
-            }
-            
-            if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
-                [sself.collectionView reloadData];
-            }
-            
-            [sself loadDataWithStartIndex:0];
-        });
-    }];
+    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+    _fetchedResultsController.delegate = self;
+    NSError *error = nil;
+    [_fetchedResultsController performFetch:&error];
+    if (error) {
+        NSLog(@"%@", error.description);
+        return;
+    }
+    
+    if (_fetchedResultsController.fetchedObjects.count == 0) {
+        [_activityIndicatorView startAnimating];
+    }
+    if (_collectionView.indexPathsForVisibleItems.count == 0) {
+        [_collectionView reloadData];
+    }
+    
+    [self loadDataWithStartIndex:0];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -187,18 +177,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    if (_isChangingContext) {
-        return 0;
-    }
-    
     return _fetchedResultsController.sections.count;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if (_isChangingContext) {
-        return 0;
-    }
-    
     id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
     return [sectionInfo numberOfObjects];
 }
@@ -206,20 +188,15 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    if (_isChangingContext) {
-        [cell setAlbum:nil isNowLoading:NO];
-        cell.actionButtonActionBlock = nil;
-    }
-    else {
-        [cell setAlbum:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];
-        __weak typeof(self) wself = self;
-        cell.actionButtonActionBlock = ^(PWAlbumObject *album) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself showAlbumActionSheet:album];
-        };
-    }
+    PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
+    [cell setAlbum:album isNowLoading:_isNowRequesting];
+    __weak typeof(self) wself = self;
+    cell.actionButtonActionBlock = ^(PWAlbumObject *album) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself showAlbumActionSheet:album];
+    };
     
     return cell;
 }
@@ -279,10 +256,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (_isChangingContext) {
-        return;
-    }
-    
     PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
     PWPhotoListViewController *viewController = [[PWPhotoListViewController alloc] initWithAlbum:album];
     [self.navigationController pushViewController:viewController animated:YES];
@@ -390,19 +363,8 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 }
 
 #pragma mark NSFetchedResultsControllerDelegate
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    _isChangingContext = YES;
-}
-
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    _isChangingContext = NO;
-    
-    NSError *error = nil;
-    [_fetchedResultsController performFetch:&error];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [_collectionView reloadData];
-    });
+    [_collectionView reloadData];
 }
 
 #pragma mark UIActionSheet
@@ -414,12 +376,12 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         if (!sself) return;
         
         PWAlbumEditViewController *viewController = [[PWAlbumEditViewController alloc] initWithAlbum:album];
-        [viewController setSuccessBlock:^{
+        viewController.successBlock = ^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
             [sself loadDataWithStartIndex:0];
-        }];
+        };
         PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
         navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
@@ -429,14 +391,11 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         if (!sself) return;
         
         PWAlbumShareViewController *viewController = [[PWAlbumShareViewController alloc] initWithAlbum:album];
-        [viewController setChangedAlbumBlock:^(NSString *retAccess, NSSet *link) {
-            album.link = link;
-            album.gphoto.access = retAccess;
-            
+        viewController.changedAlbumBlock = ^{
             dispatch_async(dispatch_get_main_queue(), ^{
                 [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
             });
-        }];
+        };
         PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
         navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];

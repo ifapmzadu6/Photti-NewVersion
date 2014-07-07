@@ -72,6 +72,7 @@
 		715943CD1957F7C6009315E5 /* PDInAppPurchaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 715943CC1957F7C6009315E5 /* PDInAppPurchaseViewController.m */; };
 		716243331952090300168825 /* PLPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 716243321952090300168825 /* PLPhotoObject.m */; };
 		71649BF1195907A400009C1F /* PDInAppPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 71649BF0195907A400009C1F /* PDInAppPurchase.m */; };
+		717456E6196AB4F5003D2436 /* XmlReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 717456E5196AB4F5003D2436 /* XmlReader.m */; };
 		7177479F1936F5A8005179B6 /* PDModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7177479D1936F5A8005179B6 /* PDModel.xcdatamodeld */; };
 		718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */; };
 		7195523619273138003EA9AF /* PWAlbumShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7195523519273138003EA9AF /* PWAlbumShareViewController.m */; };
@@ -139,7 +140,6 @@
 		71E8859219120188005A78E0 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8859119120188005A78E0 /* SystemConfiguration.framework */; };
 		71E885A219120E7A005A78E0 /* PWOAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 71E885A119120E7A005A78E0 /* PWOAuthManager.m */; };
 		71E885A6191215A1005A78E0 /* PWPicasaGETRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 71E885A5191215A1005A78E0 /* PWPicasaGETRequest.m */; };
-		71E885A919122861005A78E0 /* XmlReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 71E885A819122861005A78E0 /* XmlReader.m */; };
 		71E885AD19123360005A78E0 /* PWModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 71E885AB19123360005A78E0 /* PWModel.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
@@ -277,6 +277,8 @@
 		716243321952090300168825 /* PLPhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoObject.m; sourceTree = "<group>"; };
 		71649BEF195907A400009C1F /* PDInAppPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDInAppPurchase.h; sourceTree = "<group>"; };
 		71649BF0195907A400009C1F /* PDInAppPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDInAppPurchase.m; sourceTree = "<group>"; };
+		717456E4196AB4F5003D2436 /* XmlReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlReader.h; sourceTree = "<group>"; };
+		717456E5196AB4F5003D2436 /* XmlReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XmlReader.m; sourceTree = "<group>"; };
 		7177479E1936F5A8005179B6 /* PDModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PDModel.xcdatamodel; sourceTree = "<group>"; };
 		718A0917194D301500480E57 /* PWRoundedCornerBadgeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWRoundedCornerBadgeLabel.h; sourceTree = "<group>"; };
 		718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWRoundedCornerBadgeLabel.m; sourceTree = "<group>"; };
@@ -399,8 +401,6 @@
 		71E885A119120E7A005A78E0 /* PWOAuthManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWOAuthManager.m; sourceTree = "<group>"; };
 		71E885A4191215A1005A78E0 /* PWPicasaGETRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPicasaGETRequest.h; sourceTree = "<group>"; };
 		71E885A5191215A1005A78E0 /* PWPicasaGETRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPicasaGETRequest.m; sourceTree = "<group>"; };
-		71E885A719122861005A78E0 /* XmlReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlReader.h; sourceTree = "<group>"; };
-		71E885A819122861005A78E0 /* XmlReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XmlReader.m; sourceTree = "<group>"; };
 		71E885AC19123360005A78E0 /* PWModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PWModel.xcdatamodel; sourceTree = "<group>"; };
 		BB88A718BA2F4C6E86D19891 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -1508,8 +1508,8 @@
 		71E885AA19123229005A78E0 /* XmlReader */ = {
 			isa = PBXGroup;
 			children = (
-				71E885A719122861005A78E0 /* XmlReader.h */,
-				71E885A819122861005A78E0 /* XmlReader.m */,
+				717456E4196AB4F5003D2436 /* XmlReader.h */,
+				717456E5196AB4F5003D2436 /* XmlReader.m */,
 			);
 			name = XmlReader;
 			sourceTree = "<group>";
@@ -1665,6 +1665,7 @@
 				711FE8F5195F2F6B00AF296B /* PWBaseNavigationController.m in Sources */,
 				71342FE91941F7F0002331F6 /* PWAlbumPickerWebAlbumListViewController.m in Sources */,
 				71A2541C19190EB6009914F7 /* PWColors.m in Sources */,
+				717456E6196AB4F5003D2436 /* XmlReader.m in Sources */,
 				71958C66191B9B7100CFC15F /* PWImageScrollView.m in Sources */,
 				7195529E192CB1DB003EA9AF /* PLPageViewController.m in Sources */,
 				719D92331917848A00B75D8B /* PWPhotoExitObject.m in Sources */,
@@ -1686,7 +1687,6 @@
 				71A2546819195259009914F7 /* PWPhotoViewCell.m in Sources */,
 				712E03BB1920BA6E0035D9E0 /* PWPhotoObject+Methods.m in Sources */,
 				7118F88F19335B630016697E /* PWImagePickerLocalAllPhotoViewController.m in Sources */,
-				71E885A919122861005A78E0 /* XmlReader.m in Sources */,
 				719552411928FD4C003EA9AF /* PLAssetsManager.m in Sources */,
 				71C8C1E21942AA360002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m in Sources */,
 				719D924D1918C3DF00B75D8B /* PWPicasaAPI.m in Sources */,

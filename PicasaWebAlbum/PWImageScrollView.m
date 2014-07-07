@@ -236,6 +236,10 @@
 }
 
 - (void)handleDoubleTap:(UIGestureRecognizer *)sender {
+    if (_isDisableZoom) {
+        return;
+    }
+    
 	if (sender.state == UIGestureRecognizerStateEnded){
 		[NSObject cancelPreviousPerformRequestsWithTarget:self];
 		

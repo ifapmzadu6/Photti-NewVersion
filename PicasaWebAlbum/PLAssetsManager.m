@@ -91,7 +91,8 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
             return;
         }
         
-        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+        [context performBlock:^{
             NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
             request.predicate = predicate;
@@ -128,7 +129,8 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
             return;
         }
         
-        [PLCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+        [context performBlock:^{
             NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
             request.predicate = predicate;
@@ -223,6 +225,8 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
     NSDate *enumurateDate = [NSDate dateWithTimeInterval:seconds sinceDate:date];
     _lastEnumuratedDate = enumurateDate;
     
+    NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         // PhotoStreamはiCloud
         ALAssetsGroupType assetsGroupType = ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces | ALAssetsGroupSavedPhotos;
@@ -238,7 +242,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                 NSNumber *tag_type = @(PLAlbumObjectTagTypeImported);
                 
                 __block PLAlbumObject *album = nil;
-                [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+                [context performBlockAndWait:^{
                     NSFetchRequest *request = [NSFetchRequest new];
                     request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                     request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
@@ -276,7 +280,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     }
                     NSDate *date = [result valueForProperty:ALAssetPropertyDate];
                     CLLocation *location = [result valueForProperty:ALAssetPropertyLocation];
-                    [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+                    [context performBlockAndWait:^{
                         NSFetchRequest *request = [NSFetchRequest new];
                         request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                         request.predicate = [NSPredicate predicateWithFormat:@"url = %@", url.absoluteString];
@@ -297,7 +301,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
             }
             else {
                 //写真を全て読み込んだ後の処理だと思うわけよ
-                [PLCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+                [context performBlockAndWait:^{
                     typeof(wself) sself = wself;
                     if (!sself) return;
                     if (!sself.isLibraryUpDated) return;

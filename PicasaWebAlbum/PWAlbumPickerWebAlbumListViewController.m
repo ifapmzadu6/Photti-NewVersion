@@ -75,38 +75,29 @@
     [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];
     
-    __weak typeof(self) wself = self;
-    [PWCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-        sself.fetchedResultsController.delegate = sself;
-        NSError *error = nil;
-        [sself.fetchedResultsController performFetch:&error];
-        if (error) {
-            NSLog(@"%@", error.description);
-            return;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (sself.fetchedResultsController.fetchedObjects.count > 0) {
-                [sself.activityIndicatorView stopAnimating];
-            }
-            
-            [sself.collectionView reloadData];
-            
-            [sself loadDataWithStartIndex:0];
-        });
-    }];
+    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+    self.fetchedResultsController.delegate = self;
+    NSError *error = nil;
+    [self.fetchedResultsController performFetch:&error];
+    if (error) {
+        NSLog(@"%@", error.description);
+        return;
+    }
+    
+    if (self.fetchedResultsController.fetchedObjects.count > 0) {
+        [self.activityIndicatorView stopAnimating];
+    }
+    
+    [self loadDataWithStartIndex:0];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-        
+    
     if (!_isNowRequesting) {
         [_refreshControl endRefreshing];
     }

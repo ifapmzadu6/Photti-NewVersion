@@ -14,6 +14,7 @@
 #import "PLDateFormatter.h"
 #import "Reachability.h"
 #import "SDImageCache.h"
+#import "PWCoreDataAPI.h"
 
 @interface PWPhotoViewCell ()
 
@@ -26,7 +27,6 @@
 @property (strong, nonatomic) UIImageView *checkMark;
 
 @property (nonatomic) NSUInteger photoHash;
-@property (weak, nonatomic) NSURLSessionDataTask *task;
 
 @end
 
@@ -90,13 +90,6 @@
     _checkMark.image = [UIImage imageNamed:@"CheckMark"];
     _checkMark.alpha = 0.0f;
     [self.contentView addSubview:_checkMark];
-}
-
-- (void)dealloc {
-    NSURLSessionDataTask *task = _task;
-    if (task) {
-        [task cancel];
-    }
 }
 
 - (void)setSelected:(BOOL)selected {
@@ -185,16 +178,16 @@
     _photoHash = hash;
     
     if (!photo) return;
-    if (photo.managedObjectContext == nil) return;
     
-    NSString *durationString = photo.gphoto.originalvideo_duration;
-    if (!durationString) {
+    if (photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
         _videoBackgroundView.hidden = YES;
         _videoDurationLabel.hidden = YES;
         _videoIconView.hidden = YES;
     }
-    else {
+    if (photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
         _videoBackgroundView.hidden = NO;
+        
+        NSString *durationString = durationString = photo.gphoto.originalvideo_duration;
         _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
         _videoDurationLabel.hidden = NO;
         _videoIconView.hidden = NO;
@@ -215,6 +208,7 @@
     _imageView.alpha = 0.0f;
     [_activityIndicatorView startAnimating];
     
+    __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (_photoHash != hash) return;
         
@@ -225,19 +219,12 @@
             return;
         }
         
-        NSURLSessionDataTask *task = _task;
-        if (task) {
-            [task cancel];
-        }
-        
         if (isNowLoading) {
             return;
         }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-        });
         
-        __weak typeof(self) wself = self;
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
                 NSLog(@"%@", error.description);
@@ -248,9 +235,7 @@
             if (sself.photoHash != hash) return;
             
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                });
+                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
                 
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -261,10 +246,11 @@
                 UIImage *image = [UIImage imageWithData:data];
                 [sself setImage:image hash:hash];
                 
-                [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                if (image && urlString) {
+                    [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                }
             }];
             [task resume];
-            sself.task = task;
         }];
     });
 }
