@@ -13,5 +13,12 @@
 
 + (NSManagedObjectContext *)readContext;
 + (NSManagedObjectContext *)writeContext;
++ (void)writeContextFinish:(NSManagedObjectContext *)context;
+
+//  Block
++ (void)writeWithBlock:(void (^)(NSManagedObjectContext *context))block;
++ (void)writeWithBlockAndWait:(void (^)(NSManagedObjectContext *context))block;
++ (void)readWithBlock:(void (^)(NSManagedObjectContext *context))block;
++ (void)readWithBlockAndWait:(void (^)(NSManagedObjectContext *context))block;
 
 @end

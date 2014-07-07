@@ -40,13 +40,12 @@
         self.title = NSLocalizedString(@"Task Manager", nil);
         
         __weak typeof(self) wself = self;
-        NSManagedObjectContext *plContext = [PLCoreDataAPI readContext];
-        [plContext performBlockAndWait:^{
+        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
             if (!sself) return;
             sself.isEnabledPLCoreDataNotification = YES;
-            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerWillChangeContent:) name:NSManagedObjectContextWillSaveNotification object:plContext];
-            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:plContext];
+            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerWillChangeContent:) name:NSManagedObjectContextWillSaveNotification object:context];
+            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:context];
         }];
         [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
@@ -106,10 +105,9 @@
 
 - (void)dealloc {
     __weak typeof(self) wself = self;
-    NSManagedObjectContext *plContext = [PLCoreDataAPI readContext];
-    [plContext performBlockAndWait:^{
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextWillSaveNotification object:plContext];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:plContext];
+    [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextWillSaveNotification object:context];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
     }];
     [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         typeof(wself) sself = wself;

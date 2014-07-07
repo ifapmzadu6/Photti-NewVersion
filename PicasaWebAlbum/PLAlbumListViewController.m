@@ -285,11 +285,8 @@
         textField.text = album.name;
         [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
         [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
-            NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
-            [context performBlock:^{
+            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                 album.name = textField.text;
-                
-                [context save:nil];
             }];
         }];
         [alertView show];
@@ -318,10 +315,8 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
-        [context performBlock:^{
+        [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             [context deleteObject:album];
-            [context save:nil];
         }];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];

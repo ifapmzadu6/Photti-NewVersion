@@ -226,8 +226,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         localToWebAlbumTask.destination_album_id_str = toWebAlbum.id_str;
         
         NSMutableArray *id_strs = [NSMutableArray array];
-        NSManagedObjectContext *plContext = [PLCoreDataAPI readContext];
-        [plContext performBlockAndWait:^{
+        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
             for (PLPhotoObject *photoObject in fromLocalAlbum.photos.array) {
                 [id_strs addObject:photoObject.id_str];
             }
@@ -292,8 +291,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         localToWebPhotoTask.destination_album_id_str = toWebAlbum.id_str;
         
         NSMutableArray *id_strs = [NSMutableArray array];
-        NSManagedObjectContext *plContext = [PLCoreDataAPI readContext];
-        [plContext performBlockAndWait:^{
+        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
             for (PLPhotoObject *photoObject in fromLocalPhotos) {
                 [id_strs addObject:photoObject.id_str];
             }
@@ -626,8 +624,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
 
 + (PLAlbumObject *)getLocalAlbumWithID:(NSString *)id_str {
     __block PLAlbumObject *localAlbumObject = nil;
-    NSManagedObjectContext *context = [PLCoreDataAPI readContext];
-    [context performBlockAndWait:^{
+    [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
@@ -642,8 +639,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
 
 + (PLPhotoObject *)getLocalPhotoWithID:(NSString *)id_str {
     __block PLPhotoObject *localPhotoObject = nil;
-    NSManagedObjectContext *context = [PLCoreDataAPI readContext];
-    [context performBlockAndWait:^{
+    [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
@@ -682,8 +678,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
 #pragma mark MakeData
 + (PLAlbumObject *)makeNewLocalAlbumWithWebAlbum:(PWAlbumObject *)webAlbumObject {
     __block PLAlbumObject *localAlbumObject = nil;
-    NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
-    [context performBlockAndWait:^{
+    [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         localAlbumObject = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
         localAlbumObject.id_str = [PWSnowFlake generateUniqueIDString];
         localAlbumObject.name = webAlbumObject.title;
@@ -693,16 +688,13 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         localAlbumObject.import = enumurateDate;
         localAlbumObject.update = enumurateDate;
         localAlbumObject.tag_type = @(PLAlbumObjectTagTypeAutomatically);
-        
-        [context save:nil];
     }];
     return localAlbumObject;
 }
 
 + (PLPhotoObject *)makeNewPhotoWithAsset:(ALAsset *)asset {
     __block PLPhotoObject *photoObject = nil;
-    NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
-    [context performBlockAndWait:^{
+    [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         photoObject = [NSEntityDescription insertNewObjectForEntityForName:kPLPhotoObjectName inManagedObjectContext:context];
         NSURL *url = asset.defaultRepresentation.url;
         photoObject.url = url.absoluteString;
@@ -723,7 +715,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         
         photoObject.tag_albumtype = @(PLAlbumObjectTagTypeImported);
         photoObject.id_str = url.query;
-        [context save:nil];
     }];
     return photoObject;
 }

@@ -184,8 +184,7 @@
     __block NSMutableArray *assets = @[].mutableCopy;
     for (NSManagedObjectID *photoURL in _selectedPhotoURLs) {
         __block PLPhotoObject *photoObject = nil;
-        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
-        [context performBlock:^{
+        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
             NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"url = %@", photoURL];
@@ -270,15 +269,12 @@
             }];
         }
         else {
-            NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
-            [context performBlock:^{
+            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                 PLAlbumObject *albumObject = (PLAlbumObject *)album;
                 
                 for (PLPhotoObject *photoObject in selectLocalPhotos) {
                     [albumObject addPhotosObject:photoObject];
                 }
-                
-                [context save:nil];
                 
                 completion();
             }];
@@ -501,11 +497,8 @@
         textField.text = album.name;
         [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
         [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
-            NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
-            [context performBlock:^{
+            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                 album.name = textField.text;
-                
-                [context save:nil];
             }];
         }];
         [alertView show];
@@ -534,10 +527,8 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
-        [context performBlock:^{
+        [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             [context deleteObject:album];
-            [context save:nil];
         }];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];

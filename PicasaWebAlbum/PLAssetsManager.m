@@ -91,8 +91,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
             return;
         }
         
-        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
-        [context performBlock:^{
+        [PLCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
             NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
             request.predicate = predicate;
@@ -129,8 +128,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
             return;
         }
         
-        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
-        [context performBlock:^{
+        [PLCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
             NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
             request.predicate = predicate;
@@ -265,9 +263,10 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                 
                 [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
                     typeof(wself) sself = wself;
-                    if (!sself) return;
-                    if (![sself.lastEnumuratedDate isEqualToDate:enumurateDate]) return;
-                    if (!result) return;
+                    if (!sself || ![sself.lastEnumuratedDate isEqualToDate:enumurateDate] || !result) {
+                        [PLCoreDataAPI writeContextFinish:context];
+                        return;
+                    }
                     
                     ALAssetRepresentation *representation = result.defaultRepresentation;
                     NSURL *url = representation.url;
@@ -296,6 +295,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                             photo.tag_sort_index = @(album.photos.count);
                             [album addPhotosObject:photo];
                         }
+                        [PLCoreDataAPI writeContextFinish:context];
                     }];
                 }];
             }
@@ -303,8 +303,10 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                 //写真を全て読み込んだ後の処理だと思うわけよ
                 [context performBlockAndWait:^{
                     typeof(wself) sself = wself;
-                    if (!sself) return;
-                    if (!sself.isLibraryUpDated) return;
+                    if (!sself || !sself.isLibraryUpDated) {
+                        [PLCoreDataAPI writeContextFinish:context];
+                        return;
+                    }
                     
                     //前回の読み込みから消えた写真
                     NSFetchRequest *outdatedPhotoRequest = [[NSFetchRequest alloc] init];
@@ -363,6 +365,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     }
                     
                     [context save:&error];
+                    [PLCoreDataAPI writeContextFinish:context];
                     
                     if (completion) {
                         completion(error);

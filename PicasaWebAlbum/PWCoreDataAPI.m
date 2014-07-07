@@ -33,7 +33,7 @@
         NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PWModel" withExtension:@"momd"];
         NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
         
-        NSURL *storeURL = [[PWCoreDataAPI applicationDocumentsDirectory] URLByAppendingPathComponent:@"PWModel.sqlite"];
+        NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"PWModel.sqlite"];
         
         NSPersistentStoreCoordinator *tmpPersistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
         
@@ -55,16 +55,16 @@
 
 + (NSManagedObjectContext *)writeContext {
     NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    context.parentContext = [PWCoreDataAPI readContext];
+    context.parentContext = [self readContext];
     context.undoManager = nil;
     
-    [[NSNotificationCenter defaultCenter] addObserver:[PWCoreDataAPI sharedManager] selector:@selector(contextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedManager] selector:@selector(contextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
     
     return context;
 }
 
 + (void)writeContextFinish:(NSManagedObjectContext *)context {
-    [[NSNotificationCenter defaultCenter] removeObserver:[PWCoreDataAPI sharedManager] name:NSManagedObjectContextDidSaveNotification object:context];
+    [[NSNotificationCenter defaultCenter] removeObserver:[self sharedManager] name:NSManagedObjectContextDidSaveNotification object:context];
 }
 
 + (NSManagedObjectContext *)readContext {
@@ -72,7 +72,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-        context.parentContext = [PWCoreDataAPI storeContext];
+        context.parentContext = [self storeContext];
         context.undoManager = nil;
     });
     return context;
@@ -83,7 +83,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        context.persistentStoreCoordinator = [PWCoreDataAPI persistentStoreCoordinator];
+        context.persistentStoreCoordinator = [self persistentStoreCoordinator];
         context.undoManager = nil;
     });
     return context;
@@ -94,7 +94,7 @@
 + (void)writeWithBlock:(void (^)(NSManagedObjectContext *))block {
     if (!block) return;
     
-    NSManagedObjectContext *context = [PWCoreDataAPI writeContext];
+    NSManagedObjectContext *context = [self writeContext];
     [context performBlock:^{
         block(context);
         
@@ -103,14 +103,14 @@
             abort();
         }
         
-        [PWCoreDataAPI writeContextFinish:context];
+        [self writeContextFinish:context];
     }];
 }
 
 + (void)writeWithBlockAndWait:(void (^)(NSManagedObjectContext *))block {
     if (!block) return;
     
-    NSManagedObjectContext *context = [PWCoreDataAPI writeContext];
+    NSManagedObjectContext *context = [self writeContext];
     [context performBlockAndWait:^{
         block(context);
         
@@ -119,14 +119,14 @@
             abort();
         }
         
-        [PWCoreDataAPI writeContextFinish:context];
+        [self writeContextFinish:context];
     }];
 }
 
 + (void)readWithBlock:(void (^)(NSManagedObjectContext *))block {
     if (!block) return;
     
-    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+    NSManagedObjectContext *context = [self readContext];
     [context performBlock:^{
         block(context);
     }];
@@ -135,7 +135,7 @@
 + (void)readWithBlockAndWait:(void (^)(NSManagedObjectContext *))block {
     if (!block) return;
     
-    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+    NSManagedObjectContext *context = [self readContext];
     [context performBlockAndWait:^{
         block(context);
     }];
@@ -143,16 +143,16 @@
 
 #pragma mark NSNotificationCenter
 - (void)contextDidSaveNotification:(NSNotification *)notification {
-    if (notification.object != [PWCoreDataAPI readContext] && notification.object != [PWCoreDataAPI storeContext]) {
-        [[PWCoreDataAPI readContext] performBlockAndWait:^{
+    if (notification.object != [[self class] readContext] && notification.object != [[self class] storeContext]) {
+        [[[self class] readContext] performBlockAndWait:^{
             NSError *error = nil;
-            if (![[PWCoreDataAPI readContext] save:&error]) {
+            if (![[[self class] readContext] save:&error]) {
                 abort();
             }
             
-            [[PWCoreDataAPI storeContext] performBlock:^{
+            [[[self class] storeContext] performBlock:^{
                 NSError *error = nil;
-                if (![[PWCoreDataAPI storeContext] save:&error]) {
+                if (![[[self class] storeContext] save:&error]) {
                     abort();
                 }
             }];

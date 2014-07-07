@@ -9,7 +9,6 @@
 @import Foundation;
 @import CoreData;
 
-
 @interface PWCoreDataAPI : NSObject
 
 + (NSManagedObjectContext *)readContext;

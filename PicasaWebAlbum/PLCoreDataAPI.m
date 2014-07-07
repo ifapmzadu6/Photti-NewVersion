@@ -15,6 +15,13 @@
 
 @implementation PLCoreDataAPI
 
++ (PLCoreDataAPI *)sharedManager {
+    static dispatch_once_t once;
+    static id instance;
+    dispatch_once(&once, ^{instance = self.new;});
+    return instance;
+}
+
 + (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
     static NSPersistentStoreCoordinator *persistentStoreCoordinator;
     static dispatch_once_t onceToken;
@@ -22,7 +29,7 @@
         NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PLModel" withExtension:@"momd"];
         NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
         
-        NSURL *storeURL = [[PLCoreDataAPI applicationDocumentsDirectory] URLByAppendingPathComponent:@"PLModel.sqlite"];
+        NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"PLModel.sqlite"];
         
         NSPersistentStoreCoordinator *tmpPersistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
         
@@ -38,31 +45,115 @@
     return persistentStoreCoordinator;
 }
 
-+ (NSManagedObjectContext *)readContext {
-    static NSManagedObjectContext *context;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSPersistentStoreCoordinator *coordinator = [PLCoreDataAPI persistentStoreCoordinator];
-        if (coordinator != nil) {
-            NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-            managedObjectContext.persistentStoreCoordinator = coordinator;
-            
-            context = managedObjectContext;
-        }
-    });
-    return context;
++ (NSURL *)applicationDocumentsDirectory {
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
 + (NSManagedObjectContext *)writeContext {
     NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    context.parentContext = [PLCoreDataAPI readContext];
+    context.parentContext = [self readContext];
+    context.undoManager = nil;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:[self sharedManager] selector:@selector(contextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
+    
     return context;
 }
 
-#pragma mark - Application's Documents directory
-// Returns the URL to the application's Documents directory.
-+ (NSURL *)applicationDocumentsDirectory {
-    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
++ (void)writeContextFinish:(NSManagedObjectContext *)context {
+    [[NSNotificationCenter defaultCenter] removeObserver:[self sharedManager] name:NSManagedObjectContextDidSaveNotification object:context];
+}
+
++ (NSManagedObjectContext *)readContext {
+    static NSManagedObjectContext *context;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+        context.parentContext = [self storeContext];
+        context.undoManager = nil;
+    });
+    return context;
+}
+
++ (NSManagedObjectContext *)storeContext {
+    static NSManagedObjectContext *context;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        context.persistentStoreCoordinator = [self persistentStoreCoordinator];
+        context.undoManager = nil;
+    });
+    return context;
+}
+
+
+#pragma mark Block
++ (void)writeWithBlock:(void (^)(NSManagedObjectContext *))block {
+    if (!block) return;
+    
+    NSManagedObjectContext *context = [self writeContext];
+    [context performBlock:^{
+        block(context);
+        
+        NSError *error = nil;
+        if (![context save:&error]) {
+            abort();
+        }
+        
+        [self writeContextFinish:context];
+    }];
+}
+
++ (void)writeWithBlockAndWait:(void (^)(NSManagedObjectContext *))block {
+    if (!block) return;
+    
+    NSManagedObjectContext *context = [self writeContext];
+    [context performBlockAndWait:^{
+        block(context);
+        
+        NSError *error = nil;
+        if (![context save:&error]) {
+            abort();
+        }
+        
+        [self writeContextFinish:context];
+    }];
+}
+
++ (void)readWithBlock:(void (^)(NSManagedObjectContext *))block {
+    if (!block) return;
+    
+    NSManagedObjectContext *context = [self readContext];
+    [context performBlock:^{
+        block(context);
+    }];
+}
+
++ (void)readWithBlockAndWait:(void (^)(NSManagedObjectContext *))block {
+    if (!block) return;
+    
+    NSManagedObjectContext *context = [self readContext];
+    [context performBlockAndWait:^{
+        block(context);
+    }];
+}
+
+#pragma mark NSNotificationCenter
+- (void)contextDidSaveNotification:(NSNotification *)notification {
+    if (notification.object != [[self class] readContext] && notification.object != [[self class] storeContext]) {
+        [[[self class] readContext] performBlockAndWait:^{
+            NSError *error = nil;
+            if (![[[self class] readContext] save:&error]) {
+                abort();
+            }
+            
+            [[[self class] storeContext] performBlock:^{
+                NSError *error = nil;
+                if (![[[self class] storeContext] save:&error]) {
+                    abort();
+                }
+            }];
+        }];
+    }
 }
 
 @end

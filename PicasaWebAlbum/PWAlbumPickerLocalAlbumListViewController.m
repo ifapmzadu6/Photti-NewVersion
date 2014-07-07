@@ -137,7 +137,7 @@
 }
 
 - (void)addBarButtonAction {
-    UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"新規アルバム", nil) message:NSLocalizedString(@"アルバム名を入力してください。", nil)];
+    UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"New Album", nil) message:NSLocalizedString(@"Enter album title.", nil)];
     alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
     [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
     __weak UIAlertView *wAlertView = alertView;
@@ -149,17 +149,16 @@
         UITextField *textField = [sAlertView textFieldAtIndex:0];
         NSString *title = textField.text;
         if (!title || [title isEqualToString:@""]) {
-            title = NSLocalizedString(@"新規アルバム", nil);
+            title = NSLocalizedString(@"New Album", nil);
         }
         
-        NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
-        [context performBlock:^{
+        [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
             if (!sself) return;
             
             PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
             album.id_str = [PWSnowFlake generateUniqueIDString];
-            album.name = NSLocalizedString(@"新規アルバム", nil);
+            album.name = NSLocalizedString(@"New Album", nil);
             NSDate *date = [NSDate date];
             NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:date];
             album.tag_date = adjustedDate;
@@ -167,13 +166,10 @@
             album.import = date;
             album.update = date;
             album.tag_type = @(PLAlbumObjectTagTypeMyself);
-            
-            NSError *error = nil;
-            [context save:&error];
         }];
     }];
     UITextField *textField = [alertView textFieldAtIndex:0];
-    textField.placeholder = NSLocalizedString(@"新規アルバム", nil);
+    textField.placeholder = NSLocalizedString(@"New Album", nil);
     [alertView show];
 }
 

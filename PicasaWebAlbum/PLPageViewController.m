@@ -177,8 +177,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
             title = NSLocalizedString(@"New Album", nil);
         }
         
-        NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
-        [context performBlock:^{
+        [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
             album.id_str = [PWSnowFlake generateUniqueIDString];
             album.name = NSLocalizedString(@"New Album", nil);
@@ -189,9 +188,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
             album.import = date;
             album.update = date;
             album.tag_type = @(PLAlbumObjectTagTypeMyself);
-            
-            NSError *error = nil;
-            [context save:&error];
         }];
     }];
     UITextField *textField = [alertView textFieldAtIndex:0];
