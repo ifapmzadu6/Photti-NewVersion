@@ -54,7 +54,12 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"UploadLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.667f];
+    if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height == 480)) {
+        _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.1f];
+    }
+    else {
+        _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.667f];
+    }
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
     
@@ -194,35 +199,69 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     CGRect rect = self.view.bounds;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            _iconImageView.frame = CGRectMake(46.0f, 80.0f, 170.0f, 170.0f);
-            _uploadSettingLabel.frame = CGRectMake(244.0f + 0.0f, 272.0f - 210.0f, CGRectGetHeight(rect), 20.0f);
-            _unlimitedLabel.frame = CGRectMake(244.0f + 15.0f, 304.0f - 220.0f, 140.0f, 20.0f);
-            _highResolutionLabel.frame = CGRectMake(244.0f + 165.0f, 304.0f - 220.0f, 140.0f, 20.0f);
-            CGFloat titleLabelMaxY = CGRectGetMaxY(_unlimitedLabel.frame);
-            CGFloat buttonMinY = 450.0f - 220.0f;
-            CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-            _unlimitedDescriptionLabel.frame = CGRectMake(244.0f + 10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
-            CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-            _highResolutionDescriptionLabel.frame = CGRectMake(244.0f + 165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
-            _openGoogleDriveButton.frame = CGRectMake(244.0f + 165.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 140.0f, 20.0f);
-            _unlimitedButton.frame = CGRectMake(244.0f + 30.0f, 458.0f - 220.0f, 110.0, 30.0f);
-            _highResolutionButton.frame = CGRectMake(244.0f + 180.0f, 458.0f - 220.0f, 110.0, 30.0f);
+        if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height > 480)) {
+            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                _iconImageView.frame = CGRectMake(46.0f, 80.0f, 170.0f, 170.0f);
+                _uploadSettingLabel.frame = CGRectMake(244.0f + 0.0f, 272.0f - 210.0f, CGRectGetHeight(rect), 20.0f);
+                _unlimitedLabel.frame = CGRectMake(244.0f + 15.0f, 310.0f - 220.0f, 140.0f, 20.0f);
+                _highResolutionLabel.frame = CGRectMake(244.0f + 165.0f, 310.0f - 220.0f, 140.0f, 20.0f);
+                CGFloat titleLabelMaxY = CGRectGetMaxY(_unlimitedLabel.frame);
+                CGFloat buttonMinY = 450.0f - 220.0f;
+                CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
+                _unlimitedDescriptionLabel.frame = CGRectMake(244.0f + 10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
+                CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
+                _highResolutionDescriptionLabel.frame = CGRectMake(244.0f + 165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
+                _openGoogleDriveButton.frame = CGRectMake(244.0f + 165.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 140.0f, 20.0f);
+                _unlimitedButton.frame = CGRectMake(244.0f + 30.0f, 458.0f - 220.0f, 110.0, 30.0f);
+                _highResolutionButton.frame = CGRectMake(244.0f + 180.0f, 458.0f - 220.0f, 110.0, 30.0f);
+            }
+            else {
+                _iconImageView.frame = CGRectMake(70.0f, 86.0f, 170.0f, 170.0f);
+                _uploadSettingLabel.frame = CGRectMake(0.0f, 272.0f, CGRectGetWidth(rect), 20.0f);
+                _unlimitedLabel.frame = CGRectMake(15.0f, 304.0f, 140.0f, 20.0f);
+                _highResolutionLabel.frame = CGRectMake(165.0f, 304.0f, 140.0f, 20.0f);
+                CGFloat titleLabelMaxY = CGRectGetMaxY(_unlimitedLabel.frame);
+                CGFloat buttonMinY = 444.0f;
+                CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
+                _unlimitedDescriptionLabel.frame = CGRectMake(10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
+                CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
+                _highResolutionDescriptionLabel.frame = CGRectMake(165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
+                _openGoogleDriveButton.frame = CGRectMake(165.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 140.0f, 20.0f);
+                _unlimitedButton.frame = CGRectMake(30.0f, 454.0f, 110.0, 30.0f);
+                _highResolutionButton.frame = CGRectMake(180.0f, 454.0f, 110.0, 30.0f);
+            }
         }
         else {
-            _iconImageView.frame = CGRectMake(70.0f, 86.0f, 170.0f, 170.0f);
-            _uploadSettingLabel.frame = CGRectMake(0.0f, 272.0f, CGRectGetWidth(rect), 20.0f);
-            _unlimitedLabel.frame = CGRectMake(15.0f, 304.0f, 140.0f, 20.0f);
-            _highResolutionLabel.frame = CGRectMake(165.0f, 304.0f, 140.0f, 20.0f);
-            CGFloat titleLabelMaxY = CGRectGetMaxY(_unlimitedLabel.frame);
-            CGFloat buttonMinY = 444.0f;
-            CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-            _unlimitedDescriptionLabel.frame = CGRectMake(10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
-            CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-            _highResolutionDescriptionLabel.frame = CGRectMake(165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
-            _openGoogleDriveButton.frame = CGRectMake(165.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 140.0f, 20.0f);
-            _unlimitedButton.frame = CGRectMake(30.0f, 454.0f, 110.0, 30.0f);
-            _highResolutionButton.frame = CGRectMake(180.0f, 454.0f, 110.0, 30.0f);
+            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                _iconImageView.frame = CGRectMake(120.0f, 48.0f, 240.0f, 240.0f);
+                _uploadSettingLabel.frame = CGRectMake(0.0f, 272.0f - 210.0f, CGRectGetWidth(rect), 20.0f);
+                _unlimitedLabel.frame = CGRectMake(75.0f + 15.0f, 310.0f - 220.0f, 140.0f, 20.0f);
+                _highResolutionLabel.frame = CGRectMake(75.0f + 165.0f, 310.0f - 220.0f, 140.0f, 20.0f);
+                CGFloat titleLabelMaxY = CGRectGetMaxY(_unlimitedLabel.frame);
+                CGFloat buttonMinY = 450.0f - 220.0f;
+                CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
+                _unlimitedDescriptionLabel.frame = CGRectMake(75.0f + 10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
+                CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
+                _highResolutionDescriptionLabel.frame = CGRectMake(75.0f + 165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
+                _openGoogleDriveButton.frame = CGRectMake(75.0f + 165.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 140.0f, 20.0f);
+                _unlimitedButton.frame = CGRectMake(75.0f + 30.0f, 458.0f - 220.0f, 110.0, 30.0f);
+                _highResolutionButton.frame = CGRectMake(75.0f + 180.0f, 458.0f - 220.0f, 110.0, 30.0f);
+            }
+            else {
+                _iconImageView.frame = CGRectMake(40.0f, 110.0f, 240.0f, 240.0f);
+                _uploadSettingLabel.frame = CGRectMake(0.0f, 120.0f, CGRectGetWidth(rect), 20.0f);
+                _unlimitedLabel.frame = CGRectMake(15.0f, 170.0f, 140.0f, 20.0f);
+                _highResolutionLabel.frame = CGRectMake(165.0f, 170.0f, 140.0f, 20.0f);
+                CGFloat titleLabelMaxY = CGRectGetMaxY(_unlimitedLabel.frame);
+                CGFloat buttonMinY = 340.0f;
+                CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
+                _unlimitedDescriptionLabel.frame = CGRectMake(10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
+                CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
+                _highResolutionDescriptionLabel.frame = CGRectMake(165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
+                _openGoogleDriveButton.frame = CGRectMake(165.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 140.0f, 20.0f);
+                _unlimitedButton.frame = CGRectMake(30.0f, 360.0f, 110.0, 30.0f);
+                _highResolutionButton.frame = CGRectMake(180.0f, 360.0f, 110.0, 30.0f);
+            }
         }
     }
     else {

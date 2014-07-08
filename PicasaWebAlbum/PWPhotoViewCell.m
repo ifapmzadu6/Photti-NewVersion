@@ -170,7 +170,7 @@
     [self setSelected:self.isSelected];
 }
 
-- (void)setPhoto:(PWPhotoObject *)photo isNowLoading:(BOOL)isNowLoading {
+- (void)setPhoto:(PWPhotoObject *)photo {
     _photo = photo;
     
     NSUInteger hash = photo.hash;
@@ -178,25 +178,24 @@
     
     if (!photo) return;
     
-    if (photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
-        _videoBackgroundView.hidden = YES;
-        _videoDurationLabel.hidden = YES;
-        _videoIconView.hidden = YES;
-    }
-    if (photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-        _videoBackgroundView.hidden = NO;
-        
-        NSString *durationString = durationString = photo.gphoto.originalvideo_duration;
-        _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
-        _videoDurationLabel.hidden = NO;
-        _videoIconView.hidden = NO;
-    }
+    _videoBackgroundView.hidden = YES;
+    _videoDurationLabel.hidden = YES;
+    _videoIconView.hidden = YES;
     
     NSString *urlString = photo.tag_thumbnail_url;
     if (!urlString) return;
     
     UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
     if (memoryCachedImage) {
+        if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+            _videoBackgroundView.hidden = NO;
+            
+            NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
+            _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
+            _videoDurationLabel.hidden = NO;
+            _videoIconView.hidden = NO;
+        }
+        
         _imageView.image = memoryCachedImage;
         _imageView.alpha = 1.0f;
         [self setNeedsLayout];
@@ -217,11 +216,7 @@
             
             return;
         }
-        
-        if (isNowLoading) {
-            return;
-        }
-        
+                
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
@@ -260,6 +255,15 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         if (_photoHash != hash) return;
+        
+        if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+            _videoBackgroundView.hidden = NO;
+            
+            NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
+            _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
+            _videoDurationLabel.hidden = NO;
+            _videoIconView.hidden = NO;
+        }
         
         [_activityIndicatorView stopAnimating];
         _imageView.image = image;

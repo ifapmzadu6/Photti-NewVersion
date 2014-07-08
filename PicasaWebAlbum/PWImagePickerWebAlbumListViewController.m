@@ -23,7 +23,6 @@
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic) NSUInteger requestIndex;
-@property (nonatomic) BOOL isNowRequesting;
 
 @end
 
@@ -102,10 +101,6 @@
     for (NSIndexPath *indexPath in indexPaths) {
         [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
-    
-    if (!_isNowRequesting) {
-        [_refreshControl endRefreshing];
-    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -174,7 +169,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    [cell setAlbum:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];
+    cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
     
     return cell;
 }
@@ -219,9 +214,7 @@
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
-    if (!_isNowRequesting) {
-        [self reloadData];
-    }
+    [self reloadData];
 }
 
 #pragma mark LoadData
@@ -256,8 +249,6 @@
 }
 
 - (void)reloadData {
-    _isNowRequesting = YES;
-    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfAlbumsWithIndex:0 completion:^(NSArray *albums, NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
@@ -282,7 +273,6 @@
             [sself.refreshControl endRefreshing];
             [sself.activityIndicatorView stopAnimating];
             
-            sself.isNowRequesting = NO;
             [sself.collectionView reloadData];
         });
     }];

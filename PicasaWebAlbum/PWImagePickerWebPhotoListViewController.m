@@ -32,7 +32,6 @@
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 
 @property (nonatomic) NSUInteger requestIndex;
-@property (nonatomic) BOOL isNowRequesting;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSMutableArray *selectedPhotoIDs;
@@ -133,10 +132,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    if (!_isNowRequesting) {
-        [_refreshControl endRefreshing];
-    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -214,9 +209,7 @@
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
-    if (!_isNowRequesting) {
-        [self reloadData];
-    }
+    [self reloadData];
 }
 
 #pragma mark UICollectionViewDataSource
@@ -232,7 +225,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     cell.isSelectWithCheckMark = YES;
-    [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];;
+    [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];;
     
     return cell;
 }
@@ -315,9 +308,7 @@
     }];
 }
 
-- (void)reloadData {
-    _isNowRequesting = YES;
-    
+- (void)reloadData {    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:0 completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
@@ -345,7 +336,6 @@
             [sself.refreshControl endRefreshing];
             [sself.activityIndicatorView stopAnimating];
             
-            sself.isNowRequesting = NO;
             [sself.collectionView reloadData];
             
             if (sself.fetchedResultsController.fetchedObjects.count) {

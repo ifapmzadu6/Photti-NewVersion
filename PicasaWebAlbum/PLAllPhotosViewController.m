@@ -29,7 +29,6 @@
 @property (nonatomic) NSUInteger videosCount;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-@property (nonatomic) BOOL isChangingContext;
 
 @end
 
@@ -154,18 +153,10 @@
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    if (_isChangingContext) {
-        return 0;
-    }
-    
     return _fetchedResultsController.sections.count;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if (_isChangingContext) {
-        return 0;
-    }
-    
     id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
     return [sectionInfo numberOfObjects];
 }
@@ -173,12 +164,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PLPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    if (_isChangingContext) {
-        cell.photo = nil;
-    }
-    else {
-        cell.photo = [_fetchedResultsController objectAtIndexPath:indexPath];
-    }
+    cell.photo = [_fetchedResultsController objectAtIndexPath:indexPath];
     cell.isSelectWithCheckMark = _isSelectMode;
     
     return cell;
@@ -300,22 +286,9 @@
 }
 
 #pragma mark NSFetchedResultsControllerDelegate
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    _isChangingContext = YES;
-}
-
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    _isChangingContext = NO;
-    
-    NSError *coredataError = nil;
-    [_fetchedResultsController performFetch:&coredataError];
-    
-    __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        [sself.collectionView reloadData];
+        [_collectionView reloadData];
     });
 }
 

@@ -48,7 +48,12 @@
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PictureLargeDay"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.667f];
+    if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height == 480)) {
+        _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.1f];
+    }
+    else {
+        _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.667f];
+    }
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
     
@@ -123,19 +128,37 @@
     CGRect rect = self.view.bounds;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            _iconImageView.frame = CGRectMake(70.0f, 60.0f, 190.0f, 190.0f);
-            _titleLabel.frame = CGRectMake(250.0f + 0.0f, 280.0f - 212.0f, CGRectGetHeight(rect), 36.0f);
-            _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 320.0f - 212.0f, 240.0f, 100.0f);
-            _enableButton.frame = CGRectMake(250.0f + 50.0f, 444.0f - 212.0f, 100.0f, 30.0f);
-            _disableButton.frame = CGRectMake(250.0f + 170.0f, 444.0f - 212.0f, 100.0f, 30.0f);
+        if ((int)[[UIScreen mainScreen] bounds].size.height > 480) {
+            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                _iconImageView.frame = CGRectMake(70.0f, 60.0f, 190.0f, 190.0f);
+                _titleLabel.frame = CGRectMake(250.0f + 0.0f, 280.0f - 212.0f, CGRectGetHeight(rect), 36.0f);
+                _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 320.0f - 212.0f, 240.0f, 100.0f);
+                _enableButton.frame = CGRectMake(250.0f + 50.0f, 444.0f - 212.0f, 100.0f, 30.0f);
+                _disableButton.frame = CGRectMake(250.0f + 170.0f, 444.0f - 212.0f, 100.0f, 30.0f);
+            }
+            else {
+                _iconImageView.frame = CGRectMake(70.0f, 80.0f, 190.0f, 190.0f);
+                _titleLabel.frame = CGRectMake(0.0f, 280.0f, CGRectGetWidth(rect), 36.0f);
+                _descriptionLabel.frame = CGRectMake(40.0f, 320.0f, 240.0f, 100.0f);
+                _enableButton.frame = CGRectMake(50.0f, 444.0f, 100.0f, 30.0f);
+                _disableButton.frame = CGRectMake(170.0f, 444.0f, 100.0f, 30.0f);
+            }
         }
         else {
-            _iconImageView.frame = CGRectMake(70.0f, 80.0f, 190.0f, 190.0f);
-            _titleLabel.frame = CGRectMake(0.0f, 280.0f, CGRectGetWidth(rect), 36.0f);
-            _descriptionLabel.frame = CGRectMake(40.0f, 320.0f, 240.0f, 100.0f);
-            _enableButton.frame = CGRectMake(50.0f, 444.0f, 100.0f, 30.0f);
-            _disableButton.frame = CGRectMake(170.0f, 444.0f, 100.0f, 30.0f);
+            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                _iconImageView.frame = CGRectMake(120.0f, 54.0f, 240.0f, 240.0f);
+                _titleLabel.frame = CGRectMake(0.0f, 85.0f, CGRectGetWidth(rect), 36.0f);
+                _descriptionLabel.frame = CGRectMake(120.0f, 120.0f, 240.0f, 100.0f);
+                _enableButton.frame = CGRectMake(130.0f, 444.0f - 220.0f, 100.0f, 30.0f);
+                _disableButton.frame = CGRectMake(250.0f, 444.0f - 220.0f, 100.0f, 30.0f);
+            }
+            else {
+                _iconImageView.frame = CGRectMake(70.0f, 80.0f, 190.0f, 190.0f);
+                _titleLabel.frame = CGRectMake(0.0f, 280.0f, CGRectGetWidth(rect), 36.0f);
+                _descriptionLabel.frame = CGRectMake(40.0f, 320.0f, 240.0f, 100.0f);
+                _enableButton.frame = CGRectMake(50.0f, 360.0f, 100.0f, 30.0f);
+                _disableButton.frame = CGRectMake(170.0f, 360.0f, 100.0f, 30.0f);
+            }
         }
     }
     else {

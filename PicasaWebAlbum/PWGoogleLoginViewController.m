@@ -49,7 +49,7 @@
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PicasaLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height != 568)) {
+    if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height == 480)) {
         _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.1f];
     }
     else {

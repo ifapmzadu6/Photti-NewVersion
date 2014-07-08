@@ -39,7 +39,6 @@
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 
 @property (nonatomic) NSUInteger requestIndex;
-@property (nonatomic) BOOL isNowRequesting;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
@@ -140,10 +139,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
-    
-    if (!_isNowRequesting) {
-        [_refreshControl endRefreshing];
-    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -189,7 +184,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
     PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    [cell setAlbum:album isNowLoading:_isNowRequesting];
+    cell.album = album;
     __weak typeof(self) wself = self;
     cell.actionButtonActionBlock = ^(PWAlbumObject *album) {
         typeof(wself) sself = wself;
@@ -262,11 +257,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 }
 
 #pragma mark UIRefreshControl
-- (void)refreshControlAction {
-    if (_isNowRequesting) {
-        return;
-    }
-    
+- (void)refreshControlAction {    
     [self loadDataWithStartIndex:0];
     
     [self moveImageCacheFromDiskToMemoryAtVisibleCells];

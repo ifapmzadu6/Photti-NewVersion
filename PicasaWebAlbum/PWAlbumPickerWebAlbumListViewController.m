@@ -24,8 +24,6 @@
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic) NSUInteger requestIndex;
-@property (nonatomic) BOOL isNowRequesting;
-@property (nonatomic) BOOL isChangingContext;
 
 @end
 
@@ -97,10 +95,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    if (!_isNowRequesting) {
-        [_refreshControl endRefreshing];
-    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -176,12 +170,7 @@
     PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
     cell.isDisableActionButton = YES;
-    if (_isChangingContext) {
-        [cell setAlbum:nil isNowLoading:NO];
-    }
-    else {
-        [cell setAlbum:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];
-    }
+    cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
     
     return cell;
 }
@@ -226,9 +215,7 @@
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
-    if (!_isNowRequesting) {
-        [self loadDataWithStartIndex:0];
-    }
+    [self loadDataWithStartIndex:0];
 }
 
 #pragma mark LoadData
@@ -276,16 +263,7 @@
 }
 
 #pragma mark NSFetchedResultsControllerDelegate
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    _isChangingContext = YES;
-}
-
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    _isChangingContext = NO;
-    
-    NSError *error = nil;
-    [_fetchedResultsController performFetch:&error];
-    
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
     });

@@ -28,7 +28,6 @@
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-@property (nonatomic) BOOL isChangingContext;
 
 @end
 
@@ -156,18 +155,10 @@
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    if (_isChangingContext) {
-        return 0;
-    }
-    
     return _fetchedResultsController.sections.count;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if (_isChangingContext) {
-        return 0;
-    }
-    
     id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
     return [sectionInfo numberOfObjects];
 }
@@ -175,12 +166,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PLAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    if (_isChangingContext) {
-        cell.album = nil;
-    }
-    else {
-        cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    }
+    cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
     __weak typeof(self) wself = self;
     [cell setActionButtonActionBlock:^(PLAlbumObject *album) {
         typeof(wself) sself = wself;
@@ -252,13 +238,7 @@
 }
 
 #pragma mark NSFetchedResultsControllerDelegate
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    _isChangingContext = YES;
-}
-
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    _isChangingContext = NO;
-    
     NSError *error = nil;
     [_fetchedResultsController performFetch:&error];
     if (error) {

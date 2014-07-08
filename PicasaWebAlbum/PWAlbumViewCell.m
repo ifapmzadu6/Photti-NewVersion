@@ -134,7 +134,7 @@
     _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 3.0f, rect.size.width - 20.0f - 8.0f, titleLabelSize.height);
 }
 
-- (void)setAlbum:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading {
+- (void)setAlbum:(PWAlbumObject *)album {
     _album = album;
     
     _titleLabel.text = nil;
@@ -146,10 +146,10 @@
     [self setTitleLabelFrame];
     _numPhotosLabel.text = album.tag_numphotos;
     
-    [self loadThumbnailImage:album isNowLoading:isNowLoading];
+    [self loadThumbnailImage:album];
 }
 
-- (void)loadThumbnailImage:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading {
+- (void)loadThumbnailImage:(PWAlbumObject *)album {
     NSUInteger hash = album.hash;
     _albumHash = hash;
     
@@ -176,9 +176,7 @@
             
             return;
         }
-        
-        if (isNowLoading) return;
-        
+                
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {

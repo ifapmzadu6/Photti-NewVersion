@@ -174,17 +174,9 @@
     _imageView.image = nil;
     [_activityIndicatorView startAnimating];
     
-    if (![_photo.type isEqualToString:ALAssetTypeVideo]) {
-        _videoBackgroundView.hidden = YES;
-        _videoDurationLabel.hidden = YES;
-        _videoIconView.hidden = YES;
-    }
-    else {
-        _videoBackgroundView.hidden = NO;
-        _videoDurationLabel.text = [PLDateFormatter arrangeDuration:_photo.duration.doubleValue];
-        _videoDurationLabel.hidden = NO;
-        _videoIconView.hidden = NO;
-    }
+    _videoBackgroundView.hidden = YES;
+    _videoDurationLabel.hidden = YES;
+    _videoIconView.hidden = YES;
     
     NSURL *url = [NSURL URLWithString:photo.url];
     __weak typeof(self) wself = self;
@@ -200,6 +192,13 @@
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (sself.photoHash != hash) return;
+                
+                if ([sself.photo.type isEqualToString:ALAssetTypeVideo]) {
+                    _videoBackgroundView.hidden = NO;
+                    _videoDurationLabel.text = [PLDateFormatter arrangeDuration:_photo.duration.doubleValue];
+                    _videoDurationLabel.hidden = NO;
+                    _videoIconView.hidden = NO;
+                }
                 
                 [sself.activityIndicatorView stopAnimating];
                 sself.imageView.image = image;

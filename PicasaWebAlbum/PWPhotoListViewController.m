@@ -40,7 +40,6 @@
 @property (strong, nonatomic) UIBarButtonItem *moveBarButtonItem;
 
 @property (nonatomic) NSUInteger requestIndex;
-@property (nonatomic) BOOL isNowRequesting;
 @property (nonatomic) BOOL isSelectMode;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -174,10 +173,6 @@
     else {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
     }
-    
-    if (!_isNowRequesting) {
-        [_refreshControl endRefreshing];
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -279,10 +274,6 @@
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
-    if (_isNowRequesting) {
-        return;
-    }
-    
     [self reloadData];
     
     [self moveImageCacheFromDiskToMemoryAtVisibleCells];
@@ -311,7 +302,7 @@
     PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
     cell.isSelectWithCheckMark = _isSelectMode;
-    [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];;
+    [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];;
     
     return cell;
 }
@@ -490,8 +481,6 @@
 }
 
 - (void)reloadData {
-    _isNowRequesting = YES;
-    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:0 completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
@@ -502,11 +491,9 @@
             if (error.code == 401) {
                 [sself openLoginviewController];
             }
-            return;
         }
         
         sself.requestIndex = nextIndex;
-        sself.isNowRequesting = NO;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
