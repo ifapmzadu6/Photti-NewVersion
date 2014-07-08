@@ -18,7 +18,6 @@
 
 @interface PWPhotoViewCell ()
 
-@property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UIImageView *videoBackgroundView;
 @property (strong, nonatomic) UIImageView *videoIconView;
 @property (strong, nonatomic) UILabel *videoDurationLabel;

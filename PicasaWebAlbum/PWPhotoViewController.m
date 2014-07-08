@@ -19,6 +19,8 @@
 
 @interface PWPhotoViewController ()
 
+@property (strong, nonatomic) UIImage *initialImage;
+
 @property (strong, nonatomic) PWImageScrollView *imageScrollView;
 @property (strong, nonatomic) UIButton *videoButton;
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
@@ -33,10 +35,12 @@
 
 @implementation PWPhotoViewController
 
-- (id)initWithPhoto:(PWPhotoObject *)photo {
+- (id)initWithPhoto:(PWPhotoObject *)photo image:(UIImage *)image {
     self = [self init];
     if (self) {
         _photo = photo;
+        
+        _initialImage = image;
     }
     return self;
 }
@@ -48,12 +52,24 @@
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:_imageScrollView];
     
-    _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    _indicatorView.center = self.view.center;
-    [self.view addSubview:_indicatorView];
-    [_indicatorView startAnimating];
-    
-    [self loadImage];
+    if (_initialImage) {
+        [_imageScrollView setImage:_initialImage];
+        _initialImage = nil;
+        
+        [self loadScreenResolutionImage];
+        
+        _zoomView = _imageScrollView.imageView;
+    }
+    else {
+        _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        _indicatorView.center = self.view.center;
+        [self.view addSubview:_indicatorView];
+        [_indicatorView startAnimating];
+        
+        [self loadImage];
+        
+        _zoomView = _imageScrollView;
+    }
     
     if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
         _imageScrollView.isDisableZoom = NO;

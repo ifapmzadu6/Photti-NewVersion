@@ -52,7 +52,12 @@
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"UploadLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.667f];
+    if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height != 568)) {
+        _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.1f];
+    }
+    else {
+        _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.667f];
+    }
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
     
@@ -187,25 +192,49 @@
     CGRect rect = self.view.bounds;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            _iconImageView.frame = CGRectMake(60.0f, 70.0f, 180.0f, 180.0f);
-            _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 282.0f - 220.0f, 240.0f, 100.0f);
-            _priceLabel.frame = CGRectMake(250.0f + 110.0f, 390.0f - 220.0f, 100.0f, 15.0f);
-            _inAppPurchaseLabel.frame = CGRectMake(250.0f + 0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetHeight(rect), 7.0f);
-            _activityIndicatorView.center = _priceLabel.center;
-            _purchaseButton.frame = CGRectMake(250.0f + 110.0f, 428.0f - 220.0f, 100.0f, 30.0f);
-            CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-            _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 258.0f, restoreButtonSize.width, restoreButtonSize.height);
+        if ((int)[[UIScreen mainScreen] bounds].size.height > 480) {
+            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                _iconImageView.frame = CGRectMake(60.0f, 70.0f, 180.0f, 180.0f);
+                _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 282.0f - 220.0f, 240.0f, 100.0f);
+                _priceLabel.frame = CGRectMake(250.0f + 110.0f, 390.0f - 220.0f, 100.0f, 15.0f);
+                _inAppPurchaseLabel.frame = CGRectMake(250.0f + 0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetHeight(rect), 7.0f);
+                _activityIndicatorView.center = _priceLabel.center;
+                _purchaseButton.frame = CGRectMake(250.0f + 110.0f, 428.0f - 220.0f, 100.0f, 30.0f);
+                CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+                _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 258.0f, restoreButtonSize.width, restoreButtonSize.height);
+            }
+            else {
+                _iconImageView.frame = CGRectMake(70.0f, 90.0f, 180.0f, 180.0f);
+                _descriptionLabel.frame = CGRectMake(40.0f, 282.0f, 240.0f, 100.0f);
+                _priceLabel.frame = CGRectMake(110.0f, 390.0f, 100.0f, 15.0f);
+                _inAppPurchaseLabel.frame = CGRectMake(0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetWidth(rect), 7.0f);
+                _activityIndicatorView.center = _priceLabel.center;
+                _purchaseButton.frame = CGRectMake(110.0f, 428.0f, 100.0f, 30.0f);
+                CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+                _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 494.0f, restoreButtonSize.width, restoreButtonSize.height);
+            }
         }
         else {
-            _iconImageView.frame = CGRectMake(70.0f, 90.0f, 180.0f, 180.0f);
-            _descriptionLabel.frame = CGRectMake(40.0f, 282.0f, 240.0f, 100.0f);
-            _priceLabel.frame = CGRectMake(110.0f, 390.0f, 100.0f, 15.0f);
-            _inAppPurchaseLabel.frame = CGRectMake(0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetWidth(rect), 7.0f);
-            _activityIndicatorView.center = _priceLabel.center;
-            _purchaseButton.frame = CGRectMake(110.0f, 428.0f, 100.0f, 30.0f);
-            CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-            _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 494.0f, restoreButtonSize.width, restoreButtonSize.height);
+            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                _iconImageView.frame = CGRectMake(120.0f, 47.0f, 240.0f, 240.0f);
+                _descriptionLabel.frame = CGRectMake(120.0f, 282.0f - 220.0f, 240.0f, 100.0f);
+                _priceLabel.frame = CGRectMake(190.0f, 390.0f - 220.0f, 100.0f, 15.0f);
+                _inAppPurchaseLabel.frame = CGRectMake(210.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetHeight(rect), 7.0f);
+                _activityIndicatorView.center = _priceLabel.center;
+                _purchaseButton.frame = CGRectMake(190.0f, 428.0f - 220.0f, 100.0f, 30.0f);
+                CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+                _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 258.0f, restoreButtonSize.width, restoreButtonSize.height);
+            }
+            else {
+                _iconImageView.frame = CGRectMake(40.0f, 64.0f, 240.0f, 240.0f);
+                _descriptionLabel.frame = CGRectMake(40.0f, 282.0f, 240.0f, 100.0f);
+                _priceLabel.frame = CGRectMake(110.0f, 390.0f, 100.0f, 15.0f);
+                _inAppPurchaseLabel.frame = CGRectMake(0.0f, CGRectGetMinY(_priceLabel.frame) - 9.0f, CGRectGetWidth(rect), 7.0f);
+                _activityIndicatorView.center = _priceLabel.center;
+                _purchaseButton.frame = CGRectMake(110.0f, 428.0f, 100.0f, 30.0f);
+                CGSize restoreButtonSize = [_restoreButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+                _restoreButton.frame = CGRectMake(CGRectGetMaxX(rect) - restoreButtonSize.width - 10.0f, 494.0f, restoreButtonSize.width, restoreButtonSize.height);
+            }
         }
     }
     else {

@@ -27,7 +27,7 @@
 
 @implementation PWPhotoPageViewController
 
-- (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index {
+- (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index image:(UIImage *)image {
     NSDictionary *option = [NSDictionary dictionaryWithObjectsAndKeys:@(40.0f), UIPageViewControllerOptionInterPageSpacingKey, nil];
     self = [self initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:option];
     if (self) {
@@ -42,7 +42,7 @@
         
         self.delegate = self;
         self.dataSource = self;
-        [self setViewControllers:@[[self makePhotoViewController:index]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+        [self setViewControllers:@[[self makePhotoViewController:index thumbnailImage:image]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
         self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];        
     }
     return self;
@@ -131,7 +131,7 @@
     if (filteredPhotos.count) {
         PWPhotoObject *newPhoto = filteredPhotos.firstObject;
         NSUInteger newIndex = [photos indexOfObject:newPhoto];
-        [self setViewControllers:@[[self makePhotoViewController:newIndex]]
+        [self setViewControllers:@[[self makePhotoViewController:newIndex thumbnailImage:nil]]
                        direction:UIPageViewControllerNavigationDirectionForward
                         animated:NO
                       completion:nil];
@@ -145,23 +145,23 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
     PWPhotoViewController *photoViewController = (PWPhotoViewController *)viewController;
     NSInteger index = [_photos indexOfObject:photoViewController.photo];
-    return [self makePhotoViewController:index - 1];
+    return [self makePhotoViewController:index - 1 thumbnailImage:nil];
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController {
     PWPhotoViewController *photoViewController = (PWPhotoViewController *)viewController;
     NSInteger index = [_photos indexOfObject:photoViewController.photo];
-    return [self makePhotoViewController:index + 1];
+    return [self makePhotoViewController:index + 1 thumbnailImage:nil];
 }
 
 #pragma mark PWPhotoViewController
-- (UIViewController *)makePhotoViewController:(NSInteger)index {
+- (UIViewController *)makePhotoViewController:(NSInteger)index thumbnailImage:(UIImage *)image {
     if (index < 0 || index == _photos.count) {
         return nil;
     }
     
     PWPhotoObject *photo = _photos[index];
-    PWPhotoViewController *viewController = [[PWPhotoViewController alloc] initWithPhoto:photo];
+    PWPhotoViewController *viewController = [[PWPhotoViewController alloc] initWithPhoto:photo image:image];
     NSString *title = [NSString stringWithFormat:@"%ld/%ld", (long)index + 1, (long)_photos.count];
     viewController.title = title;
     NSString *id_str = photo.id_str;

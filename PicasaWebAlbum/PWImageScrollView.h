@@ -17,4 +17,6 @@
 @property (strong, nonatomic) UIImage *image;
 @property (nonatomic) BOOL isDisableZoom;
 
+@property (strong, nonatomic) UIImageView *imageView;
+
 @end

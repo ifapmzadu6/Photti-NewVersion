@@ -309,6 +309,7 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
+    
     cell.isSelectWithCheckMark = _isSelectMode;
     [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath] isNowLoading:_isNowRequesting];;
     
@@ -364,8 +365,11 @@
         [_selectedPhotoIDs addObject:photo.id_str];
     }
     else {
+        PWPhotoViewCell *cell = (PWPhotoViewCell *)[_collectionView cellForItemAtIndexPath:indexPath];
+        UIImage *image = cell.imageView.image;
+        
         NSArray *photos = [_fetchedResultsController fetchedObjects];
-        PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row];
+        PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row image:image];
         [self.navigationController pushViewController:viewController animated:YES];
         
         _photoPageViewController = viewController;

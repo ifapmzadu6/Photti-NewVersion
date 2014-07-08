@@ -15,6 +15,7 @@
 #import "PWAlbumListViewController.h"
 #import "PWGoogleLoginViewController.h"
 
+
 @interface PWNavigationController ()
 
 @end
@@ -32,7 +33,7 @@
         if ([PWOAuthManager isLogined]) {
             PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
             self.viewControllers = @[albumListViewController];
-        }
+        }        
     }
     return self;
 }

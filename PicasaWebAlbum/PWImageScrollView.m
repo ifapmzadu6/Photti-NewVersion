@@ -10,7 +10,7 @@
 
 @interface PWImageScrollView ()
 
-@property (strong, nonatomic) UIImageView *imageView;
+//@property (strong, nonatomic) UIImageView *imageView;
 
 @property (nonatomic) CGPoint pointToCenterAfterResize;
 @property (nonatomic) CGFloat scaleToRestoreAfterResize;
@@ -124,6 +124,7 @@
 	
 	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, imageWidth, imageHeight)];
 	_imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _imageView.clipsToBounds = YES;
 	_imageView.image = image;
 	[self addSubview:_imageView];
 	

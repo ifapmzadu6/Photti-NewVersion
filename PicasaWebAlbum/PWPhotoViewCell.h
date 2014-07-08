@@ -15,6 +15,8 @@
 @property (strong, nonatomic, readonly) PWPhotoObject *photo;
 @property (nonatomic) BOOL isSelectWithCheckMark;
 
+@property (strong, nonatomic) UIImageView *imageView;
+
 - (void)setPhoto:(PWPhotoObject *)photo isNowLoading:(BOOL)isNowLoading;
 
 @end
