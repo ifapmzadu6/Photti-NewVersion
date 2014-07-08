@@ -82,16 +82,19 @@
     __weak typeof(self) wself = self;
     PDTaskManager *taskManager = [PDTaskManager sharedManager];
     [taskManager countOfAllPhotosInTaskWithCompletion:^(NSUInteger count, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
         if (error) return;
         
-        if (count > 0) {
-            sself.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)count];
-        }
-        else {
-            sself.tabBarItem.badgeValue = nil;
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            if (count > 0) {
+                sself.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)count];
+            }
+            else {
+                sself.tabBarItem.badgeValue = nil;
+            }
+        });
     }];
 }
 
@@ -103,7 +106,15 @@
         if (error) return;
         
         if (count > 0) {
-            [sself showTaskManagerViewController];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                UIViewController *viewController = sself.viewControllers.firstObject;
+                if (![viewController isKindOfClass:[PDTaskManagerViewController class]]) {
+                    [sself showTaskManagerViewController];
+                }
+            });
         }
         else {
             [[PDTaskManager sharedManager] getRequestingTasksWithCompletion:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
@@ -112,10 +123,16 @@
                     if (!sself) return;
                     
                     if (dataTasks.count == 0 && uploadTasks.count == 0 && downloadTasks.count == 0) {
-                        [sself showUploadDescriptionViewController];
+                        UIViewController *viewController = sself.viewControllers.firstObject;
+                        if (![viewController isKindOfClass:[PDUploadDescriptionViewController class]]) {
+                            [sself showUploadDescriptionViewController];
+                        }
                     }
                     else {
-                        [sself showTaskManagerViewController];
+                        UIViewController *viewController = sself.viewControllers.firstObject;
+                        if (![viewController isKindOfClass:[PDTaskManagerViewController class]]) {
+                            [sself showTaskManagerViewController];
+                        }
                     }
                 });
             }];

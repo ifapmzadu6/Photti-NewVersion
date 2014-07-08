@@ -26,7 +26,6 @@
 @property (strong, nonatomic) UITableView *tableView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-@property (nonatomic) BOOL isChangingContext;
 @property (nonatomic) BOOL isEnabledPLCoreDataNotification;
 @property (nonatomic) BOOL isEnabledPWCoreDataNotification;
 
@@ -44,14 +43,12 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             sself.isEnabledPLCoreDataNotification = YES;
-            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerWillChangeContent:) name:NSManagedObjectContextWillSaveNotification object:context];
             [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:context];
         }];
         [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
             typeof(wself) sself = wself;
             if (!sself) return;
             sself.isEnabledPWCoreDataNotification = YES;
-            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerWillChangeContent:) name:NSManagedObjectContextWillSaveNotification object:context];
             [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:context];
         }];
     }
@@ -103,22 +100,12 @@
     _tableView.frame = rect;
 }
 
-- (void)dealloc {
-    __weak typeof(self) wself = self;
-    [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextWillSaveNotification object:context];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
-    }];
-    [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [[NSNotificationCenter defaultCenter] removeObserver:sself name:NSManagedObjectContextWillSaveNotification object:context];
-        [[NSNotificationCenter defaultCenter] removeObserver:sself name:NSManagedObjectContextDidSaveNotification object:context];
-    }];
-}
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+- (void)dealloc {
+    NSLog(@"%s", __func__);
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
@@ -135,18 +122,10 @@
 
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (_isChangingContext) {
-        return 0;
-    }
-    
     return _fetchedResultsController.sections.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (_isChangingContext) {
-        return 0;
-    }
-    
     id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
     return [sectionInfo numberOfObjects];
 }
@@ -154,12 +133,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     PDTaskTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
-    if (_isChangingContext) {
-        cell.taskObject = nil;
-    }
-    else {
-        cell.taskObject = [_fetchedResultsController objectAtIndexPath:indexPath];
-    }
+    cell.taskObject = [_fetchedResultsController objectAtIndexPath:indexPath];
     cell.isNowLoading = (indexPath.row == 0);
     
     return cell;
@@ -190,7 +164,7 @@
 #pragma mark NSFetchedResultsController
 - (void)loadData {
     __weak typeof(self) wself = self;
-    [PDCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+    [PDCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -212,16 +186,7 @@
 }
 
 #pragma NSFetchedResultsControllerDelegate
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    _isChangingContext = YES;
-}
-
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    _isChangingContext = NO;
-    
-    NSError *error = nil;
-    [_fetchedResultsController performFetch:&error];
-    
     dispatch_async(dispatch_get_main_queue(), ^{
         [_tableView reloadData];
     });

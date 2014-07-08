@@ -77,6 +77,11 @@ static NSString * const PWXMLNode = @"text";
                         album.tag_updated = date;
                     }
                     
+                    NSError *error = nil;
+                    if (![context save:&error]) {
+                        abort();
+                    }
+                    
                     if (completion) {
                         completion(albums, index + [totalResults integerValue], nil);
                     }
@@ -152,6 +157,11 @@ static NSString * const PWXMLNode = @"text";
                     photo.sortIndex = @([startIndex integerValue] + [photos indexOfObject:photo]);
                 }
                 
+                NSError *error = nil;
+                if (![context save:&error]) {
+                    abort();
+                }
+                
                 if (completion) {
                     completion(photos, index + [totalResults integerValue], nil);
                 }
@@ -194,6 +204,11 @@ static NSString * const PWXMLNode = @"text";
         
         [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             PWAlbumObject *album = [PWPicasaParser albumFromJson:entries existingAlbums:nil context:context];
+            
+            NSError *error = nil;
+            if (![context save:&error]) {
+                abort();
+            }
             
             if (completion) {
                 completion(album, nil);

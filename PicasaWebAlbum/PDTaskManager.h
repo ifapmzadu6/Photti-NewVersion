@@ -39,6 +39,6 @@ static NSString * const kPDTaskManagerIsResizePhotosKey = @"kPDTMIRPK";
 @property (copy, nonatomic) void (^backgroundComplecationHandler)();
 
 @property (copy, nonatomic) void (^notPurchasedUploadDownloadAction)();
-
+@property (copy, nonatomic) void (^notAllowedAccessPhotoLibraryAction)();
 
 @end

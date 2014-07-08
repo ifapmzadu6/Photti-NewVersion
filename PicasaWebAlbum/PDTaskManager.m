@@ -71,6 +71,12 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         }
         return;
     }
+    if (![ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
+        if (_notAllowedAccessPhotoLibraryAction) {
+            _notAllowedAccessPhotoLibraryAction();
+        }
+        return;
+    }
     
     NSString *webAlbumId = fromWebAlbum.id_str;
     if (!webAlbumId) {
@@ -82,12 +88,14 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
         __block PDWebToLocalAlbumTaskObject *webToLocalAlbumTask = nil;
-        [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
-            webToLocalAlbumTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalAlbumTaskObjectName inManagedObjectContext:context];
+        NSManagedObjectContext *pdContext = [PDCoreDataAPI writeContext];
+        [pdContext performBlockAndWait:^{
+            webToLocalAlbumTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalAlbumTaskObjectName inManagedObjectContext:pdContext];
             webToLocalAlbumTask.album_object_id_str = webAlbumId;
-            
-            [context save:nil];
         }];
         
         NSMutableArray *photoObjectIDs = @[].mutableCopy;
@@ -112,12 +120,12 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
             }
         }];
         
-        [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+        [pdContext performBlockAndWait:^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
             for (NSString *photoObjectID in photoObjectIDs) {
-                PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
+                PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:pdContext];
                 webPhoto.photo_object_id_str = photoObjectID;
                 webPhoto.tag_sort_index = photoObjectSortIndexs[photoObjectID];
                 webPhoto.task = webToLocalAlbumTask;
@@ -128,19 +136,23 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                 [sself.tasks addObject:newTask];
             }
             
-            [context save:nil];
-            
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                if (completion) {
-                    completion(nil);
-                }
-            });
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                if (sself.taskManagerChangedBlock) {
-                    sself.taskManagerChangedBlock(sself);
-                }
-            });
+            NSError *error = nil;
+            if (![pdContext save:&error]) {
+                abort();
+            }
         }];
+        [PLCoreDataAPI writeContextFinish:pdContext];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if (completion) {
+                completion(nil);
+            }
+        });
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if (sself.taskManagerChangedBlock) {
+                sself.taskManagerChangedBlock(sself);
+            }
+        });
     });
 }
 
@@ -158,16 +170,21 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         }
         return;
     }
+    if (![ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
+        if (_notAllowedAccessPhotoLibraryAction) {
+            _notAllowedAccessPhotoLibraryAction();
+        }
+        return;
+    }
     
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        __block PDWebToLocalPhotosTaskObject *webToLocalPhotosTask = nil;
-        [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
-            webToLocalPhotosTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalAlbumTaskObjectName inManagedObjectContext:context];
-            [context save:nil];
-        }];
+        typeof(wself) sself = wself;
+        if (!sself) return;
         
-        [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PDWebToLocalPhotosTaskObject *webToLocalPhotosTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalAlbumTaskObjectName inManagedObjectContext:context];
+            
             typeof(wself) sself = wself;
             if (!sself) return;
             
@@ -182,20 +199,18 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                 newTask.taskObject = webToLocalPhotosTask;
                 [sself.tasks addObject:newTask];
             }
-            
-            [context save:nil];
-            
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                if (completion) {
-                    completion(nil);
-                }
-            });
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                if (sself.taskManagerChangedBlock) {
-                    sself.taskManagerChangedBlock(sself);
-                }
-            });
         }];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if (completion) {
+                completion(nil);
+            }
+        });
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if (sself.taskManagerChangedBlock) {
+                sself.taskManagerChangedBlock(sself);
+            }
+        });
     });
 }
 
@@ -213,11 +228,17 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         }
         return;
     }
+    if (![ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
+        if (_notAllowedAccessPhotoLibraryAction) {
+            _notAllowedAccessPhotoLibraryAction();
+        }
+        return;
+    }
     
     // TODO: webAlbum = nil ならアルバム新規作成のタスクを投げる
     
     __weak typeof(self) wself = self;
-    [PDCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -281,9 +302,15 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         }
         return;
     }
+    if (![ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
+        if (_notAllowedAccessPhotoLibraryAction) {
+            _notAllowedAccessPhotoLibraryAction();
+        }
+        return;
+    }
     
     __weak typeof(self) wself = self;
-    [PDCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -337,7 +364,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         return;
     }
     
-    [PDCoreDataAPI asyncBlock:^(NSManagedObjectContext *context) {
+    [PDCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPDBasePhotoObjectName inManagedObjectContext:context];
         NSError *error = nil;
@@ -414,10 +441,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     NSArray *allPhotoObject = [PDTaskManager getAllPhotoObject];
     PDBasePhotoObject *firstPhoto = allPhotoObject.firstObject;
     PDBaseTaskObject *taskObject = firstPhoto.task;
-    [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         [taskObject removePhotosObject:firstPhoto];
         [context deleteObject:firstPhoto];
-        [context save:nil];
     }];
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -434,9 +460,8 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         [task resume];
     }
     else {
-        [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
             [context deleteObject:taskObject];
-            [context save:nil];
         }];
     }
 }
@@ -464,8 +489,8 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                 }];
                 
                 webToLocalAlbumTask.destination_album_object_id_str = localAlbumObject.id_str;
-                [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
-                    [context save:nil];
+                [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                    //保存のみ行う
                 }];
             }
             
@@ -654,7 +679,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
 
 + (NSArray *)getAllPhotoObject {
     __block NSArray *photoObjects = nil;
-    [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+    [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPDBasePhotoObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_sort_index" ascending:YES]];
@@ -666,7 +691,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
 
 + (NSUInteger)getCountOfTasks {
     __block NSUInteger count = 0;
-    [PDCoreDataAPI syncBlock:^(NSManagedObjectContext *context) {
+    [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPDBaseTaskObjectName inManagedObjectContext:context];
         NSError *error = nil;
