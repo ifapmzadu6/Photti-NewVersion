@@ -290,6 +290,7 @@ static NSString * const PWXMLNode = @"text";
 + (void)deletePhoto:(PWPhotoObject *)photo completion:(void (^)(NSError *error))completion {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
+    NSManagedObjectID *photoObjectID = photo.objectID;
     [PWPicasaPOSTRequest deletePhotoWithAlbumID:photo.albumid photoID:photo.id_str completion:^(NSData *data, NSURLResponse *response, NSError *error) {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         
@@ -309,7 +310,8 @@ static NSString * const PWXMLNode = @"text";
         }
         
         [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            [context deleteObject:photo];
+            PWPhotoObject *photoObject = (PWPhotoObject *)[context objectWithID:photoObjectID];
+            [context deleteObject:photoObject];
         }];
         
         if (completion) {

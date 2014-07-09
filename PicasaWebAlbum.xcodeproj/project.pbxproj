@@ -1565,6 +1565,7 @@
 				ORGANIZATIONNAME = "Keisuke Karijuku";
 				TargetAttributes = {
 					71E884FD19115C7E005A78E0 = {
+						DevelopmentTeam = 4HT2V2M2FQ;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;

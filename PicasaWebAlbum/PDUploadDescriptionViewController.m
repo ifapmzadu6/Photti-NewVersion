@@ -23,8 +23,7 @@
 @property (strong, nonatomic) UILabel *unlimitedDescriptionLabel;
 @property (strong, nonatomic) UIButton *unlimitedButton;
 @property (strong, nonatomic) UILabel *highResolutionLabel;
-@property (strong, nonatomic) UILabel *highResolutionDescriptionLabel;
-@property (strong, nonatomic) UIButton *openGoogleDriveButton;
+@property (strong, nonatomic) UITextView *highResolutionDescriptionLabel;
 @property (strong, nonatomic) UIButton *highResolutionButton;
 
 @end
@@ -134,8 +133,20 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     _highResolutionLabel.textColor = [PWColors getColor:PWColorsTypeTintUploadColor];
     [self.view addSubview:_highResolutionLabel];
     
-    _highResolutionDescriptionLabel = [UILabel new];
-    _highResolutionDescriptionLabel.text = NSLocalizedString(@"Photos bigger than 2048x2048 pixels and videos longer than 15minutes use your Google Storage.", nil);
+    _highResolutionDescriptionLabel = [UITextView new];
+    _highResolutionDescriptionLabel.clipsToBounds = NO;
+    _highResolutionDescriptionLabel.backgroundColor = [UIColor clearColor];
+    _highResolutionDescriptionLabel.scrollEnabled = NO;
+    _highResolutionDescriptionLabel.editable = NO;
+    _highResolutionDescriptionLabel.textContainer.lineFragmentPadding = 0;
+    _highResolutionDescriptionLabel.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0);
+    NSString *string = NSLocalizedString(@"Photos bigger than 2048x2048 pixels and videos longer than 15minutes use your Google Storage.", nil);
+    NSRange linkRange = [string rangeOfString:@"Google Storage"];
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:string];
+    [attributedString addAttribute:NSLinkAttributeName value:kPDGoogleDriveURL range:linkRange];
+    
+    _highResolutionDescriptionLabel.attributedText = attributedString;
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _highResolutionDescriptionLabel.font = [UIFont systemFontOfSize:14.0f];
     }
@@ -144,22 +155,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     }
     _highResolutionDescriptionLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _highResolutionDescriptionLabel.textAlignment = NSTextAlignmentCenter;
-    _highResolutionDescriptionLabel.numberOfLines = 0;
     [self.view addSubview:_highResolutionDescriptionLabel];
-    
-    _openGoogleDriveButton = [UIButton new];
-    [_openGoogleDriveButton addTarget:self action:@selector(openGoogleDriveButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        _openGoogleDriveButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
-    }
-    else {
-        _openGoogleDriveButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
-    }
-    [_openGoogleDriveButton setTitle:NSLocalizedString(@"Open Google Storage", nil) forState:UIControlStateNormal];
-    [_openGoogleDriveButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
-    [_openGoogleDriveButton setTitleColor:[[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
-    _openGoogleDriveButton.exclusiveTouch = YES;
-    [self.view addSubview:_openGoogleDriveButton];
     
     _highResolutionButton = [UIButton new];
     [_highResolutionButton addTarget:self action:@selector(highResolutionButtonAction) forControlEvents:UIControlEventTouchUpInside];
@@ -186,10 +182,24 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
         _unlimitedButton.selected = YES;
         _highResolutionButton.selected = NO;
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            _unlimitedLabel.font = [UIFont boldSystemFontOfSize:15.0f];
+        }
+        else {
+            _unlimitedLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+        }
     }
     else {
         _unlimitedButton.selected = NO;
         _highResolutionButton.selected = YES;
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            _highResolutionLabel.font = [UIFont boldSystemFontOfSize:15.0f];
+        }
+        else {
+            _highResolutionLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+        }
     }
 }
 
@@ -210,8 +220,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
                 CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
                 _unlimitedDescriptionLabel.frame = CGRectMake(244.0f + 10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
                 CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-                _highResolutionDescriptionLabel.frame = CGRectMake(244.0f + 165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
-                _openGoogleDriveButton.frame = CGRectMake(244.0f + 165.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 140.0f, 20.0f);
+                _highResolutionDescriptionLabel.frame = CGRectMake(244.0f + 165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
                 _unlimitedButton.frame = CGRectMake(244.0f + 30.0f, 458.0f - 220.0f, 110.0, 30.0f);
                 _highResolutionButton.frame = CGRectMake(244.0f + 180.0f, 458.0f - 220.0f, 110.0, 30.0f);
             }
@@ -225,8 +234,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
                 CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
                 _unlimitedDescriptionLabel.frame = CGRectMake(10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
                 CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-                _highResolutionDescriptionLabel.frame = CGRectMake(165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
-                _openGoogleDriveButton.frame = CGRectMake(165.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 140.0f, 20.0f);
+                _highResolutionDescriptionLabel.frame = CGRectMake(165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
                 _unlimitedButton.frame = CGRectMake(30.0f, 454.0f, 110.0, 30.0f);
                 _highResolutionButton.frame = CGRectMake(180.0f, 454.0f, 110.0, 30.0f);
             }
@@ -242,8 +250,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
                 CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
                 _unlimitedDescriptionLabel.frame = CGRectMake(75.0f + 10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
                 CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-                _highResolutionDescriptionLabel.frame = CGRectMake(75.0f + 165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
-                _openGoogleDriveButton.frame = CGRectMake(75.0f + 165.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 140.0f, 20.0f);
+                _highResolutionDescriptionLabel.frame = CGRectMake(75.0f + 165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
                 _unlimitedButton.frame = CGRectMake(75.0f + 30.0f, 458.0f - 220.0f, 110.0, 30.0f);
                 _highResolutionButton.frame = CGRectMake(75.0f + 180.0f, 458.0f - 220.0f, 110.0, 30.0f);
             }
@@ -257,8 +264,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
                 CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
                 _unlimitedDescriptionLabel.frame = CGRectMake(10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
                 CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-                _highResolutionDescriptionLabel.frame = CGRectMake(165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
-                _openGoogleDriveButton.frame = CGRectMake(165.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 140.0f, 20.0f);
+                _highResolutionDescriptionLabel.frame = CGRectMake(165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
                 _unlimitedButton.frame = CGRectMake(30.0f, 360.0f, 110.0, 30.0f);
                 _highResolutionButton.frame = CGRectMake(180.0f, 360.0f, 110.0, 30.0f);
             }
@@ -275,8 +281,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
             CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(240.0f, CGFLOAT_MAX)];
             _unlimitedDescriptionLabel.frame = CGRectMake(242.0f + 10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 240.0f, unlimitedDescriptionLabelSize.height);
             CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(240.0f, CGFLOAT_MAX)];
-            _highResolutionDescriptionLabel.frame = CGRectMake(542.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 240.0f, highResolutionDescriptionLabelSize.height);
-            _openGoogleDriveButton.frame = CGRectMake(542.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 240.0f, 20.0f);
+            _highResolutionDescriptionLabel.frame = CGRectMake(542.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height))/2.0f, 240.0f, highResolutionDescriptionLabelSize.height);
             _unlimitedButton.frame = CGRectMake(282.0f, 610.0f, 160.0f, 50.0f);
             _highResolutionButton.frame = CGRectMake(582.0f, 610.0f, 160.0f, 50.0f);
         }
@@ -290,8 +295,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
             CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(240.0f, CGFLOAT_MAX)];
             _unlimitedDescriptionLabel.frame = CGRectMake(114.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 240.0f, unlimitedDescriptionLabelSize.height);
             CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(240.0f, CGFLOAT_MAX)];
-            _highResolutionDescriptionLabel.frame = CGRectMake(414.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height+20.0f))/2.0f, 240.0f, highResolutionDescriptionLabelSize.height);
-            _openGoogleDriveButton.frame = CGRectMake(414.0f, CGRectGetMaxY(_highResolutionDescriptionLabel.frame), 240.0f, 20.0f);
+            _highResolutionDescriptionLabel.frame = CGRectMake(414.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height))/2.0f, 240.0f, highResolutionDescriptionLabelSize.height);
             _unlimitedButton.frame = CGRectMake(154.0f, 816.0f, 160.0f, 50.0f);
             _highResolutionButton.frame = CGRectMake(454.0f, 816.0f, 160.0f, 50.0f);
         }
@@ -323,6 +327,19 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     
     _unlimitedButton.selected = YES;
     _highResolutionButton.selected = NO;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _unlimitedLabel.font = [UIFont boldSystemFontOfSize:15.0f];
+    }
+    else {
+        _unlimitedLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+    }
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _highResolutionLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _highResolutionLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
 }
 
 - (void)highResolutionButtonAction {
@@ -335,6 +352,19 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     
     _highResolutionButton.selected = YES;
     _unlimitedButton.selected = NO;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _unlimitedLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _unlimitedLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _highResolutionLabel.font = [UIFont boldSystemFontOfSize:15.0f];
+    }
+    else {
+        _highResolutionLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+    }
 }
 
 - (void)openGoogleDriveButtonAction {

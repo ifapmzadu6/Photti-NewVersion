@@ -153,9 +153,9 @@
                 _disableButton.frame = CGRectMake(250.0f, 444.0f - 220.0f, 100.0f, 30.0f);
             }
             else {
-                _iconImageView.frame = CGRectMake(70.0f, 80.0f, 190.0f, 190.0f);
-                _titleLabel.frame = CGRectMake(0.0f, 280.0f, CGRectGetWidth(rect), 36.0f);
-                _descriptionLabel.frame = CGRectMake(40.0f, 320.0f, 240.0f, 100.0f);
+                _iconImageView.frame = CGRectMake(40.0f, 110.0f, 240.0f, 240.0f);
+                _titleLabel.frame = CGRectMake(0.0f, 150.0f, CGRectGetWidth(rect), 36.0f);
+                _descriptionLabel.frame = CGRectMake(40.0f, 210.0f, 240.0f, 100.0f);
                 _enableButton.frame = CGRectMake(50.0f, 360.0f, 100.0f, 30.0f);
                 _disableButton.frame = CGRectMake(170.0f, 360.0f, 100.0f, 30.0f);
             }
