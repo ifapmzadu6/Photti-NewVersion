@@ -67,7 +67,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+        
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
     
@@ -115,7 +115,7 @@
         [_collectionView reloadData];
     }
     
-    [self reloadData];
+    [self loadDataWithStartIndex:0];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -283,7 +283,7 @@
         });
     }
     
-    [self reloadData];
+    [self loadDataWithStartIndex:0];
     
     [self moveImageCacheFromDiskToMemoryAtVisibleCells];
 }
@@ -472,6 +472,11 @@
 
 #pragma mark LoadData
 - (void)loadDataWithStartIndex:(NSUInteger)index {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        [_refreshControl endRefreshing];
+        return;
+    };
+    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:index completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
@@ -483,23 +488,6 @@
                 [sself openLoginviewController];
             }
             return;
-        }
-        
-        sself.requestIndex = nextIndex;
-    }];
-}
-
-- (void)reloadData {
-    __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:0 completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        if (error) {
-            NSLog(@"%@", error);
-            if (error.code == 401) {
-                [sself openLoginviewController];
-            }
         }
         
         sself.requestIndex = nextIndex;
@@ -530,7 +518,7 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            [sself reloadData];
+            [sself loadDataWithStartIndex:0];
         });
     }];
 }
@@ -670,7 +658,7 @@
                     if (count == maxCount) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                            [sself reloadData];
+                            [sself loadDataWithStartIndex:0];
                         });
                     }
                     else {

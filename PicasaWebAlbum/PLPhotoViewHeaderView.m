@@ -56,7 +56,7 @@
     _selectButton = [UIButton new];
     [_selectButton addTarget:self action:@selector(selectButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _selectButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
-    [_selectButton setTitle:NSLocalizedString(@"選択", nil) forState:UIControlStateNormal];
+    [_selectButton setTitle:NSLocalizedString(@"Select", nil) forState:UIControlStateNormal];
     [_selectButton setTitleColor:[PWColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateNormal];
     [_selectButton setTitleColor:[[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
     _selectButton.hitEdgeInsets = UIEdgeInsetsMake(0.0f, -30.0f, 0.0f, 0.0f);
@@ -93,11 +93,11 @@
 
 - (void)setSelectButtonIsDeselect:(BOOL)isDeselect {
     if (isDeselect) {
-        [_selectButton setTitle:NSLocalizedString(@"選択解除", nil) forState:UIControlStateNormal];
+        [_selectButton setTitle:NSLocalizedString(@"Deselect", nil) forState:UIControlStateNormal];
         _isDeselectButton = YES;
     }
     else {
-        [_selectButton setTitle:NSLocalizedString(@"選択", nil) forState:UIControlStateNormal];
+        [_selectButton setTitle:NSLocalizedString(@"Select", nil) forState:UIControlStateNormal];
         _isDeselectButton = NO;
     }
     
@@ -112,7 +112,7 @@
             _deselectButtonActionBlock();
         }
         
-        [_selectButton setTitle:NSLocalizedString(@"選択", nil) forState:UIControlStateNormal];
+        [_selectButton setTitle:NSLocalizedString(@"Select", nil) forState:UIControlStateNormal];
         _isDeselectButton = NO;
     }
     else {
@@ -120,7 +120,7 @@
             _selectButtonActionBlock();
         }
         
-        [_selectButton setTitle:NSLocalizedString(@"選択解除", nil) forState:UIControlStateNormal];
+        [_selectButton setTitle:NSLocalizedString(@"Deselect", nil) forState:UIControlStateNormal];
         _isDeselectButton = YES;
     }
     

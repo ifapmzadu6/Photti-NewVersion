@@ -51,10 +51,10 @@
     [super viewWillAppear:animated];
     
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
-    UIBarButtonItem *uploadBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"移動", nil) style:UIBarButtonItemStylePlain target:self action:@selector(uploadBarButtonAction)];
-    UIBarButtonItem *deleteButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
+    UIBarButtonItem *uploadBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Copy", nil) style:UIBarButtonItemStylePlain target:self action:@selector(uploadBarButtonAction)];
+//    UIBarButtonItem *deleteButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, uploadBarButtonItem, flexibleSpace, deleteButtonItem];
+    NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, uploadBarButtonItem, flexibleSpace];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isTabBarHidden]) {
@@ -109,9 +109,8 @@
     
 }
 
-- (void)trashBarButtonAction {
-//    PLPhotoViewController *photoViewController = (PLPhotoViewController *)self.presentingViewController;
-}
+//- (void)trashBarButtonAction {
+//}
 
 #pragma mark UIPageViewControllerDataSource
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {

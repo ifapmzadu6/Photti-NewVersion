@@ -7,6 +7,7 @@
 //
 
 @import AVFoundation;
+@import MapKit;
 
 #import "PWPhotoPageViewController.h"
 
@@ -16,6 +17,10 @@
 #import "PWTabBarController.h"
 #import "BlocksKit+UIKit.h"
 #import "Reachability.h"
+#import "SDImageCache.h"
+#import "PWBaseNavigationController.h"
+#import "PWPhotoEditViewController.h"
+#import "PWMapViewController.h"
 
 @interface PWPhotoPageViewController ()
 
@@ -55,6 +60,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    //ScrollViewDelegate
+    [self.view.subviews.firstObject setDelegate:(id)self];
+    
+    UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction)];
+    UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction)];
+    self.navigationItem.rightBarButtonItems = @[pinBarButtonItem, tagBarButtonItem];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -77,16 +89,24 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    
-    [_photoViewCache removeAllObjects];
 }
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
 }
 
+- (void)viewDidLayoutSubviews {
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:YES];
+    self.navigationController.navigationBar.userInteractionEnabled = YES;
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+- (void)dealloc {
+    [_photoViewCache removeAllObjects];
 }
 
 #pragma mark UIBarButtonItemAction
@@ -265,6 +285,25 @@
     [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }
 
+- (void)tagBarButtonAction {
+    PWPhotoEditViewController *viewController = [[PWPhotoEditViewController alloc] initWithPhoto:_photos[_index]];
+    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)pinBarButtonAction {
+    PWPhotoObject *photo = _photos[_index];
+    NSArray *strings = [photo.pos componentsSeparatedByString:@" "];
+    NSString *latitude = strings.firstObject;
+    NSString *longitude = strings.lastObject;
+    UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:photo.tag_thumbnail_url];
+    PWMapViewController *viewController = [[PWMapViewController alloc] initWithImage:image latitude:latitude.doubleValue longitude:longitude.doubleValue];
+    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
 #pragma mark Methods
 - (void)changePhotos:(NSArray *)photos {
     _photos = photos;
@@ -296,6 +335,21 @@
     return [self makePhotoViewController:index + 1 thumbnailImage:nil];
 }
 
+#pragma mark UIScrollViewDelegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:NO];
+    self.navigationController.navigationBar.userInteractionEnabled = NO;
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    NSLog(@"%s", __func__);
+    
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:YES];
+    self.navigationController.navigationBar.userInteractionEnabled = YES;
+}
+
 #pragma mark PWPhotoViewController
 - (UIViewController *)makePhotoViewController:(NSInteger)index thumbnailImage:(UIImage *)image {
     if (index < 0 || index == _photos.count) {
@@ -307,6 +361,7 @@
     NSString *title = [NSString stringWithFormat:@"%ld/%ld", (long)index + 1, (long)_photos.count];
     viewController.title = title;
     NSString *id_str = photo.id_str;
+    BOOL isGPSEnable = (photo.pos != nil);
     __weak typeof(self) wself = self;
     viewController.viewDidAppearBlock = ^{
         typeof(wself) sself = wself;
@@ -315,6 +370,10 @@
         sself.title = title;
         sself.index = index;
         sself.id_str = id_str;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIBarButtonItem *item = sself.navigationItem.rightBarButtonItems.firstObject;
+            item.enabled = isGPSEnable;
+        });
     };
     viewController.handleSingleTapBlock = ^{
         typeof(wself) sself = wself;

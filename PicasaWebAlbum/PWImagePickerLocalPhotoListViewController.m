@@ -101,12 +101,12 @@
 
 #pragma mark UIBarButtonItem
 - (void)setRightNavigationItemSelectButton {
-    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"すべて選択", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
+    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     self.navigationItem.rightBarButtonItem = selectBarButtonItem;
 }
 
 - (void)setRightNavigationItemDeselectButton {
-    UIBarButtonItem *deselectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"選択解除", nil) style:UIBarButtonItemStylePlain target:self action:@selector(deselectBarButtonAction)];
+    UIBarButtonItem *deselectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Deselect All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(deselectBarButtonAction)];
     self.navigationItem.rightBarButtonItem = deselectBarButtonItem;
 }
 

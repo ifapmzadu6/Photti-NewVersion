@@ -16,6 +16,7 @@
 #import "PWPicasaAPI.h"
 #import "SDImageCache.h"
 #import "PWImageScrollView.h"
+#import "PWTabBarController.h"
 
 @interface PWPhotoViewController ()
 
@@ -30,6 +31,8 @@
 @property (strong, nonatomic) MPMoviePlayerController *moviePlayerController;
 @property (strong, nonatomic) UIImageView *moviePlayerPlaceholderView;
 @property (nonatomic) BOOL statusBarHiddenBeforePlay;
+
+@property (strong, nonatomic) UITableView *tableView;
 
 @end
 

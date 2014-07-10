@@ -319,6 +319,11 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 #pragma mark LoadData
 - (void)loadDataWithStartIndex:(NSUInteger)index {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        [_refreshControl endRefreshing];
+        return;
+    };
+    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSArray *albums, NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
