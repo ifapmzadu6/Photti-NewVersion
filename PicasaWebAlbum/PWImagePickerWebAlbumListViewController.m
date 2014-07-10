@@ -91,7 +91,7 @@
     
     [_collectionView reloadData];
     
-    [self reloadData];
+    [self loadDataWithStartIndex:0];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -214,7 +214,7 @@
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
-    [self reloadData];
+    [self loadDataWithStartIndex:0];
 }
 
 #pragma mark LoadData
@@ -229,51 +229,13 @@
             if (error.code == 401) {
                 [sself openLoginviewController];
             }
-            return;
         }
         
         sself.requestIndex = nextIndex;
-        NSError *coredataError = nil;
-        [sself.fetchedResultsController performFetch:&coredataError];
-        if (coredataError) {
-            NSLog(@"%@", coredataError.description);
-        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [sself.refreshControl endRefreshing];
             [sself.activityIndicatorView stopAnimating];
-            
-            [sself.collectionView reloadData];
-        });
-    }];
-}
-
-- (void)reloadData {
-    __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfAlbumsWithIndex:0 completion:^(NSArray *albums, NSUInteger nextIndex, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        if (error) {
-            NSLog(@"%@", error);
-            if (error.code == 401) {
-                [sself openLoginviewController];
-            }
-            return;
-        }
-        
-        sself.requestIndex = nextIndex;
-        NSError *coredataError = nil;
-        [sself.fetchedResultsController performFetch:&coredataError];
-        if (coredataError) {
-            NSLog(@"%@", coredataError.description);
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.refreshControl endRefreshing];
-            [sself.activityIndicatorView stopAnimating];
-            
-            [sself.collectionView reloadData];
         });
     }];
 }
@@ -294,7 +256,7 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            [sself reloadData];
+            [sself loadDataWithStartIndex:0];
         });
     }];
 }

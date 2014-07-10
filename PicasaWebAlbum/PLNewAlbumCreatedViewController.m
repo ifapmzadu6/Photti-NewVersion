@@ -15,7 +15,7 @@
 #import "PLCoreDataAPI.h"
 #import "PLFullAlbumViewCell.h"
 
-@interface PLNewAlbumCreatedViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PLNewAlbumCreatedViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UILabel *createdNewAlbumLabel;
 @property (strong, nonatomic) UICollectionView *collectionView;

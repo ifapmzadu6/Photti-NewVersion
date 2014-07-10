@@ -11,6 +11,7 @@
 #import "PWColors.h"
 #import "PWDatePickerView.h"
 #import "BlocksKit+UIKit.h"
+#import "Reachability.h"
 
 typedef enum _PWAlbumEditViewControllerCellRow {
     PWAlbumEditViewControllerCellRowTitle,
@@ -176,22 +177,6 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     return textField;
 }
 
-- (void)linkShareAction {
-    NSString *link = nil;
-    for (PWPhotoLinkObject *linkObject in _album.link.allObjects) {
-        if ([kPWPicasaAPILinkRelShare isEqualToString:linkObject.rel]) {
-            link = linkObject.href;
-        }
-    }
-    if (!link) {
-        return;
-    }
-    NSURL *url = [NSURL URLWithString:link];
-    
-    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[_album.title, url] applicationActivities:nil];
-    [self.navigationController presentViewController:activityViewController animated:YES completion:nil];
-}
-
 - (void)enableDatePicker {
     UITextField *textField = _textField;
     if (textField) {
@@ -263,6 +248,15 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
 #pragma mark UIBarButtonItem
 - (void)saveBarButtonAction {
     if (!_album) {
+        return;
+    }
+    
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        [alertView show];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+        });
         return;
     }
     

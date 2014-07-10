@@ -15,6 +15,7 @@
 #import "SDImageCache.h"
 #import "PWIcons.h"
 #import "UIButton+HitEdgeInsets.h"
+#import "Reachability.h"
 
 @interface PWAlbumViewCell ()
 
@@ -142,19 +143,20 @@
     
     if (!album) return;
     
-    _titleLabel.text = album.title;
-    [self setTitleLabelFrame];
-    _numPhotosLabel.text = album.tag_numphotos;
-    
-    [self loadThumbnailImage:album];
-}
-
-- (void)loadThumbnailImage:(PWAlbumObject *)album {
     NSUInteger hash = album.hash;
     _albumHash = hash;
     
     NSString *urlString = album.tag_thumbnail_url;
     if (!urlString) return;
+    
+    _titleLabel.text = album.title;
+    [self setTitleLabelFrame];
+    _numPhotosLabel.text = album.tag_numphotos;
+    
+    [self loadThumbnailImage:urlString hash:hash];
+}
+
+- (void)loadThumbnailImage:(NSString *)urlString hash:(NSUInteger)hash {
     
     UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
     if (memoryCachedImage) {
@@ -176,7 +178,11 @@
             
             return;
         }
-                
+        
+        if (![Reachability reachabilityForInternetConnection].isReachable) {
+            return;
+        }
+        
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
@@ -193,7 +199,10 @@
                 
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                if (error) return;
+                if (error) {
+                    [sself loadThumbnailImage:urlString hash:hash];
+                    return;
+                }
                 
                 UIImage *image = [UIImage imageWithData:data];
                 [sself setImage:image hash:hash];

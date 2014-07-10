@@ -108,7 +108,7 @@
     CGFloat scale = size / 120.0f;
     
     //// Color Declarations
-    UIColor* color2 = [UIColor colorWithRed: 0.0f green: 0.0f blue: 0.0f alpha: 0.2f];
+    UIColor* color2 = [UIColor colorWithRed: 0.5f green: 0.5f blue: 0.5f alpha: 0.5f];
     
     //// Bezier Drawing
     UIBezierPath* bezierPath = UIBezierPath.bezierPath;

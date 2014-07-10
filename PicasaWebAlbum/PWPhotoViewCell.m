@@ -15,6 +15,7 @@
 #import "Reachability.h"
 #import "SDImageCache.h"
 #import "PWCoreDataAPI.h"
+#import "Reachability.h"
 
 @interface PWPhotoViewCell ()
 
@@ -185,6 +186,10 @@
     NSString *urlString = photo.tag_thumbnail_url;
     if (!urlString) return;
     
+    [self loadImageWithURLString:urlString hash:hash];
+}
+
+- (void)loadImageWithURLString:(NSString *)urlString hash:(NSUInteger)hash {
     UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
     if (memoryCachedImage) {
         if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
@@ -216,7 +221,11 @@
             
             return;
         }
-                
+        
+        if (![Reachability reachabilityForInternetConnection].isReachable) {
+            return;
+        }
+        
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
@@ -235,6 +244,7 @@
                 if (!sself) return;
                 if (error) {
 //                    NSLog(@"%@", error.description);
+                    [sself loadImageWithURLString:urlString hash:hash];
                     return;
                 }
                 UIImage *image = [UIImage imageWithData:data];

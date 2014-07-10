@@ -230,7 +230,6 @@
             if (error.code == 401) {
                 [sself openLoginviewController];
             }
-            return;
         }
         
         sself.requestIndex = nextIndex;

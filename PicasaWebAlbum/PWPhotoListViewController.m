@@ -15,6 +15,7 @@
 #import "BlocksKit+UIKit.h"
 #import "SDImageCache.h"
 #import "PDTaskManager.h"
+#import "Reachability.h"
 
 #import "PWPhotoViewCell.h"
 #import "PWTabBarController.h"
@@ -274,6 +275,14 @@
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        [alertView show];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+        });
+    }
+    
     [self reloadData];
     
     [self moveImageCacheFromDiskToMemoryAtVisibleCells];

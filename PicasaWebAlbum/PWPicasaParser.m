@@ -302,7 +302,7 @@ static NSString * const PWXMLNode = @"text";
         PWPhotoMediaThumbnailObject *thumbnailObject = photo.media.thumbnail.array.firstObject;
         photo.tag_thumbnail_url = thumbnailObject.url;
         
-        PWPhotoMediaThumbnailObject *content = photo.media.content.firstObject;
+        PWPhotoMediaContentObject *content = photo.media.content.firstObject;
         photo.tag_screenimage_url = content.url;
         photo.tag_originalimage_url = content.url;
     }
@@ -427,7 +427,7 @@ static NSString * const PWXMLNode = @"text";
 
 + (PWPhotoMediaContentObject *)mediaContentFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
     if (!json) return nil;
-    //    NSLog(@"%@", json);
+//    NSLog(@"%@", json);
     
     PWPhotoMediaContentObject *content = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaContentManagedObjectName inManagedObjectContext:context];
     
@@ -448,7 +448,7 @@ static NSString * const PWXMLNode = @"text";
 
 + (PWPhotoMediaThumbnailObject *)mediaThumbnailFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context {
     if (!json) return nil;
-    //    NSLog(@"%@", json);
+//    NSLog(@"%@", json);
     
     PWPhotoMediaThumbnailObject *thumbnail = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaThumbnailManagedObjectName inManagedObjectContext:context];
     
