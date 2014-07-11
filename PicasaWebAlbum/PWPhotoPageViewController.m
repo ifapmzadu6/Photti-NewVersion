@@ -12,6 +12,7 @@
 #import "PWPhotoPageViewController.h"
 
 #import "PWColors.h"
+#import "PWIcons.h"
 #import "PWPicasaAPI.h"
 #import "PWPhotoViewController.h"
 #import "PWTabBarController.h"
@@ -53,7 +54,7 @@
         self.delegate = self;
         self.dataSource = self;
         [self setViewControllers:@[[self makePhotoViewController:index thumbnailImage:image]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-        self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];        
+        self.view.backgroundColor = [UIColor whiteColor];
     }
     return self;
 }
@@ -65,7 +66,9 @@
     [self.view.subviews.firstObject setDelegate:(id)self];
     
     UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction)];
+    tagBarButtonItem.landscapeImagePhone = [PWIcons imageWithImage:[UIImage imageNamed:@"Tag"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
     UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction)];
+    pinBarButtonItem.landscapeImagePhone = [PWIcons imageWithImage:[UIImage imageNamed:@"PinIcon"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
     self.navigationItem.rightBarButtonItems = @[pinBarButtonItem, tagBarButtonItem];
 }
 
@@ -343,8 +346,6 @@
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    NSLog(@"%s", __func__);
-    
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
     self.navigationController.navigationBar.userInteractionEnabled = YES;

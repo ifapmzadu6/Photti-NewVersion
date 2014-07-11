@@ -95,6 +95,12 @@
     }];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+}
+
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     

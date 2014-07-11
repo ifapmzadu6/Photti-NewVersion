@@ -292,11 +292,10 @@
         }];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
+        NSManagedObjectID *albumObjectID = album.objectID;
         [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-            [context deleteObject:album];
+            PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumObjectID];
+            [context deleteObject:albumObject];
         }];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];

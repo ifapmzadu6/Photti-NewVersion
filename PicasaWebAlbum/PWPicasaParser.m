@@ -357,9 +357,9 @@ static NSString * const PWXMLNode = @"text";
     if (timestamp && ![timestamp isEqualToString:gphoto.timestamp]) {
         gphoto.timestamp = timestamp;
     }
-    NSDictionary *user = NtN(json[@"gphoto:user"]);
-    if (user) {
-        gphoto.user = NtN(user[PWXMLNode]);
+    NSString *user = NtN(NtN(json[@"gphoto:user"])[PWXMLNode]);
+    if (user && ![user isEqualToString:user]) {
+        gphoto.user = user;
     }
     NSDictionary *originalvideo = NtN(json[@"gphoto:originalvideo"]);
     if (originalvideo) {
@@ -372,6 +372,18 @@ static NSString * const PWXMLNode = @"text";
         gphoto.originalvideo_type = NtN(originalvideo[@"type"]);
         gphoto.originalvideo_videoCodec = NtN(originalvideo[@"videoCodec"]);
         gphoto.originalvideo_width = NtN(originalvideo[@"width"]);
+    }
+    NSString *size = NtN(NtN(json[@"gphoto:size"])[PWXMLNode]);
+    if (size) {
+        gphoto.size = @(size.integerValue);
+    }
+    NSString *width = NtN(NtN(json[@"gphoto:width"])[PWXMLNode]);
+    if (width) {
+        gphoto.width = @(width.integerValue);
+    }
+    NSString *height = NtN(NtN(json[@"gphoto:height"])[PWXMLNode]);
+    if (height) {
+        gphoto.height = @(height.integerValue);
     }
     
     return gphoto;

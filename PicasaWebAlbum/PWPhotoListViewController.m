@@ -10,6 +10,7 @@
 
 #import "PWPicasaAPI.h"
 #import "PWColors.h"
+#import "PWIcons.h"
 #import "PWString.h"
 #import "PWRefreshControl.h"
 #import "BlocksKit+UIKit.h"
@@ -156,7 +157,7 @@
     
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
-    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
+    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
@@ -192,9 +193,9 @@
 }
 
 #pragma mark UIBarButtonAction
-//- (void)mapBarButtonAction {
-//    
-//}
+- (void)pinBarButtonAction {
+    
+}
 
 - (void)actionBarButtonAction {
     [self showAlbumActionSheet:_album];

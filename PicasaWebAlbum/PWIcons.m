@@ -47,6 +47,19 @@
     return resizedImage;
 }
 
++ (UIImage *)imageWithText:(NSString *)text fontSize:(CGFloat)fontSize {
+    UIFont *font = [UIFont systemFontOfSize:fontSize];
+    CGSize textAreaSize = [text boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX) options:0 attributes:@{NSFontAttributeName:font} context:0].size;
+    CGFloat width = (int)(textAreaSize.width + 1.0f);
+    CGFloat height = (int)(textAreaSize.height + 1.0f);
+    
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 0.0f);
+    [text drawInRect:CGRectMake(0.0f, 0.0f, width, height) withAttributes:@{NSFontAttributeName:font}];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
+
 + (UIImage *)gradientVerticalFromColor:(UIColor *)fromColor toColor:(UIColor *)toColor size:(CGSize)size {
     UIGraphicsBeginImageContextWithOptions(size, NO, 0.0f);
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();

@@ -25,9 +25,6 @@
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSMutableArray *headers;
 
-@property (nonatomic) NSUInteger photosCount;
-@property (nonatomic) NSUInteger videosCount;
-
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
 @end
@@ -226,8 +223,11 @@
         if (indexPath.section == _fetchedResultsController.sections.count - 1) {
             PLCollectionFooterView *footer = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
             
+            NSArray *photos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypePhoto]];
+            NSArray *videos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypeVideo]];
+            
             NSString *localizedString = NSLocalizedString(@"All Photos:%lu, All Videos:%lu", nil);
-            [footer setText:[NSString stringWithFormat:localizedString, _photosCount, _videosCount]];
+            [footer setText:[NSString stringWithFormat:localizedString, photos.count, videos.count]];
             
             reusableView = footer;
         }

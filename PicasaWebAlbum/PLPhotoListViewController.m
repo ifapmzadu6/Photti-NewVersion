@@ -9,6 +9,7 @@
 #import "PLPhotoListViewController.h"
 
 #import "PWColors.h"
+#import "PWIcons.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
@@ -92,7 +93,7 @@
     
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
-    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
+    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
@@ -213,7 +214,7 @@
 
 - (void)selectAllBarButtonAction {
     if (_fetchedResultsController.fetchedObjects.count == _collectionView.indexPathsForSelectedItems.count) {
-        [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
+        [_selectAllBarButtonItem setImage:[PWIcons imageWithText:NSLocalizedString(@"Select all", nil) fontSize:17.0f]];
         [_selectedPhotoURLs removeAllObjects];
         for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
             [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
@@ -223,7 +224,7 @@
         _moveBarButtonItem.enabled = NO;
     }
     else {
-        [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Deselect all", nil)];
+        [_selectAllBarButtonItem setImage:[PWIcons imageWithText:NSLocalizedString(@"Deselect all", nil) fontSize:17.0f]];
         for (PLPhotoObject *photoObject in _fetchedResultsController.fetchedObjects) {
             if (![_selectedPhotoURLs containsObject:photoObject.objectID]) {
                 [_selectedPhotoURLs addObject:photoObject.url];
@@ -369,7 +370,7 @@
             _moveBarButtonItem.enabled = NO;
         }
         
-        [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
+        [_selectAllBarButtonItem setImage:[PWIcons imageWithText:NSLocalizedString(@"Select all", nil) fontSize:17.0f]];
     }
 }
 
@@ -410,7 +411,7 @@
     
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     _selectAllBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:nil style:UIBarButtonItemStylePlain target:self action:@selector(selectAllBarButtonAction)];
-    [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
+    [_selectAllBarButtonItem setImage:[PWIcons imageWithText:NSLocalizedString(@"Select all", nil) fontSize:17.0f]];
     UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
     [navigationItem setRightBarButtonItem:_selectAllBarButtonItem animated:NO];

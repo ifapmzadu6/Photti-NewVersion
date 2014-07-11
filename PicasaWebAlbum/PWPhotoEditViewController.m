@@ -15,9 +15,8 @@
 #import "UIImage+ImageEffects.h"
 
 typedef enum _PWPhotoEditViewControllerSectionType {
-    PWPhotoEditViewControllerSectionTypeEXIF,
-    PWPhotoEditViewControllerSectionTypeTAG,
-    PWPhotoEditViewControllerSectionTypeGPHOTO,
+    PWPhotoEditViewControllerSectionTypeEXIForVIDEO,
+    PWPhotoEditViewControllerSectionTypeDESCRIPTION,
     PWPhotoEditViewControllerSectionTypeCOUNT
 } PWPhotoEditViewControllerSectionType;
 
@@ -34,6 +33,32 @@ typedef enum _PWPhotoEditViewControllerExifType {
     PWPhotoEditViewControllerExifTypeTIME,
     PWPhotoEditViewControllerExifTypeCOUNT
 } PWPhotoEditViewControllerExifType;
+
+typedef enum _PWPhotoEditViewControllerVIDEOType{
+    PWPhotoEditViewControllerVIDEOTypeDURATION,
+    PWPhotoEditViewControllerVIDEOTypeHEIGHT,
+    PWPhotoEditViewControllerVIDEOTypeWIDTH,
+    PWPhotoEditViewControllerVIDEOTypeFPS,
+    PWPhotoEditViewControllerVIDEOTypeSAMPLERATE,
+    PWPhotoEditViewControllerVIDEOTypeTYPE,
+    PWPhotoEditViewControllerVIDEOTypeVIDEOCODEC,
+    PWPhotoEditViewControllerVIDEOTypeAUDIOCODEC,
+    PWPhotoEditViewControllerVIDEOTypeCHANNELS,
+    PWPhotoEditViewControllerVIDEOTypeCOUNT
+} PWPhotoEditViewControllerVIDEOType;
+
+typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
+    PWPhotoEditViewControllerDESCRIPTIONTypeTITLE,
+    PWPhotoEditViewControllerDESCRIPTIONTypeTIMESTAMP,
+    PWPhotoEditViewControllerDESCRIPTIONTypeSIZE,
+    PWPhotoEditViewControllerDESCRIPTIONTypeHEIGHT,
+    PWPhotoEditViewControllerDESCRIPTIONTypeWIDTH,
+    PWPhotoEditViewControllerDESCRIPTIONTypeCREDIT,
+    PWPhotoEditViewControllerDESCRIPTIONTypeSUMMARY,
+    PWPhotoEditViewControllerDESCRIPTIONTypeKEYWORDS,
+    PWPhotoEditViewControllerDESCRIPTIONTypeCOUNT
+} PWPhotoEditViewControllerDESCRIPTIONType;
+
 
 @interface PWPhotoEditViewController ()
 
@@ -106,14 +131,16 @@ typedef enum _PWPhotoEditViewControllerExifType {
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     NSInteger numberOfRows = 0;
     switch (section) {
-        case PWPhotoEditViewControllerSectionTypeEXIF:
-            numberOfRows = PWPhotoEditViewControllerExifTypeCOUNT;
+        case PWPhotoEditViewControllerSectionTypeEXIForVIDEO:
+            if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+                numberOfRows = PWPhotoEditViewControllerExifTypeCOUNT;
+            }
+            else if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+                numberOfRows = PWPhotoEditViewControllerVIDEOTypeCOUNT;
+            }
             break;
-        case PWPhotoEditViewControllerSectionTypeGPHOTO:
-//            numberOfRows
-            break;
-        case PWPhotoEditViewControllerSectionTypeTAG:
-//            numberOfRows
+        case PWPhotoEditViewControllerSectionTypeDESCRIPTION:
+            numberOfRows = PWPhotoEditViewControllerDESCRIPTIONTypeCOUNT;
             break;
         default:
             break;
@@ -130,47 +157,135 @@ typedef enum _PWPhotoEditViewControllerExifType {
         cell.detailTextLabel.font = [UIFont systemFontOfSize:15.0f];
     }
     
-    if (indexPath.section == PWPhotoEditViewControllerSectionTypeEXIF) {
+    if (indexPath.section == PWPhotoEditViewControllerSectionTypeEXIForVIDEO) {
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+            switch (indexPath.row) {
+                case PWPhotoEditViewControllerExifTypeDISTANCE:
+                    cell.textLabel.text = @"Distance";
+                    cell.detailTextLabel.text = _photo.exif.distance;
+                    break;
+                case PWPhotoEditViewControllerExifTypeEXPOSURE:
+                    cell.textLabel.text = @"Exposure";
+                    cell.detailTextLabel.text = _photo.exif.exposure;
+                    break;
+                case PWPhotoEditViewControllerExifTypeFLASH:
+                    cell.textLabel.text = @"Flash";
+                    cell.detailTextLabel.text = _photo.exif.flash;
+                    break;
+                case PWPhotoEditViewControllerExifTypeFOCALLENGTH:
+                    cell.textLabel.text = @"Focal Length";
+                    cell.detailTextLabel.text = _photo.exif.focallength;
+                    break;
+                case PWPhotoEditViewControllerExifTypeFSTOP:
+                    cell.textLabel.text = @"Fstop";
+                    cell.detailTextLabel.text = _photo.exif.fstop;
+                    break;
+                case PWPhotoEditViewControllerExifTypeIMAGEUNIQUEID:
+                    cell.textLabel.text = @"Image Unique ID";
+                    cell.detailTextLabel.text = _photo.exif.imageUniqueID;
+                    break;
+                case PWPhotoEditViewControllerExifTypeISO:
+                    cell.textLabel.text = @"ISO";
+                    cell.detailTextLabel.text = _photo.exif.iso;
+                    break;
+                case PWPhotoEditViewControllerExifTypeMAKE:
+                    cell.textLabel.text = @"Make";
+                    cell.detailTextLabel.text = _photo.exif.make;
+                    break;
+                case PWPhotoEditViewControllerExifTypeMODEL:
+                    cell.textLabel.text = @"Model";
+                    cell.detailTextLabel.text = _photo.exif.model;
+                    break;
+                case PWPhotoEditViewControllerExifTypeTIME:
+                    cell.textLabel.text = @"Time";
+                    cell.detailTextLabel.text = _photo.exif.time;
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+            switch (indexPath.row) {
+                case PWPhotoEditViewControllerVIDEOTypeAUDIOCODEC:
+                    cell.textLabel.text = @"Audio Codec";
+                    cell.detailTextLabel.text = _photo.gphoto.originalvideo_audioCodec;
+                    break;
+                case PWPhotoEditViewControllerVIDEOTypeCHANNELS:
+                    cell.textLabel.text = @"Channels";
+                    cell.detailTextLabel.text = _photo.gphoto.originalvideo_channels;
+                    break;
+                case PWPhotoEditViewControllerVIDEOTypeDURATION:
+                    cell.textLabel.text = @"Duration";
+                    cell.detailTextLabel.text = _photo.gphoto.originalvideo_duration;
+                    break;
+                case PWPhotoEditViewControllerVIDEOTypeFPS:
+                    cell.textLabel.text = @"FPS";
+                    cell.detailTextLabel.text = _photo.gphoto.originalvideo_fps;
+                    break;
+                case PWPhotoEditViewControllerVIDEOTypeHEIGHT:
+                    cell.textLabel.text = @"Height";
+                    cell.detailTextLabel.text = _photo.gphoto.originalvideo_height;
+                    break;
+                case PWPhotoEditViewControllerVIDEOTypeSAMPLERATE:
+                    cell.textLabel.text = @"Samplerate";
+                    cell.detailTextLabel.text = _photo.gphoto.originalvideo_samplingrate;
+                    break;
+                case PWPhotoEditViewControllerVIDEOTypeTYPE:
+                    cell.textLabel.text = @"Type";
+                    cell.detailTextLabel.text = _photo.gphoto.originalvideo_type;
+                    break;
+                case PWPhotoEditViewControllerVIDEOTypeVIDEOCODEC:
+                    cell.textLabel.text = @"Video Codec";
+                    cell.detailTextLabel.text = _photo.gphoto.originalvideo_videoCodec;
+                    break;
+                case PWPhotoEditViewControllerVIDEOTypeWIDTH:
+                    cell.textLabel.text = @"Width";
+                    cell.detailTextLabel.text = _photo.gphoto.originalvideo_width;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    else if (indexPath.section == PWPhotoEditViewControllerSectionTypeDESCRIPTION) {
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//        cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+//        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        
         switch (indexPath.row) {
-            case PWPhotoEditViewControllerExifTypeDISTANCE:
-                cell.textLabel.text = @"Distance";
-                cell.detailTextLabel.text = _photo.exif.distance;
+            case PWPhotoEditViewControllerDESCRIPTIONTypeCREDIT:
+                cell.textLabel.text = @"Credit";
+                cell.detailTextLabel.text = _photo.media.credit;
                 break;
-            case PWPhotoEditViewControllerExifTypeEXPOSURE:
-                cell.textLabel.text = @"Exposure";
-                cell.detailTextLabel.text = _photo.exif.exposure;
+            case PWPhotoEditViewControllerDESCRIPTIONTypeSUMMARY:
+                cell.textLabel.text = @"Summary";
+                cell.detailTextLabel.text = _photo.summary;
                 break;
-            case PWPhotoEditViewControllerExifTypeFLASH:
-                cell.textLabel.text = @"Flash";
-                cell.detailTextLabel.text = _photo.exif.flash;
+            case PWPhotoEditViewControllerDESCRIPTIONTypeKEYWORDS:
+                cell.textLabel.text = @"Keywords";
+                cell.detailTextLabel.text = _photo.media.keywords;
                 break;
-            case PWPhotoEditViewControllerExifTypeFOCALLENGTH:
-                cell.textLabel.text = @"Focal Length";
-                cell.detailTextLabel.text = _photo.exif.focallength;
+            case PWPhotoEditViewControllerDESCRIPTIONTypeTITLE:
+                cell.textLabel.text = @"Title";
+                cell.detailTextLabel.text = _photo.media.title;
                 break;
-            case PWPhotoEditViewControllerExifTypeFSTOP:
-                cell.textLabel.text = @"Fstop";
-                cell.detailTextLabel.text = _photo.exif.fstop;
+            case PWPhotoEditViewControllerDESCRIPTIONTypeTIMESTAMP:
+                cell.textLabel.text = @"Timestamp";
+                cell.detailTextLabel.text = _photo.gphoto.timestamp;
                 break;
-            case PWPhotoEditViewControllerExifTypeIMAGEUNIQUEID:
-                cell.textLabel.text = @"Image Unique ID";
-                cell.detailTextLabel.text = _photo.exif.imageUniqueID;
+            case PWPhotoEditViewControllerDESCRIPTIONTypeSIZE:
+                cell.textLabel.text = @"Size";
+                cell.detailTextLabel.text = _photo.gphoto.size.stringValue;
                 break;
-            case PWPhotoEditViewControllerExifTypeISO:
-                cell.textLabel.text = @"ISO";
-                cell.detailTextLabel.text = _photo.exif.iso;
+            case PWPhotoEditViewControllerDESCRIPTIONTypeHEIGHT:
+                cell.textLabel.text = @"Height";
+                cell.detailTextLabel.text = _photo.gphoto.height.stringValue;
                 break;
-            case PWPhotoEditViewControllerExifTypeMAKE:
-                cell.textLabel.text = @"Make";
-                cell.detailTextLabel.text = _photo.exif.make;
-                break;
-            case PWPhotoEditViewControllerExifTypeMODEL:
-                cell.textLabel.text = @"Model";
-                cell.detailTextLabel.text = _photo.exif.model;
-                break;
-            case PWPhotoEditViewControllerExifTypeTIME:
-                cell.textLabel.text = @"Time";
-                cell.detailTextLabel.text = _photo.exif.time;
+            case PWPhotoEditViewControllerDESCRIPTIONTypeWIDTH:
+                cell.textLabel.text = @"Width";
+                cell.detailTextLabel.text = _photo.gphoto.width.stringValue;
                 break;
             default:
                 break;
@@ -183,16 +298,17 @@ typedef enum _PWPhotoEditViewControllerExifType {
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     NSString *title = nil;
     switch (section) {
-        case PWPhotoEditViewControllerSectionTypeEXIF:
-            title = @"EXIF";
+        case PWPhotoEditViewControllerSectionTypeEXIForVIDEO:
+            if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+                title = @"EXIF";
+            }
+            else if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+                title = @"VIDEO";
+            }
             break;
-        case PWPhotoEditViewControllerSectionTypeGPHOTO:
-            title = @"";
+        case PWPhotoEditViewControllerSectionTypeDESCRIPTION:
+            title = @"DESCRIPTION";
             break;
-        case PWPhotoEditViewControllerSectionTypeTAG:
-            title = @"TAG";
-            break;
-            
         default:
             break;
     }

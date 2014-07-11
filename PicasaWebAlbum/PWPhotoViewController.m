@@ -27,6 +27,7 @@
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
 @property (weak, nonatomic) NSURLSessionDataTask *task;
+@property (weak, nonatomic) NSURLSessionDataTask *highResolutionTask;
 
 @property (strong, nonatomic) MPMoviePlayerController *moviePlayerController;
 @property (strong, nonatomic) UIImageView *moviePlayerPlaceholderView;
@@ -110,6 +111,10 @@
 
 - (void)dealloc {    
     NSURLSessionDataTask *task = _task;
+    if (task) {
+        [task cancel];
+    }
+    task = _highResolutionTask;
     if (task) {
         [task cancel];
     }
@@ -308,10 +313,12 @@
         if (!sself) return;
         if (error) {
             NSLog(@"%@", error.description);
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
             return;
         }
         
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
             if (error) {
                 return;
             }
@@ -321,8 +328,6 @@
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 
-                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                
                 [sself.imageScrollView setImage:image];
             });
             
@@ -331,7 +336,7 @@
             }
         }];
         [task resume];
-        sself.task = task;
+        sself.highResolutionTask = task;
     }];
 }
 

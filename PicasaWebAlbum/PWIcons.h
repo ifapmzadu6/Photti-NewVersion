@@ -12,6 +12,7 @@
 
 + (UIImage *)imageWithColor:(UIColor *)color;
 + (UIImage *)imageWithImage:(UIImage *)image insets:(UIEdgeInsets)insets;
++ (UIImage *)imageWithText:(NSString *)text fontSize:(CGFloat)fontSize;
 + (UIImage *)gradientVerticalFromColor:(UIColor *)fromColor toColor:(UIColor *)toColor size:(CGSize)size;
 
 + (UIImage *)albumActionButtonIconWithColor:(UIColor *)color;

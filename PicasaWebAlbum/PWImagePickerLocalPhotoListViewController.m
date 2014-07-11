@@ -9,6 +9,7 @@
 #import "PWImagePickerLocalPhotoListViewController.h"
 
 #import "PWColors.h"
+#import "PWIcons.h"
 #import "PLModelObject.h"
 #import "PLPhotoViewCell.h"
 #import "PWImagePickerController.h"
@@ -101,7 +102,7 @@
 
 #pragma mark UIBarButtonItem
 - (void)setRightNavigationItemSelectButton {
-    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
+    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     self.navigationItem.rightBarButtonItem = selectBarButtonItem;
 }
 

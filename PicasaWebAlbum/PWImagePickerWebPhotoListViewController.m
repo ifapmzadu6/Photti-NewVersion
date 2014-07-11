@@ -10,6 +10,7 @@
 
 #import "PWPicasaAPI.h"
 #import "PWColors.h"
+#import "PWIcons.h"
 #import "PWString.h"
 #import "PWRefreshControl.h"
 #import "BlocksKit+UIKit.h"
@@ -165,7 +166,7 @@
 
 #pragma mark UIBarButtonItem
 - (void)setRightNavigationItemSelectButton {
-    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
+    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     self.navigationItem.rightBarButtonItem = selectBarButtonItem;
     
     for (UIView *view in self.navigationController.navigationBar.subviews) {
