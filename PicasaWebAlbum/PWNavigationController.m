@@ -33,7 +33,7 @@
         if ([PWOAuthManager isLogined]) {
             PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
             self.viewControllers = @[albumListViewController];
-        }        
+        }
     }
     return self;
 }
@@ -49,18 +49,24 @@
     [super viewWillAppear:animated];
     
     if (![PWOAuthManager isLogined]) {
-        PWGoogleLoginViewController *googleLoginViewController = [[PWGoogleLoginViewController alloc] init];
-        __weak typeof(self) wself = self;
-        googleLoginViewController.completion = ^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                
-                PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
-                [sself setViewControllers:@[albumListViewController] animated:YES];
-            });
-        };
-        [self setViewControllers:@[googleLoginViewController] animated:NO];
+        UIViewController *viewController = self.viewControllers.firstObject;
+        if (![viewController isKindOfClass:[PWGoogleLoginViewController class]]) {
+            PWGoogleLoginViewController *googleLoginViewController = [[PWGoogleLoginViewController alloc] init];
+            __weak typeof(self) wself = self;
+            googleLoginViewController.completion = ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    
+                    UIViewController *viewController = sself.viewControllers.firstObject;
+                    if (![viewController isKindOfClass:[PWAlbumListViewController class]]) {
+                        PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
+                        [sself setViewControllers:@[albumListViewController] animated:YES];
+                    }
+                });
+            };
+            [self setViewControllers:@[googleLoginViewController] animated:NO];
+        }
     }
 }
 

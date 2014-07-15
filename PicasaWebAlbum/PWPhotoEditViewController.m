@@ -11,12 +11,10 @@
 #import "PWColors.h"
 #import "PWPicasaAPI.h"
 #import "SDImageCache.h"
-#import "UIView+ScreenCapture.h"
-#import "UIImage+ImageEffects.h"
 
 typedef enum _PWPhotoEditViewControllerSectionType {
-    PWPhotoEditViewControllerSectionTypeEXIForVIDEO,
     PWPhotoEditViewControllerSectionTypeDESCRIPTION,
+    PWPhotoEditViewControllerSectionTypeEXIForVIDEO,
     PWPhotoEditViewControllerSectionTypeCOUNT
 } PWPhotoEditViewControllerSectionType;
 
@@ -83,10 +81,8 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UIBarButtonItem *saveBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Save", nil) style:UIBarButtonItemStylePlain target:self action:@selector(saveBarButtonItem)];
-    self.navigationItem.rightBarButtonItem = saveBarButtonItem;
-    UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Cancel", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancelBarButtonItem)];
-    self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
+    UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
+    self.navigationItem.rightBarButtonItem = doneBarButtonItem;
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
@@ -115,11 +111,7 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
 }
 
 #pragma mark UIBarButtonItem
-- (void)saveBarButtonItem {
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)cancelBarButtonItem {
+- (void)doneBarButtonAction {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -155,11 +147,11 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
         cell.textLabel.font = [UIFont systemFontOfSize:15.0f];
         cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
         cell.detailTextLabel.font = [UIFont systemFontOfSize:15.0f];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
+    cell.textLabel.alpha = 1.0f;
     
     if (indexPath.section == PWPhotoEditViewControllerSectionTypeEXIForVIDEO) {
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
         if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
             switch (indexPath.row) {
                 case PWPhotoEditViewControllerExifTypeDISTANCE:
@@ -250,10 +242,6 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
         }
     }
     else if (indexPath.section == PWPhotoEditViewControllerSectionTypeDESCRIPTION) {
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-//        cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-//        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        
         switch (indexPath.row) {
             case PWPhotoEditViewControllerDESCRIPTIONTypeCREDIT:
                 cell.textLabel.text = @"Credit";
@@ -290,6 +278,10 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
             default:
                 break;
         }
+    }
+    
+    if (!cell.detailTextLabel.text) {
+        cell.textLabel.alpha = 0.25f;
     }
     
     return cell;

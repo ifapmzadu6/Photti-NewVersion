@@ -407,7 +407,7 @@
     _selectActionBarButton.enabled = NO;
     _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
     _trashBarButtonItem.enabled = NO;
-    _moveBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Copy", nil) style:UIBarButtonItemStylePlain target:self action:@selector(moveBarButtonAction)];
+    _moveBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Copy", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(moveBarButtonAction)];
     _moveBarButtonItem.enabled = NO;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _moveBarButtonItem, flexibleSpace, _trashBarButtonItem];
@@ -526,7 +526,17 @@
 
 #pragma mark NSFetchedResultsControllerDelegate
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    [_collectionView reloadData];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+        
+        for (NSString *id_str in _selectedPhotoIDs) {
+            NSArray *selectedPhotos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+            PWPhotoObject *photo = selectedPhotos.firstObject;
+            NSUInteger index = [_fetchedResultsController.fetchedObjects indexOfObject:photo];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+            [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+        }
+    });
 }
 
 #pragma mark UIActionSheet
@@ -586,7 +596,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"本当に削除しますか？アルバム内の写真はすべて削除されます。", nil)];
+        UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.title]];
         [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
             UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -620,17 +630,16 @@
 
 - (void)showTrashPhotosActionSheet {
     __weak typeof(self) wself = self;
-    NSArray *photos = [_fetchedResultsController fetchedObjects];
-    [PWPhotoObject getCountFromPhotoObjects:photos completion:^(NSUInteger countOfPhoto, NSUInteger countOfVideo) {
+    NSMutableArray *selectedPhotos = @[].mutableCopy;
+    for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
+        [selectedPhotos addObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
+    }
+    [PWPhotoObject getCountFromPhotoObjects:selectedPhotos completion:^(NSUInteger countOfPhoto, NSUInteger countOfVideo) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        NSString *itemString = [PWString itemNameFromPhotoCount:countOfPhoto videoCount:countOfVideo];
-        NSString *deleteButton = [NSString stringWithFormat:@"%@を削除", itemString];
-        NSString *cancelButton = @"Cancel";
-        
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
-        [actionSheet bk_setDestructiveButtonWithTitle:deleteButton handler:^{
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete %@?", nil), [PWString photoAndVideoStringWithPhotoCount:countOfPhoto videoCount:countOfVideo]]];
+        [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
             typeof(wself) sself = wself;
             if (!sself) return;
             
@@ -664,13 +673,13 @@
                     }
                     else {
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            alertView.title = [NSString stringWithFormat:@"%@(%ld+1/%ld)", NSLocalizedString(@"Deleting...", nil), (unsigned long)count, (unsigned long)maxCount];
+                            alertView.title = [NSString stringWithFormat:@"%@(%ld/%ld)", NSLocalizedString(@"Deleting...", nil), (long)count + 1, (long)maxCount];
                         });
                     }
                 }];
             }
         }];
-        [actionSheet bk_setCancelButtonWithTitle:cancelButton handler:^{}];
+        [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
         
         [actionSheet showFromTabBar:sself.tabBarController.tabBar];
     }];

@@ -64,6 +64,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 PLNewAlbumCreatedViewController *viewController = [[PLNewAlbumCreatedViewController alloc] initWithEnumuratedDate:enumuratedDate];
                 PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+                navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
                 [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
             });
         };

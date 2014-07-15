@@ -12,6 +12,8 @@
 #import "PLAllPhotosViewController.h"
 #import "PLAlbumListViewController.h"
 #import "PLiCloudViewController.h"
+#import "PWBaseNavigationController.h"
+#import "PLNewAlbumEditViewController.h"
 #import "PWTabBarController.h"
 #import "PWSearchNavigationController.h"
 #import "PWSettingsViewController.h"
@@ -27,9 +29,7 @@
 @interface PLPageViewController ()
 
 @property (strong, nonatomic) NSArray *myViewControllers;
-
 @property (strong, nonatomic) PLParallelNavigationTitleView *titleView;
-
 @property (nonatomic) BOOL isAllPhotoSelectMode;
 
 @end
@@ -163,36 +163,21 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 }
 
 - (void)addBarButtonAction {
-    UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"New Album", nil) message:NSLocalizedString(@"Enter album title.", nil)];
-    alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
-    [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
-    __weak UIAlertView *wAlertView = alertView;
-    [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
-        UIAlertView *sAlertView = wAlertView;
-        if (!sAlertView) return;
-        
-        UITextField *textField = [sAlertView textFieldAtIndex:0];
-        NSString *title = textField.text;
-        if (!title || [title isEqualToString:@""]) {
-            title = NSLocalizedString(@"New Album", nil);
-        }
-        
+    PLNewAlbumEditViewController *viewController = [[PLNewAlbumEditViewController alloc] initWithTitle:nil timestamp:@((long long)[[NSDate date] timeIntervalSince1970]*1000) uploading_type:nil];
+    viewController.saveButtonBlock = ^(NSString *name, NSNumber *timestamp, NSNumber *uploading_type){
         [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
             album.id_str = [PWSnowFlake generateUniqueIDString];
-            album.name = NSLocalizedString(@"New Album", nil);
-            NSDate *date = [NSDate date];
-            NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:date];
-            album.tag_date = adjustedDate;
-            album.timestamp = @((long long)([adjustedDate timeIntervalSince1970]) * 1000);
-            album.import = date;
-            album.update = date;
+            album.name = name;
+            album.tag_date = [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue/1000.0];
+            album.timestamp = timestamp;
+            album.import = [NSDate date];
+            album.update = [NSDate date];
             album.tag_type = @(PLAlbumObjectTagTypeMyself);
         }];
-    }];
-    UITextField *textField = [alertView textFieldAtIndex:0];
-    textField.placeholder = NSLocalizedString(@"New Album", nil);
-    [alertView show];
+    };
+    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)settingsBarButtonAction {

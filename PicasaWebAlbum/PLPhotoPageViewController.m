@@ -152,6 +152,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             PLPhotoEditViewController *viewController = [[PLPhotoEditViewController alloc] initWithPhoto:photo metadata:metadata];
             PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+            navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
             navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             [sself presentViewController:navigationController animated:YES completion:nil];
         });
@@ -173,6 +174,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             PWMapViewController *viewController = [[PWMapViewController alloc] initWithImage:image latitude:photo.latitude.doubleValue longitude:photo.longitude.doubleValue];
             PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+            navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
             navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             [sself presentViewController:navigationController animated:YES completion:nil];
         });

@@ -33,24 +33,22 @@
 
 + (NSString *)photoAndVideoStringWithPhotoCount:(NSUInteger)photoCount videoCount:(NSUInteger)videoCount {
     if (photoCount > 0 && videoCount > 0) {
-        NSString *localizedString = NSLocalizedString(@"%d枚の写真、%d本のビデオ", nil);
-        return [NSString stringWithFormat:localizedString, photoCount, videoCount];
+        NSString *localizedString = NSLocalizedString(@"%ld photos, %d videos", nil);
+        return [NSString stringWithFormat:localizedString, (long)photoCount, (long)videoCount];
     }
     else if (photoCount > 0) {
-        NSString *localizedString = NSLocalizedString(@"%d枚の写真", nil);
-        return [NSString stringWithFormat:localizedString, photoCount];
+        NSString *localizedString = NSLocalizedString(@"%ld photos", nil);
+        return [NSString stringWithFormat:localizedString, (long)photoCount];
     }
     else if (photoCount) {
-        NSString *localizedString = NSLocalizedString(@"%d枚の写真", nil);
-        return [NSString stringWithFormat:localizedString, photoCount];
+        return NSLocalizedString(@"a photo", nil);
     }
     else if (videoCount > 0) {
-        NSString *localizedString = NSLocalizedString(@"%d本のビデオ", nil);
-        return [NSString stringWithFormat:localizedString, videoCount];
+        NSString *localizedString = NSLocalizedString(@"%ld videos", nil);
+        return [NSString stringWithFormat:localizedString, (long)videoCount];
     }
     else if (videoCount) {
-        NSString *localizedString = NSLocalizedString(@"%d本のビデオ", nil);
-        return [NSString stringWithFormat:localizedString, videoCount];
+        return NSLocalizedString(@"a video", nil);
     }
     else {
         return nil;

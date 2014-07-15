@@ -1,40 +1,38 @@
 //
-//  PWAlbumEditViewController.m
+//  PLAlbumEditViewController.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/05/13.
+//  Created by Keisuke Karijuku on 2014/07/14.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWAlbumEditViewController.h"
+#import "PLAlbumEditViewController.h"
 
 #import "PWColors.h"
-#import "PWDatePickerView.h"
+#import "PWIcons.h"
+#import "PLModelObject.h"
 #import "BlocksKit+UIKit.h"
-#import "Reachability.h"
+#import "PWDatePickerView.h"
 
-typedef enum _PWAlbumEditViewControllerCellRow {
-    PWAlbumEditViewControllerCellRowTitle,
-    PWAlbumEditViewControllerCellRowTimestamp
-} PWAlbumEditViewControllerCellRow;
-
-typedef enum _PWAlbumEditViewControllerCellAccessRow {
-    PWAlbumEditViewControllerCellAccessRowAccess,
-    PWAlbumEditViewControllerCellAccessRowShare
-} PWAlbumEditViewControllerCellAccessRow;
-
-@interface PWAlbumEditViewController ()
-
-@property (strong, nonatomic) PWAlbumObject *album;
+@interface PLAlbumEditViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @end
 
-@implementation PWAlbumEditViewController
+@implementation PLAlbumEditViewController
 
-- (id)initWithAlbum:(PWAlbumObject *)album {
+- (id)initWithTitle:(NSString *)title timestamp:(NSNumber *)timestamp uploading_type:(NSNumber *)uploading_type {
     self = [super init];
     if (self) {
-        _album = album;        
+        self.title = NSLocalizedString(@"Edit", nil);
+        
+        _name = title;
+        _timestamp = timestamp;
+        if (uploading_type) {
+            _uploading_type = uploading_type;
+        }
+        else {
+            _uploading_type = @(PLAlbumObjectTagUploadingTypeYES);
+        }
     }
     return self;
 }
@@ -42,17 +40,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = NSLocalizedString(@"Edit", nil);
-    
-    _timestamp = _album.gphoto.timestamp;
-    
-    _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
-    _tableView.dataSource = self;
-    _tableView.delegate = self;
-    _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
-    _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
-    _tableView.exclusiveTouch = YES;
-    [self.view addSubview:_tableView];
+    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
@@ -63,10 +51,13 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
         view.exclusiveTouch = YES;
     }
     
-    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
-    
-    [[UITextField appearance] setTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    _tableView.dataSource = self;
+    _tableView.delegate = self;
+    _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+    _tableView.exclusiveTouch = YES;
+    [self.view addSubview:_tableView];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -75,35 +66,43 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     CGRect rect = self.view.bounds;
     
     _tableView.frame = rect;
-    
-    CGFloat dHeight = 216.0f + 44.0f;
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        dHeight = 162.0 + 44.0f;
-    }
-    _datePickerView.frame = CGRectMake(0.0f, rect.size.height - dHeight, rect.size.width, dHeight);
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-    
-    for (NSIndexPath *indexPath in _tableView.indexPathsForSelectedRows) {
-        [_tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark UIBarButtonItem
+- (void)cancelBarButtonAction {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)saveBarButtonAction {
+    if (_saveButtonBlock) {
+        _saveButtonBlock(_nameTextField.text, _timestamp, _uploading_type);
+    }
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 2;
+    NSInteger numberOfRows = 0;
+    switch (section) {
+        case 0:
+            numberOfRows = 2;
+            break;
+        case 1:
+            numberOfRows = 1;
+            break;
+        default:
+            break;
+    }
+    return numberOfRows;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -120,20 +119,16 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     cell.clipsToBounds = YES;
     
     if (indexPath.section == 0) {
-        if (indexPath.row == PWAlbumEditViewControllerCellRowTitle) {
+        if (indexPath.row == 0) {
             cell.textLabel.text = NSLocalizedString(@"Title", nil);
             CGSize textSize = [cell.textLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-            UITextField *textField = _textField;
-            if (!textField) {
-                textField = [self makeTextField:textSize];
-            }
-            cell.accessoryView = textField;
+            cell.accessoryView = [self makeTextField:textSize];
             if (!_isDisplayed) {
                 _isDisplayed = YES;
-                [textField becomeFirstResponder];
+                [_nameTextField becomeFirstResponder];
             }
         }
-        else if (indexPath.row == PWAlbumEditViewControllerCellRowTimestamp) {
+        else if (indexPath.row == 1) {
             cell.textLabel.text = NSLocalizedString(@"Date", nil);
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             dateFormatter.dateStyle = NSDateFormatterLongStyle;
@@ -143,6 +138,27 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
     }
+    else if (indexPath.section == 1) {
+        if (indexPath.row == 0) {
+            cell.textLabel.text = NSLocalizedString(@"Auto Uploading", nil);
+            
+            UISwitch *autoUploadingSwitch = [[UISwitch alloc] init];
+            autoUploadingSwitch.on = (_uploading_type.integerValue == PLAlbumObjectTagUploadingTypeYES);
+            __weak typeof(self) wself = self;
+            [autoUploadingSwitch bk_addEventHandler:^(UISwitch * sender) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                if (sender.on) {
+                    _uploading_type = @(PLAlbumObjectTagUploadingTypeYES);
+                }
+                else {
+                    _uploading_type = @(PLAlbumObjectTagUploadingTypeNO);
+                }
+            } forControlEvents:UIControlEventValueChanged];
+            cell.accessoryView = autoUploadingSwitch;
+        }
+    }
     
     return cell;
 }
@@ -150,7 +166,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
 #pragma mark UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
-        if (indexPath.row == PWAlbumEditViewControllerCellRowTimestamp) {
+        if (indexPath.row == 1) {
             [self enableDatePicker];
         }
     }
@@ -158,14 +174,14 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
 
 #pragma mark UITableViewCellOption
 - (UITextField *)makeTextField:(CGSize)textSize {
-    if (_textField) {
-        return _textField;
+    if (_nameTextField) {
+        return _nameTextField;
     }
     
     UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.bounds.size.width - textSize.width - 60.0f, 20.0f)];
     textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     textField.font = [UIFont systemFontOfSize:15.0f];
-    textField.text = _album.title;
+    textField.text = _name;
     textField.returnKeyType = UIReturnKeyDone;
     [textField setBk_shouldReturnBlock:^BOOL(UITextField *textField) {
         [textField resignFirstResponder];
@@ -174,13 +190,13 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     }];
     textField.exclusiveTouch = YES;
     
-    _textField = textField;
+    _nameTextField = textField;
     
     return textField;
 }
 
 - (void)enableDatePicker {
-    UITextField *textField = _textField;
+    UITextField *textField = _nameTextField;
     if (textField) {
         [textField resignFirstResponder];
     }
@@ -208,7 +224,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        sself.timestamp = [NSString stringWithFormat:@"%lld", (long long)[date timeIntervalSince1970] * 1000];
+        sself.timestamp = @((long long)[date timeIntervalSince1970] * 1000);
         [sself.tableView reloadRowsAtIndexPaths:sself.tableView.indexPathsForSelectedRows withRowAnimation:UITableViewRowAnimationAutomatic];
         
         [sself disableDatePicker];
@@ -247,76 +263,6 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     }];
 }
 
-#pragma mark UIBarButtonItem
-- (void)saveBarButtonAction {
-    if (!_album) {
-        return;
-    }
-    
-    if (![Reachability reachabilityForInternetConnection].isReachable) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-        [alertView show];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [alertView dismissWithClickedButtonIndex:0 animated:YES];
-        });
-        return;
-    }
-    
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Saving...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
-    [indicator startAnimating];
-    [alertView setValue:indicator forKey:@"accessoryView"];
-    [alertView show];
-    
-    NSString *albumTitle = nil;
-    UITextField *textField = _textField;
-    if (textField) {
-        if (![textField.text isEqualToString:@""]) {
-            albumTitle = textField.text;
-        }
-    }
-    if (!albumTitle) {
-        albumTitle = _album.title;
-    }
-    
-    __weak typeof(self) wself = self;
-    [PWPicasaAPI putModifyingAlbumWithID:_album.id_str
-                                   title:albumTitle
-                                 summary:_album.summary
-                                location:_album.gphoto.location
-                                  access:kPWPicasaAPIGphotoAccessProtected
-                               timestamp:_timestamp
-                                keywords:_album.media.keywords
-                              completion:^(NSError *error) {
-                                  if (error) {
-                                      NSLog(@"%@", error.description);
-                                      dispatch_async(dispatch_get_main_queue(), ^{
-                                          [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                                      });
-                                      return;
-                                  }
-                                  
-                                  dispatch_async(dispatch_get_main_queue(), ^{
-                                      [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                                      
-                                      typeof(wself) sself = wself;
-                                      if (!sself) return;
-                                      [sself dismissViewControllerAnimated:YES completion:nil];
-                                      if (sself.successBlock) {
-                                          sself.successBlock();
-                                      }
-                                  });
-                              }];
-}
 
-- (void)cancelBarButtonAction {
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-
-- (BOOL)disablesAutomaticKeyboardDismissal {
-    return NO;
-}
 
 @end

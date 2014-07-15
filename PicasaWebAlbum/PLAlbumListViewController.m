@@ -9,11 +9,15 @@
 #import "PLAlbumListViewController.h"
 
 #import "PWColors.h"
+#import "PWSnowFlake.h"
+#import "PLDateFormatter.h"
 #import "PLAlbumViewCell.h"
 #import "PLAssetsManager.h"
 #import "PWTabBarController.h"
 #import "PLCollectionFooterView.h"
 #import "PLPhotoListViewController.h"
+#import "PWBaseNavigationController.h"
+#import "PLAlbumEditViewController.h"
 #import "BlocksKit+UIKit.h"
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
@@ -239,13 +243,6 @@
 
 #pragma mark NSFetchedResultsControllerDelegate
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    NSError *error = nil;
-    [_fetchedResultsController performFetch:&error];
-    if (error) {
-        NSLog(@"%@", error);
-        return;
-    }
-    
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
     });
@@ -253,23 +250,29 @@
 
 #pragma mark UIAlertView
 - (void)showAlbumActionSheet:(PLAlbumObject *)album {
+    NSManagedObjectID *albumID = album.objectID;
+    
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.name];
     __weak typeof(self) wself = self;
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Edit", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"Edit Album", nil) message:NSLocalizedString(@"Enter album title.", nil)];
-        alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
-        UITextField *textField = [alertView textFieldAtIndex:0];
-        textField.text = album.name;
-        [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
-        [alertView bk_addButtonWithTitle:NSLocalizedString(@"Save", nil) handler:^{
+        PLAlbumEditViewController *viewController = [[PLAlbumEditViewController alloc] initWithTitle:album.name timestamp:album.timestamp uploading_type:album.tag_uploading_type];
+        viewController.saveButtonBlock = ^(NSString *name, NSNumber *timestamp, NSNumber *uploading_type) {
             [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-                album.name = textField.text;
+                PLAlbumObject *album = (PLAlbumObject *)[context objectWithID:albumID];
+                album.name = name;
+                album.tag_date = [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue];
+                if (![album.timestamp isEqualToNumber:timestamp]) {
+                    album.timestamp = timestamp;
+                    album.edited = @(YES);
+                }
+                album.tag_uploading_type = uploading_type;
             }];
-        }];
-        [alertView show];
+        };
+        PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+        [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
         typeof(wself) sself = wself;
@@ -292,11 +295,18 @@
         }];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
-        NSManagedObjectID *albumObjectID = album.objectID;
-        [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-            PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumObjectID];
-            [context deleteObject:albumObject];
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.name]];
+        [deleteActionSheet bk_addButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
+            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumID];
+                [context deleteObject:albumObject];
+            }];
         }];
+        [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+        [deleteActionSheet showFromTabBar:sself.tabBarController.tabBar];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
     [actionSheet showFromTabBar:self.tabBarController.tabBar];

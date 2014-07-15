@@ -368,7 +368,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 #pragma mark NSFetchedResultsControllerDelegate
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    [_collectionView reloadData];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+    });
 }
 
 #pragma mark UIActionSheet

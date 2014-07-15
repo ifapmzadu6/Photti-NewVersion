@@ -14,6 +14,7 @@
 @interface PDWebToLocalPhotosTaskObject : PDBaseTaskObject
 
 @property (nonatomic, retain) NSString * photo_object_id_str;
+@property (nonatomic, retain) NSString * destination_album_id_str;
 @property (nonatomic, retain) NSString * resume_data_url;
 
 @end

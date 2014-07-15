@@ -71,7 +71,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         }
         return;
     }
-    if (![ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
+    if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
         if (_notAllowedAccessPhotoLibraryAction) {
             _notAllowedAccessPhotoLibraryAction();
         }
@@ -170,12 +170,14 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         }
         return;
     }
-    if (![ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
+    if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
         if (_notAllowedAccessPhotoLibraryAction) {
             _notAllowedAccessPhotoLibraryAction();
         }
         return;
     }
+    
+    NSString *destination_album_id_str = toLocalAlbum.id_str;
     
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -183,7 +185,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         if (!sself) return;
         
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDWebToLocalPhotosTaskObject *webToLocalPhotosTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalAlbumTaskObjectName inManagedObjectContext:context];
+            PDWebToLocalPhotosTaskObject *webToLocalPhotosTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalPhotosTaskObjectName inManagedObjectContext:context];
+            
+            webToLocalPhotosTask.destination_album_id_str = destination_album_id_str;
             
             typeof(wself) sself = wself;
             if (!sself) return;
@@ -228,7 +232,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         }
         return;
     }
-    if (![ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
+    if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
         if (_notAllowedAccessPhotoLibraryAction) {
             _notAllowedAccessPhotoLibraryAction();
         }
@@ -302,7 +306,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         }
         return;
     }
-    if (![ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
+    if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
         if (_notAllowedAccessPhotoLibraryAction) {
             _notAllowedAccessPhotoLibraryAction();
         }

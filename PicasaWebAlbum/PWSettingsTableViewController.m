@@ -187,6 +187,7 @@
         }
         NSArray *items = @[NSLocalizedString(@"Resize", nil), NSLocalizedString(@"Original", nil)];
         PWSelectItemFromArrayViewController *viewController = [[PWSelectItemFromArrayViewController alloc] initWithItems:items defaultIndex:defaultIndex];
+        viewController.title = NSLocalizedString(@"Uploading Size", nil);
         viewController.view.tintColor = tintColor;
         viewController.doneBlock = ^(NSString *selectedItem){
             typeof(wself) sself = wself;

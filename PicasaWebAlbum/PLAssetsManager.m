@@ -244,6 +244,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     NSFetchRequest *request = [NSFetchRequest new];
                     request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                     request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+                    request.fetchLimit = 1;
                     NSError *error = nil;
                     NSArray *tmpalbums = [context executeFetchRequest:request error:&error];
                     if (tmpalbums.count > 0) {
@@ -283,6 +284,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                         NSFetchRequest *request = [NSFetchRequest new];
                         request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                         request.predicate = [NSPredicate predicateWithFormat:@"url = %@", url.absoluteString];
+                        request.fetchLimit = 1;
                         NSError *error = nil;
                         NSArray *tmpphotos = [context executeFetchRequest:request error:&error];
                         if (tmpphotos.count > 0) {

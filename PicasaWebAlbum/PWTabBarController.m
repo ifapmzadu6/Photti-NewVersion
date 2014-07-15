@@ -78,6 +78,8 @@ static const CGFloat animationDuration = 0.25f;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.view.backgroundColor = [UIColor whiteColor];
+    
     self.tabBar.barTintColor = [UIColor colorWithWhite:0.95f alpha:1.0f];
     self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
 }

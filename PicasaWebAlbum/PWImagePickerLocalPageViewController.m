@@ -57,7 +57,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     
     UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     self.navigationItem.leftBarButtonItem = cancelBarButtonitem;
-    
     UIBarButtonItem *doneBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
     self.navigationItem.rightBarButtonItem = doneBarButtonitem;
     

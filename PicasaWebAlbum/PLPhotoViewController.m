@@ -183,43 +183,45 @@
 - (void)loadScreenImage {
     NSURL *url = [NSURL URLWithString:_photo.url];
     __weak typeof(self) wself = self;
-    [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if (!asset) return;
-        
-        UIImage *image = [UIImage imageWithCGImage:asset.defaultRepresentation.fullScreenImage];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
             typeof(wself) sself = wself;
             if (!sself) return;
+            if (!asset) return;
             
-            [sself.imageScrollView setImage:image];
-        });
-    } failureBlock:^(NSError *error) {
-        
-    }];
+            UIImage *image = [UIImage imageWithCGImage:asset.defaultRepresentation.fullScreenImage];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                [sself.imageScrollView setImage:image];
+            });
+        } failureBlock:^(NSError *error) {
+        }];
+    });
 }
 
 - (void)loadFullResolutionImage {
     NSURL *url = [NSURL URLWithString:_photo.url];
     __weak typeof(self) wself = self;
-    [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if (!asset) return;
-        
-        UIImage *image = [PLPhotoViewController decodedFullResolutionImageFromAsset:asset];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
             typeof(wself) sself = wself;
             if (!sself) return;
+            if (!asset) return;
             
-            [sself.imageScrollView setImage:image];
-        });
-    } failureBlock:^(NSError *error) {
-        
-    }];
+            UIImage *image = [PLPhotoViewController decodedFullResolutionImageFromAsset:asset];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                [sself.imageScrollView setImage:image];
+            });
+        } failureBlock:^(NSError *error) {
+        }];
+    });
 }
 
 + (UIImage *)decodedFullResolutionImageFromAsset:(ALAsset *)asset {

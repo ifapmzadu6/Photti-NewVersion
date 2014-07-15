@@ -23,6 +23,8 @@
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UILabel *numPhotosLabel;
 @property (strong, nonatomic) UIButton *actionButton;
+@property (strong, nonatomic) UILabel *autoUploadLabel;
+@property (strong, nonatomic) UIImageView *autoUploadIcon;
 @property (strong, nonatomic) UIView *overrayView;
 
 @property (nonatomic) NSUInteger albumHash;
@@ -79,6 +81,18 @@
     [_actionButton setBackgroundImage:[PWIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.05f]] forState:UIControlStateHighlighted];
     [self.contentView addSubview:_actionButton];
     
+    _autoUploadLabel = [UILabel new];
+    _autoUploadLabel.font = [UIFont systemFontOfSize:11.0f];
+//    _autoUploadLabel.backgroundColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.8f];
+    _autoUploadLabel.textColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.8f];
+    _autoUploadLabel.text = @"AUTO";
+    [self.contentView addSubview:_autoUploadLabel];
+    
+    _autoUploadIcon = [UIImageView new];
+    _autoUploadIcon.image = [[UIImage imageNamed:@"UploadOnlyIconMini"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _autoUploadIcon.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.8f];
+    [self.contentView addSubview:_autoUploadIcon];
+    
     _overrayView = [UIView new];
     _overrayView.alpha = 0.0f;
     _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.1f];
@@ -118,20 +132,18 @@
     
     _activityIndicatorView.center = _imageView.center;
     
-    [self setTitleLabelFrame];
-    
     _numPhotosLabel.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 40.0f, CGRectGetMaxY(_imageView.frame) - 20.0f, 36.0f, 16.0f);
     
     _actionButton.frame = CGRectMake(CGRectGetMaxX(rect) - 20.0f, CGRectGetMaxY(_imageView.frame) + 5.0f, 20.0f, 30.0f);
     
-    _overrayView.frame = rect;
-}
-
-- (void)setTitleLabelFrame {
-    CGRect rect = self.contentView.bounds;
+    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 3.0f, rect.size.width - 20.0f - 8.0f, 15.0f);
     
-    CGSize titleLabelSize = [_titleLabel sizeThatFits:CGSizeMake(rect.size.width - 20.0f - 8.0f, CGFLOAT_MAX)];
-    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 3.0f, rect.size.width - 20.0f - 8.0f, titleLabelSize.height);
+    _autoUploadIcon.frame = CGRectMake(7.0f, CGRectGetMaxY(_imageView.frame) + 21.5f, 15.0f, 15.0f);
+    
+    CGSize autoUploadLabelSize = [_autoUploadLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    _autoUploadLabel.frame = CGRectMake(24.0f, CGRectGetMaxY(_imageView.frame) + 22.0f, autoUploadLabelSize.width + 1.0f, autoUploadLabelSize.height);
+    
+    _overrayView.frame = rect;
 }
 
 - (void)setAlbum:(PLAlbumObject *)album {
@@ -152,7 +164,7 @@
     
     NSString *albumName = album.name;
     NSUInteger count = album.photos.count;
-    NSString *countString = [NSString stringWithFormat:@"%lu", (unsigned long)count];
+    NSString *countString = [NSString stringWithFormat:@"%ld", (long)count];
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         typeof(wself) sself = wself;
@@ -160,8 +172,6 @@
         if (sself.albumHash != hash) return;
         
         sself.titleLabel.text = albumName;
-        [sself setTitleLabelFrame];
-        
         sself.numPhotosLabel.text = countString;
     });
     
