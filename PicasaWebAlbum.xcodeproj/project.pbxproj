@@ -124,6 +124,9 @@
 		71A2546C19195EDB009914F7 /* PWNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546B19195EDB009914F7 /* PWNavigationController.m */; };
 		71A254701919CFF5009914F7 /* PWSearchNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546F1919CFF5009914F7 /* PWSearchNavigationController.m */; };
 		71A25478191B3247009914F7 /* PWIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A25477191B3247009914F7 /* PWIcons.m */; };
+		71BD233C197577880034CD3B /* PDWebToWebPhotosTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD233B197577880034CD3B /* PDWebToWebPhotosTask.m */; };
+		71BD2340197683F40034CD3B /* PDLocalPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD233F197683F40034CD3B /* PDLocalPhotoObject+methods.m */; };
+		71BD234319768D0E0034CD3B /* PDWebPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD234219768D0E0034CD3B /* PDWebPhotoObject+methods.m */; };
 		71C0784B194ABBD70071702D /* PDTaskTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C0784A194ABBD70071702D /* PDTaskTableViewCell.m */; };
 		71C477A3192CE8C100A60177 /* PLAllPhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C477A2192CE8C100A60177 /* PLAllPhotosViewController.m */; };
 		71C8C1E21942AA360002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C8C1E11942AA350002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m */; };
@@ -383,6 +386,12 @@
 		71A25473191B0B01009914F7 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		71A25476191B3247009914F7 /* PWIcons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWIcons.h; sourceTree = "<group>"; };
 		71A25477191B3247009914F7 /* PWIcons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWIcons.m; sourceTree = "<group>"; };
+		71BD233A197577880034CD3B /* PDWebToWebPhotosTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDWebToWebPhotosTask.h; sourceTree = "<group>"; };
+		71BD233B197577880034CD3B /* PDWebToWebPhotosTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDWebToWebPhotosTask.m; sourceTree = "<group>"; };
+		71BD233E197683F40034CD3B /* PDLocalPhotoObject+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PDLocalPhotoObject+methods.h"; sourceTree = "<group>"; };
+		71BD233F197683F40034CD3B /* PDLocalPhotoObject+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PDLocalPhotoObject+methods.m"; sourceTree = "<group>"; };
+		71BD234119768D0E0034CD3B /* PDWebPhotoObject+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PDWebPhotoObject+methods.h"; sourceTree = "<group>"; };
+		71BD234219768D0E0034CD3B /* PDWebPhotoObject+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PDWebPhotoObject+methods.m"; sourceTree = "<group>"; };
 		71C07849194ABBD70071702D /* PDTaskTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskTableViewCell.h; sourceTree = "<group>"; };
 		71C0784A194ABBD70071702D /* PDTaskTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskTableViewCell.m; sourceTree = "<group>"; };
 		71C477A1192CE8C100A60177 /* PLAllPhotosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLAllPhotosViewController.h; sourceTree = "<group>"; };
@@ -1024,6 +1033,8 @@
 				7133009C194039370061DBA3 /* PDWebToLocalAlbumTaskObject.m */,
 				713300AA194039380061DBA3 /* PDWebToLocalPhotosTaskObject.h */,
 				713300AB194039380061DBA3 /* PDWebToLocalPhotosTaskObject.m */,
+				71BD233A197577880034CD3B /* PDWebToWebPhotosTask.h */,
+				71BD233B197577880034CD3B /* PDWebToWebPhotosTask.m */,
 			);
 			name = PDModelObject;
 			sourceTree = "<group>";
@@ -1322,6 +1333,17 @@
 			name = PWIcons;
 			sourceTree = "<group>";
 		};
+		71BD233D197683C80034CD3B /* PDModelObjectCategory */ = {
+			isa = PBXGroup;
+			children = (
+				71BD233E197683F40034CD3B /* PDLocalPhotoObject+methods.h */,
+				71BD233F197683F40034CD3B /* PDLocalPhotoObject+methods.m */,
+				71BD234119768D0E0034CD3B /* PDWebPhotoObject+methods.h */,
+				71BD234219768D0E0034CD3B /* PDWebPhotoObject+methods.m */,
+			);
+			name = PDModelObjectCategory;
+			sourceTree = "<group>";
+		};
 		71C07838194ABBB60071702D /* PDTaskTableViewCell */ = {
 			isa = PBXGroup;
 			children = (
@@ -1469,6 +1491,7 @@
 		71E8859519120BB9005A78E0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				71BD233D197683C80034CD3B /* PDModelObjectCategory */,
 				71388283193E13BD009AFB1F /* PDCoreDataAPI */,
 				71649BF2195907AB00009C1F /* PDInAppPurchase */,
 				7177479C1936F572005179B6 /* PDModelObject */,
@@ -1803,6 +1826,7 @@
 				71CD06171931799D00BECF6B /* PWSnowFlake.m in Sources */,
 				719CFE5519599F11008B4308 /* PWShareAction.m in Sources */,
 				7118F89519335B790016697E /* PWImagePickerLocaliCloudViewController.m in Sources */,
+				71BD233C197577880034CD3B /* PDWebToWebPhotosTask.m in Sources */,
 				719D92541918D84700B75D8B /* PWAlbumViewCell.m in Sources */,
 				71958C5C191B933500CFC15F /* PWPhotoViewController.m in Sources */,
 				71109BD1196FBC3700EEDAAE /* PLPhotoEditViewController.m in Sources */,
@@ -1829,11 +1853,13 @@
 				715943CD1957F7C6009315E5 /* PDInAppPurchaseViewController.m in Sources */,
 				71E8850E19115C7E005A78E0 /* main.m in Sources */,
 				713300A3194039380061DBA3 /* PDBasePhotoObject.m in Sources */,
+				71BD234319768D0E0034CD3B /* PDWebPhotoObject+methods.m in Sources */,
 				712F39AE1938D011005CF60B /* PWPhotoObject.m in Sources */,
 				71E885A219120E7A005A78E0 /* PWOAuthManager.m in Sources */,
 				719BECEE1957419E005DE6E7 /* PWSettingsTableViewController.m in Sources */,
 				71E8851219115C7E005A78E0 /* PWAppDelegate.m in Sources */,
 				71388286193E13E8009AFB1F /* PDCoreDataAPI.m in Sources */,
+				71BD2340197683F40034CD3B /* PDLocalPhotoObject+methods.m in Sources */,
 				710461A01917759900DF369D /* PWCoreDataAPI.m in Sources */,
 				71649BF1195907A400009C1F /* PDInAppPurchase.m in Sources */,
 				71388289193E30AC009AFB1F /* PDTask.m in Sources */,

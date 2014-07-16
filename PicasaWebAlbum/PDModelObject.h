@@ -14,6 +14,7 @@ static NSString * const kPDLocalToWebAlbumTaskObjectName = @"PDLocalToWebAlbumTa
 static NSString * const kPDLocalToWebPhotosTaskObjectName = @"PDLocalToWebPhotosTaskObject";
 static NSString * const kPDWebToLocalPhotosTaskObjectName = @"PDWebToLocalPhotosTaskObject";
 static NSString * const kPDWebToLocalAlbumTaskObjectName = @"PDWebToLocalAlbumTaskObject";
+static NSString * const kPDWebToWebPhotosTaskObjectName = @"PDWebToWebPhotosTask";
 
 static NSString * const kPDBasePhotoObjectName = @"PDBasePhotoObject";
 static NSString * const kPDWebPhotoObjectName = @"PDWebPhotoObject";
@@ -25,6 +26,10 @@ static NSString * const kPDLocalPhotoObjectName = @"PDLocalPhotoObject";
 #import "PDLocalToWebPhotosTaskObject.h"
 #import "PDWebToLocalPhotosTaskObject.h"
 #import "PDWebToLocalAlbumTaskObject.h"
+#import "PDWebToWebPhotosTask.h"
+
+#import "PDLocalPhotoObject+methods.h"
+#import "PDWebPhotoObject+methods.h"
 
 #import "PDBasePhotoObject.h"
 #import "PDWebPhotoObject.h"

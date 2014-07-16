@@ -11,7 +11,6 @@
 
 @implementation PDWebToLocalPhotosTaskObject
 
-@dynamic photo_object_id_str;
 @dynamic destination_album_id_str;
 @dynamic resume_data_url;
 

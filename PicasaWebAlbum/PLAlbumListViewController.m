@@ -299,7 +299,7 @@
         if (!sself) return;
         
         UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.name]];
-        [deleteActionSheet bk_addButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
+        [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
             [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                 PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumID];
                 [context deleteObject:albumObject];

@@ -24,6 +24,4 @@
 @property (strong, nonatomic) PDBasePhotoObject *photoObject;
 @property (nonatomic) NSUInteger identifier;
 
-- (void)setUploadTaskFromLocalObject:(PDLocalPhotoObject *)localPhotoObject toWebAlbumID:(NSString *)webAlbumID completion:(void (^)(NSError *error))completion;
-
 @end

@@ -27,8 +27,6 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
 @property (strong, nonatomic) NSURLSession *backgroundSession;
 
-@property (strong, nonatomic) NSMutableArray *tasks;
-
 @end
 
 @implementation PDTaskManager
@@ -47,8 +45,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     if (self) {
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfiguration:kPDTaskManagerBackgroundSessionIdentifier];
         _backgroundSession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
-        
-        _tasks = @[].mutableCopy;
     }
     return self;
 }
@@ -57,47 +53,37 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     return [[PDTaskManager sharedManager] backgroundSession];
 }
 
-- (void)addTaskFromWebAlbum:(PWAlbumObject *)fromWebAlbum toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *))completion {
-    if (fromWebAlbum.tag_numphotos.intValue == 0) {
-        if (completion) {
-            completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
-        }
-        return;
-    }
-    
+- (BOOL)checkOKAddTask {
     if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
-        if (_notPurchasedUploadDownloadAction) {
-            _notPurchasedUploadDownloadAction();
-        }
-        return;
+        if (_notPurchasedUploadDownloadAction) _notPurchasedUploadDownloadAction();
+        return NO;
     }
     if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
-        if (_notAllowedAccessPhotoLibraryAction) {
-            _notAllowedAccessPhotoLibraryAction();
+        if (_notAllowedAccessPhotoLibraryAction) _notAllowedAccessPhotoLibraryAction();
+        return NO;
+    }
+    
+    return YES;
+}
+
++ (void)performTaskManagerChangedBlock {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        if ([[self class] sharedManager].taskManagerChangedBlock) {
+            [[self class] sharedManager].taskManagerChangedBlock([[self class] sharedManager]);
         }
+    });
+}
+
+- (void)addTaskFromWebAlbum:(PWAlbumObject *)fromWebAlbum toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *))completion {
+    if (fromWebAlbum.tag_numphotos.intValue == 0) {
+        if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
         return;
     }
+    if (![self checkOKAddTask]) return;
     
     NSString *webAlbumId = fromWebAlbum.id_str;
-    if (!webAlbumId) {
-        if (completion) {
-            completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
-        }
-        return;
-    }
     
-    __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        __block PDWebToLocalAlbumTaskObject *webToLocalAlbumTask = nil;
-        NSManagedObjectContext *pdContext = [PDCoreDataAPI writeContext];
-        [pdContext performBlockAndWait:^{
-            webToLocalAlbumTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalAlbumTaskObjectName inManagedObjectContext:pdContext];
-            webToLocalAlbumTask.album_object_id_str = webAlbumId;
-        }];
-        
         NSMutableArray *photoObjectIDs = @[].mutableCopy;
         NSMutableDictionary *photoObjectSortIndexs = @{}.mutableCopy;
         [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
@@ -120,77 +106,41 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
             }
         }];
         
-        [pdContext performBlockAndWait:^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
+        [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PDWebToLocalAlbumTaskObject *webToLocalAlbumTask = nil;
+            webToLocalAlbumTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalAlbumTaskObjectName inManagedObjectContext:context];
+            webToLocalAlbumTask.album_object_id_str = webAlbumId;
             
             for (NSString *photoObjectID in photoObjectIDs) {
-                PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:pdContext];
+                PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
                 webPhoto.photo_object_id_str = photoObjectID;
                 webPhoto.tag_sort_index = photoObjectSortIndexs[photoObjectID];
                 webPhoto.task = webToLocalAlbumTask;
                 [webToLocalAlbumTask addPhotosObject:webPhoto];
-                
-                PDTask *newTask = [PDTask new];
-                newTask.taskObject = webToLocalAlbumTask;
-                [sself.tasks addObject:newTask];
-            }
-            
-            NSError *error = nil;
-            if (![pdContext save:&error]) {
-                abort();
             }
         }];
-        [PLCoreDataAPI writeContextFinish:pdContext];
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            if (completion) {
-                completion(nil);
-            }
-        });
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            if (sself.taskManagerChangedBlock) {
-                sself.taskManagerChangedBlock(sself);
-            }
-        });
+        if (completion) {
+            completion(nil);
+        }
+        [[self class] performTaskManagerChangedBlock];
     });
 }
 
 - (void)addTaskFromWebPhotos:(NSArray *)fromWebPhotos toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *))completion {
     if (fromWebPhotos.count == 0) {
-        if (completion) {
-            completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
-        }
+        if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
         return;
     }
-    
-    if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
-        if (_notPurchasedUploadDownloadAction) {
-            _notPurchasedUploadDownloadAction();
-        }
-        return;
-    }
-    if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
-        if (_notAllowedAccessPhotoLibraryAction) {
-            _notAllowedAccessPhotoLibraryAction();
-        }
-        return;
-    }
+    if (![self checkOKAddTask]) return;
     
     NSString *destination_album_id_str = toLocalAlbum.id_str;
     
-    __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
             PDWebToLocalPhotosTaskObject *webToLocalPhotosTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalPhotosTaskObjectName inManagedObjectContext:context];
             
             webToLocalPhotosTask.destination_album_id_str = destination_album_id_str;
-            
-            typeof(wself) sself = wself;
-            if (!sself) return;
             
             for (PWPhotoObject *photoObject in fromWebPhotos) {
                 PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
@@ -198,54 +148,26 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                 webPhoto.tag_sort_index = photoObject.sortIndex;
                 webPhoto.task = webToLocalPhotosTask;
                 [webToLocalPhotosTask addPhotosObject:webPhoto];
-                
-                PDTask *newTask = [PDTask new];
-                newTask.taskObject = webToLocalPhotosTask;
-                [sself.tasks addObject:newTask];
             }
         }];
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            if (completion) {
-                completion(nil);
-            }
-        });
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            if (sself.taskManagerChangedBlock) {
-                sself.taskManagerChangedBlock(sself);
-            }
-        });
+        if (completion) {
+            completion(nil);
+        }
+        [[self class] performTaskManagerChangedBlock];
     });
 }
 
 - (void)addTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *))completion {
     if (fromLocalAlbum.photos.count == 0) {
-        if (completion) {
-            completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
-        }
+        if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
         return;
     }
-    
-    if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
-        if (_notPurchasedUploadDownloadAction) {
-            _notPurchasedUploadDownloadAction();
-        }
-        return;
-    }
-    if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
-        if (_notAllowedAccessPhotoLibraryAction) {
-            _notAllowedAccessPhotoLibraryAction();
-        }
-        return;
-    }
+    if (![self checkOKAddTask]) return;
     
     // TODO: webAlbum = nil ならアルバム新規作成のタスクを投げる
     
-    __weak typeof(self) wself = self;
     [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
         PDLocalToWebAlbumTaskObject *localToWebAlbumTask = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalToWebAlbumTaskObjectName inManagedObjectContext:context];
         localToWebAlbumTask.album_object_id_str = fromLocalAlbum.id_str;
         localToWebAlbumTask.destination_album_id_str = toWebAlbum.id_str;
@@ -265,11 +187,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
             localPhoto.task = localToWebAlbumTask;
             [localToWebAlbumTask addPhotosObject:localPhoto];
             
-            PDTask *newTask = [PDTask new];
-            [newTask setUploadTaskFromLocalObject:localPhoto toWebAlbumID:localToWebAlbumTask.destination_album_id_str completion:^(NSError *error) {
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                
+            [localPhoto setUploadTaskToWebAlbumID:id_str completion:^(NSError *error) {
                 index++;
                 if (index == count) {
                     [context save:nil];
@@ -279,45 +197,21 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                             completion(nil);
                         }
                     });
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        if (sself.taskManagerChangedBlock) {
-                            sself.taskManagerChangedBlock(sself);
-                        }
-                    });
+                    [[self class] performTaskManagerChangedBlock];
                 }
             }];
-            newTask.taskObject = localToWebAlbumTask;
-            [sself.tasks addObject:newTask];
         }
     }];
 }
 
 - (void)addTaskFromLocalPhotos:(NSArray *)fromLocalPhotos toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *))completion {
     if (fromLocalPhotos.count == 0) {
-        if (completion) {
-            completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
-        }
+        if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
         return;
     }
+    if (![self checkOKAddTask]) return;
     
-    if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
-        if (_notPurchasedUploadDownloadAction) {
-            _notPurchasedUploadDownloadAction();
-        }
-        return;
-    }
-    if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
-        if (_notAllowedAccessPhotoLibraryAction) {
-            _notAllowedAccessPhotoLibraryAction();
-        }
-        return;
-    }
-    
-    __weak typeof(self) wself = self;
     [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
         PDLocalToWebPhotosTaskObject *localToWebPhotoTask = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalToWebPhotosTaskObjectName inManagedObjectContext:context];
         localToWebPhotoTask.destination_album_id_str = toWebAlbum.id_str;
         
@@ -336,11 +230,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
             localPhoto.task = localToWebPhotoTask;
             [localToWebPhotoTask addPhotosObject:localPhoto];
             
-            PDTask *newTask = [PDTask new];
-            [newTask setUploadTaskFromLocalObject:localPhoto toWebAlbumID:localToWebPhotoTask.destination_album_id_str completion:^(NSError *error) {
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                
+            [localPhoto setUploadTaskToWebAlbumID:id_str completion:^(NSError *error) {
                 index++;
                 if (index == count) {
                     [context save:nil];
@@ -350,15 +240,40 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                             completion(nil);
                         }
                     });
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        if (sself.taskManagerChangedBlock) {
-                            sself.taskManagerChangedBlock(sself);
-                        }
-                    });
+                    [[self class] performTaskManagerChangedBlock];
                 }
             }];
-            newTask.taskObject = localToWebPhotoTask;
-            [sself.tasks addObject:newTask];
+        }
+    }];
+}
+
+- (void)addTaskFromWebPhotos:(NSArray *)fromWebPhotos toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *error))completion {
+    if (fromWebPhotos.count == 0) {
+        if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
+        return;
+    }
+    if (![self checkOKAddTask]) return;
+    
+    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+        PDWebToWebPhotosTask *webToWebPhotoTask = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalToWebPhotosTaskObjectName inManagedObjectContext:context];
+        webToWebPhotoTask.destination_album_id_str = toWebAlbum.id_str;
+        
+        NSMutableArray *id_strs = [NSMutableArray array];
+        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+            for (PLPhotoObject *photoObject in fromWebPhotos) {
+                [id_strs addObject:photoObject.id_str];
+            }
+        }];
+        
+        for (NSString *id_str in id_strs) {
+            PDWebPhotoObject *downloadPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
+            downloadPhoto.photo_object_id_str = id_str;
+            downloadPhoto.task = webToWebPhotoTask;
+            [webToWebPhotoTask addPhotosObject:downloadPhoto];
+            
+            PDLocalPhotoObject *uploadPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalPhotoObjectName inManagedObjectContext:context];
+            uploadPhoto.task = webToWebPhotoTask;
+            [webToWebPhotoTask addPhotosObject:uploadPhoto];
         }
     }];
 }
@@ -449,13 +364,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         [taskObject removePhotosObject:firstPhoto];
         [context deleteObject:firstPhoto];
     }];
-    __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        if (sself.taskManagerChangedBlock) {
-            sself.taskManagerChangedBlock(sself);
+        if (_taskManagerChangedBlock) {
+            _taskManagerChangedBlock(self);
         }
     });
     
@@ -488,13 +399,12 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
             if (!localAlbumObject) {
                 //アルバムがないので新しく作る
                 [PDTaskManager getWebAlbumWithID:webToLocalAlbumTask.album_object_id_str completion:^(PWAlbumObject *webAlbumObject) {
-                    if (!webAlbumObject) return;
                     localAlbumObject = [PDTaskManager makeNewLocalAlbumWithWebAlbum:webAlbumObject];
                 }];
                 
-                webToLocalAlbumTask.destination_album_object_id_str = localAlbumObject.id_str;
+                NSString *id_str = localAlbumObject.id_str;
                 [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                    //保存のみ行う
+                    webToLocalAlbumTask.destination_album_object_id_str = id_str;
                 }];
             }
             
@@ -512,8 +422,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                     }];
                 }
                 else {
-                    PLPhotoObject *photo = [PDTaskManager makeNewPhotoWithAsset:asset];
-                    [localAlbumObject addPhotosObject:photo];
+                    [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                        PLPhotoObject *photo = [PDTaskManager makeNewPhotoWithAsset:asset];
+                        [localAlbumObject addPhotosObject:photo];
+                    }];
                     
                     [PDTaskManager donnedASessionTask];
                 }
@@ -542,70 +454,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
 #pragma mark MakeSessionTask
 - (NSURLSessionTask *)makeSessionTaskWithPhoto:(PDBasePhotoObject *)basePhoto {
     if ([basePhoto isKindOfClass:[PDWebPhotoObject class]]) {
-        PDWebPhotoObject *webPhotoObject = (PDWebPhotoObject *)basePhoto;
-        __block NSMutableURLRequest *request = nil;
-        [PDTaskManager getWebPhotoWithID:webPhotoObject.photo_object_id_str completion:^(PWPhotoObject *webPhotoObject) {
-            NSURL *url = [NSURL URLWithString:webPhotoObject.tag_originalimage_url];
-            [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *authorizedRequest, NSError *error) {
-                request = authorizedRequest;
-            }];
-        }];
-        if (!request) {
-            return nil;
-        }
-        else {
-            return [_backgroundSession downloadTaskWithRequest:request];
-        }
+        return [(PDWebPhotoObject *)basePhoto makeSessionTaskWithSession:_backgroundSession];
     }
     else if([basePhoto isKindOfClass:[PDLocalPhotoObject class]]) {
-        PDLocalPhotoObject *localPhotoObject = (PDLocalPhotoObject *)basePhoto;
-        PDBaseTaskObject *baseTaskObject = localPhotoObject.task;
-        NSString *webAlbumID = nil;
-        if ([baseTaskObject isKindOfClass:[PDLocalToWebAlbumTaskObject class]]) {
-            PDLocalToWebAlbumTaskObject *taskObject = (PDLocalToWebAlbumTaskObject *)baseTaskObject;
-            webAlbumID = taskObject.destination_album_id_str;
-        }
-        else if ([baseTaskObject isKindOfClass:[PDLocalToWebPhotosTaskObject class]]) {
-            PDLocalToWebPhotosTaskObject *taskObject = (PDLocalToWebPhotosTaskObject *)baseTaskObject;
-            webAlbumID = taskObject.destination_album_id_str;
-        }
-        if (!webAlbumID) return nil;
-        
-        NSString *requestUrlString = [NSString stringWithFormat:@"https://picasaweb.google.com/data/feed/api/user/default/albumid/%@", webAlbumID];
-        NSURL *url = [NSURL URLWithString:requestUrlString];
-        PLPhotoObject *photoObject = [PDTaskManager getLocalPhotoWithID:localPhotoObject.photo_object_id_str];
-        if (!photoObject) return nil;
-        if ([photoObject.type isEqualToString:ALAssetTypePhoto]) {
-            __block NSURLSessionTask *sessionTask = nil;
-            [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
-                request.HTTPMethod = @"POST";
-                [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
-                NSString *filePath = localPhotoObject.prepared_body_filepath;
-                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-                [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)fileAttributes[NSFileSize]] forHTTPHeaderField:@"Content-Length"];
-                sessionTask = [_backgroundSession uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
-            }];
-            
-            return sessionTask;
-        }
-        else if ([photoObject.type isEqualToString:ALAssetTypeVideo]) {
-            __block NSURLSessionTask *sessionTask = nil;
-            [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
-                request.HTTPMethod = @"POST";
-                [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
-                [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
-                NSString *filePath = localPhotoObject.prepared_body_filepath;
-                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-                [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)fileAttributes[NSFileSize]] forHTTPHeaderField:@"Content-Length"];
-                sessionTask = [_backgroundSession uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
-            }];
-            
-            return sessionTask;
-        }
-        else {
-            
-        }
-        
+        return [(PDLocalPhotoObject *)basePhoto makeSessionTaskWithSession:_backgroundSession];
     }
     
     return nil;
@@ -666,20 +518,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     return localAlbumObject;
 }
 
-+ (PLPhotoObject *)getLocalPhotoWithID:(NSString *)id_str {
-    __block PLPhotoObject *localPhotoObject = nil;
-    [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-        request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-        NSError *error = nil;
-        NSArray *albums = [context executeFetchRequest:request error:&error];
-        if (albums.count > 0) {
-            localPhotoObject = albums.firstObject;
-        }
-    }];
-    return localPhotoObject;
-}
 
 + (NSArray *)getAllPhotoObject {
     __block NSArray *photoObjects = nil;

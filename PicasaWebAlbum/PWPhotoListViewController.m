@@ -12,6 +12,7 @@
 #import "PWColors.h"
 #import "PWIcons.h"
 #import "PWString.h"
+#import "PWSnowFlake.h"
 #import "PWRefreshControl.h"
 #import "BlocksKit+UIKit.h"
 #import "SDImageCache.h"
@@ -247,14 +248,19 @@
         
         if (isWebAlbum) {
             PWAlbumObject *webAlbum = (PWAlbumObject *)album;
-            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
-                if (error) {
-                    NSLog(@"%@", error.description);
-                    return;
-                }
-                
-                NSLog(@"web album added tasks");
-            }];
+            //ダウンロードはここでやる
+            
+            
+            
+            //アップロードはタスクへ
+//            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
+//                if (error) {
+//                    NSLog(@"%@", error.description);
+//                    return;
+//                }
+//                
+//                NSLog(@"web album added tasks");
+//            }];
         }
         else {
             PLAlbumObject *localAlbum = (PLAlbumObject *)album;
@@ -683,6 +689,36 @@
         
         [actionSheet showFromTabBar:sself.tabBarController.tabBar];
     }];
+}
+
+#pragma mark Download
+- (void)downloadOriginalFile:(NSString *)url completion:(void (^)(NSString *filepath, NSError *error))completion {
+    if (!completion) return;
+    
+    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:url] completion:^(NSMutableURLRequest *request, NSError *error) {
+        if (error) {
+            return;
+        }
+        
+        [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            if (error) {
+                return;
+            }
+            
+            NSString *filePath = [PWPhotoListViewController makeUniquePathInTmpDir];
+            [data writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error];
+            
+            completion(filePath, error);
+        }];
+    }];
+}
+
++ (NSString *)makeUniquePathInTmpDir {
+    NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
+    NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
+    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PWSnowFlake generateUniqueIDString]];
+    
+    return filePath;
 }
 
 @end
