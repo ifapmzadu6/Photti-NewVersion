@@ -261,14 +261,15 @@
         };
         
         if (isWebAlbum) {
-            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectLocalPhotos toWebAlbum:album completion:^(NSError *error) {
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                
-                [[PDTaskManager sharedManager] start];
-                
-                completion();
-            }];
+            // TODO: やること！
+//            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectLocalPhotos toWebAlbum:album completion:^(NSError *error) {
+//                typeof(wself) sself = wself;
+//                if (!sself) return;
+//                
+//                [[PDTaskManager sharedManager] start];
+//                
+//                completion();
+//            }];
         }
         else {
             [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {

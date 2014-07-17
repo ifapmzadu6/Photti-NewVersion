@@ -17,7 +17,7 @@
 
 @implementation PDTaskViewController
 
-- (id)initWithTask:(PDBaseTaskObject *)taskObject {
+- (id)initWithTask:(PDTaskObject *)taskObject {
     self = [super init];
     if (self) {
         

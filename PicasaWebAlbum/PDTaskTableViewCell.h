@@ -8,13 +8,13 @@
 
 @import UIKit;
 
-@class PDBaseTaskObject;
+@class PDTaskObject;
 
 @interface PDTaskTableViewCell : UITableViewCell
 
-@property (strong, nonatomic) PDBaseTaskObject *taskObject;
+@property (strong, nonatomic) PDTaskObject *taskObject;
 @property (nonatomic) BOOL isNowLoading;
 
-+ (CGFloat)cellHeightForTaskObject:(PDBaseTaskObject *)taskObject;
++ (CGFloat)cellHeightForTaskObject:(PDTaskObject *)taskObject;
 
 @end

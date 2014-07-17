@@ -1,5 +1,5 @@
 //
-//  PDBaseTaskObject.h
+//  PDTaskObject.h
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/07/17.
@@ -11,7 +11,7 @@
 
 @class PDBasePhotoObject;
 
-@interface PDBaseTaskObject : NSManagedObject
+@interface PDTaskObject : NSManagedObject
 
 @property (nonatomic, retain) NSString * error_description;
 @property (nonatomic, retain) NSNumber * sort_index;

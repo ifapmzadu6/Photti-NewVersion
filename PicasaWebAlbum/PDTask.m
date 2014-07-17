@@ -27,7 +27,7 @@
 
 static NSString * const kPDTaskErrorDomain = @"PDTaskErrorDomain";
 
-- (id)initWithTaskObject:(PDBaseTaskObject *)taskObject {
+- (id)initWithTaskObject:(PDTaskObject *)taskObject {
     self = [super init];
     if (self) {
     }

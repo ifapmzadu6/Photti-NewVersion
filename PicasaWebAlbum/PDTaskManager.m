@@ -107,16 +107,16 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         }];
         
         [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDWebToLocalAlbumTaskObject *webToLocalAlbumTask = nil;
-            webToLocalAlbumTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalAlbumTaskObjectName inManagedObjectContext:context];
-            webToLocalAlbumTask.album_object_id_str = webAlbumId;
+            PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
+            taskObject.type = @(PDTaskObjectTypeWebAlbumToLocalAlbum);
+            taskObject.from_album_id_str = webAlbumId;
             
             for (NSString *photoObjectID in photoObjectIDs) {
                 PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
                 webPhoto.photo_object_id_str = photoObjectID;
                 webPhoto.tag_sort_index = photoObjectSortIndexs[photoObjectID];
-                webPhoto.task = webToLocalAlbumTask;
-                [webToLocalAlbumTask addPhotosObject:webPhoto];
+                webPhoto.task = taskObject;
+                [taskObject addPhotosObject:webPhoto];
             }
         }];
         
@@ -137,16 +137,16 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     NSString *destination_album_id_str = toLocalAlbum.id_str;
     
     [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        PDWebToLocalPhotosTaskObject *webToLocalPhotosTask = [NSEntityDescription insertNewObjectForEntityForName:kPDWebToLocalPhotosTaskObjectName inManagedObjectContext:context];
-        
-        webToLocalPhotosTask.destination_album_id_str = destination_album_id_str;
+        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
+        taskObject.type = @(PDTaskObjectTypePhotosToLocalAlbum);
+        taskObject.to_album_id_str = destination_album_id_str;
         
         for (PWPhotoObject *photoObject in fromWebPhotos) {
             PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
             webPhoto.photo_object_id_str = photoObject.id_str;
             webPhoto.tag_sort_index = photoObject.sortIndex;
-            webPhoto.task = webToLocalPhotosTask;
-            [webToLocalPhotosTask addPhotosObject:webPhoto];
+            webPhoto.task = taskObject;
+            [taskObject addPhotosObject:webPhoto];
         }
         
         if (completion) {
@@ -166,9 +166,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     // TODO: webAlbum = nil ならアルバム新規作成のタスクを投げる
     
     [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        PDLocalToWebAlbumTaskObject *localToWebAlbumTask = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalToWebAlbumTaskObjectName inManagedObjectContext:context];
-        localToWebAlbumTask.album_object_id_str = fromLocalAlbum.id_str;
-        localToWebAlbumTask.destination_album_id_str = toWebAlbum.id_str;
+        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
+        taskObject.type = @(PDTaskObjectTypeLocalAlbumToWebAlbum);
+        taskObject.from_album_id_str = fromLocalAlbum.id_str;
+        taskObject.to_album_id_str = toWebAlbum.id_str;
         
         NSMutableArray *id_strs = [NSMutableArray array];
         [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
@@ -182,8 +183,8 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
         for (NSString *id_str in id_strs) {
             PDLocalPhotoObject *localPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalPhotoObjectName inManagedObjectContext:context];
             localPhoto.photo_object_id_str = id_str;
-            localPhoto.task = localToWebAlbumTask;
-            [localToWebAlbumTask addPhotosObject:localPhoto];
+            localPhoto.task = taskObject;
+            [taskObject addPhotosObject:localPhoto];
             
             [localPhoto setUploadTaskToWebAlbumID:id_str completion:^(NSError *error) {
                 index++;
@@ -210,8 +211,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     if (![self checkOKAddTask]) return;
     
     [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        PDLocalToWebPhotosTaskObject *localToWebPhotoTask = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalToWebPhotosTaskObjectName inManagedObjectContext:context];
-        localToWebPhotoTask.destination_album_id_str = toWebAlbum.id_str;
+        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
+        taskObject.type = @(PDTaskObjectTypePhotosToWebAlbum);
+        taskObject.to_album_id_str = toWebAlbum.id_str;
         
         __block NSUInteger index = 0;
         NSUInteger count = photos.count;
@@ -220,8 +222,8 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
                 PLPhotoObject *localPhoto = photo;
                 PDLocalPhotoObject *localPhotoObject = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalPhotoObjectName inManagedObjectContext:context];
                 localPhotoObject.photo_object_id_str = localPhoto.id_str;
-                localPhotoObject.task = localToWebPhotoTask;
-                [localToWebPhotoTask addPhotosObject:localPhotoObject];
+                localPhotoObject.task = taskObject;
+                [taskObject addPhotosObject:localPhotoObject];
                 
                 [localPhotoObject setUploadTaskToWebAlbumID:localPhoto.id_str completion:^(NSError *error) {
                     index++;
@@ -251,33 +253,33 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     }
     if (![self checkOKAddTask]) return;
     
-    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        PDWebToWebPhotosTask *webToWebPhotoTask = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalToWebPhotosTaskObjectName inManagedObjectContext:context];
-        webToWebPhotoTask.destination_album_id_str = toWebAlbum.id_str;
-        
-        NSMutableArray *id_strs = [NSMutableArray array];
-        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-            for (PLPhotoObject *photoObject in fromWebPhotos) {
-                [id_strs addObject:photoObject.id_str];
-            }
-        }];
-        
-        for (NSString *id_str in id_strs) {
-            PDWebPhotoObject *downloadPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
-            downloadPhoto.photo_object_id_str = id_str;
-            downloadPhoto.task = webToWebPhotoTask;
-            [webToWebPhotoTask addPhotosObject:downloadPhoto];
-            
-            PDLocalPhotoObject *uploadPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalPhotoObjectName inManagedObjectContext:context];
-            uploadPhoto.task = webToWebPhotoTask;
-            [webToWebPhotoTask addPhotosObject:uploadPhoto];
-            
-            if (completion) {
-                completion(nil);
-            }
-            [[self class] performTaskManagerChangedBlock];
-        }
-    }];
+//    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+//        PDWebToWebPhotosTask *webToWebPhotoTask = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalToWebPhotosTaskObjectName inManagedObjectContext:context];
+//        webToWebPhotoTask.destination_album_id_str = toWebAlbum.id_str;
+//        
+//        NSMutableArray *id_strs = [NSMutableArray array];
+//        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+//            for (PLPhotoObject *photoObject in fromWebPhotos) {
+//                [id_strs addObject:photoObject.id_str];
+//            }
+//        }];
+//        
+//        for (NSString *id_str in id_strs) {
+//            PDWebPhotoObject *downloadPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
+//            downloadPhoto.photo_object_id_str = id_str;
+//            downloadPhoto.task = webToWebPhotoTask;
+//            [webToWebPhotoTask addPhotosObject:downloadPhoto];
+//            
+//            PDLocalPhotoObject *uploadPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalPhotoObjectName inManagedObjectContext:context];
+//            uploadPhoto.task = webToWebPhotoTask;
+//            [webToWebPhotoTask addPhotosObject:uploadPhoto];
+//            
+//            if (completion) {
+//                completion(nil);
+//            }
+//            [[self class] performTaskManagerChangedBlock];
+//        }
+//    }];
 }
 
 - (void)countOfAllPhotosInTaskWithCompletion:(void (^)(NSUInteger count, NSError *error))completion {
@@ -359,7 +361,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     
     NSArray *allPhotoObject = [PDTaskManager getAllPhotoObject];
     PDBasePhotoObject *firstPhoto = allPhotoObject.firstObject;
-    PDBaseTaskObject *taskObject = firstPhoto.task;
+    PDTaskObject *taskObject = firstPhoto.task;
     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         [taskObject removePhotosObject:firstPhoto];
         [context deleteObject:firstPhoto];
@@ -468,7 +470,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     __block NSUInteger count = 0;
     [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPDBaseTaskObjectName inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPDTaskObjectName inManagedObjectContext:context];
         NSError *error = nil;
         count = [context countForFetchRequest:request error:&error];
     }];

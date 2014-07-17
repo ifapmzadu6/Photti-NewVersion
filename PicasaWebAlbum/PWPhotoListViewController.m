@@ -248,14 +248,14 @@
             PWAlbumObject *webAlbum = (PWAlbumObject *)album;
             //ダウンロードはここでやる
             
-            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
-                if (error) {
-                    NSLog(@"%@", error.description);
-                    return;
-                }
-                
-                [[PDTaskManager sharedManager] start];
-            }];
+//            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
+//                if (error) {
+//                    NSLog(@"%@", error.description);
+//                    return;
+//                }
+//                
+//                [[PDTaskManager sharedManager] start];
+//            }];
         }
         else {
             PLAlbumObject *localAlbum = (PLAlbumObject *)album;

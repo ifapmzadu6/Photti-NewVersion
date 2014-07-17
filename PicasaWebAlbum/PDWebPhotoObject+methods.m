@@ -49,20 +49,19 @@
 };
 
 - (void)finishDownloadWithData:(NSData *)data completion:(void (^)(NSError *))completion {
-    PDBaseTaskObject *baseTaskObject = self.task;
-    PDWebToLocalAlbumTaskObject *webToLocalAlbumTask = (PDWebToLocalAlbumTaskObject *)baseTaskObject;
+    PDTaskObject *taskObject = self.task;
     
     [[PLAssetsManager sharedLibrary] writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
-        __block PLAlbumObject *localAlbumObject = [[self class] getLocalAlbumWithID:webToLocalAlbumTask.destination_album_object_id_str];
+        __block PLAlbumObject *localAlbumObject = [[self class] getLocalAlbumWithID:taskObject.to_album_id_str];
         if (!localAlbumObject) {
             //アルバムがないので新しく作る
-            [[self class] getWebAlbumWithID:webToLocalAlbumTask.album_object_id_str completion:^(PWAlbumObject *webAlbumObject) {
+            [[self class] getWebAlbumWithID:taskObject.to_album_id_str completion:^(PWAlbumObject *webAlbumObject) {
                 localAlbumObject = [[self class] makeNewLocalAlbumWithWebAlbum:webAlbumObject];
             }];
             
             NSString *id_str = localAlbumObject.id_str;
             [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                webToLocalAlbumTask.destination_album_object_id_str = id_str;
+                taskObject.to_album_id_str = id_str;
             }];
         }
         

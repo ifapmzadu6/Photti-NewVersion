@@ -143,16 +143,8 @@
 }
 
 - (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session {
-    PDBaseTaskObject *baseTaskObject = self.task;
-    NSString *webAlbumID = nil;
-    if ([baseTaskObject isKindOfClass:[PDLocalToWebAlbumTaskObject class]]) {
-        PDLocalToWebAlbumTaskObject *taskObject = (PDLocalToWebAlbumTaskObject *)baseTaskObject;
-        webAlbumID = taskObject.destination_album_id_str;
-    }
-    else if ([baseTaskObject isKindOfClass:[PDLocalToWebPhotosTaskObject class]]) {
-        PDLocalToWebPhotosTaskObject *taskObject = (PDLocalToWebPhotosTaskObject *)baseTaskObject;
-        webAlbumID = taskObject.destination_album_id_str;
-    }
+    PDTaskObject *taskObject = self.task;
+    NSString *webAlbumID = taskObject.to_album_id_str;
     if (!webAlbumID) return nil;
     
     NSString *requestUrlString = [NSString stringWithFormat:@"https://picasaweb.google.com/data/feed/api/user/default/albumid/%@", webAlbumID];
