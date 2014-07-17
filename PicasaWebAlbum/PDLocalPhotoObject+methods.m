@@ -22,7 +22,6 @@
 @implementation PDLocalPhotoObject (methods)
 
 - (void)setUploadTaskToWebAlbumID:(NSString *)webAlbumID completion:(void(^)(NSError *error))completion {
-    
     PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.prepared_body_filepath];
     if (!photoObject) {
         if (completion) {
@@ -80,8 +79,7 @@
                 }
                 
                 NSError *error = nil;
-                [body writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error];
-                if (error) {
+                if (![body writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
                     if (completion) {
                         completion(error);
                     }
@@ -174,7 +172,6 @@
     NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
     NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
     NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PWSnowFlake generateUniqueIDString]];
-    
     return filePath;
 }
 

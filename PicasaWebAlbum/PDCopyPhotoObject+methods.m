@@ -71,9 +71,27 @@
     PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.web_photo_id_str];
     if (!photoObject) return;
     
+    NSString *filePath = [[self class] makeUniquePathInTmpDir];
     
+    if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+        NSError *error = nil;
+        if (![[NSFileManager defaultManager] moveItemAtPath:location toPath:filePath error:&error]) {
+            
+        }
+    }
+    else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+        NSData *body = [[self class] makeBodyFromFilePath:location title:photoObject.title];
+        NSError *error = nil;
+        if (![body writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
+            
+        }
+    }
+    
+    self.downloaded_data_location = filePath;
+    
+    NSError *error = nil;
+    [[NSFileManager defaultManager] removeItemAtPath:location error:&error];
 }
-
 
 #pragma mark Body
 + (NSData *)makeBodyFromFilePath:(NSString *)filepath title:(NSString *)title {
@@ -131,5 +149,14 @@
     }];
     return photoObject;
 }
+
+#pragma mark FilePath
++ (NSString *)makeUniquePathInTmpDir {
+    NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
+    NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
+    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PWSnowFlake generateUniqueIDString]];
+    return filePath;
+}
+
 
 @end
