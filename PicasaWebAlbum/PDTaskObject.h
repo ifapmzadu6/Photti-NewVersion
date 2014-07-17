@@ -2,7 +2,7 @@
 //  PDBaseTaskObject.h
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/06/05.
+//  Created by Keisuke Karijuku on 2014/07/17.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
@@ -13,12 +13,15 @@
 
 @interface PDBaseTaskObject : NSManagedObject
 
-@property (nonatomic, retain) NSNumber * count;
-@property (nonatomic, retain) NSNumber * sortIndex;
+@property (nonatomic, retain) NSString * error_description;
+@property (nonatomic, retain) NSNumber * sort_index;
+@property (nonatomic, retain) NSString * to_album_id_str;
+@property (nonatomic, retain) NSString * from_album_id_str;
+@property (nonatomic, retain) NSNumber * type;
 @property (nonatomic, retain) NSOrderedSet *photos;
 @end
 
-@interface PDBaseTaskObject (CoreDataGeneratedAccessors)
+@interface PDTaskObject (CoreDataGeneratedAccessors)
 
 - (void)insertObject:(PDBasePhotoObject *)value inPhotosAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromPhotosAtIndex:(NSUInteger)idx;

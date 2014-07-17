@@ -11,5 +11,6 @@
 @interface PDWebPhotoObject (methods)
 
 - (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session;
+- (void)finishDownloadWithData:(NSData *)data completion:(void (^)(NSError *error))completion;
 
 @end

@@ -43,7 +43,7 @@
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
     UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
-    self.navigationItem.rightBarButtonItem = doneBarButtonItem;
+    self.navigationItem.leftBarButtonItem = doneBarButtonItem;
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }

@@ -242,25 +242,20 @@
                 [selectedPhotos addObject:searched.firstObject];
             }
         }
-        if (selectedPhotos.count == 0) {
-            return;
-        }
+        if (selectedPhotos.count == 0) return;
         
         if (isWebAlbum) {
             PWAlbumObject *webAlbum = (PWAlbumObject *)album;
             //ダウンロードはここでやる
             
-            
-            
-            //アップロードはタスクへ
-//            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
-//                if (error) {
-//                    NSLog(@"%@", error.description);
-//                    return;
-//                }
-//                
-//                NSLog(@"web album added tasks");
-//            }];
+            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+                
+                [[PDTaskManager sharedManager] start];
+            }];
         }
         else {
             PLAlbumObject *localAlbum = (PLAlbumObject *)album;
@@ -270,7 +265,7 @@
                     return;
                 }
                 
-                NSLog(@"local album added tasks");
+                [[PDTaskManager sharedManager] start];
             }];
         }
         

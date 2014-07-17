@@ -9,30 +9,29 @@
 #ifndef PicasaWebAlbum_PDModelObject_h
 #define PicasaWebAlbum_PDModelObject_h
 
-static NSString * const kPDBaseTaskObjectName = @"PDBaseTaskObject";
-static NSString * const kPDLocalToWebAlbumTaskObjectName = @"PDLocalToWebAlbumTaskObject";
-static NSString * const kPDLocalToWebPhotosTaskObjectName = @"PDLocalToWebPhotosTaskObject";
-static NSString * const kPDWebToLocalPhotosTaskObjectName = @"PDWebToLocalPhotosTaskObject";
-static NSString * const kPDWebToLocalAlbumTaskObjectName = @"PDWebToLocalAlbumTaskObject";
-static NSString * const kPDWebToWebPhotosTaskObjectName = @"PDWebToWebPhotosTask";
+static NSString * const kPDTaskObjectName = @"PDTaskObject";
 
 static NSString * const kPDBasePhotoObjectName = @"PDBasePhotoObject";
 static NSString * const kPDWebPhotoObjectName = @"PDWebPhotoObject";
 static NSString * const kPDLocalPhotoObjectName = @"PDLocalPhotoObject";
+static NSString * const kPDCopyPhotoObjectName = @"PDCopyPhotoObject";
+
+typedef enum _PDTaskObjectType {
+    PDTaskObjectTypeLocalAlbumToWebAlbum,
+    PDTaskObjectTypeWebAlbumToLocalAlbum,
+    PDTaskObjectTypePhotosToLocalAlbum,
+    PDTaskObjectTypePhotosToWebAlbum
+} PDTaskObjectType;
 
 
-#import "PDBaseTaskObject.h"
-#import "PDLocalToWebAlbumTaskObject.h"
-#import "PDLocalToWebPhotosTaskObject.h"
-#import "PDWebToLocalPhotosTaskObject.h"
-#import "PDWebToLocalAlbumTaskObject.h"
-#import "PDWebToWebPhotosTask.h"
+#import "PDTaskObject.h"
 
-#import "PDLocalPhotoObject+methods.h"
-#import "PDWebPhotoObject+methods.h"
 
 #import "PDBasePhotoObject.h"
 #import "PDWebPhotoObject.h"
 #import "PDLocalPhotoObject.h"
+
+#import "PDLocalPhotoObject+methods.h"
+#import "PDWebPhotoObject+methods.h"
 
 #endif
