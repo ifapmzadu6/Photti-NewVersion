@@ -74,59 +74,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     });
 }
 
-- (void)addTaskFromWebAlbum:(PWAlbumObject *)fromWebAlbum toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *))completion {
-    if (fromWebAlbum.tag_numphotos.intValue == 0) {
-        if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
-        return;
-    }
-    if (![self checkOKAddTask]) return;
-    
-    NSString *webAlbumId = fromWebAlbum.id_str;
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableArray *photoObjectIDs = @[].mutableCopy;
-        NSMutableDictionary *photoObjectSortIndexs = @{}.mutableCopy;
-        [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-            NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-            request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", webAlbumId];
-            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-            NSError *error = nil;
-            NSArray *photos = [context executeFetchRequest:request error:&error];
-            if (photos.count == 0) {
-                if (completion) {
-                    completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
-                }
-                return;
-            }
-            
-            for (PWPhotoObject *photoObject in photos) {
-                [photoObjectIDs addObject:photoObject.id_str];
-                [photoObjectSortIndexs setObject:photoObject.sortIndex forKey:photoObject.id_str];
-            }
-        }];
-        
-        [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
-            taskObject.type = @(PDTaskObjectTypeWebAlbumToLocalAlbum);
-            taskObject.from_album_id_str = webAlbumId;
-            
-            for (NSString *photoObjectID in photoObjectIDs) {
-                PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
-                webPhoto.photo_object_id_str = photoObjectID;
-                webPhoto.tag_sort_index = photoObjectSortIndexs[photoObjectID];
-                webPhoto.task = taskObject;
-                [taskObject addPhotosObject:webPhoto];
-            }
-        }];
-        
-        if (completion) {
-            completion(nil);
-        }
-        [[self class] performTaskManagerChangedBlock];
-    });
-}
-
 - (void)addTaskFromWebPhotos:(NSArray *)fromWebPhotos toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *))completion {
     if (fromWebPhotos.count == 0) {
         if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
@@ -134,26 +81,16 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     }
     if (![self checkOKAddTask]) return;
     
-    NSString *destination_album_id_str = toLocalAlbum.id_str;
+}
+
+
+- (void)addTaskFromWebAlbum:(PWAlbumObject *)fromWebAlbum toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *))completion {
+    if (fromWebAlbum.tag_numphotos.intValue == 0) {
+        if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
+        return;
+    }
+    if (![self checkOKAddTask]) return;
     
-    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
-        taskObject.type = @(PDTaskObjectTypePhotosToLocalAlbum);
-        taskObject.to_album_id_str = destination_album_id_str;
-        
-        for (PWPhotoObject *photoObject in fromWebPhotos) {
-            PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
-            webPhoto.photo_object_id_str = photoObject.id_str;
-            webPhoto.tag_sort_index = photoObject.sortIndex;
-            webPhoto.task = taskObject;
-            [taskObject addPhotosObject:webPhoto];
-        }
-        
-        if (completion) {
-            completion(nil);
-        }
-        [[self class] performTaskManagerChangedBlock];
-    }];
 }
 
 - (void)addTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *))completion {
@@ -163,44 +100,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     }
     if (![self checkOKAddTask]) return;
     
-    // TODO: webAlbum = nil ならアルバム新規作成のタスクを投げる
     
-    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
-        taskObject.type = @(PDTaskObjectTypeLocalAlbumToWebAlbum);
-        taskObject.from_album_id_str = fromLocalAlbum.id_str;
-        taskObject.to_album_id_str = toWebAlbum.id_str;
-        
-        NSMutableArray *id_strs = [NSMutableArray array];
-        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-            for (PLPhotoObject *photoObject in fromLocalAlbum.photos.array) {
-                [id_strs addObject:photoObject.id_str];
-            }
-        }];
-        
-        __block NSUInteger index = 0;
-        NSUInteger count = id_strs.count;
-        for (NSString *id_str in id_strs) {
-            PDLocalPhotoObject *localPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalPhotoObjectName inManagedObjectContext:context];
-            localPhoto.photo_object_id_str = id_str;
-            localPhoto.task = taskObject;
-            [taskObject addPhotosObject:localPhoto];
-            
-            [localPhoto setUploadTaskToWebAlbumID:id_str completion:^(NSError *error) {
-                index++;
-                if (index == count) {
-                    [context save:nil];
-                    
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        if (completion) {
-                            completion(nil);
-                        }
-                    });
-                    [[self class] performTaskManagerChangedBlock];
-                }
-            }];
-        }
-    }];
 }
 
 - (void)addTaskPhotos:(NSArray *)photos toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *error))completion {
@@ -210,40 +110,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"PDTaskManagerErrorDomain";
     }
     if (![self checkOKAddTask]) return;
     
-    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
-        taskObject.type = @(PDTaskObjectTypePhotosToWebAlbum);
-        taskObject.to_album_id_str = toWebAlbum.id_str;
-        
-        __block NSUInteger index = 0;
-        NSUInteger count = photos.count;
-        for (id photo in photos) {
-            if ([photos isKindOfClass:[PLPhotoObject class]]) {
-                PLPhotoObject *localPhoto = photo;
-                PDLocalPhotoObject *localPhotoObject = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalPhotoObjectName inManagedObjectContext:context];
-                localPhotoObject.photo_object_id_str = localPhoto.id_str;
-                localPhotoObject.task = taskObject;
-                [taskObject addPhotosObject:localPhotoObject];
-                
-                [localPhotoObject setUploadTaskToWebAlbumID:localPhoto.id_str completion:^(NSError *error) {
-                    index++;
-                    if (index == count) {
-                        [context save:nil];
-                        
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                            if (completion) {
-                                completion(nil);
-                            }
-                        });
-                        [[self class] performTaskManagerChangedBlock];
-                    }
-                }];
-            }
-            else {
-//                PWPhotoObject *photo = 
-            }
-        }
-    }];
 }
 
 - (void)addTaskFromWebPhotos:(NSArray *)fromWebPhotos toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *error))completion {

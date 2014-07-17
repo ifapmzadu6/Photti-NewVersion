@@ -5,15 +5,15 @@
         <attribute name="tag_sort_index" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
         <relationship name="task" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PDTaskObject" inverseName="photos" inverseEntity="PDTaskObject" syncable="YES"/>
     </entity>
-    <entity name="PDCopyPhotoObject" representedClassName="PDCopyPhotoObject" syncable="YES">
-        <attribute name="prepared_body_filepath" optional="YES" attributeType="String" syncable="YES"/>
+    <entity name="PDCopyPhotoObject" representedClassName="PDCopyPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES">
+        <attribute name="downloaded_data_location" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="web_photo_id_str" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="PDLocalPhotoObject" representedClassName="PDLocalPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES">
         <attribute name="photo_object_id_str" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="prepared_body_filepath" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
-    <entity name="PDTaskObject" representedClassName="PDBaseTaskObject" isAbstract="YES" syncable="YES">
+    <entity name="PDTaskObject" representedClassName="PDBaseTaskObject" syncable="YES">
         <attribute name="error_description" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="from_album_id_str" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="sort_index" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
@@ -27,9 +27,9 @@
     </entity>
     <elements>
         <element name="PDBasePhotoObject" positionX="-135" positionY="-504" width="128" height="88"/>
-        <element name="PDTaskObject" positionX="-119" positionY="-324" width="128" height="133"/>
+        <element name="PDCopyPhotoObject" positionX="0" positionY="-495" width="128" height="75"/>
         <element name="PDLocalPhotoObject" positionX="16" positionY="-661" width="128" height="73"/>
+        <element name="PDTaskObject" positionX="-119" positionY="-324" width="128" height="133"/>
         <element name="PDWebPhotoObject" positionX="-135" positionY="-661" width="128" height="73"/>
-        <element name="PDCopyPhotoObject" positionX="0" positionY="-495" width="128" height="73"/>
     </elements>
 </model>

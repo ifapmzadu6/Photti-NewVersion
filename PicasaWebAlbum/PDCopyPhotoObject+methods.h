@@ -1,5 +1,5 @@
 //
-//  PDCopyPhotoObject.m
+//  PDCopyPhotoObject+methods.h
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/07/17.
@@ -8,10 +8,6 @@
 
 #import "PDCopyPhotoObject.h"
 
-
-@implementation PDCopyPhotoObject
-
-@dynamic web_photo_id_str;
-@dynamic downloaded_data_location;
+@interface PDCopyPhotoObject (methods)
 
 @end

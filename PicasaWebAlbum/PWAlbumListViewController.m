@@ -416,14 +416,14 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
                 return;
             }
             
-            [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
-                NSLog(@"added");
-                if (error) {
-                    NSLog(@"%@", error.description);
-                    return;
-                }
-                [[PDTaskManager sharedManager] start];
-            }];
+//            [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
+//                NSLog(@"added");
+//                if (error) {
+//                    NSLog(@"%@", error.description);
+//                    return;
+//                }
+//                [[PDTaskManager sharedManager] start];
+//            }];
         }];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{

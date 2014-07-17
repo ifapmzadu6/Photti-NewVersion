@@ -12,15 +12,12 @@
 //test
 #import "PDModelObject.h"
 
-@class PDTaskObject;
-
 @interface PDTask : NSObject
 
 @property (copy, nonatomic) void (^willProcessBlock)(PDBasePhotoObject *photoObject);
 @property (copy, nonatomic) void (^processingBlock)(PDBasePhotoObject *photoObject, int64_t bytesWritten, int64_t totalBytes);
 @property (copy, nonatomic) void (^doneProcessBlock)(PDBasePhotoObject *photoObject, NSError *error);
 
-@property (strong, nonatomic) PDTaskObject *taskObject;
 @property (strong, nonatomic) PDBasePhotoObject *photoObject;
 @property (nonatomic) NSUInteger identifier;
 

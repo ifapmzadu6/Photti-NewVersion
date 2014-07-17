@@ -30,22 +30,20 @@ PODS:
   - GData/XMLNode (1.12.0):
     - gtm-oauth2
     - GTMHTTPFetcher
-  - GPUImage (0.1.4)
   - gtm-oauth2 (0.1.0):
     - GTMHTTPFetcher
   - GTMHTTPFetcher (0.1.0)
   - LXReorderableCollectionViewFlowLayout (0.1.1)
   - Reachability (3.1.1)
-  - SDWebImage (3.6):
+  - SDWebImage (3.7.0):
     - SDWebImage/Core
-  - SDWebImage/Core (3.6)
+  - SDWebImage/Core (3.7.0)
   - SFHFKeychainUtils (0.0.1)
 
 DEPENDENCIES:
   - BlocksKit
   - CocoaLumberjack
   - GData
-  - GPUImage
   - LXReorderableCollectionViewFlowLayout
   - Reachability
   - SDWebImage
@@ -55,12 +53,11 @@ SPEC CHECKSUMS:
   BlocksKit: 07c8a80f04275efac6a5f8b973782489c083a182
   CocoaLumberjack: 94accd5749f5c5d15134c8d50f34a973aed8ef69
   GData: 99d19dd8ee328ce77d12d504ddf9b0e0a6e3bc0d
-  GPUImage: ac2bde5f4dbea02a81ced6313964cec1f2043ca9
   gtm-oauth2: 64f2d404a50676ab63b5437a02a7567da8f8b7fa
   GTMHTTPFetcher: 0f02d5a5803dd08736462981064de6a7f59cf9bd
   LXReorderableCollectionViewFlowLayout: b4e25543263e27d4c147109ae5ead01cc9119f23
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
-  SDWebImage: c6989652c1cdf27cbdf3f56957e2030f825af5bc
+  SDWebImage: 791cb0f588046cb0bb7802ae8ae8f5462947b773
   SFHFKeychainUtils: 6fdda05a86d035db406c7662ec1054814b68f0fd
 
 COCOAPODS: 0.33.1

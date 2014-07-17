@@ -20,63 +20,81 @@
 @dynamic photos;
 
 - (void)insertObject:(PDBasePhotoObject *)value inPhotosAtIndex:(NSUInteger)idx {
-    NSMutableOrderedSet *mOrderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
-    [mOrderedSet insertObject:value atIndex:idx];
-    self.photos = mOrderedSet;
+    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
+    [orderedSet insertObject:value atIndex:idx];
+    self.photos = orderedSet;
+    
+    value.task = self;
 }
 
 - (void)removeObjectFromPhotosAtIndex:(NSUInteger)idx {
-    NSMutableOrderedSet *mOrderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
-    [mOrderedSet removeObjectAtIndex:idx];
-    self.photos = mOrderedSet;
+    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
+    [orderedSet removeObjectAtIndex:idx];
+    self.photos = orderedSet;
 }
 
 - (void)insertPhotos:(NSArray *)value atIndexes:(NSIndexSet *)indexes {
-    NSMutableOrderedSet *mOrderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
-    [mOrderedSet insertObjects:value atIndexes:indexes];
-    self.photos = mOrderedSet;
+    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
+    [orderedSet insertObjects:value atIndexes:indexes];
+    self.photos = orderedSet;
+    
+    for (PDBasePhotoObject *photo in value) {
+        photo.task = self;
+    }
 }
 
 - (void)removePhotosAtIndexes:(NSIndexSet *)indexes {
-    NSMutableOrderedSet *mOrderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
-    [mOrderedSet removeObjectsAtIndexes:indexes];
-    self.photos = mOrderedSet;
+    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
+    [orderedSet removeObjectsAtIndexes:indexes];
+    self.photos = orderedSet;
 }
 
 - (void)replaceObjectInPhotosAtIndex:(NSUInteger)idx withObject:(PDBasePhotoObject *)value {
-    NSMutableOrderedSet *mOrderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
-    [mOrderedSet replaceObjectAtIndex:idx withObject:value];
-    self.photos = mOrderedSet;
+    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
+    [orderedSet replaceObjectAtIndex:idx withObject:value];
+    self.photos = orderedSet;
+    
+    value.task = self;
 }
 
 - (void)replacePhotosAtIndexes:(NSIndexSet *)indexes withPhotos:(NSArray *)values {
-    NSMutableOrderedSet *mOrderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
-    [mOrderedSet replaceObjectsAtIndexes:indexes withObjects:values];
-    self.photos = mOrderedSet;
+    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
+    [orderedSet replaceObjectsAtIndexes:indexes withObjects:values];
+    self.photos = orderedSet;
+    
+    for (PDBasePhotoObject *photo in values) {
+        photo.task = self;
+    }
 }
 
 - (void)addPhotosObject:(PDBasePhotoObject *)value {
-    NSMutableOrderedSet *mOrderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
-    [mOrderedSet addObject:value];
-    self.photos = mOrderedSet;
+    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
+    [orderedSet addObject:value];
+    self.photos = orderedSet;
+    
+    value.task = self;
 }
 
 - (void)removePhotosObject:(PDBasePhotoObject *)value {
-    NSMutableOrderedSet *mOrderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
-    [mOrderedSet removeObject:value];
-    self.photos = mOrderedSet;
+    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
+    [orderedSet removeObject:value];
+    self.photos = orderedSet;    
 }
 
 - (void)addPhotos:(NSOrderedSet *)values {
-    NSMutableOrderedSet *mOrderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
-    [mOrderedSet addObjectsFromArray:values.array];
-    self.photos = mOrderedSet;
+    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
+    [orderedSet addObjectsFromArray:values.array];
+    self.photos = orderedSet;
+    
+    for (PDBasePhotoObject *photo in values) {
+        photo.task = self;
+    }
 }
 
 - (void)removePhotos:(NSOrderedSet *)values {
-    NSMutableOrderedSet *mOrderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
-    [mOrderedSet removeObjectsInArray:values.array];
-    self.photos = mOrderedSet;
+    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithOrderedSet:self.photos];
+    [orderedSet removeObjectsInArray:values.array];
+    self.photos = orderedSet;
 }
 
 @end

@@ -8,11 +8,12 @@
 
 @import Foundation;
 @import CoreData;
+#import "PDBasePhotoObject.h"
 
 
-@interface PDCopyPhotoObject : NSManagedObject
+@interface PDCopyPhotoObject : PDBasePhotoObject
 
 @property (nonatomic, retain) NSString * web_photo_id_str;
-@property (nonatomic, retain) NSString * prepared_body_filepath;
+@property (nonatomic, retain) NSString * downloaded_data_location;
 
 @end

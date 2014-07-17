@@ -505,15 +505,15 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
-            if (error) NSLog(@"%@", error.description);
-            [[PDTaskManager sharedManager] start];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Added new tasks.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil];
-                [alertView show];
-            });
-        }];
+//        [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
+//            if (error) NSLog(@"%@", error.description);
+//            [[PDTaskManager sharedManager] start];
+//            
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Added new tasks.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil];
+//                [alertView show];
+//            });
+//        }];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
         typeof(wself) sself = wself;

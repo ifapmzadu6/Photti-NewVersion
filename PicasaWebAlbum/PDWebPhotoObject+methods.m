@@ -21,13 +21,12 @@
 @implementation PDWebPhotoObject (methods)
 
 - (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session {
-    __block NSMutableURLRequest *request = nil;
-    
     __block PWPhotoObject *photoObject = nil;
     [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", self.photo_object_id_str];
+        request.fetchLimit = 1;
         NSError *error = nil;
         NSArray *photos = [context executeFetchRequest:request error:&error];
         if (photos.count > 0) {
@@ -35,17 +34,16 @@
         }
     }];
     
+    __block NSMutableURLRequest *request = nil;
     NSURL *url = [NSURL URLWithString:photoObject.tag_originalimage_url];
     [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *authorizedRequest, NSError *error) {
         request = authorizedRequest;
     }];
     
-    if (!request) {
-        return nil;
-    }
-    else {
+    if (request) {
         return [session downloadTaskWithRequest:request];
     }
+    return nil;
 };
 
 - (void)finishDownloadWithData:(NSData *)data completion:(void (^)(NSError *))completion {

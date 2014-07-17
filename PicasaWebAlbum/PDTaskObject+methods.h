@@ -8,6 +8,13 @@
 
 #import "PDTaskObject.h"
 
+@class PWAlbumObject, PLAlbumObject;
+
 @interface PDTaskObject (methods)
+
++ (void)makeTaskFromWebAlbum:(PWAlbumObject *)fromWebAlbum toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSManagedObjectID *taskObjectID, NSError *error))completion;
++ (void)makeTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSManagedObjectID *taskObject, NSError *error))completion;
++ (void)makeTaskFromPhotos:(NSArray *)photos toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSManagedObjectID *taskObject, NSError *error))completion;
++ (void)makeTaskFromPhotos:(NSArray *)photos toLocalAlbum:(PWAlbumObject *)toLocalAlbum completion:(void (^)(NSManagedObjectID *taskObject, NSError *error))completion;
 
 @end
