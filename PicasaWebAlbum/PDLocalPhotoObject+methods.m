@@ -8,6 +8,8 @@
 
 @import AVFoundation;
 
+#define NtN(obj) ({ __typeof__ (obj) __obj = (obj); __obj == [NSNull null] ? nil : obj; })
+
 #import "PDLocalPhotoObject+methods.h"
 
 #import "PDCoreDataAPI.h"
@@ -17,12 +19,15 @@
 #import "PWSnowFlake.h"
 #import "PDModelObject.h"
 #import "PWPicasaAPI.h"
+#import "PWPicasaParser.h"
+#import "XmlReader.h"
+#import "PWPicasaPOSTRequest.h"
 #import "ALAsset+methods.h"
 
 @implementation PDLocalPhotoObject (methods)
 
 - (void)setUploadTaskToWebAlbumID:(NSString *)webAlbumID completion:(void(^)(NSError *error))completion {
-    PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.prepared_body_filepath];
+    PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) {
         if (completion) {
             completion([NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:nil]);
@@ -101,11 +106,13 @@
 - (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session {
     PDTaskObject *taskObject = self.task;
     NSString *webAlbumID = taskObject.to_album_id_str;
-    if (!webAlbumID) return nil;
+    if (!webAlbumID) {
+        return [self makeNewAlbumSessionTaskWithSession:session];
+    };
     
     NSString *requestUrlString = [NSString stringWithFormat:@"https://picasaweb.google.com/data/feed/api/user/default/albumid/%@", webAlbumID];
     
-    PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.prepared_body_filepath];
+    PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) return nil;
     
     __block NSMutableURLRequest *request = nil;
@@ -129,6 +136,68 @@
     return sessionTask;
 }
 
+- (NSURLSessionTask *)makeNewAlbumSessionTaskWithSession:(NSURLSession *)session {
+    __block NSString *from_album_id_str = nil;
+    [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+        from_album_id_str = self.task.from_album_id_str;
+    }];
+    
+    PLAlbumObject *albumObject = [self getAlbumObjectWithID:from_album_id_str];
+    if (!albumObject) return nil;
+    
+    NSString *postURL = @"https://picasaweb.google.com/data/feed/api/user/default";
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:postURL]];
+    request.HTTPMethod = @"POST";
+    [PWOAuthManager getAuthorizeHTTPHeaderFields:^(NSDictionary *headerFields, NSError *error) {
+        request.allHTTPHeaderFields = headerFields;
+    }];
+    NSString *body = [PWPicasaPOSTRequest makeBodyWithGPhotoID:nil Title:albumObject.name summary:nil location:nil access:nil timestamp:albumObject.timestamp.stringValue keywords:nil];
+    NSData *bodyData = [body dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *filePath = [[self class] makeUniquePathInTmpDir];
+    NSError *error = nil;
+    if (![bodyData writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
+        return nil;
+    }
+    [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
+    [request addValue:@"application/atom+xml" forHTTPHeaderField:@"Content-Type"];
+    [request addValue:[NSString stringWithFormat:@"%ld", (long)bodyData.length] forHTTPHeaderField:@"Content-Length"];
+    NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
+    return sessionTask;
+}
+
+- (void)finishMakeNewAlbumSessionWithResponse:(NSURLResponse *)response data:(NSData *)data {
+    NSUInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
+    if (statusCode != 201) {
+        NSLog(@"%@", response.description);
+        return;
+    }
+//    NSLog(@"%@", response.description);
+    
+    NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+    //        NSLog(@"%@", json.description);
+    
+    id entries = NtN(json[@"entry"]);
+    if (!entries) {
+        NSLog(@"Parser Error");
+        NSLog(@"%s", __func__);
+        return;
+    };
+    
+    __block NSString *to_web_album_id_str = nil;
+    [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        PWAlbumObject *album = [PWPicasaParser albumFromJson:entries existingAlbums:nil context:context];
+        
+        to_web_album_id_str = album.id_str;
+    }];
+    
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        PDTaskObject *taskObject = self.task;
+        taskObject.to_album_id_str = to_web_album_id_str;
+    }];
+}
+
+
+#pragma mark methods
 + (NSData *)makeBodyFromFilePath:(NSString *)filepath title:(NSString *)title {
     NSMutableData *body = [NSMutableData data];
     
@@ -180,16 +249,32 @@
     __block PLPhotoObject *photoObject = nil;
     [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:@"PLPhotoObject" inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
         request.fetchLimit = 1;
         NSError *error = nil;
-        NSArray *albums = [context executeFetchRequest:request error:&error];
-        if (albums.count > 0) {
-            photoObject = albums.firstObject;
+        NSArray *objects = [context executeFetchRequest:request error:&error];
+        if (objects.count > 0) {
+            photoObject = objects.firstObject;
         }
     }];
     return photoObject;
+}
+
+- (PLAlbumObject *)getAlbumObjectWithID:(NSString *)id_str {
+    __block PLAlbumObject *albumObject = nil;
+    [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+        NSFetchRequest *request = [NSFetchRequest new];
+        request.entity = [NSEntityDescription entityForName:@"PLAlbumObject" inManagedObjectContext:context];
+        request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+        request.fetchLimit = 1;
+        NSError *error = nil;
+        NSArray *objects = [context executeFetchRequest:request error:&error];
+        if (objects.count > 0) {
+            albumObject = objects.firstObject;
+        }
+    }];
+    return albumObject;
 }
 
 @end

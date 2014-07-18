@@ -13,6 +13,7 @@
 
 @interface PDBasePhotoObject : NSManagedObject
 
+@property (nonatomic, retain) NSNumber * is_done;
 @property (nonatomic, retain) NSNumber * session_task_identifier;
 @property (nonatomic, retain) NSNumber * tag_sort_index;
 @property (nonatomic, retain) PDTaskObject *task;

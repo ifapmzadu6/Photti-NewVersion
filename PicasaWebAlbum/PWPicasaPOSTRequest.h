@@ -37,5 +37,7 @@
 + (void)deletePhotoWithAlbumID:(NSString *)albumID photoID:(NSString *)photoID completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion;
 
 
++ (NSString *)makeBodyWithGPhotoID:(NSString *)gphotoID Title:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords;
+
 
 @end

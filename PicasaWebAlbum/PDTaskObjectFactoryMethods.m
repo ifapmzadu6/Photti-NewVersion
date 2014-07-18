@@ -68,13 +68,14 @@
 }
 
 + (void)makeTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSManagedObjectID *, NSError *))completion {
-    // TODO: webAlbum = nil ならアルバム新規作成のタスクを投げる
+    NSString *fromLocalAlbumID = fromLocalAlbum.id_str;
+    NSString *toWebAlbumID = toWebAlbum.id_str;
     
     [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
         PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDTaskObject class]) inManagedObjectContext:context];
         taskObject.type = @(PDTaskObjectTypeLocalAlbumToWebAlbum);
-        taskObject.from_album_id_str = fromLocalAlbum.id_str;
-        taskObject.to_album_id_str = toWebAlbum.id_str;
+        taskObject.from_album_id_str = fromLocalAlbumID;
+        taskObject.to_album_id_str = toWebAlbumID;
         
         NSMutableArray *id_strs = [NSMutableArray array];
         [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {

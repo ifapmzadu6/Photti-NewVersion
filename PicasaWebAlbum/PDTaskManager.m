@@ -195,10 +195,6 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 }
 
 #pragma mark NSURLSessionTaskDelegate
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest *))completionHandler {
-    NSLog(@"%s", __func__);
-}
-
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task needNewBodyStream:(void (^)(NSInputStream *bodyStream))completionHandler {
     NSLog(@"%s", __func__);
 }
@@ -219,43 +215,57 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         NSLog(@"%@", error.description);
     }
     
-    NSArray *allPhotoObject = [PDTaskManager getAllPhotoObject];
+    NSArray *allPhotoObject = [[self class] getAllPhotoObject];
     PDBasePhotoObject *firstPhoto = allPhotoObject.firstObject;
-    PDBasePhotoObject *nextPhotoObject = nil;
-    if (allPhotoObject.count >= 2) {
-        nextPhotoObject = allPhotoObject[1];
+    if (firstPhoto.is_done.boolValue) {
+        PDBasePhotoObject *nextPhotoObject = nil;
+        if (allPhotoObject.count >= 2) {
+            nextPhotoObject = allPhotoObject[1];
+        }
+        PDTaskObject *taskObject = firstPhoto.task;
+        NSManagedObjectID *firstObjectID = firstPhoto.objectID;
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            [taskObject removePhotosObject:firstPhoto];
+            NSManagedObject *firstObject = [context objectWithID:firstObjectID];
+            [context deleteObject:firstObject];
+        }];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_taskManagerChangedBlock) {
+                _taskManagerChangedBlock(self);
+            }
+        });
+        
+        if (nextPhotoObject) {
+            NSURLSessionTask *sessionTask = nil;
+            if ([nextPhotoObject isKindOfClass:[PDWebPhotoObject class]]) {
+                sessionTask = [(PDWebPhotoObject *)nextPhotoObject makeSessionTaskWithSession:_backgroundSession];
+            }
+            else if([nextPhotoObject isKindOfClass:[PDLocalPhotoObject class]]) {
+                sessionTask = [(PDLocalPhotoObject *)nextPhotoObject makeSessionTaskWithSession:_backgroundSession];
+            }
+            if (sessionTask) {
+                [sessionTask resume];
+            }
+        }
+        else {
+            NSManagedObjectID *taskObjectID = taskObject.objectID;
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                NSManagedObject *object = [context objectWithID:taskObjectID];
+                [context deleteObject:object];
+            }];
+        }
     }
-    PDTaskObject *taskObject = firstPhoto.task;
-    NSManagedObjectID *firstObjectID = firstPhoto.objectID;
-    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-        [taskObject removePhotosObject:firstPhoto];
-        NSManagedObject *firstObject = [context objectWithID:firstObjectID];
-        [context deleteObject:firstObject];
-    }];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (_taskManagerChangedBlock) {
-            _taskManagerChangedBlock(self);
-        }
-    });
-    
-    if (nextPhotoObject) {
+    else {
         NSURLSessionTask *sessionTask = nil;
-        if ([nextPhotoObject isKindOfClass:[PDWebPhotoObject class]]) {
-            sessionTask = [(PDWebPhotoObject *)nextPhotoObject makeSessionTaskWithSession:_backgroundSession];
+        if ([firstPhoto isKindOfClass:[PDWebPhotoObject class]]) {
+            sessionTask = [(PDWebPhotoObject *)firstPhoto makeSessionTaskWithSession:_backgroundSession];
         }
-        else if([nextPhotoObject isKindOfClass:[PDLocalPhotoObject class]]) {
-            sessionTask = [(PDLocalPhotoObject *)nextPhotoObject makeSessionTaskWithSession:_backgroundSession];
+        else if([firstPhoto isKindOfClass:[PDLocalPhotoObject class]]) {
+            sessionTask = [(PDLocalPhotoObject *)firstPhoto makeSessionTaskWithSession:_backgroundSession];
         }
         if (sessionTask) {
             [sessionTask resume];
         }
-    }
-    else {
-        NSManagedObjectID *taskObjectID = taskObject.objectID;
-        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            NSManagedObject *object = [context objectWithID:taskObjectID];
-            [context deleteObject:object];
-        }];
     }
     
     [[self class] donnedASessionTask];
@@ -270,8 +280,12 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
     
     if ([photoObject isKindOfClass:[PDWebPhotoObject class]]) {
         PDWebPhotoObject *webPhotoObject = (PDWebPhotoObject *)photoObject;
+        NSManagedObjectID *webPhotoObjectID = webPhotoObject.objectID;
         [webPhotoObject finishDownloadWithData:data completion:^(NSError *error) {
-            
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PDWebPhotoObject *photoObject = (PDWebPhotoObject *)[context objectWithID:webPhotoObjectID];
+                photoObject.is_done = @(YES);
+            }];
         }];
     }
     if ([photoObject isKindOfClass:[PDCopyPhotoObject class]]) {
@@ -290,6 +304,27 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
     NSLog(@"%s", __func__);
 }
 
+#pragma mark NSURLSessionDataTask
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
+    didReceiveData:(NSData *)data {
+    PDBasePhotoObject *firstObject = [[self class] getFirstPhotoObject];
+    if ([firstObject isKindOfClass:[PDLocalPhotoObject class]]) {
+        __block PDTaskObject *taskObject = nil;
+        [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+            taskObject = firstObject.task;
+        }];
+        if (!taskObject.to_album_id_str) {
+            [(PDLocalPhotoObject *)firstObject finishMakeNewAlbumSessionWithResponse:dataTask.response data:data];
+        }
+        else {
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                firstObject.is_done = @(YES);
+            }];
+        }
+    }
+    
+    NSLog(@"%s", __func__);
+}
 
 #pragma mark DoneSessionTask
 + (void)donnedASessionTask {
@@ -313,6 +348,22 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
     return photoObjects;
 }
 
++ (PDBasePhotoObject *)getFirstPhotoObject {
+    __block PDBasePhotoObject *photoObject = nil;
+    [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+        NSFetchRequest *request = [NSFetchRequest new];
+        request.entity = [NSEntityDescription entityForName:NSStringFromClass([PDBasePhotoObject class]) inManagedObjectContext:context];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_sort_index" ascending:YES]];
+        request.fetchLimit = 1;
+        NSError *error = nil;
+        NSArray *objects = [context executeFetchRequest:request error:&error];
+        if (objects.count > 0) {
+            photoObject = objects.firstObject;
+        }
+    }];
+    return photoObject;
+}
+
 + (NSUInteger)getCountOfTasks {
     __block NSUInteger count = 0;
     [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
@@ -323,6 +374,5 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
     }];
     return count;
 }
-
 
 @end
