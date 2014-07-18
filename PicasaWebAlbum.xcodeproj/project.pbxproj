@@ -116,13 +116,13 @@
 		71A2546C19195EDB009914F7 /* PWNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546B19195EDB009914F7 /* PWNavigationController.m */; };
 		71A254701919CFF5009914F7 /* PWSearchNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546F1919CFF5009914F7 /* PWSearchNavigationController.m */; };
 		71A25478191B3247009914F7 /* PWIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A25477191B3247009914F7 /* PWIcons.m */; };
+		71BA33871978292600CD0011 /* PDTaskObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BA33861978292600CD0011 /* PDTaskObject.m */; };
 		71BD2340197683F40034CD3B /* PDLocalPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD233F197683F40034CD3B /* PDLocalPhotoObject+methods.m */; };
 		71BD234319768D0E0034CD3B /* PDWebPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD234219768D0E0034CD3B /* PDWebPhotoObject+methods.m */; };
 		71BD234619778C010034CD3B /* PDLocalPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD234519778C010034CD3B /* PDLocalPhotoObject.m */; };
-		71BD234919778C020034CD3B /* PDTaskObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD234819778C020034CD3B /* PDTaskObject.m */; };
 		71BD234C19778C020034CD3B /* PDWebPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD234B19778C020034CD3B /* PDWebPhotoObject.m */; };
 		71BD235219778C020034CD3B /* PDBasePhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235119778C020034CD3B /* PDBasePhotoObject.m */; };
-		71BD235519778ECC0034CD3B /* PDTaskObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235419778ECC0034CD3B /* PDTaskObject+methods.m */; };
+		71BD235519778ECC0034CD3B /* PDTaskObjectFactoryMethods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235419778ECC0034CD3B /* PDTaskObjectFactoryMethods.m */; };
 		71BD235819779D010034CD3B /* PDCopyPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235719779D010034CD3B /* PDCopyPhotoObject.m */; };
 		71BD235C19779E450034CD3B /* ALAsset+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235B19779E450034CD3B /* ALAsset+methods.m */; };
 		71BD235F1977AE100034CD3B /* PDCopyPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235E1977AE100034CD3B /* PDCopyPhotoObject+methods.m */; };
@@ -368,20 +368,20 @@
 		71A25473191B0B01009914F7 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		71A25476191B3247009914F7 /* PWIcons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWIcons.h; sourceTree = "<group>"; };
 		71A25477191B3247009914F7 /* PWIcons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWIcons.m; sourceTree = "<group>"; };
+		71BA33851978292600CD0011 /* PDTaskObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskObject.h; sourceTree = "<group>"; };
+		71BA33861978292600CD0011 /* PDTaskObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskObject.m; sourceTree = "<group>"; };
 		71BD233E197683F40034CD3B /* PDLocalPhotoObject+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PDLocalPhotoObject+methods.h"; sourceTree = "<group>"; };
 		71BD233F197683F40034CD3B /* PDLocalPhotoObject+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PDLocalPhotoObject+methods.m"; sourceTree = "<group>"; };
 		71BD234119768D0E0034CD3B /* PDWebPhotoObject+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PDWebPhotoObject+methods.h"; sourceTree = "<group>"; };
 		71BD234219768D0E0034CD3B /* PDWebPhotoObject+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PDWebPhotoObject+methods.m"; sourceTree = "<group>"; };
 		71BD234419778C010034CD3B /* PDLocalPhotoObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDLocalPhotoObject.h; sourceTree = "<group>"; };
 		71BD234519778C010034CD3B /* PDLocalPhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDLocalPhotoObject.m; sourceTree = "<group>"; };
-		71BD234719778C020034CD3B /* PDTaskObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskObject.h; sourceTree = "<group>"; };
-		71BD234819778C020034CD3B /* PDTaskObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskObject.m; sourceTree = "<group>"; };
 		71BD234A19778C020034CD3B /* PDWebPhotoObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDWebPhotoObject.h; sourceTree = "<group>"; };
 		71BD234B19778C020034CD3B /* PDWebPhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDWebPhotoObject.m; sourceTree = "<group>"; };
 		71BD235019778C020034CD3B /* PDBasePhotoObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDBasePhotoObject.h; sourceTree = "<group>"; };
 		71BD235119778C020034CD3B /* PDBasePhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDBasePhotoObject.m; sourceTree = "<group>"; };
-		71BD235319778ECC0034CD3B /* PDTaskObject+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PDTaskObject+methods.h"; sourceTree = "<group>"; };
-		71BD235419778ECC0034CD3B /* PDTaskObject+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PDTaskObject+methods.m"; sourceTree = "<group>"; };
+		71BD235319778ECC0034CD3B /* PDTaskObjectFactoryMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskObjectFactoryMethods.h; sourceTree = "<group>"; };
+		71BD235419778ECC0034CD3B /* PDTaskObjectFactoryMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskObjectFactoryMethods.m; sourceTree = "<group>"; };
 		71BD235619779D010034CD3B /* PDCopyPhotoObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDCopyPhotoObject.h; sourceTree = "<group>"; };
 		71BD235719779D010034CD3B /* PDCopyPhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDCopyPhotoObject.m; sourceTree = "<group>"; };
 		71BD235A19779E450034CD3B /* ALAsset+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALAsset+methods.h"; sourceTree = "<group>"; };
@@ -1015,10 +1015,10 @@
 				71BD234B19778C020034CD3B /* PDWebPhotoObject.m */,
 				71BD235619779D010034CD3B /* PDCopyPhotoObject.h */,
 				71BD235719779D010034CD3B /* PDCopyPhotoObject.m */,
-				71BD234719778C020034CD3B /* PDTaskObject.h */,
-				71BD234819778C020034CD3B /* PDTaskObject.m */,
 				71BD234419778C010034CD3B /* PDLocalPhotoObject.h */,
 				71BD234519778C010034CD3B /* PDLocalPhotoObject.m */,
+				71BA33851978292600CD0011 /* PDTaskObject.h */,
+				71BA33861978292600CD0011 /* PDTaskObject.m */,
 			);
 			name = PDModelObject;
 			sourceTree = "<group>";
@@ -1320,8 +1320,8 @@
 		71BD233D197683C80034CD3B /* PDModelObjectCategory */ = {
 			isa = PBXGroup;
 			children = (
-				71BD235319778ECC0034CD3B /* PDTaskObject+methods.h */,
-				71BD235419778ECC0034CD3B /* PDTaskObject+methods.m */,
+				71BD235319778ECC0034CD3B /* PDTaskObjectFactoryMethods.h */,
+				71BD235419778ECC0034CD3B /* PDTaskObjectFactoryMethods.m */,
 				71BD233E197683F40034CD3B /* PDLocalPhotoObject+methods.h */,
 				71BD233F197683F40034CD3B /* PDLocalPhotoObject+methods.m */,
 				71BD234119768D0E0034CD3B /* PDWebPhotoObject+methods.h */,
@@ -1834,7 +1834,6 @@
 				71349CB1192DF7A8003CC2AA /* PLPhotoViewCell.m in Sources */,
 				719CFE5119598B85008B4308 /* PWGoogleLoginViewController.m in Sources */,
 				7118F89E19335C0E0016697E /* PWImagePickerWebPhotoListViewController.m in Sources */,
-				71BD234919778C020034CD3B /* PDTaskObject.m in Sources */,
 				712E03A6191DAD7E0035D9E0 /* PWRefreshControl.m in Sources */,
 				719D92581918E08500B75D8B /* PWTabBarController.m in Sources */,
 				71E885A6191215A1005A78E0 /* PWPicasaGETRequest.m in Sources */,
@@ -1859,6 +1858,7 @@
 				710461A01917759900DF369D /* PWCoreDataAPI.m in Sources */,
 				71649BF1195907A400009C1F /* PDInAppPurchase.m in Sources */,
 				71388289193E30AC009AFB1F /* PDTask.m in Sources */,
+				71BA33871978292600CD0011 /* PDTaskObject.m in Sources */,
 				711FE8F91961C62A00AF296B /* PLNewAlbumCreatedViewController.m in Sources */,
 				71A25464191940B0009914F7 /* PWPhotoListViewController.m in Sources */,
 				71349CC0192F245A003CC2AA /* PLCollectionFooterView.m in Sources */,
@@ -1874,7 +1874,7 @@
 				7110001E1963F650009A329C /* PLFullAlbumViewCell.m in Sources */,
 				7195524A19290161003EA9AF /* PLAlbumViewCell.m in Sources */,
 				719D92501918C54E00B75D8B /* PWPicasaPOSTRequest.m in Sources */,
-				71BD235519778ECC0034CD3B /* PDTaskObject+methods.m in Sources */,
+				71BD235519778ECC0034CD3B /* PDTaskObjectFactoryMethods.m in Sources */,
 				715943C11957C1F3009315E5 /* PLNavigationController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

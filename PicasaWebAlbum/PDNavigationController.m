@@ -11,6 +11,7 @@
 #import "PWColors.h"
 #import "PWIcons.h"
 #import "PDTaskManager.h"
+#import "PDCoreDataAPI.h"
 #import "PDInAppPurchase.h"
 #import "BlocksKit+UIKit.h"
 
@@ -90,7 +91,7 @@
             if (!sself) return;
             
             if (count > 0) {
-                sself.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)count];
+                sself.tabBarItem.badgeValue = [NSString stringWithFormat:@"%ld", (long)count];
             }
             else {
                 sself.tabBarItem.badgeValue = nil;
@@ -153,15 +154,12 @@
 
 #pragma mark PDTaskManager
 - (void)setTaskManagerChangedBlock {
-    __weak typeof(self) wself = self;
-    PDTaskManager *taskManager = [PDTaskManager sharedManager];
-    [taskManager setTaskManagerChangedBlock:^(PDTaskManager *taskManager){
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        [sself badgeUpdate];
-        [sself checkTaskIsNone];
-    }];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(taskManagerChangedBlock) name:NSManagedObjectContextDidSaveNotification object:[PDCoreDataAPI readContext]];
+}
+
+- (void)taskManagerChangedBlock {
+    [self badgeUpdate];
+    [self checkTaskIsNone];
 }
 
 - (void)setTaskManagerNotPurchaseBlock {

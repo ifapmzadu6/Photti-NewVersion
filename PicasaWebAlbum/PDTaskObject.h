@@ -2,7 +2,7 @@
 //  PDTaskObject.h
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/07/17.
+//  Created by Keisuke Karijuku on 2014/07/18.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
@@ -14,9 +14,9 @@
 @interface PDTaskObject : NSManagedObject
 
 @property (nonatomic, retain) NSString * error_description;
+@property (nonatomic, retain) NSString * from_album_id_str;
 @property (nonatomic, retain) NSNumber * sort_index;
 @property (nonatomic, retain) NSString * to_album_id_str;
-@property (nonatomic, retain) NSString * from_album_id_str;
 @property (nonatomic, retain) NSNumber * type;
 @property (nonatomic, retain) NSOrderedSet *photos;
 @end
