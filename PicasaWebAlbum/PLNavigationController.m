@@ -54,6 +54,10 @@
             self.viewControllers = @[pageViewcontroller];            
         }
         
+        [[PLAssetsManager sharedManager] enumurateAssetsWithCompletion:^(NSError *error) {
+            if (error) return;
+        }];
+        
         __weak typeof(self) wself = self;
         [PLAssetsManager sharedManager].libraryUpDateBlock = ^(NSDate *enumuratedDate, NSUInteger newAlbumCount) {
             typeof(wself) sself = wself;

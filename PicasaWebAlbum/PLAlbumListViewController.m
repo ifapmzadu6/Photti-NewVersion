@@ -29,7 +29,6 @@
 @interface PLAlbumListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
-@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
@@ -63,38 +62,19 @@
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
-    _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    [self.view addSubview:_indicatorView];
-    [_indicatorView startAnimating];
+    NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
     
-    __weak typeof(self) wself = self;
-    [[PLAssetsManager sharedManager] enumurateAssetsWithCompletion:^(NSError *error) {
-        if (error) return;
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
-        
-        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-        sself.fetchedResultsController.delegate = sself;
-        
-        [sself.fetchedResultsController performFetch:&error];
-        if (error) {
-            NSLog(@"%@", error.description);
-            return;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.indicatorView stopAnimating];
-            
-            if (sself.collectionView.indexPathsForVisibleItems.count == 0) {
-                [sself.collectionView reloadData];
-            }
-        });
-    }];
+    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+    _fetchedResultsController.delegate = self;
+    NSError *error = nil;
+    if (![_fetchedResultsController performFetch:&error]) {
+        NSLog(@"%@", error.description);
+        abort();
+        return;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -147,10 +127,6 @@
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
     _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f , 10.0f, viewInsets.bottom, 10.0f);
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
-    
-    if (_indicatorView) {
-        _indicatorView.center = self.view.center;
-    }
 }
 
 - (void)didReceiveMemoryWarning {

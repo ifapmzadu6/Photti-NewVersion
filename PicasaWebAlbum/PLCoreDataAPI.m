@@ -11,6 +11,9 @@
 
 @interface PLCoreDataAPI ()
 
+@property (strong, nonatomic) NSManagedObjectContext *readContext;
+@property (strong, nonatomic) NSManagedObjectContext *storeContext;
+
 @end
 
 @implementation PLCoreDataAPI
@@ -18,31 +21,38 @@
 + (PLCoreDataAPI *)sharedManager {
     static dispatch_once_t once;
     static id instance;
-    dispatch_once(&once, ^{instance = self.new;});
+    dispatch_once(&once, ^{
+        instance = self.new;
+    });
     return instance;
 }
 
-+ (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
-    static NSPersistentStoreCoordinator *persistentStoreCoordinator;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+- (id)init {
+    self = [super init];
+    if (self) {
         NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PLModel" withExtension:@"momd"];
         NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
         
-        NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"PLModel.sqlite"];
+        NSURL *storeURL = [[[self class] applicationDocumentsDirectory] URLByAppendingPathComponent:@"PLModel.sqlite"];
         
-        NSPersistentStoreCoordinator *tmpPersistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+        NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
         
         NSError *error = nil;
-        if (![tmpPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+        if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
             
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
         }
         
-        persistentStoreCoordinator = tmpPersistentStoreCoordinator;
-    });
-    return persistentStoreCoordinator;
+        _storeContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        _storeContext.persistentStoreCoordinator = persistentStoreCoordinator;
+        _storeContext.undoManager = nil;
+        
+        _readContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+        _readContext.parentContext = _storeContext;
+        _readContext.undoManager = nil;
+    }
+    return self;
 }
 
 + (NSURL *)applicationDocumentsDirectory {
@@ -51,7 +61,7 @@
 
 + (NSManagedObjectContext *)writeContext {
     NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    context.parentContext = [self readContext];
+    context.parentContext = [self sharedManager].readContext;
     context.undoManager = nil;
     
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedManager] selector:@selector(contextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
@@ -64,25 +74,11 @@
 }
 
 + (NSManagedObjectContext *)readContext {
-    static NSManagedObjectContext *context;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-        context.parentContext = [self storeContext];
-        context.undoManager = nil;
-    });
-    return context;
+    return [self sharedManager].readContext;
 }
 
 + (NSManagedObjectContext *)storeContext {
-    static NSManagedObjectContext *context;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        context.persistentStoreCoordinator = [self persistentStoreCoordinator];
-        context.undoManager = nil;
-    });
-    return context;
+    return [self sharedManager].storeContext;
 }
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13E28" minimumToolsVersion="Xcode 4.5" macOSVersion="Automatic" iOSVersion="Automatic">
-    <entity name="PWAlbumManagedObject" representedClassName="Album" syncable="YES">
+    <entity name="PWAlbumManagedObject" representedClassName="PWAlbumObject" syncable="YES">
         <attribute name="author_name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="author_url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="category_scheme" optional="YES" attributeType="String" syncable="YES"/>

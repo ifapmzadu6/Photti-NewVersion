@@ -20,7 +20,7 @@
 #import "PWString.h"
 #import "PLPhotoPageViewController.h"
 
-@interface PLAllPhotosViewController ()
+@interface PLAllPhotosViewController () <NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSMutableArray *headers;
@@ -64,7 +64,13 @@
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]];
     
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:@"tag_adjusted_date" cacheName:nil];
-    [_fetchedResultsController performFetch:nil];
+    _fetchedResultsController.delegate = self;
+    NSError *error = nil;
+    if (![_fetchedResultsController performFetch:&error]) {
+        NSLog(@"%@", error.description);
+        abort();
+        return;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {

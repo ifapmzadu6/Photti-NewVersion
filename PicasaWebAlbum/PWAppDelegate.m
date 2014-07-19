@@ -38,7 +38,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     [[[NSURLSession sharedSession] configuration] setURLCache:nil];
 //    [[NSURLSession sharedSession] configuration].URLCache.memoryCapacity = 0;
     
-    [PDTaskManager sharedManager];
+    [[PDTaskManager sharedManager] start];
     
     return YES;
 }
