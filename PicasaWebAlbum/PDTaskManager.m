@@ -43,6 +43,9 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
     if (self) {
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfiguration:kPDTaskManagerBackgroundSessionIdentifier];
         _backgroundSession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
+        
+        NSManagedObjectContext *context = [PDCoreDataAPI readContext];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
     }
     return self;
 }
@@ -151,7 +154,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [_backgroundSession getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             if (dataTasks.count == 0 && uploadTasks.count == 0 && downloadTasks.count == 0) {
-                PDBasePhotoObject *firstPhoto = [PDTaskManager getAllPhotoInFirstTaskObject].firstObject;
+                PDBasePhotoObject *firstPhoto = [PDTaskManager getFirstTaskObject].photos.firstObject;
                 NSURLSessionTask *task = nil;
                 if ([firstPhoto isKindOfClass:[PDWebPhotoObject class]]) {
                     task = [(PDWebPhotoObject *)firstPhoto makeSessionTaskWithSession:_backgroundSession];
@@ -213,7 +216,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         NSLog(@"%@", error.description);
     }
     
-    NSArray *allPhotoObject = [[self class] getAllPhotoInFirstTaskObject];
+    NSArray *allPhotoObject = [[self class] getFirstTaskObject].photos.array;
     PDBasePhotoObject *firstPhoto = allPhotoObject.firstObject;
     if (firstPhoto.is_done.boolValue) {
         PDBasePhotoObject *nextPhotoObject = nil;
@@ -223,15 +226,10 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         PDTaskObject *taskObject = firstPhoto.task;
         NSManagedObjectID *firstObjectID = firstPhoto.objectID;
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            [taskObject removePhotosObject:firstPhoto];
             NSManagedObject *firstObject = [context objectWithID:firstObjectID];
+            [taskObject removePhotosObject:firstPhoto];
             [context deleteObject:firstObject];
         }];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (_taskManagerChangedBlock) {
-                _taskManagerChangedBlock(self);
-            }
-        });
         
         if (nextPhotoObject) {
             NSURLSessionTask *sessionTask = nil;
@@ -274,7 +272,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
     NSLog(@"%s", __func__);
     
     NSData *data = [NSData dataWithContentsOfURL:location];
-    PDBasePhotoObject *photoObject = [PDTaskManager getAllPhotoInFirstTaskObject].firstObject;
+    PDBasePhotoObject *photoObject = [PDTaskManager getFirstTaskObject].photos.firstObject;
     
     if ([photoObject isKindOfClass:[PDWebPhotoObject class]]) {
         PDWebPhotoObject *webPhotoObject = (PDWebPhotoObject *)photoObject;
@@ -305,7 +303,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 #pragma mark NSURLSessionDataTask
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
     didReceiveData:(NSData *)data {
-    PDBasePhotoObject *firstObject = [[self class] getFirstPhotoInFirstTaskObject];
+    PDBasePhotoObject *firstObject = [[self class] getFirstTaskObject].photos.firstObject;
     if ([firstObject isKindOfClass:[PDLocalPhotoObject class]]) {
         __block PDTaskObject *taskObject = nil;
         [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
@@ -333,27 +331,18 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
     }
 }
 
-#pragma GetData
-+ (NSArray *)getAllPhotoInFirstTaskObject {
-    __block NSArray *photoObjects = nil;
-    [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:@"PDTaskObject" inManagedObjectContext:context];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sort_index" ascending:YES]];
-        request.fetchLimit = 1;
-        NSError *error = nil;
-        NSArray *objects = [context executeFetchRequest:request error:&error];
-        if (objects.count == 0) {
-            return;
+#pragma mark contextchanged
+- (void)contextDidSaveNotification:(NSNotification *)notification {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (_taskManagerChangedBlock) {
+            _taskManagerChangedBlock(self);
         }
-        PDTaskObject *taskObject = objects.firstObject;
-        photoObjects = taskObject.photos.array;
-    }];
-    return photoObjects;
+    });
 }
 
-+ (PDBasePhotoObject *)getFirstPhotoInFirstTaskObject {
-    __block PDBasePhotoObject *photoObject = nil;
+#pragma GetData
++ (PDTaskObject *)getFirstTaskObject {
+    __block PDTaskObject *taskObject = nil;
     [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:@"PDTaskObject" inManagedObjectContext:context];
@@ -361,16 +350,11 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         request.fetchLimit = 1;
         NSError *error = nil;
         NSArray *objects = [context executeFetchRequest:request error:&error];
-        if (objects.count == 0) {
-            return;
+        if (objects.count >= 1) {
+            taskObject = objects.firstObject;
         }
-        PDTaskObject *taskObject = objects.firstObject;
-        if (taskObject.photos.count == 0) {
-            return;
-        }
-        photoObject = taskObject.photos.firstObject;
     }];
-    return photoObject;
+    return taskObject;
 }
 
 + (NSUInteger)getCountOfTasks {
