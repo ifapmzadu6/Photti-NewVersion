@@ -15,6 +15,4 @@
 @property (strong, nonatomic) PDTaskObject *taskObject;
 @property (nonatomic) BOOL isNowLoading;
 
-+ (CGFloat)cellHeightForTaskObject:(PDTaskObject *)taskObject;
-
 @end

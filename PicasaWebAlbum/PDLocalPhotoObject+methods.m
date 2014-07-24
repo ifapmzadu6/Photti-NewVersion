@@ -115,11 +115,10 @@
     PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) return nil;
     
-    __block NSMutableURLRequest *request = nil;
-    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:requestUrlString] completion:^(NSMutableURLRequest *authorizedRequest, NSError *error) {
-        request = authorizedRequest;
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:requestUrlString]];
+    [PWOAuthManager getAuthorizeHTTPHeaderFields:^(NSDictionary *headerFields, NSError *error) {
+        request.allHTTPHeaderFields = headerFields;
     }];
-    if (!request) return nil;
     request.HTTPMethod = @"POST";
     NSString *filePath = self.prepared_body_filepath;
     NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
@@ -171,7 +170,6 @@
         NSLog(@"%@", response.description);
         return;
     }
-//    NSLog(@"%@", response.description);
     
     NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
     //        NSLog(@"%@", json.description);
@@ -186,7 +184,6 @@
     __block NSString *to_web_album_id_str = nil;
     [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         PWAlbumObject *album = [PWPicasaParser albumFromJson:entries existingAlbums:nil context:context];
-        
         to_web_album_id_str = album.id_str;
     }];
     

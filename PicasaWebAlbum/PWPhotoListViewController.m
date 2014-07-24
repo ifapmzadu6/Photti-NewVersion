@@ -30,7 +30,7 @@
 #import "PWImagePickerController.h"
 #import "PWAlbumPickerController.h"
 
-@interface PWPhotoListViewController ()
+@interface PWPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) PWAlbumObject *album;
 
@@ -248,25 +248,19 @@
             PWAlbumObject *webAlbum = (PWAlbumObject *)album;
             //ダウンロードはここでやる
             
-//            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
-//                if (error) {
-//                    NSLog(@"%@", error.description);
-//                    return;
-//                }
-//                
-//                [[PDTaskManager sharedManager] start];
-//            }];
+            [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                }
+            }];
         }
         else {
             PLAlbumObject *localAlbum = (PLAlbumObject *)album;
-//            [[PDTaskManager sharedManager] addTaskFromWebPhotos:selectedPhotos toLocalAlbum:localAlbum completion:^(NSError *error) {
-//                if (error) {
-//                    NSLog(@"%@", error.description);
-//                    return;
-//                }
-//                
-//                [[PDTaskManager sharedManager] start];
-//            }];
+            [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toLocalAlbum:localAlbum completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                }
+            }];
         }
         
         [sself disableSelectMode];
@@ -582,15 +576,11 @@
                 NSLog(@"%@", error.description);
                 return;
             }
-            
-//            [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
-//                NSLog(@"added");
-//                if (error) {
-//                    NSLog(@"%@", error.description);
-//                    return;
-//                }
-//                [[PDTaskManager sharedManager] start];
-//            }];
+            [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                }
+            }];
         }];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{

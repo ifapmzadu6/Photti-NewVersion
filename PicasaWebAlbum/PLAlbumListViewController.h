@@ -9,7 +9,7 @@
 @import UIKit;
 @import CoreData;
 
-@interface PLAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PLAlbumListViewController : UIViewController
 
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 

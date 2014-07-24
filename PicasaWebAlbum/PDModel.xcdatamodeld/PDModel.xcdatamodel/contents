@@ -8,7 +8,7 @@
     </entity>
     <entity name="PDCopyPhotoObject" representedClassName="PDCopyPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES">
         <attribute name="downloaded_data_location" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="web_photo_id_str" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="photo_object_id_str" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="PDLocalPhotoObject" representedClassName="PDLocalPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES">
         <attribute name="photo_object_id_str" optional="YES" attributeType="String" syncable="YES"/>
@@ -28,7 +28,7 @@
     </entity>
     <elements>
         <element name="PDBasePhotoObject" positionX="-135" positionY="-504" width="128" height="105"/>
-        <element name="PDCopyPhotoObject" positionX="0" positionY="-495" width="128" height="75"/>
+        <element name="PDCopyPhotoObject" positionX="0" positionY="-495" width="128" height="73"/>
         <element name="PDLocalPhotoObject" positionX="16" positionY="-661" width="128" height="73"/>
         <element name="PDTaskObject" positionX="-119" positionY="-324" width="128" height="133"/>
         <element name="PDWebPhotoObject" positionX="-135" positionY="-661" width="128" height="73"/>

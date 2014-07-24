@@ -15,9 +15,7 @@
 @implementation ALAsset (methods)
 
 - (NSData *)resizedDataWithMaxPixelSize:(NSUInteger)maxPixelSize {
-
     NSMutableData *resizedData = nil;
-    
     @autoreleasepool {
         ALAssetRepresentation *representation = self.defaultRepresentation;
         
@@ -54,7 +52,6 @@
             free(buff);
         }
     }
-    
     return resizedData;
 }
 

@@ -8,7 +8,9 @@
 
 @import UIKit;
 
-@interface PWSearchNavigationController : UINavigationController <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>
+#import "PWBaseNavigationController.h"
+
+@interface PWSearchNavigationController : PWBaseNavigationController 
 
 - (void)openSearchBarWithCancelBlock:(void (^)())cancelBlock;
 - (void)closeSearchBarWithCompletion:(void (^)())completion;

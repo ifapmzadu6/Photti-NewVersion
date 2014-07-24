@@ -48,11 +48,11 @@
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
-    UIBarButtonItem *skipBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Skip All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(skipBarButtonAction)];
-    self.navigationItem.leftBarButtonItem = skipBarButtonItem;
-    UIBarButtonItem *uploadAllButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Upload All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(uploadAllButtonAction)];
-    [uploadAllButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
-    self.navigationItem.rightBarButtonItem = uploadAllButtonItem;
+    UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = doneBarButtonItem;
+//    UIBarButtonItem *uploadAllButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Upload All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(uploadAllButtonAction)];
+//    [uploadAllButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
+//    self.navigationItem.rightBarButtonItem = uploadAllButtonItem;
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
@@ -146,7 +146,7 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)skipBarButtonAction {
+- (void)doneBarButtonAction {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

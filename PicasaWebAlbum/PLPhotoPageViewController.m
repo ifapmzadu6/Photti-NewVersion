@@ -19,6 +19,9 @@
 #import "PWBaseNavigationController.h"
 #import "PWMapViewController.h"
 #import "PLPhotoEditViewController.h"
+#import "PWAlbumPickerController.h"
+#import "PLCoreDataAPI.h"
+#import "PDTaskManager.h"
 
 @interface PLPhotoPageViewController ()
 
@@ -63,7 +66,7 @@
     [super viewWillAppear:animated];
     
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
-    UIBarButtonItem *uploadBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Copy", nil) style:UIBarButtonItemStylePlain target:self action:@selector(uploadBarButtonAction)];
+    UIBarButtonItem *uploadBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Copy", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(uploadBarButtonAction)];
 //    UIBarButtonItem *deleteButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, uploadBarButtonItem, flexibleSpace];
@@ -118,7 +121,30 @@
 }
 
 - (void)uploadBarButtonAction {
+    __weak typeof(self) wself = self;
+    PLPhotoObject *photo = _photos[_index];
     
+    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        if (isWebAlbum) {
+            [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+            }];
+        }
+        else {
+            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                PLAlbumObject *albumObject = (PLAlbumObject *)album;
+                [albumObject addPhotosObject:photo];
+            }];
+        }
+    }];
+    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
 }
 
 - (void)tagBarButtonAction {

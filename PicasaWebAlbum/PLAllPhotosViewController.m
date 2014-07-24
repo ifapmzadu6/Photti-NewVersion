@@ -36,7 +36,8 @@
     if (self) {
         self.title = NSLocalizedString(@"All Items", nil);
         
-        _headers = [NSMutableArray array];
+        _headers = @[].mutableCopy;
+        _selectedPhotos = @[].mutableCopy;
     }
     return self;
 }
@@ -146,11 +147,13 @@
     if (isSelectMode) {
         for (NSIndexPath *indexPath in selectIndexPaths) {
             [_collectionView selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+            [_selectedPhotos addObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
         }
     }
     if (!isSelectMode) {
         for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
             [_collectionView deselectItemAtIndexPath:indexPath animated:NO];
+            [_selectedPhotos removeObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
         }
         
         for (PLPhotoViewHeaderView *headerView in _headers) {
@@ -304,6 +307,7 @@
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_isSelectMode) {
+        [_selectedPhotos addObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
         return;
     }
     

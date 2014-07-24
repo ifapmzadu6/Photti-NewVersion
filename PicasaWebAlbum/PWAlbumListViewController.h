@@ -9,6 +9,6 @@
 @import UIKit;
 @import CoreData;
 
-@interface PWAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PWAlbumListViewController : UIViewController
 
 @end

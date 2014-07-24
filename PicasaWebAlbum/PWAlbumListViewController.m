@@ -33,7 +33,7 @@
 #import "PWAlbumShareViewController.h"
 #import "PWSettingsViewController.h"
 
-@interface PWAlbumListViewController ()
+@interface PWAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
@@ -420,9 +420,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
                 NSLog(@"added");
                 if (error) {
                     NSLog(@"%@", error.description);
-                    return;
                 }
-                [[PDTaskManager sharedManager] start];
             }];
         }];
     }];

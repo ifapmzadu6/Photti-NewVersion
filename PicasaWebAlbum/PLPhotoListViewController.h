@@ -11,7 +11,7 @@
 
 @class PLAlbumObject;
 
-@interface PLPhotoListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PLPhotoListViewController : UIViewController
 
 @property (strong, nonatomic, readonly) PLAlbumObject *album;
 

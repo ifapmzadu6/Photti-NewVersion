@@ -81,7 +81,7 @@ static NSString * const PWSearchNavigationControllerHistoryItemUpdateKey = @"PWS
 @end
 
 
-@interface PWSearchNavigationController ()
+@interface PWSearchNavigationController () <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>
 
 @property (strong, nonatomic) UISearchBar *searchBar;
 @property (strong, nonatomic) UIButton *cancelButton;
@@ -568,6 +568,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+        request.fetchLimit = 1;
         NSError *error;
         NSArray *albums = [context executeFetchRequest:request error:&error];
         if (completion) {

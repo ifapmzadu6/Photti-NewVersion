@@ -8,6 +8,8 @@
 
 #import "PWAppDelegate.h"
 
+#import <Crashlytics/Crashlytics.h>
+
 #import "PWTabBarController.h"
 
 #import "SDImageCache.h"
@@ -15,6 +17,8 @@
 #import "PDTaskManager.h"
 #import "PLAssetsManager.h"
 #import "PLDateFormatter.h"
+
+#import "PWPicasaAPI.h"
 
 @implementation PWAppDelegate
 
@@ -29,6 +33,8 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
                                                               kPWAppDelegateBackgroundFetchDateKey: [NSDate date]}];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
+    [Crashlytics startWithAPIKey:@"e304869e1f84a6d87002a3e24fd4a640cfff713f"];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = [[PWTabBarController alloc] init];
     self.window.backgroundColor = [UIColor whiteColor];
@@ -38,7 +44,9 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     [[[NSURLSession sharedSession] configuration] setURLCache:nil];
 //    [[NSURLSession sharedSession] configuration].URLCache.memoryCapacity = 0;
     
-    [[PDTaskManager sharedManager] start];
+    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:@""] completion:^(NSMutableURLRequest *request, NSError *error) {
+        [[PDTaskManager sharedManager] start];
+    }];
     
     return YES;
 }

@@ -48,7 +48,7 @@
         return nil;
     }
     
-    NSCalendar *calendar = [PLDateFormatter calendar];
+    NSCalendar *calendar = [self calendar];
 	NSDateComponents *components = [calendar components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit
                                                fromDate:date];
 	return [calendar dateFromComponents:components];
@@ -59,7 +59,7 @@
         return nil;
     }
     
-    NSCalendar *calendar = [PLDateFormatter calendar];
+    NSCalendar *calendar = [self calendar];
 	NSDateComponents *components = [calendar components:NSYearCalendarUnit
                                                fromDate:date];
 	return [calendar dateFromComponents:components];

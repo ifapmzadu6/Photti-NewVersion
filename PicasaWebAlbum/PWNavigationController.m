@@ -16,7 +16,7 @@
 #import "PWGoogleLoginViewController.h"
 
 
-@interface PWNavigationController ()
+@interface PWNavigationController () <UINavigationBarDelegate>
 
 @end
 
@@ -39,10 +39,7 @@
 }
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
-    self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
+    [super viewDidLoad];    
 }
 
 - (void)viewWillAppear:(BOOL)animated {

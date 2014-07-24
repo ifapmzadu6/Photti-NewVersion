@@ -11,7 +11,7 @@
 
 @class PWAlbumObject;
 
-@interface PWPhotoListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PWPhotoListViewController : UIViewController
 
 - (id)initWithAlbum:(PWAlbumObject *)album;
 

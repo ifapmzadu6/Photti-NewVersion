@@ -25,6 +25,7 @@ typedef enum _PDTaskObjectType {
 #import "PDWebPhotoObject.h"
 #import "PDLocalPhotoObject.h"
 #import "PDCopyPhotoObject.h"
+#import "PDBasePhotoObject+methods.h"
 #import "PDLocalPhotoObject+methods.h"
 #import "PDWebPhotoObject+methods.h"
 #import "PDCopyPhotoObject+methods.h"

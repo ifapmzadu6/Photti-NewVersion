@@ -10,6 +10,6 @@
 
 #import "PWSearchNavigationController.h"
 
-@interface PWNavigationController : PWSearchNavigationController <UINavigationBarDelegate>
+@interface PWNavigationController : PWSearchNavigationController
 
 @end

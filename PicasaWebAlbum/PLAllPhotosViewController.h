@@ -18,4 +18,6 @@
 @property (nonatomic, readonly) BOOL isSelectMode;
 - (void)setIsSelectMode:(BOOL)isSelectMode withSelectIndexPaths:(NSArray *)selectIndexPaths;
 
+@property (strong, nonatomic) NSMutableArray *selectedPhotos;
+
 @end

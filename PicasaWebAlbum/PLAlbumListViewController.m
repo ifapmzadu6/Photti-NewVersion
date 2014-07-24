@@ -26,9 +26,10 @@
 
 #import "PWPicasaAPI.h"
 
-@interface PLAlbumListViewController ()
+@interface PLAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
+@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
@@ -74,6 +75,12 @@
         NSLog(@"%@", error.description);
         abort();
         return;
+    }
+    
+    if (_fetchedResultsController.fetchedObjects == 0) {
+        _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        [self.view addSubview:_indicatorView];
+        [_indicatorView startAnimating];
     }
 }
 
@@ -221,6 +228,8 @@
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
+        
+        [_indicatorView stopAnimating];
     });
 }
 
@@ -261,9 +270,7 @@
         if (!sself) return;
         
         [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
-            if (error) NSLog(@"%@", error.description);
-            [[PDTaskManager sharedManager] start];
-            
+            if (error) NSLog(@"%@", error.description);            
             dispatch_async(dispatch_get_main_queue(), ^{
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Added new tasks.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil];
                 [alertView show];

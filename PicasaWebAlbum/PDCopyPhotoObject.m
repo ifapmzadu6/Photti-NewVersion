@@ -11,7 +11,7 @@
 
 @implementation PDCopyPhotoObject
 
-@dynamic web_photo_id_str;
+@dynamic photo_object_id_str;
 @dynamic downloaded_data_location;
 
 @end

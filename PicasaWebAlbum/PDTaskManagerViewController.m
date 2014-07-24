@@ -18,6 +18,7 @@
 #import "PLCoreDataAPI.h"
 
 #import "PDTaskTableViewCell.h"
+#import "PDTaskManagerViewControllerHeaderView.h"
 #import "PDTaskViewController.h"
 #import "PWSettingsViewController.h"
 
@@ -72,7 +73,8 @@
     _tableView.dataSource = self;
     _tableView.delegate = self;
     [_tableView registerClass:[PDTaskTableViewCell class] forCellReuseIdentifier:@"Cell"];
-    _tableView.rowHeight = 56.0f;
+    [_tableView registerClass:[PDTaskManagerViewControllerHeaderView class] forHeaderFooterViewReuseIdentifier:@"Header"];
+    _tableView.rowHeight = 60.0f;
     _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
@@ -122,21 +124,50 @@
 
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return _fetchedResultsController.sections.count;
+    if (_fetchedResultsController.fetchedObjects.count >= 2) {
+        return 2;
+    }
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
-    return [sectionInfo numberOfObjects];
+    if (section == 0) {
+        return (_fetchedResultsController.fetchedObjects.count > 0);
+    }
+    return _fetchedResultsController.fetchedObjects.count - 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     PDTaskTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
-    cell.taskObject = [_fetchedResultsController objectAtIndexPath:indexPath];
-    cell.isNowLoading = (indexPath.row == 0);
+    if (indexPath.section == 0) {
+        cell.taskObject = _fetchedResultsController.fetchedObjects.firstObject;
+    }
+    else {
+        cell.taskObject = _fetchedResultsController.fetchedObjects[indexPath.row+1];
+    }
+    cell.isNowLoading = (indexPath.section == 0);
     
     return cell;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    PDTaskManagerViewControllerHeaderView *headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"Header"];
+    
+    if (section == 0) {
+        [headerView setText:NSLocalizedString(@"In Process...", nil)];
+        [headerView indicatorIsEnable:YES];
+    }
+    else {
+        [headerView setText:NSLocalizedString(@"In Standby", nil)];
+        [headerView indicatorIsEnable:NO];
+    }
+    
+    return headerView;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 50.0f;
 }
 
 #pragma mark UITableViewDelegate
@@ -145,21 +176,17 @@
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [PDTaskTableViewCell cellHeightForTaskObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
-}
-
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     return YES;
 }
 
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
-    
-}
+//- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+//    return YES;
+//}
+//
+//- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
+//    
+//}
 
 #pragma mark NSFetchedResultsController
 - (void)loadData {

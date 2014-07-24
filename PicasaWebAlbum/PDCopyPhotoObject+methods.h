@@ -10,8 +10,7 @@
 
 @interface PDCopyPhotoObject (methods)
 
-- (NSURLSessionTask *)makeDownloadSessionTaskWithSession:(NSURLSession *)session;
-- (NSURLSessionTask *)makeUploadSessionTaskWithSession:(NSURLSession *)session;
+- (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session;
 - (void)finishDownloadWithLocation:(NSString *)location;
 
 @end

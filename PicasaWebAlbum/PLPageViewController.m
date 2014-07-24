@@ -17,6 +17,7 @@
 #import "PWTabBarController.h"
 #import "PWSearchNavigationController.h"
 #import "PWSettingsViewController.h"
+#import "PWAlbumPickerController.h"
 
 #import "PWColors.h"
 #import "PWIcons.h"
@@ -24,6 +25,7 @@
 #import "PLModelObject.h"
 #import "PWSnowFlake.h"
 #import "PLDateFormatter.h"
+#import "PDTaskManager.h"
 #import "BlocksKit+UIKit.h"
 
 @interface PLPageViewController ()
@@ -192,22 +194,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 }
 
 - (void)selectCancelBarButtonAction {
-    if (_isAllPhotoSelectMode) {
-        _isAllPhotoSelectMode = NO;
-        
-        PLAllPhotosViewController *allPhotoViewController = (PLAllPhotosViewController *)_myViewControllers[0];
-        [allPhotoViewController setIsSelectMode:NO withSelectIndexPaths:nil];
-        [self setViewControllers:@[allPhotoViewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-    }
-    
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
-    [tabBarController setToolbarHidden:YES animated:NO completion:nil];
-    [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
-    
-    self.navigationController.navigationBar.alpha = 1.0f;
-    [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
-    
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+    [self disableAllPhotoViewcontrollerDeselectMode];
 }
 
 - (void)selectActionBarButtonAction {
@@ -215,7 +202,46 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 }
 
 - (void)selectAddBarButtonAction {
+    PLAllPhotosViewController *viewController = (PLAllPhotosViewController *)self.viewControllers.firstObject;
+    NSArray *selectedPhotos = viewController.selectedPhotos;
     
+    __weak typeof(self) wself = self;
+    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        void (^completion)() = ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                [sself disableAllPhotoViewcontrollerDeselectMode];
+            });
+        };
+        
+        if (isWebAlbum) {
+            [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:album completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+                completion();
+            }];
+        }
+        else {
+            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                PLAlbumObject *albumObject = (PLAlbumObject *)album;
+                
+                for (PLPhotoObject *photoObject in selectedPhotos) {
+                    [albumObject addPhotosObject:photoObject];
+                }
+                
+                completion();
+            }];
+        }
+    }];
+    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
 }
 
 - (void)selectTrashBarButtonAction {
@@ -343,9 +369,9 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     UIBarButtonItem *selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
     UIBarButtonItem *selectAddBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Copy", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectAddBarButtonAction)];
-    UIBarButtonItem *selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction)];
+//    UIBarButtonItem *selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    [tabBarController setActionToolbarItems:@[selectActionBarButtonItem, flexibleSpace, selectAddBarButtonItem, flexibleSpace, selectTrashBarButtonItem] animated:YES];
+    [tabBarController setActionToolbarItems:@[selectActionBarButtonItem, flexibleSpace, selectAddBarButtonItem, flexibleSpace] animated:YES];
     [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
@@ -368,6 +394,25 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     }];
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+}
+
+- (void)disableAllPhotoViewcontrollerDeselectMode {
+    if (_isAllPhotoSelectMode) {
+        _isAllPhotoSelectMode = NO;
+        
+        PLAllPhotosViewController *allPhotoViewController = (PLAllPhotosViewController *)_myViewControllers[0];
+        [allPhotoViewController setIsSelectMode:NO withSelectIndexPaths:nil];
+        [self setViewControllers:@[allPhotoViewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    }
+    
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setToolbarHidden:YES animated:NO completion:nil];
+    [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
+    
+    self.navigationController.navigationBar.alpha = 1.0f;
+    [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 @end

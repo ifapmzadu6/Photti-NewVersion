@@ -25,12 +25,13 @@
 #import "PWModelObject.h"
 #import "PDTaskManager.h"
 
-@interface PLPhotoListViewController ()
+@interface PLPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButton;
 @property (strong, nonatomic) UIBarButtonItem *moveBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *trashBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectAllBarButtonItem;
 
 @property (nonatomic) BOOL isSelectMode;
@@ -216,7 +217,7 @@
 
 - (void)selectAllBarButtonAction {
     if (_fetchedResultsController.fetchedObjects.count == _collectionView.indexPathsForSelectedItems.count) {
-        [_selectAllBarButtonItem setImage:[PWIcons imageWithText:NSLocalizedString(@"Select all", nil) fontSize:17.0f]];
+        [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
         [_selectedPhotoURLs removeAllObjects];
         for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
             [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
@@ -224,9 +225,10 @@
         
         _selectActionBarButton.enabled = NO;
         _moveBarButtonItem.enabled = NO;
+        _trashBarButtonItem.enabled = NO;
     }
     else {
-        [_selectAllBarButtonItem setImage:[PWIcons imageWithText:NSLocalizedString(@"Deselect all", nil) fontSize:17.0f]];
+        [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Deselect all", nil)];
         for (PLPhotoObject *photoObject in _fetchedResultsController.fetchedObjects) {
             if (![_selectedPhotoURLs containsObject:photoObject.objectID]) {
                 [_selectedPhotoURLs addObject:photoObject.url];
@@ -237,6 +239,7 @@
         
         _selectActionBarButton.enabled = YES;
         _moveBarButtonItem.enabled = YES;
+        _trashBarButtonItem.enabled = YES;
     }
 }
 
@@ -255,36 +258,35 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                
                 [sself disableSelectMode];
             });
         };
         
         if (isWebAlbum) {
-            // TODO: やること！
-//            [[PDTaskManager sharedManager] addTaskFromLocalPhotos:selectLocalPhotos toWebAlbum:album completion:^(NSError *error) {
-//                typeof(wself) sself = wself;
-//                if (!sself) return;
-//                
-//                [[PDTaskManager sharedManager] start];
-//                
-//                completion();
-//            }];
+            [[PDTaskManager sharedManager] addTaskPhotos:selectLocalPhotos toWebAlbum:album completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+                completion();
+            }];
         }
         else {
             [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                 PLAlbumObject *albumObject = (PLAlbumObject *)album;
-                
                 for (PLPhotoObject *photoObject in selectLocalPhotos) {
                     [albumObject addPhotosObject:photoObject];
                 }
-                
                 completion();
             }];
         }
     }];
     albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
     [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
+}
+
+- (void)trashBarButtonAction {
+    
 }
 
 #pragma mark UICollectionViewDataSource
@@ -349,6 +351,7 @@
     if (_isSelectMode) {
         _selectActionBarButton.enabled = YES;
         _moveBarButtonItem.enabled = YES;
+        _trashBarButtonItem.enabled = YES;
         
         PLPhotoObject *photoObject = [_fetchedResultsController objectAtIndexPath:indexPath];
         [_selectedPhotoURLs addObject:photoObject.url];
@@ -371,9 +374,11 @@
         if (_selectedPhotoURLs.count == 0) {
             _selectActionBarButton.enabled = NO;
             _moveBarButtonItem.enabled = NO;
+            _trashBarButtonItem.enabled = NO;
         }
         
-        [_selectAllBarButtonItem setImage:[PWIcons imageWithText:NSLocalizedString(@"Select all", nil) fontSize:17.0f]];
+        
+        [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
     }
 }
 
@@ -394,12 +399,14 @@
     
     _selectActionBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
     _selectActionBarButton.enabled = NO;
-    _moveBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Copy", nil) style:UIBarButtonItemStylePlain target:self action:@selector(moveBarButtonAction)];
+    _moveBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Copy", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(moveBarButtonAction)];
     _moveBarButtonItem.enabled = NO;
+    _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
+    _trashBarButtonItem.enabled = NO;
     UIBarButtonItem *fixedBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     fixedBarButtonItem.width = 32.0f;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _moveBarButtonItem, flexibleSpace, fixedBarButtonItem];
+    NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _moveBarButtonItem, flexibleSpace, fixedBarButtonItem, _trashBarButtonItem];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
     [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
@@ -414,7 +421,7 @@
     
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     _selectAllBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:nil style:UIBarButtonItemStylePlain target:self action:@selector(selectAllBarButtonAction)];
-    [_selectAllBarButtonItem setImage:[PWIcons imageWithText:NSLocalizedString(@"Select all", nil) fontSize:17.0f]];
+    [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
     UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
     [navigationItem setRightBarButtonItem:_selectAllBarButtonItem animated:NO];

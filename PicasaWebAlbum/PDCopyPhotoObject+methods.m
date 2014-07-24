@@ -21,8 +21,17 @@
 
 @implementation PDCopyPhotoObject (methods)
 
+- (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session {
+    if (self.downloaded_data_location) {
+        return [self makeUploadSessionTaskWithSession:session];
+    }
+    else {
+        return [self makeDownloadSessionTaskWithSession:session];
+    }
+}
+
 - (NSURLSessionTask *)makeDownloadSessionTaskWithSession:(NSURLSession *)session {
-    PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.web_photo_id_str];
+    PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) return nil;
     
     __block NSMutableURLRequest *request = nil;
@@ -42,7 +51,7 @@
     NSString *webAlbumID = taskObject.to_album_id_str;
     if (!webAlbumID) return nil;
     
-    PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.web_photo_id_str];
+    PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) return nil;
     
     __block NSMutableURLRequest *request = nil;
@@ -68,7 +77,7 @@
 }
 
 - (void)finishDownloadWithLocation:(NSString *)location {
-    PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.web_photo_id_str];
+    PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) return;
     
     NSString *filePath = [[self class] makeUniquePathInTmpDir];

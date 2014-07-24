@@ -242,7 +242,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                 __block PLAlbumObject *album = nil;
                 [context performBlockAndWait:^{
                     NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+                    request.entity = [NSEntityDescription entityForName:@"PLAlbumObject" inManagedObjectContext:context];
                     request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
                     request.fetchLimit = 1;
                     NSError *error = nil;
@@ -262,6 +262,14 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     album.update = enumurateDate;
                 }];
                 
+                NSMutableArray *allPhotos = @[].mutableCopy;
+                [context performBlockAndWait:^{
+                    NSFetchRequest *request = [NSFetchRequest new];
+                    request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+                    NSError *error = nil;
+                    NSArray *objects = [context executeFetchRequest:request error:&error];
+                    [allPhotos addObjectsFromArray:objects];
+                }];
                 [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
                     typeof(wself) sself = wself;
                     if (!sself || ![sself.lastEnumuratedDate isEqualToDate:enumurateDate] || !result) {
@@ -281,12 +289,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     NSDate *date = [result valueForProperty:ALAssetPropertyDate];
                     CLLocation *location = [result valueForProperty:ALAssetPropertyLocation];
                     [context performBlockAndWait:^{
-                        NSFetchRequest *request = [NSFetchRequest new];
-                        request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                        request.predicate = [NSPredicate predicateWithFormat:@"url = %@", url.absoluteString];
-                        request.fetchLimit = 1;
-                        NSError *error = nil;
-                        NSArray *tmpphotos = [context executeFetchRequest:request error:&error];
+                        NSArray *tmpphotos = [allPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"url = %@", url.absoluteString]];
                         if (tmpphotos.count > 0) {
                             PLPhotoObject *photo = tmpphotos.firstObject;
                             photo.update = enumurateDate;
@@ -296,6 +299,8 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                             
                             photo.tag_sort_index = @(album.photos.count);
                             [album addPhotosObject:photo];
+                            
+                            [allPhotos addObject:photo];
                         }
                         [PLCoreDataAPI writeContextFinish:context];
                     }];
