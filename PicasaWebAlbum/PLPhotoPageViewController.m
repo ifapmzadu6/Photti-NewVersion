@@ -65,11 +65,13 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
+    
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
-    UIBarButtonItem *uploadBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Copy", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(uploadBarButtonAction)];
+    UIBarButtonItem *copyBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Copy", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(copyBarButtonAction)];
 //    UIBarButtonItem *deleteButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, uploadBarButtonItem, flexibleSpace];
+    NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, copyBarButtonItem, flexibleSpace];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isTabBarHidden]) {
@@ -120,10 +122,10 @@
     }];
 }
 
-- (void)uploadBarButtonAction {
-    __weak typeof(self) wself = self;
+- (void)copyBarButtonAction {
     PLPhotoObject *photo = _photos[_index];
     
+    __weak typeof(self) wself = self;
     PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
         typeof(wself) sself = wself;
         if (!sself) return;

@@ -22,6 +22,8 @@
 #import "PWBaseNavigationController.h"
 #import "PWPhotoEditViewController.h"
 #import "PWMapViewController.h"
+#import "PWAlbumPickerController.h"
+#import "PDTaskManager.h"
 
 @interface PWPhotoPageViewController ()
 
@@ -75,12 +77,15 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
+    
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    UIBarButtonItem *copyBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Copy", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(copyBarButtonAction)];
     UIBarButtonItem *trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
-    [tabBarController setToolbarItems:@[actionBarButtonItem, flexibleSpace, trashBarButtonItem] animated:YES];
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    [tabBarController setToolbarItems:@[actionBarButtonItem, flexibleSpace, copyBarButtonItem, flexibleSpace, trashBarButtonItem] animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -252,6 +257,35 @@
         
         [actionSheet showFromTabBar:self.tabBarController.tabBar];
     }
+}
+
+- (void)copyBarButtonAction {
+    PWPhotoObject *photo = _photos[_index];
+    
+    __weak typeof(self) wself = self;
+    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        if (isWebAlbum) {
+            [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+            }];
+        }
+        else {
+            [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toLocalAlbum:album completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+            }];
+        }
+    }];
+    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
 }
 
 - (void)trashBarButtonAction {
