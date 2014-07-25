@@ -216,6 +216,8 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
                 if (!sself) return;
                 
                 [sself disableAllPhotoViewcontrollerDeselectMode];
+                
+                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A New task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
             });
         };
         

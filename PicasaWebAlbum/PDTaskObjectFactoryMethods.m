@@ -99,7 +99,7 @@
                 index++;
                 if (index == count) {
                     NSError *error = nil;
-                    if ([context save:&error]) {
+                    if (![context save:&error]) {
                         NSLog(@"%@", error.description);
                         abort();
                     }

@@ -252,6 +252,9 @@
                 if (error) {
                     NSLog(@"%@", error.description);
                 }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A New task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                });
             }];
         }
         else {
@@ -260,6 +263,9 @@
                 if (error) {
                     NSLog(@"%@", error.description);
                 }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A New task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                });
             }];
         }
         
@@ -571,7 +577,10 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
+        [alertView show];
         [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:album.id_str index:0 completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
             if (error) {
                 NSLog(@"%@", error.description);
                 return;
@@ -581,6 +590,9 @@
                     NSLog(@"%@", error.description);
                 }
             }];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A New task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+            });
         }];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
