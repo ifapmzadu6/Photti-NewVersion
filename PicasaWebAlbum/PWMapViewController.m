@@ -9,6 +9,7 @@
 @import MapKit;
 
 #import "PWMapViewController.h"
+#import "BlocksKit+UIKit.h"
 
 @interface PWAnnotation : NSObject <MKAnnotation>
 @property (nonatomic) CLLocationCoordinate2D coordinate;
@@ -43,6 +44,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = actionBarButtonItem;
+    UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
+    self.navigationItem.rightBarButtonItem = doneBarButtonItem;
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
+    
     _mapView = [MKMapView new];
     _mapView.delegate = self;
     [self.view addSubview:_mapView];
@@ -56,12 +65,6 @@
     region.span.latitudeDelta = 0.0;
     region.span.longitudeDelta = 0.0;
     [_mapView setRegion:region animated:NO];
-    
-    UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
-    self.navigationItem.rightBarButtonItem = doneBarButtonItem;
-    for (UIView *view in self.navigationController.navigationBar.subviews) {
-        view.exclusiveTouch = YES;
-    }
     
     NSString *standard = NSLocalizedString(@"Standard", nil);
     NSString *hybrid = NSLocalizedString(@"Hybrid", nil);
@@ -114,6 +117,22 @@
 #pragma mark UIBarButtonItem
 - (void)doneBarButtonAction {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)actionBarButtonAction {
+    NSString *param = [NSString stringWithFormat:@"q=%lf,%lf", _coordinate.latitude, _coordinate.longitude];
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Open in Maps", nil) handler:^{
+        NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?%@", param];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+    }];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Open in Google Maps", nil) handler:^{
+        NSString *url = [NSString stringWithFormat:@"http://maps.google.com/?%@", param];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    [actionSheet showInView:self.view];
 }
 
 #pragma mark UISegmentedControl
