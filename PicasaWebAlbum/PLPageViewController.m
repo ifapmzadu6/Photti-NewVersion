@@ -217,7 +217,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
                 
                 [sself disableAllPhotoViewcontrollerDeselectMode];
                 
-                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A New task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
             });
         };
         
@@ -298,7 +298,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[searchBarButtonItem] animated:YES];
         
-        UIBarButtonItem *allPhotoSelectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(allPhotoSelectBarButtonAction)];
+        UIBarButtonItem *allPhotoSelectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select", nil) style:UIBarButtonItemStylePlain target:self action:@selector(allPhotoSelectBarButtonAction)];
         [sself.navigationItem setLeftBarButtonItem:allPhotoSelectBarButtonItem animated:YES];
         
         for (UIView *view in sself.navigationController.navigationBar.subviews) {

@@ -113,11 +113,11 @@
 	CGFloat imageWidth = dimensions.width;
 	CGFloat imageHeight = dimensions.height;
 	if (self.bounds.size.width > self.bounds.size.height) {
-		imageHeight = ceilf(imageHeight * self.bounds.size.width / imageWidth * 2.0f) / 2.0f;
+		imageHeight = ceilf(imageHeight * self.bounds.size.width / imageWidth * 2.0f + 1.0f) / 2.0f;
 		imageWidth = ceilf(self.bounds.size.width);
 	}
 	else {
-		imageWidth = ceilf(imageWidth * self.bounds.size.height / imageHeight * 2.0f) / 2.0f;
+		imageWidth = ceilf(imageWidth * self.bounds.size.height / imageHeight * 2.0f + 1.0f) / 2.0f;
 		imageHeight = ceilf(self.bounds.size.height);
 	}
 	_imageSize = CGSizeMake(imageWidth, imageHeight);
