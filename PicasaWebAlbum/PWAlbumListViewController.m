@@ -135,6 +135,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     }];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     

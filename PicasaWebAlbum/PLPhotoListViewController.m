@@ -37,8 +37,6 @@
 @property (nonatomic) BOOL isSelectMode;
 @property (strong, nonatomic) NSMutableArray *selectedPhotoURLs;
 
-@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-
 @end
 
 @implementation PLPhotoListViewController
@@ -49,6 +47,9 @@
         self.title = album.name;
         
         _album = album;
+        
+        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification) name:NSManagedObjectContextDidSaveNotification object:context];
         
         _selectedPhotoURLs = @[].mutableCopy;
     }
@@ -71,16 +72,13 @@
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
-    NSManagedObjectContext *context = [PLCoreDataAPI readContext];
-    NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY albums = %@", _album];
-    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_sort_index" ascending:YES]];
-    
-    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-    _fetchedResultsController.delegate = self;
-    
-    [_fetchedResultsController performFetch:nil];
+//    NSFetchRequest *request = [NSFetchRequest new];
+//    request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+//    request.predicate = [NSPredicate predicateWithFormat:@"ANY albums = %@", _album];
+//    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+//    _fetchedResultsController.delegate = self;
+//    
+//    [_fetchedResultsController performFetch:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -155,6 +153,11 @@
     [super didReceiveMemoryWarning];
 }
 
+- (void)dealloc {
+    NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
+}
+
 #pragma mark UIBarButtonAction
 - (void)mapBarButtonAction {
     
@@ -216,7 +219,7 @@
 }
 
 - (void)selectAllBarButtonAction {
-    if (_fetchedResultsController.fetchedObjects.count == _collectionView.indexPathsForSelectedItems.count) {
+    if (_album.photos.count == _collectionView.indexPathsForSelectedItems.count) {
         [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
         [_selectedPhotoURLs removeAllObjects];
         for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
@@ -229,12 +232,12 @@
     }
     else {
         [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Deselect all", nil)];
-        for (PLPhotoObject *photoObject in _fetchedResultsController.fetchedObjects) {
+        for (PLPhotoObject *photoObject in _album.photos) {
             if (![_selectedPhotoURLs containsObject:photoObject.objectID]) {
                 [_selectedPhotoURLs addObject:photoObject.url];
             }
             
-            [_collectionView selectItemAtIndexPath:[_fetchedResultsController indexPathForObject:photoObject] animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+            [_collectionView selectItemAtIndexPath:[NSIndexPath indexPathForRow:[_album.photos indexOfObject:photoObject] inSection:0] animated:YES scrollPosition:UICollectionViewScrollPositionNone];
         }
         
         _selectActionBarButton.enabled = YES;
@@ -251,7 +254,7 @@
         
         NSMutableArray *selectLocalPhotos = @[].mutableCopy;
         for (NSIndexPath *indexPath in sself.collectionView.indexPathsForSelectedItems) {
-            [selectLocalPhotos addObject:[sself.fetchedResultsController objectAtIndexPath:indexPath]];
+            [selectLocalPhotos addObject:sself.album.photos[indexPath.row]];
         }
         
         void (^completion)() = ^{
@@ -291,18 +294,17 @@
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return _fetchedResultsController.sections.count;
+    return 1;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
-    return [sectionInfo numberOfObjects];
+    return _album.photos.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PLPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    cell.photo = [_fetchedResultsController objectAtIndexPath:indexPath];
+    cell.photo = _album.photos[indexPath.row];
     cell.isSelectWithCheckMark = _isSelectMode;
     
     return cell;
@@ -353,22 +355,22 @@
         _moveBarButtonItem.enabled = YES;
         _trashBarButtonItem.enabled = YES;
         
-        PLPhotoObject *photoObject = [_fetchedResultsController objectAtIndexPath:indexPath];
+        PLPhotoObject *photoObject = _album.photos[indexPath.row];
         [_selectedPhotoURLs addObject:photoObject.url];
         
-        if (_selectedPhotoURLs.count == _fetchedResultsController.fetchedObjects.count) {
+        if (_selectedPhotoURLs.count == _album.photos.count) {
             [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Deselect all", nil)];
         }
     }
     else {
-        PLPhotoPageViewController *viewController = [[PLPhotoPageViewController alloc] initWithPhotos:_fetchedResultsController.fetchedObjects index:indexPath.row];
+        PLPhotoPageViewController *viewController = [[PLPhotoPageViewController alloc] initWithPhotos:_album.photos.array index:indexPath.row];
         [self.navigationController pushViewController:viewController animated:YES];
     }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_isSelectMode) {
-        PLPhotoObject *photoObject = [_fetchedResultsController objectAtIndexPath:indexPath];
+        PLPhotoObject *photoObject = _album.photos[indexPath.row];
         [_selectedPhotoURLs removeObject:photoObject.url];
         
         if (_selectedPhotoURLs.count == 0) {
@@ -376,7 +378,6 @@
             _moveBarButtonItem.enabled = NO;
             _trashBarButtonItem.enabled = NO;
         }
-        
         
         [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
     }
@@ -470,7 +471,7 @@
 }
 
 #pragma mark NSFetchedResultsControllerDelegate
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+- (void)contextDidSaveNotification {
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
     });

@@ -24,7 +24,6 @@
 @dynamic longitude;
 @dynamic tag_albumtype;
 @dynamic tag_adjusted_date;
-@dynamic tag_sort_index;
 @dynamic timestamp;
 @dynamic type;
 @dynamic update;

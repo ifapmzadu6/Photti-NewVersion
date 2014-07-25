@@ -24,7 +24,6 @@
 @property (nonatomic, retain) NSNumber * longitude;
 @property (nonatomic, retain) NSString * tag_adjusted_date;
 @property (nonatomic, retain) NSNumber * tag_albumtype;
-@property (nonatomic, retain) NSNumber * tag_sort_index;
 @property (nonatomic, retain) NSNumber * timestamp;
 @property (nonatomic, retain) NSString * type;
 @property (nonatomic, retain) NSDate * update;

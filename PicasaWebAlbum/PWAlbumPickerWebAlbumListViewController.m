@@ -40,7 +40,17 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-        
+    
+    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    
+    UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
+    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
+    self.navigationItem.rightBarButtonItem = addBarButtonItem;
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
+    
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
@@ -60,15 +70,6 @@
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_activityIndicatorView];
-    
-    UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
-    self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
-    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
-    addBarButtonItem.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
-    self.navigationItem.rightBarButtonItem = addBarButtonItem;
-    for (UIView *view in self.navigationController.navigationBar.subviews) {
-        view.exclusiveTouch = YES;
-    }
     
     [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];

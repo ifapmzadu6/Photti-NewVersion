@@ -117,6 +117,8 @@
         if (!sself) return;
         PLPageViewController *pageViewcontroller = [[PLPageViewController alloc] init];
         [sself setViewControllers:@[pageViewcontroller] animated:YES];
+        
+        [[PLAssetsManager sharedManager] enumurateAssetsWithCompletion:nil];
     };
     [self setViewControllers:@[autoCreateAlbumViewController] animated:YES];
 }

@@ -297,7 +297,6 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                         else {
                             PLPhotoObject *photo = [PLAssetsManager makeNewPhotoWithURL:url dimensions:dimensions filename:filename type:type date:date duration:duration location:location enumurateDate:enumurateDate albumType:albumType context:context];
                             
-                            photo.tag_sort_index = @(album.photos.count);
                             [album addPhotosObject:photo];
                             
                             [allPhotos addObject:photo];
@@ -351,7 +350,6 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                                 BOOL isDetected = NO;
                                 for (PLAlbumObject *album in autoCreatedAlbums.reverseObjectEnumerator) {
                                     if ([album.tag_date isEqualToDate:adjustedDate]) {
-                                        newPhoto.tag_sort_index = @(album.photos.count);
                                         [album addPhotosObject:newPhoto];
                                         isDetected = YES;
                                         break;
@@ -361,7 +359,6 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                                     //自動作成版アルバムを作る
                                     PLAlbumObject *album = [PLAssetsManager makeNewAutoCreateAlbumWithEnumurateDate:enumurateDate adjustedDate:adjustedDate context:context];
                                     
-                                    newPhoto.tag_sort_index = @(0);
                                     [album addPhotosObject:newPhoto];
                                     
                                     [autoCreatedAlbums addObject:album];

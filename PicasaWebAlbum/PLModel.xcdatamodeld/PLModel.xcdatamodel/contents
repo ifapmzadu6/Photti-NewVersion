@@ -28,7 +28,6 @@
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="tag_albumtype" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
-        <attribute name="tag_sort_index" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="update" optional="YES" attributeType="Date" indexed="YES" syncable="YES"/>
@@ -39,6 +38,6 @@
     </entity>
     <elements>
         <element name="PLAlbumObject" positionX="-54" positionY="-9" width="128" height="270"/>
-        <element name="PLPhotoObject" positionX="-461" positionY="-133" width="128" height="315"/>
+        <element name="PLPhotoObject" positionX="-461" positionY="-133" width="128" height="300"/>
     </elements>
 </model>

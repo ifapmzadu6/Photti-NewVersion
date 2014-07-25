@@ -46,6 +46,15 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    
+    UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = cancelBarButtonitem;
+    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
+    self.navigationItem.rightBarButtonItem = addBarButtonItem;
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
     
     UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
@@ -60,15 +69,6 @@
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
-    
-    UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
-    self.navigationItem.leftBarButtonItem = cancelBarButtonitem;
-    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
-    addBarButtonItem.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
-    self.navigationItem.rightBarButtonItem = addBarButtonItem;
-    for (UIView *view in self.navigationController.navigationBar.subviews) {
-        view.exclusiveTouch = YES;
-    }
     
     _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_indicatorView];
