@@ -139,10 +139,6 @@
             }
             
             UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil];
-            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
-            [indicator startAnimating];
-            [alertView setValue:indicator forKey:@"accessoryView"];
             __weak typeof(self) wself = self;
             [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
                 typeof(wself) sself = wself;
@@ -203,10 +199,6 @@
                     __block UIAlertView *alertView = nil;
                     dispatch_async(dispatch_get_main_queue(), ^{
                         alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil];
-                        UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                        indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
-                        [indicator startAnimating];
-                        [alertView setValue:indicator forKey:@"accessoryView"];
                         [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
                             typeof(wself) sself = wself;
                             if (!sself) return;

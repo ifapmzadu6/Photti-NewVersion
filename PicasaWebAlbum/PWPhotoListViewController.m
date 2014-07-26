@@ -30,7 +30,7 @@
 #import "PWImagePickerController.h"
 #import "PWAlbumPickerController.h"
 
-@interface PWPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PWPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, UIAlertViewDelegate>
 
 @property (strong, nonatomic) PWAlbumObject *album;
 
@@ -48,6 +48,7 @@
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
 @property (strong, nonatomic) NSMutableArray *selectedPhotoIDs;
+@property (nonatomic) BOOL isActionLoadingCancel;
 
 @property (weak, nonatomic) PWPhotoPageViewController *photoPageViewController;
 
@@ -222,6 +223,78 @@
 }
 
 - (void)selectActionBarButtonAction {
+    if (_selectedPhotoIDs.count == 0) {
+        return;
+    }
+    
+    NSArray *photos = _fetchedResultsController.fetchedObjects;
+    NSMutableArray *selectedPhotos = @[].mutableCopy;
+    for (NSString *id_str in _selectedPhotoIDs) {
+        NSArray *results = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+        if (results.count > 0) {
+            [selectedPhotos addObject:results.firstObject];
+        }
+    }
+    if (selectedPhotos.count == 0) return;
+    
+    _isActionLoadingCancel = NO;
+    
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
+    alertView.tag = 100;
+    [alertView show];
+    
+    __weak typeof(self) wself = self;
+    [self loadAndSaveWithPhotos:selectedPhotos savedLocations:@[].mutableCopy alertView:alertView completion:^(NSArray *savedLocations) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (sself.isActionLoadingCancel) return;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:savedLocations applicationActivities:nil];
+            [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
+        });
+    }];
+}
+
+- (void)loadAndSaveWithPhotos:(NSMutableArray *)photos  savedLocations:(NSMutableArray *)savedLocations alertView:(UIAlertView *)alertView completion:(void (^)(NSArray *savedLocations))completion {
+    if (self.isActionLoadingCancel) {
+        return;
+    }
+    
+    NSString *title = [NSString stringWithFormat:@"Loading...(%ld/%ld)", (long)savedLocations.count+1, (long)(photos.count + savedLocations.count)];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        alertView.title = title;
+    });
+    PWPhotoObject *photo = photos.firstObject;
+    __weak typeof(self) wself = self;
+    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:photo.tag_originalimage_url] completion:^(NSMutableURLRequest *request, NSError *error) {
+        [[[NSURLSession sharedSession] downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (!error) {
+                NSString *filePath = [[PWPhotoListViewController makeUniquePathInTmpDir] stringByAppendingPathExtension:@"jpg"];
+                NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
+                NSError *fileManagerError = nil;
+                [[NSFileManager defaultManager] moveItemAtURL:location toURL:filePathURL error:&fileManagerError];
+                
+                [savedLocations addObject:filePathURL];
+            }
+            
+            [photos removeObject:photo];
+            if (photos.count > 0) {
+                [sself loadAndSaveWithPhotos:photos savedLocations:savedLocations alertView:alertView completion:completion];
+            }
+            else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                });
+                
+                if (completion) {
+                    completion(savedLocations.copy);
+                }
+            }
+        }] resume];
+    }];
 }
 
 - (void)trashBarButtonAction {
@@ -716,6 +789,15 @@
     NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PWSnowFlake generateUniqueIDString]];
     
     return filePath;
+}
+
+#pragma mark UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 100) {
+        if (alertView.cancelButtonIndex == buttonIndex) {
+            _isActionLoadingCancel = YES;
+        }
+    }
 }
 
 @end

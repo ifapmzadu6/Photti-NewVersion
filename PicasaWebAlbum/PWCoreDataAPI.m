@@ -12,9 +12,6 @@
 
 @interface PWCoreDataAPI ()
 
-//@property (strong, nonatomic) NSManagedObjectContext *readContext;
-//@property (strong, nonatomic) NSManagedObjectContext *storeContext;
-
 @end
 
 @implementation PWCoreDataAPI
