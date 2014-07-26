@@ -223,9 +223,9 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
     NSDate *enumurateDate = [NSDate dateWithTimeInterval:seconds sinceDate:date];
     _lastEnumuratedDate = enumurateDate;
     
-    NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
-    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
+        
         // PhotoStreamはiCloud
         ALAssetsGroupType assetsGroupType = ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces | ALAssetsGroupSavedPhotos;
         [_library enumerateGroupsWithTypes:assetsGroupType usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
@@ -265,7 +265,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                 NSMutableArray *allPhotos = @[].mutableCopy;
                 [context performBlockAndWait:^{
                     NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+                    request.entity = [NSEntityDescription entityForName:@"PLPhotoObject" inManagedObjectContext:context];
                     NSError *error = nil;
                     NSArray *objects = [context executeFetchRequest:request error:&error];
                     [allPhotos addObjectsFromArray:objects];
@@ -273,7 +273,6 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                 [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
                     typeof(wself) sself = wself;
                     if (!sself || ![sself.lastEnumuratedDate isEqualToDate:enumurateDate] || !result) {
-                        [PLCoreDataAPI writeContextFinish:context];
                         return;
                     }
                     
@@ -289,7 +288,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     NSDate *date = [result valueForProperty:ALAssetPropertyDate];
                     CLLocation *location = [result valueForProperty:ALAssetPropertyLocation];
                     [context performBlockAndWait:^{
-                        NSArray *tmpphotos = [allPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"url = %@", url.absoluteString]];
+                        NSArray *tmpphotos = [allPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", url.query]];
                         if (tmpphotos.count > 0) {
                             PLPhotoObject *photo = tmpphotos.firstObject;
                             photo.update = enumurateDate;
@@ -301,7 +300,6 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                             
                             [allPhotos addObject:photo];
                         }
-                        [PLCoreDataAPI writeContextFinish:context];
                     }];
                 }];
             }
@@ -314,17 +312,19 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                         return;
                     }
                     
-                    //前回の読み込みから消えた写真
-                    NSFetchRequest *outdatedPhotoRequest = [[NSFetchRequest alloc] init];
-                    outdatedPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                    outdatedPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"update != %@", enumurateDate];
-                    NSError *error = nil;
-                    NSArray *outdatedPhotos = [context executeFetchRequest:outdatedPhotoRequest error:&error];
-                    for (PLPhotoObject *photo in outdatedPhotos) {
-                        [context deleteObject:photo];
+                    @autoreleasepool {
+                        //前回の読み込みから消えた写真
+                        NSFetchRequest *outdatedPhotoRequest = [[NSFetchRequest alloc] init];
+                        outdatedPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+                        outdatedPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"update != %@", enumurateDate];
+                        NSError *error = nil;
+                        NSArray *outdatedPhotos = [context executeFetchRequest:outdatedPhotoRequest error:&error];
+                        for (PLPhotoObject *photo in outdatedPhotos) {
+                            [context deleteObject:photo];
+                        }
+                        outdatedPhotos = nil;
+                        //NSLog(@"removed = %lu", (unsigned long)outdatedPhotos.count);
                     }
-                    
-                    //NSLog(@"removed = %lu", (unsigned long)outdatedPhotos.count);
                     
                     NSInteger newAutoCreatAlbumCount = 0;
                     if (sself.autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
@@ -333,7 +333,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                         newPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                         newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (import = %@)", @(ALAssetsGroupPhotoStream), enumurateDate];
                         newPhotoRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
-                        error = nil;
+                        NSError *error = nil;
                         NSArray *newPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
                         //NSLog(@"new = %lu", (unsigned long)newPhotos.count);
                         
@@ -343,8 +343,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                             request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                             request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(PLAlbumObjectTagTypeAutomatically)];
                             error = nil;
-                            NSArray *tmpalbums = [context executeFetchRequest:request error:&error];
-                            NSMutableArray *autoCreatedAlbums = tmpalbums.mutableCopy;
+                            NSMutableArray *autoCreatedAlbums = [context executeFetchRequest:request error:&error].mutableCopy;
                             for (PLPhotoObject *newPhoto in newPhotos) {
                                 NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:newPhoto.date];
                                 BOOL isDetected = NO;
@@ -368,7 +367,25 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                         }
                     }
                     
-                    [context save:&error];
+                    // 自動作成されたアルバムで写真枚数が0になったものを削除
+                    @autoreleasepool {
+                        NSFetchRequest *request = [NSFetchRequest new];
+                        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+                        request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(PLAlbumObjectTagTypeAutomatically)];
+                        NSError *error = nil;
+                        NSArray *autoCreatedAlbums = [context executeFetchRequest:request error:&error];
+                        for (PLAlbumObject *album in autoCreatedAlbums) {
+                            if (album.photos.count == 0) {
+                                [context deleteObject:album];
+                            }
+                        }
+                    }
+                    
+                    NSError *error = nil;
+                    if (![context save:&error]) {
+                        NSLog(@"%@", error.description);
+                        abort();
+                    }
                     [PLCoreDataAPI writeContextFinish:context];
                     
                     if (completion) {

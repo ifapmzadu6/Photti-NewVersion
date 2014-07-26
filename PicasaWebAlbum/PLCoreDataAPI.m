@@ -27,32 +27,27 @@
     return instance;
 }
 
-- (id)init {
-    self = [super init];
-    if (self) {
++ (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
+    static NSPersistentStoreCoordinator *persistentStoreCoordinator;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PLModel" withExtension:@"momd"];
         NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
         
-        NSURL *storeURL = [[[self class] applicationDocumentsDirectory] URLByAppendingPathComponent:@"PLModel.sqlite"];
+        NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"PLModel.sqlite"];
         
-        NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+        NSPersistentStoreCoordinator *tmpPersistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
         
         NSError *error = nil;
-        if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+        if (![tmpPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
             
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
         }
         
-        _storeContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        _storeContext.persistentStoreCoordinator = persistentStoreCoordinator;
-        _storeContext.undoManager = nil;
-        
-        _readContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-        _readContext.parentContext = _storeContext;
-        _readContext.undoManager = nil;
-    }
-    return self;
+        persistentStoreCoordinator = tmpPersistentStoreCoordinator;
+    });
+    return persistentStoreCoordinator;
 }
 
 + (NSURL *)applicationDocumentsDirectory {
@@ -61,7 +56,7 @@
 
 + (NSManagedObjectContext *)writeContext {
     NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    context.parentContext = [self sharedManager].readContext;
+    context.parentContext = [self readContext];
     context.undoManager = nil;
     
     [[NSNotificationCenter defaultCenter] addObserver:[self sharedManager] selector:@selector(contextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
@@ -74,11 +69,34 @@
 }
 
 + (NSManagedObjectContext *)readContext {
-    return [self sharedManager].readContext;
+    static NSManagedObjectContext *context;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if ([NSThread isMainThread]) {
+            context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+            context.parentContext = [self storeContext];
+            context.undoManager = nil;
+        }
+        else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+                context.parentContext = [self storeContext];
+                context.undoManager = nil;
+            });
+        }
+    });
+    return context;
 }
 
 + (NSManagedObjectContext *)storeContext {
-    return [self sharedManager].storeContext;
+    static NSManagedObjectContext *context;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        context.persistentStoreCoordinator = [self persistentStoreCoordinator];
+        context.undoManager = nil;
+    });
+    return context;
 }
 
 
@@ -139,12 +157,14 @@
         [[[self class] readContext] performBlockAndWait:^{
             NSError *error = nil;
             if (![[[self class] readContext] save:&error]) {
+                NSLog(@"%@", error.description);
                 abort();
             }
             
             [[[self class] storeContext] performBlock:^{
                 NSError *error = nil;
                 if (![[[self class] storeContext] save:&error]) {
+                    NSLog(@"%@", error.description);
                     abort();
                 }
             }];

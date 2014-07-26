@@ -68,9 +68,18 @@
     static NSManagedObjectContext *context;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-        context.parentContext = [self storeContext];
-        context.undoManager = nil;
+        if ([NSThread isMainThread]) {
+            context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+            context.parentContext = [self storeContext];
+            context.undoManager = nil;
+        }
+        else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+                context.parentContext = [self storeContext];
+                context.undoManager = nil;
+            });
+        }
     });
     return context;
 }
