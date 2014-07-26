@@ -32,23 +32,55 @@
 }
 
 + (NSString *)photoAndVideoStringWithPhotoCount:(NSUInteger)photoCount videoCount:(NSUInteger)videoCount {
+    return [[self class] photoAndVideoStringWithPhotoCount:photoCount videoCount:videoCount isInitialUpperCase:NO];
+}
+
++ (NSString *)photoAndVideoStringWithPhotoCount:(NSUInteger)photoCount videoCount:(NSUInteger)videoCount isInitialUpperCase:(BOOL)isInitialUpperCase {
     if (photoCount > 0 && videoCount > 0) {
-        NSString *localizedString = NSLocalizedString(@"%ld photos, %d videos", nil);
+        NSString *localizedString = nil;
+        if (isInitialUpperCase) {
+            localizedString = NSLocalizedString(@"%ld Photos, %d Videos", nil);
+        }
+        else {
+            localizedString = NSLocalizedString(@"%ld photos, %d videos", nil);
+        }
         return [NSString stringWithFormat:localizedString, (long)photoCount, (long)videoCount];
     }
     else if (photoCount > 0) {
-        NSString *localizedString = NSLocalizedString(@"%ld photos", nil);
+        NSString *localizedString = nil;
+        if (isInitialUpperCase) {
+            localizedString = NSLocalizedString(@"%ld Photos", nil);
+        }
+        else {
+            localizedString = NSLocalizedString(@"%ld photos", nil);
+        }
         return [NSString stringWithFormat:localizedString, (long)photoCount];
     }
     else if (photoCount) {
-        return NSLocalizedString(@"a photo", nil);
+        if (isInitialUpperCase) {
+            return NSLocalizedString(@"a Photo", nil);
+        }
+        else {
+            return NSLocalizedString(@"a photo", nil);
+        }
     }
     else if (videoCount > 0) {
-        NSString *localizedString = NSLocalizedString(@"%ld videos", nil);
+        NSString *localizedString = nil;
+        if (isInitialUpperCase) {
+            localizedString = NSLocalizedString(@"%ld Videos", nil);
+        }
+        else {
+            localizedString = NSLocalizedString(@"%ld videos", nil);
+        }
         return [NSString stringWithFormat:localizedString, (long)videoCount];
     }
     else if (videoCount) {
-        return NSLocalizedString(@"a video", nil);
+        if (isInitialUpperCase) {
+            return NSLocalizedString(@"a Video", nil);
+        }
+        else {
+            return NSLocalizedString(@"a video", nil);
+        }
     }
     else {
         return nil;

@@ -20,6 +20,7 @@
 #import "Reachability.h"
 
 #import "PWPhotoViewCell.h"
+#import "PLCollectionFooterView.h"
 #import "PWTabBarController.h"
 #import "PWNavigationController.h"
 #import "PWPhotoPageViewController.h"
@@ -80,6 +81,7 @@
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
     [_collectionView registerClass:[PWPhotoViewCell class] forCellWithReuseIdentifier:@"Cell"];
+    [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.alwaysBounceVertical = YES;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -261,6 +263,8 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:savedLocations applicationActivities:nil];
                 [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
+                
+                [sself disableSelectMode];
             });
         }];
     };
@@ -271,35 +275,30 @@
         [actionSheet bk_addButtonWithTitle:@"1080P" handler:^{
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             sself.actionLoadingVideoQuality = 1080;
             block();
         }];
         [actionSheet bk_addButtonWithTitle:@"720P" handler:^{
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             sself.actionLoadingVideoQuality = 720;
             block();
         }];
         [actionSheet bk_addButtonWithTitle:@"480P" handler:^{
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             sself.actionLoadingVideoQuality = 480;
             block();
         }];
         [actionSheet bk_addButtonWithTitle:@"360P" handler:^{
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             sself.actionLoadingVideoQuality = 360;
             block();
         }];
         [actionSheet bk_addButtonWithTitle:@"240P" handler:^{
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             sself.actionLoadingVideoQuality = 240;
             block();
         }];
@@ -468,6 +467,27 @@
     return cell;
 }
 
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+    if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
+        return nil;
+    }
+    
+    PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
+    
+    if (_fetchedResultsController.fetchedObjects.count > 0) {
+        NSArray *photos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypePhoto)]];
+        NSArray *videos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypeVideo)]];
+        
+        NSString *albumCountString = [PWString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
+        [footerView setText:albumCountString];
+    }
+    else {
+        [footerView setText:nil];
+    }
+    
+    return footerView;
+}
+
 #pragma mark UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
@@ -504,6 +524,10 @@
     else {
         return 10.0f;
     }
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    return CGSizeMake(0.0f, 50.0f);
 }
 
 #pragma mark UICollectionViewDelegate

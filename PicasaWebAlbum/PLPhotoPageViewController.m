@@ -41,8 +41,6 @@
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
         
-        ?
-        
         self.delegate = self;
         self.dataSource = self;
         [self setViewControllers:@[[self makePhotoViewController:index]]
