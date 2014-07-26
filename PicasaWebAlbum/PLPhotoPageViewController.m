@@ -41,13 +41,15 @@
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
         
+        ?
+        
         self.delegate = self;
         self.dataSource = self;
         [self setViewControllers:@[[self makePhotoViewController:index]]
                        direction:UIPageViewControllerNavigationDirectionForward
                         animated:NO
                       completion:nil];
-        self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
+        self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     }
     return self;
 }
@@ -260,7 +262,7 @@
             [sself.navigationController setNavigationBarHidden:NO animated:YES];
             [tabBarController setToolbarFadeout:NO animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
-                sself.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
+                sself.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
             }];
             sself.navigationController.interactivePopGestureRecognizer.enabled = YES;
         }

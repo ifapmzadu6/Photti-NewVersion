@@ -49,6 +49,7 @@
 
 @property (strong, nonatomic) NSMutableArray *selectedPhotoIDs;
 @property (nonatomic) BOOL isActionLoadingCancel;
+@property (nonatomic) NSUInteger actionLoadingVideoQuality;
 
 @property (weak, nonatomic) PWPhotoPageViewController *photoPageViewController;
 
@@ -209,6 +210,7 @@
             return;
         }
         
+        // TODO: 必ずやること
 //        [PDTaskManager sharedManager] add
     }];
     [self presentViewController:viewController animated:YES completion:nil];
@@ -227,33 +229,86 @@
         return;
     }
     
+    BOOL isContainVideo = NO;
     NSArray *photos = _fetchedResultsController.fetchedObjects;
     NSMutableArray *selectedPhotos = @[].mutableCopy;
     for (NSString *id_str in _selectedPhotoIDs) {
         NSArray *results = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
         if (results.count > 0) {
-            [selectedPhotos addObject:results.firstObject];
+            PWPhotoObject *photo = results.firstObject;
+            [selectedPhotos addObject:photo];
+            if (photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+                isContainVideo = YES;
+            }
         }
     }
     if (selectedPhotos.count == 0) return;
     
     _isActionLoadingCancel = NO;
+    _actionLoadingVideoQuality = 0;
     
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
-    alertView.tag = 100;
-    [alertView show];
-    
-    __weak typeof(self) wself = self;
-    [self loadAndSaveWithPhotos:selectedPhotos savedLocations:@[].mutableCopy alertView:alertView completion:^(NSArray *savedLocations) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if (sself.isActionLoadingCancel) return;
+    void (^block)() = ^{
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
+        alertView.tag = 100;
+        [alertView show];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:savedLocations applicationActivities:nil];
-            [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
-        });
-    }];
+        __weak typeof(self) wself = self;
+        [self loadAndSaveWithPhotos:selectedPhotos savedLocations:@[].mutableCopy alertView:alertView completion:^(NSArray *savedLocations) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (sself.isActionLoadingCancel) return;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:savedLocations applicationActivities:nil];
+                [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
+            });
+        }];
+    };
+    
+    if (isContainVideo) {
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Choose a video quality to share (If don't match, choose a highest quality video that is smaller than you have chosen.)", nil)];
+        __weak typeof(self) wself = self;
+        [actionSheet bk_addButtonWithTitle:@"1080P" handler:^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            sself.actionLoadingVideoQuality = 1080;
+            block();
+        }];
+        [actionSheet bk_addButtonWithTitle:@"720P" handler:^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            sself.actionLoadingVideoQuality = 720;
+            block();
+        }];
+        [actionSheet bk_addButtonWithTitle:@"480P" handler:^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            sself.actionLoadingVideoQuality = 480;
+            block();
+        }];
+        [actionSheet bk_addButtonWithTitle:@"360P" handler:^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            sself.actionLoadingVideoQuality = 360;
+            block();
+        }];
+        [actionSheet bk_addButtonWithTitle:@"240P" handler:^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            sself.actionLoadingVideoQuality = 240;
+            block();
+        }];
+        [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+        [actionSheet showFromTabBar:self.tabBarController.tabBar];
+    }
+    else {
+        block();
+    }
 }
 
 - (void)loadAndSaveWithPhotos:(NSMutableArray *)photos  savedLocations:(NSMutableArray *)savedLocations alertView:(UIAlertView *)alertView completion:(void (^)(NSArray *savedLocations))completion {
@@ -266,13 +321,35 @@
         alertView.title = title;
     });
     PWPhotoObject *photo = photos.firstObject;
+    NSURL *url = nil;
+    if (photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+        url = [NSURL URLWithString:photo.tag_originalimage_url];
+    }
+    else if (photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+        for (PWPhotoMediaContentObject *content in photo.media.content.reversedOrderedSet) {
+            if ([content.type isEqualToString:@"video/mpeg4"]) {
+                NSUInteger quality = content.width.unsignedIntegerValue > content.height.unsignedIntegerValue ? content.width.unsignedIntegerValue : content.height.unsignedIntegerValue;
+                if (quality <= _actionLoadingVideoQuality) {
+                    url = [NSURL URLWithString:content.url];
+                    break;
+                }
+            }
+        }
+    }
+    
     __weak typeof(self) wself = self;
-    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:photo.tag_originalimage_url] completion:^(NSMutableURLRequest *request, NSError *error) {
+    [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
         [[[NSURLSession sharedSession] downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (!error) {
-                NSString *filePath = [[PWPhotoListViewController makeUniquePathInTmpDir] stringByAppendingPathExtension:@"jpg"];
+                NSString *filePath = nil;
+                if (photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+                    filePath = [[PWPhotoListViewController makeUniquePathInTmpDir] stringByAppendingPathExtension:@"jpg"];
+                }
+                else {
+                    filePath = [[PWPhotoListViewController makeUniquePathInTmpDir] stringByAppendingPathExtension:@"mp4"];
+                }
                 NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
                 NSError *fileManagerError = nil;
                 [[NSFileManager defaultManager] moveItemAtURL:location toURL:filePathURL error:&fileManagerError];
