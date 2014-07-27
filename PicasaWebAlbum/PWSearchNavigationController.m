@@ -96,7 +96,7 @@ static NSString * const PWSearchNavigationControllerHistoryItemUpdateKey = @"PWS
 @property (copy, nonatomic) void (^cancelBlock)();
 @property (strong, nonatomic) UIScrollView *beforeSctollToTopScrollView;
 
-@property (strong, nonatomic) NSArray *items;
+@property (strong, nonatomic) NSMutableArray *items;
 
 @end
 
@@ -112,6 +112,13 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     self = [super init];
     if (self) {
         _items = @[].mutableCopy;
+        
+        [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification) name:NSManagedObjectContextDidSaveNotification object:context];
+        }];
+        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification) name:NSManagedObjectContextDidSaveNotification object:context];
+        }];
     }
     return self;
 }
@@ -120,6 +127,13 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     self = [super initWithRootViewController:rootViewController];
     if (self) {
         _items = @[].mutableCopy;
+        
+        [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification) name:NSManagedObjectContextDidSaveNotification object:context];
+        }];
+        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification) name:NSManagedObjectContextDidSaveNotification object:context];
+        }];
     }
     return self;
 }
@@ -203,14 +217,15 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 //    NSLog(@"%@", searchText);
     if (!searchText || [searchText isEqualToString:@""]) {
         _isShowHistory = YES;
-        _items = @[];
+        _items = @[].mutableCopy;
         [_tableView reloadData];
         
-        [self getHistory];
+        NSArray *historyItems = [self getHistory];
+        [self reloadTableViewWithHistoryItems:historyItems];
     }
     else {
         if (_isShowHistory) {
-            _items = @[];
+            _items = @[].mutableCopy;
             [_tableView reloadData];
             _isShowHistory = NO;
         }
@@ -251,10 +266,11 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     _searchBar.tintColor = self.view.tintColor;
     if (!_searchBar.text || [_searchBar.text isEqualToString:@""]) {
         _isShowHistory = YES;
-        _items = @[];
+        _items = @[].mutableCopy;
         [_tableView reloadData];
         
-        [self getHistory];
+        NSArray *historyItems = [self getHistory];
+        [self reloadTableViewWithHistoryItems:historyItems];
     }
     
     [_cancelButton setTitleColor:self.view.tintColor forState:UIControlStateNormal];
@@ -385,6 +401,14 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     return nil;
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+    // Text Color
+    UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
+    [header.textLabel setTextColor:[UIColor whiteColor]];
+}
+
+
+#pragma mark TableViewMethods
 - (void)reloadDataWithItems:(NSArray *)items hash:(NSUInteger)hash {
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -392,7 +416,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         if (!sself) return;
         if (sself.searchedTextHash != hash) return;
         
-        sself.items = items;
+        sself.items = items.mutableCopy;
         [sself.tableView reloadData];
         sself.tableView.contentOffset = CGPointMake(0.0f, -sself.tableView.contentInset.top);
     });
@@ -436,6 +460,11 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     }
     else {
         PWSearchNavigationControllerItem *rowItem = _items[indexPath.row];
+        NSArray *historyItems = [self getHistory];
+        historyItems = [historyItems sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"update" ascending:NO]]];
+        PWSearchNavigationControllerHistoryItem *historyItem = historyItems[indexPath.row];
+        historyItem.update = [NSDate date];
+        [self saveHistoryItems:historyItems];
         
         if (rowItem.type == PWSearchNavigationControllerItemTypeWebAlbum) {
             PWAlbumObject *album = rowItem.item.firstObject;
@@ -468,29 +497,21 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 }
 
 #pragma mark History
-- (void)getHistory {
+- (NSArray *)getHistory {
     NSData *historyItemData = [[NSUserDefaults standardUserDefaults] objectForKey:PWSearchNavigationControllerHistoryKey];
-    NSMutableArray *historyItems = nil;
+    NSArray *historyItems = nil;
     if (historyItemData) {
         historyItems = [NSKeyedUnarchiver unarchiveObjectWithData:historyItemData];
     }
     else {
-        historyItems = [NSMutableArray array];
+        historyItems = @[];
     }
     
-    [self reloadTableViewWithHistoryItems:historyItems];
+    return historyItems;
 }
 
 - (void)addHistory:(PWSearchNavigationControllerItem *)item index:(NSUInteger)index {
-    NSMutableArray *mutableHistoryItems = nil;
-    NSData *tmpHistoryItemData = [[NSUserDefaults standardUserDefaults] objectForKey:PWSearchNavigationControllerHistoryKey];
-    if (tmpHistoryItemData) {
-        NSMutableArray *historyItems = [NSKeyedUnarchiver unarchiveObjectWithData:tmpHistoryItemData];
-        mutableHistoryItems = historyItems.mutableCopy;
-    }
-    if (!mutableHistoryItems) {
-        mutableHistoryItems = [NSMutableArray array];
-    }
+    NSMutableArray *mutableHistoryItems = [self getHistory].mutableCopy;
     
     PWSearchNavigationControllerHistoryItem *historyItem = [[PWSearchNavigationControllerHistoryItem alloc] init];
     historyItem.type = item.type;
@@ -507,7 +528,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     historyItem.identifier = identifier;
     
     NSArray *filteredHistoryItems = [mutableHistoryItems filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"identifier = %@", identifier]];
-    if (filteredHistoryItems.count) {
+    if (filteredHistoryItems.count > 0) {
         [mutableHistoryItems removeObject:filteredHistoryItems.firstObject];
     }
     [mutableHistoryItems insertObject:historyItem atIndex:0];
@@ -515,9 +536,40 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         [mutableHistoryItems removeObject:mutableHistoryItems.lastObject];
     }
     
-    NSData *historyItemData = [NSKeyedArchiver archivedDataWithRootObject:mutableHistoryItems.copy];
+    [self saveHistoryItems:mutableHistoryItems.copy];
+}
+
+- (void)saveHistoryItems:(NSArray *)historyItems {
+    NSData *historyItemData = [NSKeyedArchiver archivedDataWithRootObject:historyItems];
     [[NSUserDefaults standardUserDefaults] setObject:historyItemData forKey:PWSearchNavigationControllerHistoryKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)removeHistory:(PWSearchNavigationControllerHistoryItem *)item {
+    NSMutableArray *historyItems = [self getHistory].mutableCopy;
+    
+    if ([historyItems containsObject:item]) {
+        [historyItems removeObject:item];
+    }
+    
+    [self saveHistoryItems:historyItems];
+}
+
+#pragma mark NSManagedObjectContextDidSaveNotification
+- (void)contextDidSaveNotification {
+    if (_isSearchBarOpen) {
+        if (_isShowHistory) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSArray *historyItems = [self getHistory];
+                [self reloadTableViewWithHistoryItems:historyItems];
+            });
+        }
+        else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self reloadTableViewWithSearchText:_searchBar.text];
+            });
+        }
+    }
 }
 
 #pragma mark Model
