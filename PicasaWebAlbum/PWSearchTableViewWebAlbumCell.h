@@ -13,6 +13,7 @@
 @interface PWSearchTableViewWebAlbumCell : UITableViewCell
 
 @property (strong, nonatomic, readonly) PWAlbumObject *album;
+@property (nonatomic) BOOL isShowAlbumType;
 
 - (void)setAlbum:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading;
 

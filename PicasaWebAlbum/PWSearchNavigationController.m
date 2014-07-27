@@ -335,6 +335,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         PWSearchNavigationControllerItem *rowItem = _items[indexPath.row];
         if (rowItem.type == PWSearchNavigationControllerItemTypeWebAlbum) {
             PWSearchTableViewWebAlbumCell *webAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerWebAlbumCell forIndexPath:indexPath];
+            webAlbumCell.isShowAlbumType = YES;
             
             [webAlbumCell setAlbum:rowItem.item.firstObject isNowLoading:NO];
             
@@ -342,6 +343,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         }
         else if (rowItem.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
             PWSearchTableViewLocalAlbumCell *localAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerLocalAlbumCell forIndexPath:indexPath];
+            localAlbumCell.isShowAlbumType = YES;
             
             localAlbumCell.album = rowItem.item.firstObject;
             
@@ -355,6 +357,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         PWSearchNavigationControllerItem *sectionItem = _items[indexPath.section];
         if (sectionItem.type == PWSearchNavigationControllerItemTypeWebAlbum) {
             PWSearchTableViewWebAlbumCell *webAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerWebAlbumCell forIndexPath:indexPath];
+            webAlbumCell.isShowAlbumType = NO;
             
             PWAlbumObject *album = sectionItem.item[indexPath.row];
             [webAlbumCell setAlbum:album isNowLoading:NO];
@@ -363,6 +366,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         }
         else if (sectionItem.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
             PWSearchTableViewLocalAlbumCell *localAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerLocalAlbumCell forIndexPath:indexPath];
+            localAlbumCell.isShowAlbumType = NO;
             
             PLAlbumObject *album = sectionItem.item[indexPath.row];
             localAlbumCell.album = album;
@@ -404,7 +408,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
     // Text Color
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    [header.textLabel setTextColor:[UIColor whiteColor]];
+    [header.textLabel setTextColor:[UIColor colorWithWhite:1.0f alpha:0.667f]];
 }
 
 

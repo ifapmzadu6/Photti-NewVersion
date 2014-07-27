@@ -13,8 +13,9 @@
 
 @interface PWSearchTableViewLocalAlbumCell ()
 
-@property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UIImageView *thumbnailImageView;
+@property (strong, nonatomic) UILabel *titleLabel;
+@property (strong, nonatomic) UILabel *albumTypeLabel;
 
 @property (nonatomic) NSUInteger urlHash;
 
@@ -58,6 +59,13 @@
     _thumbnailImageView.contentMode = UIViewContentModeScaleAspectFill;
     _thumbnailImageView.clipsToBounds = YES;
     [self.contentView addSubview:_thumbnailImageView];
+    
+    _albumTypeLabel = [UILabel new];
+    _albumTypeLabel.text = [NSString stringWithFormat:@"- %@", NSLocalizedString(@"Camera Roll", nil)];
+    _albumTypeLabel.font = [UIFont systemFontOfSize:15.0f];
+    _albumTypeLabel.textColor = [UIColor colorWithWhite:1.0f alpha:0.333f];
+    _albumTypeLabel.textAlignment = NSTextAlignmentRight;
+    [self.contentView addSubview:_albumTypeLabel];    
 }
 
 - (void)layoutSubviews {
@@ -67,7 +75,17 @@
     
     _thumbnailImageView.frame = CGRectMake(15.0f, 4.0f, 36.0f, 36.0f);
     
-    _titleLabel.frame = CGRectMake(51.0f + 10.0f, 0.0f, rect.size.width - (51.0f + 10.0f) - 15.0f, rect.size.height);
+    if (!_isShowAlbumType) {
+        _albumTypeLabel.frame = CGRectZero;
+        
+        _titleLabel.frame = CGRectMake(51.0f + 10.0f, 0.0f, rect.size.width - (51.0f + 10.0f) - 15.0f, rect.size.height);
+    }
+    else {
+        CGSize albumTypeLabelSize = [_albumTypeLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+        _albumTypeLabel.frame = CGRectMake((rect.size.width - 15.0f) - albumTypeLabelSize.width, 0.0f, albumTypeLabelSize.width, rect.size.height);
+        
+        _titleLabel.frame = CGRectMake(51.0f + 10.0f, 0.0f, CGRectGetMinX(_albumTypeLabel.frame) - 5.0f, rect.size.height);
+    }
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

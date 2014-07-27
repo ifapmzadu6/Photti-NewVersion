@@ -222,15 +222,6 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PLPhotoListViewController *viewController = [[PLPhotoListViewController alloc] initWithAlbum:[_fetchedResultsController objectAtIndexPath:indexPath]];
     [self.navigationController pushViewController:viewController animated:YES];
-    
-    PLAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    NSString *id_str = album.id_str;
-    [PLCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
-        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PLAlbumObject"];
-        request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-        NSArray *objects = [context executeFetchRequest:request error:nil];
-        NSInteger count = objects.count;
-    }];
 }
 
 #pragma mark NSFetchedResultsControllerDelegate
