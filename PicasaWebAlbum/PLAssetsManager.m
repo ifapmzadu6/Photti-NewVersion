@@ -227,8 +227,8 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
         NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
         
         // PhotoStreamはiCloud
-        ALAssetsGroupType assetsGroupType = ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces | ALAssetsGroupSavedPhotos;
-        [_library enumerateGroupsWithTypes:assetsGroupType usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+//        ALAssetsGroupType assetsGroupType = ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces | ALAssetsGroupSavedPhotos;
+        [_library enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (![sself.lastEnumuratedDate isEqualToDate:enumurateDate]) return;

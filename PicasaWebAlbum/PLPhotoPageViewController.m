@@ -74,6 +74,7 @@
     NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, copyBarButtonItem, flexibleSpace];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
+    [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
     if ([tabBarController isTabBarHidden]) {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
         if ([tabBarController isToolbarHideen]) {
