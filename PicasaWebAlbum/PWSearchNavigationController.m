@@ -337,7 +337,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
             PWSearchTableViewWebAlbumCell *webAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerWebAlbumCell forIndexPath:indexPath];
             webAlbumCell.isShowAlbumType = YES;
             
-            [webAlbumCell setAlbum:rowItem.item.firstObject isNowLoading:NO];
+            [webAlbumCell setAlbum:rowItem.item.firstObject searchedText:nil];
             
             cell = webAlbumCell;
         }
@@ -345,7 +345,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
             PWSearchTableViewLocalAlbumCell *localAlbumCell = [tableView dequeueReusableCellWithIdentifier:PWSearchNavigationControllerLocalAlbumCell forIndexPath:indexPath];
             localAlbumCell.isShowAlbumType = YES;
             
-            localAlbumCell.album = rowItem.item.firstObject;
+            [localAlbumCell setAlbum:rowItem.item.firstObject searchedText:nil];
             
             cell = localAlbumCell;
         }
@@ -360,7 +360,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
             webAlbumCell.isShowAlbumType = NO;
             
             PWAlbumObject *album = sectionItem.item[indexPath.row];
-            [webAlbumCell setAlbum:album isNowLoading:NO];
+            [webAlbumCell setAlbum:album searchedText:_searchBar.text];
             
             cell = webAlbumCell;
         }
@@ -369,7 +369,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
             localAlbumCell.isShowAlbumType = NO;
             
             PLAlbumObject *album = sectionItem.item[indexPath.row];
-            localAlbumCell.album = album;
+            [localAlbumCell setAlbum:album searchedText:_searchBar.text];
             
             cell = localAlbumCell;
         }

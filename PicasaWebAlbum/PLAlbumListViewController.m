@@ -132,7 +132,7 @@
     
     PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
-    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f , 10.0f, viewInsets.bottom, 10.0f);
+    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 10.0f, viewInsets.bottom, 10.0f);
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
 }
 

@@ -90,10 +90,18 @@
     CGRect rect = self.view.bounds;
     
     CGFloat tHeight = 44.0f;
+    CGFloat nHeight = 44.0f;
     BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    if(isLandscape) {
-        tHeight = 32.0f;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if(isLandscape) {
+            tHeight = 32.0f;
+            nHeight = 32.0f;
+        }
     }
+    else {
+        tHeight = 56.0f;
+    }
+    
     for(UIView *view in self.view.subviews) {
         if([view isKindOfClass:[UITabBar class]]) {
             [view setFrame:CGRectMake(view.frame.origin.x, rect.size.height - tHeight, view.frame.size.width, tHeight)];
@@ -146,18 +154,6 @@
             viewController.navigationItem.prompt = prompt;
         }
     }
-}
-
-- (UIEdgeInsets)viewInsets {
-    CGFloat nHeight = 44.0f + 30.0f;
-    CGFloat tHeight = 44.0f;
-    BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    if(isLandscape) {
-        nHeight = 32.0f + 22.0f;
-        tHeight = 32.0f;
-    }
-    
-    return UIEdgeInsetsMake(nHeight + 20.0f, 0.0f, tHeight, 0.0f);
 }
 
 @end

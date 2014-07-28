@@ -82,10 +82,10 @@
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
-    UIBarButtonItem *copyBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Copy", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(copyBarButtonAction)];
+    UIBarButtonItem *organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction)];
     UIBarButtonItem *trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    [tabBarController setToolbarItems:@[actionBarButtonItem, flexibleSpace, copyBarButtonItem, flexibleSpace, trashBarButtonItem] animated:YES];
+    [tabBarController setToolbarItems:@[actionBarButtonItem, flexibleSpace, organizeBarButtonItem, flexibleSpace, trashBarButtonItem] animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -251,7 +251,7 @@
     }
 }
 
-- (void)copyBarButtonAction {
+- (void)organizeBarButtonAction {
     PWPhotoObject *photo = _photos[_index];
     
     __weak typeof(self) wself = self;

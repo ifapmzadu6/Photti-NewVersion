@@ -84,9 +84,6 @@
     [self setRightNavigationItemSelectButton];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
-    //    UIBarButtonItem *mapBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Info"] style:UIBarButtonItemStylePlain target:self action:@selector(mapBarButtonAction)];
-    //    self.navigationItem.rightBarButtonItem = mapBarButtonItem;
-    
     [_refreshControl beginRefreshing];
     [_activityIndicatorView startAnimating];
     

@@ -189,6 +189,13 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
         else {
             _unlimitedLabel.font = [UIFont boldSystemFontOfSize:17.0f];
         }
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            _unlimitedDescriptionLabel.font = [UIFont boldSystemFontOfSize:14.0f];
+        }
+        else {
+            _unlimitedDescriptionLabel.font = [UIFont boldSystemFontOfSize:16.0f];
+        }
     }
     else {
         _unlimitedButton.selected = NO;
@@ -199,6 +206,13 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
         }
         else {
             _highResolutionLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+        }
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            _highResolutionDescriptionLabel.font = [UIFont boldSystemFontOfSize:14.0f];
+        }
+        else {
+            _highResolutionDescriptionLabel.font = [UIFont boldSystemFontOfSize:16.0f];
         }
     }
 }
@@ -286,7 +300,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
             _highResolutionButton.frame = CGRectMake(582.0f, 610.0f, 160.0f, 50.0f);
         }
         else {
-            _iconImageView.frame = CGRectMake(184.0f, 86.0f, 400.0f, 400.0f);
+            _iconImageView.frame = CGRectMake(184.0f, 90.0f, 400.0f, 400.0f);
             _uploadSettingLabel.frame = CGRectMake(284.0f, 540.0f, 200.0f, 20.0f);
             _unlimitedLabel.frame = CGRectMake(114.0f, 600.0f, 240.0f, 20.0f);
             _highResolutionLabel.frame = CGRectMake(414.0f, 600.0f, 240.0f, 20.0f);
@@ -340,6 +354,19 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     else {
         _highResolutionLabel.font = [UIFont systemFontOfSize:17.0f];
     }
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _unlimitedDescriptionLabel.font = [UIFont boldSystemFontOfSize:14.0f];
+    }
+    else {
+        _unlimitedDescriptionLabel.font = [UIFont boldSystemFontOfSize:16.0f];
+    }
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _highResolutionDescriptionLabel.font = [UIFont systemFontOfSize:14.0f];
+    }
+    else {
+        _highResolutionDescriptionLabel.font = [UIFont systemFontOfSize:16.0f];
+    }
 }
 
 - (void)highResolutionButtonAction {
@@ -364,6 +391,19 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     }
     else {
         _highResolutionLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+    }
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _unlimitedDescriptionLabel.font = [UIFont systemFontOfSize:14.0f];
+    }
+    else {
+        _unlimitedDescriptionLabel.font = [UIFont systemFontOfSize:16.0f];
+    }
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _highResolutionDescriptionLabel.font = [UIFont boldSystemFontOfSize:14.0f];
+    }
+    else {
+        _highResolutionDescriptionLabel.font = [UIFont boldSystemFontOfSize:16.0f];
     }
 }
 

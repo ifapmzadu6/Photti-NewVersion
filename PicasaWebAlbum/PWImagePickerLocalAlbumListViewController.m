@@ -48,8 +48,6 @@
     [_collectionView registerClass:[PLAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 0.0f, 0.0f, 0.0f);
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, -10.0f);
     _collectionView.scrollsToTop = NO;
     _collectionView.clipsToBounds = NO;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
@@ -104,7 +102,7 @@
     
     CGRect rect = self.view.bounds;
     
-    _collectionView.frame = CGRectMake(10.0f, 0.0f, rect.size.width - 20.0f, rect.size.height);
+    _collectionView.frame = rect;
     
     NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
         return obj1.row > obj2.row;
@@ -123,8 +121,8 @@
     
     PWImagePickerController *tabBarViewController = (PWImagePickerController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
-    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 0.0f, viewInsets.bottom, 0.0f);
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, -10.0f);
+    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 10.0f, viewInsets.bottom, 10.0f);
+    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
     
     if (_indicatorView) {
         _indicatorView.center = self.view.center;

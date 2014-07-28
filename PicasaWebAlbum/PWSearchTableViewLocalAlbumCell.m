@@ -92,8 +92,22 @@
     [super setSelected:selected animated:animated];
 }
 
-- (void)setAlbum:(PLAlbumObject *)album {
-    _titleLabel.text = album.name;
+- (void)setAlbum:(PLAlbumObject *)album searchedText:(NSString *)seatchedText {
+    NSString *text = album.name;
+    NSMutableAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text].mutableCopy;
+    if (seatchedText) {
+        NSRange searchRange = NSMakeRange(0, [text length]);
+        NSRange place = NSMakeRange(0, 0);
+        while (searchRange.location < [text length]) {
+            place = [text rangeOfString:seatchedText options:NSLiteralSearch range:searchRange];
+            if (place.location != NSNotFound) {
+                [attributedText addAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:15.0f]} range:place];
+            }
+            searchRange.location = place.location + place.length;
+            searchRange.length = [text length] - searchRange.location;
+        }
+    }
+    _titleLabel.attributedText = attributedText;
     
     _thumbnailImageView.image = nil;
     

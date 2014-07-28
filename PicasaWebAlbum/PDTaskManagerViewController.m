@@ -27,8 +27,6 @@
 @property (strong, nonatomic) UITableView *tableView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-@property (nonatomic) BOOL isEnabledPLCoreDataNotification;
-@property (nonatomic) BOOL isEnabledPWCoreDataNotification;
 
 @end
 
@@ -39,19 +37,10 @@
     if (self) {
         self.title = NSLocalizedString(@"Task Manager", nil);
         
-        __weak typeof(self) wself = self;
-        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            sself.isEnabledPLCoreDataNotification = YES;
-            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:context];
-        }];
-        [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            sself.isEnabledPWCoreDataNotification = YES;
-            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:context];
-        }];
+        NSManagedObjectContext *plcontext = [PLCoreDataAPI readContext];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:plcontext];
+        NSManagedObjectContext *pwcontext = [PWCoreDataAPI readContext];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:pwcontext];
     }
     return self;
 }
@@ -108,6 +97,11 @@
 
 - (void)dealloc {
     NSLog(@"%s", __func__);
+    
+    NSManagedObjectContext *plcontext = [PLCoreDataAPI readContext];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:plcontext];
+    NSManagedObjectContext *pwcontext = [PWCoreDataAPI readContext];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:pwcontext];
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {

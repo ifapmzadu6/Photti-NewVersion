@@ -96,10 +96,24 @@
     [super setSelected:selected animated:animated];
 }
 
-- (void)setAlbum:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading {
+- (void)setAlbum:(PWAlbumObject *)album searchedText:(NSString *)searchedText {
     _album = album;
     
-    _titleLabel.text = album.title;
+    NSString *text = album.title;
+    NSMutableAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text].mutableCopy;
+    if (searchedText) {
+        NSRange searchRange = NSMakeRange(0, [text length]);
+        NSRange place = NSMakeRange(0, 0);
+        while (searchRange.location < [text length]) {
+            place = [text rangeOfString:searchedText options:NSLiteralSearch range:searchRange];
+            if (place.location != NSNotFound) {
+                [attributedText addAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:15.0f]} range:place];
+            }
+            searchRange.location = place.location + place.length;
+            searchRange.length = [text length] - searchRange.location;
+        }
+    }
+    _titleLabel.attributedText = attributedText;
     
     NSUInteger hash = album.hash;
     _albumHash = hash;
@@ -136,7 +150,6 @@
         
         NSURLSessionDataTask *beforeTask = _task;
         if (beforeTask) [beforeTask cancel];
-        if (isNowLoading) return;
         
         __weak typeof(self) wself = self;
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {

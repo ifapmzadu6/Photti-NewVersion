@@ -41,7 +41,7 @@
 
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButton;
 @property (strong, nonatomic) UIBarButtonItem *trashBarButtonItem;
-@property (strong, nonatomic) UIBarButtonItem *moveBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *organizeBarButtonItem;
 
 @property (nonatomic) NSUInteger requestIndex;
 @property (nonatomic) BOOL isSelectMode;
@@ -377,7 +377,7 @@
     [self showTrashPhotosActionSheet];
 }
 
-- (void)moveBarButtonAction {
+- (void)organizeBarButtonAction {
     __weak typeof(self) wself = self;
     PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
         typeof(wself) sself = wself;
@@ -535,7 +535,7 @@
     if (_isSelectMode) {
         _selectActionBarButton.enabled = YES;
         _trashBarButtonItem.enabled = YES;
-        _moveBarButtonItem.enabled = YES;
+        _organizeBarButtonItem.enabled = YES;
         
         PWPhotoObject *photo = [_fetchedResultsController objectAtIndexPath:indexPath];
         [_selectedPhotoIDs addObject:photo.id_str];
@@ -557,7 +557,7 @@
         if (_collectionView.indexPathsForSelectedItems.count == 0) {
             _selectActionBarButton.enabled = NO;
             _trashBarButtonItem.enabled = NO;
-            _moveBarButtonItem.enabled = NO;
+            _organizeBarButtonItem.enabled = NO;
         }
         
         PWPhotoObject *photo = [_fetchedResultsController objectAtIndexPath:indexPath];
@@ -582,10 +582,10 @@
     _selectActionBarButton.enabled = NO;
     _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
     _trashBarButtonItem.enabled = NO;
-    _moveBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Copy", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(moveBarButtonAction)];
-    _moveBarButtonItem.enabled = NO;
+    _organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction)];
+    _organizeBarButtonItem.enabled = NO;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _moveBarButtonItem, flexibleSpace, _trashBarButtonItem];
+    NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, _trashBarButtonItem];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
     [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
@@ -707,9 +707,17 @@
         for (NSString *id_str in _selectedPhotoIDs) {
             NSArray *selectedPhotos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
             PWPhotoObject *photo = selectedPhotos.firstObject;
-            NSUInteger index = [_fetchedResultsController.fetchedObjects indexOfObject:photo];
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-            [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+            if (photo) {
+                NSUInteger index = [_fetchedResultsController.fetchedObjects indexOfObject:photo];
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+            }
+        }
+        NSArray *selectedIndexPaths = _collectionView.indexPathsForSelectedItems;
+        if (selectedIndexPaths.count == 0) {
+            _selectActionBarButton.enabled = NO;
+            _trashBarButtonItem.enabled = NO;
+            _organizeBarButtonItem.enabled = NO;
         }
     });
 }
@@ -776,10 +784,6 @@
         UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.title]];
         [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
-            [indicator startAnimating];
-            [alertView setValue:indicator forKey:@"accessoryView"];
             [alertView show];
             
             [PWPicasaAPI deleteAlbum:album completion:^(NSError *error) {
@@ -821,10 +825,6 @@
             if (!sself) return;
             
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
-            [indicator startAnimating];
-            [alertView setValue:indicator forKey:@"accessoryView"];
             [alertView show];
             
             NSArray *indexPaths = sself.collectionView.indexPathsForSelectedItems;

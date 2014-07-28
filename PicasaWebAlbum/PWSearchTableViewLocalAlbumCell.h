@@ -12,7 +12,9 @@
 
 @interface PWSearchTableViewLocalAlbumCell : UITableViewCell
 
-@property (strong, nonatomic) PLAlbumObject *album;
+@property (strong, nonatomic, readonly) PLAlbumObject *album;
 @property (nonatomic) BOOL isShowAlbumType;
+
+- (void)setAlbum:(PLAlbumObject *)album searchedText:(NSString *)seatchedText;
 
 @end

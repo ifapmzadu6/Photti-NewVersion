@@ -15,6 +15,5 @@
 @property (strong, nonatomic) NSString *prompt;
 
 - (void)doneBarButtonActionWithSelectedAlbum:(id)selectedAlbum isWebAlbum:(BOOL)isWebAlbum;
-- (UIEdgeInsets)viewInsets;
 
 @end

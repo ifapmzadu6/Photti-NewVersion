@@ -32,12 +32,12 @@
 @property (strong, nonatomic) UICollectionView *collectionView;
 
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButton;
-@property (strong, nonatomic) UIBarButtonItem *moveBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *organizeBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *trashBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectAllBarButtonItem;
 
 @property (nonatomic) BOOL isSelectMode;
-@property (strong, nonatomic) NSMutableArray *selectedPhotoURLs;
+@property (strong, nonatomic) NSMutableArray *selectedPhotoIDs;
 
 @end
 
@@ -53,7 +53,7 @@
         NSManagedObjectContext *context = [PLCoreDataAPI readContext];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification) name:NSManagedObjectContextDidSaveNotification object:context];
         
-        _selectedPhotoURLs = @[].mutableCopy;
+        _selectedPhotoIDs = @[].mutableCopy;
     }
     return self;
 }
@@ -74,14 +74,6 @@
     }
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
-    
-//    NSFetchRequest *request = [NSFetchRequest new];
-//    request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-//    request.predicate = [NSPredicate predicateWithFormat:@"ANY albums = %@", _album];
-//    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-//    _fetchedResultsController.delegate = self;
-//    
-//    [_fetchedResultsController performFetch:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -162,10 +154,6 @@
 }
 
 #pragma mark UIBarButtonAction
-- (void)mapBarButtonAction {
-    
-}
-
 - (void)actionBarButtonAction {
     [self showAlbumActionSheet:_album];
 }
@@ -186,17 +174,17 @@
 }
 
 - (void)selectActionBarButtonAction {
-    if (_selectedPhotoURLs.count == 0) {
+    if (_selectedPhotoIDs.count == 0) {
         return;
     }
     
     __block NSMutableArray *assets = @[].mutableCopy;
-    for (NSManagedObjectID *photoURL in _selectedPhotoURLs) {
+    for (NSString *id_str in _selectedPhotoIDs) {
         __block PLPhotoObject *photoObject = nil;
         [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
             NSFetchRequest *request = [NSFetchRequest new];
             request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-            request.predicate = [NSPredicate predicateWithFormat:@"url = %@", photoURL];
+            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
             NSArray *objects = [context executeFetchRequest:request error:nil];
             if (objects.count > 0) {
                 photoObject = objects.firstObject;
@@ -211,7 +199,7 @@
             
             [assets addObject:asset];
             
-            if (assets.count == sself.selectedPhotoURLs.count) {
+            if (assets.count == sself.selectedPhotoIDs.count) {
                 UIActivityViewController *activityViewcontroller = [[UIActivityViewController alloc] initWithActivityItems:assets applicationActivities:nil];
                 [sself.tabBarController presentViewController:activityViewcontroller animated:YES completion:nil];
             }
@@ -224,32 +212,32 @@
 - (void)selectAllBarButtonAction {
     if (_album.photos.count == _collectionView.indexPathsForSelectedItems.count) {
         [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Select all", nil)];
-        [_selectedPhotoURLs removeAllObjects];
+        _selectedPhotoIDs = @[].mutableCopy;
         for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
             [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
         }
         
         _selectActionBarButton.enabled = NO;
-        _moveBarButtonItem.enabled = NO;
+        _organizeBarButtonItem.enabled = NO;
         _trashBarButtonItem.enabled = NO;
     }
     else {
         [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Deselect all", nil)];
         for (PLPhotoObject *photoObject in _album.photos) {
-            if (![_selectedPhotoURLs containsObject:photoObject.objectID]) {
-                [_selectedPhotoURLs addObject:photoObject.url];
+            if (![_selectedPhotoIDs containsObject:photoObject.id_str]) {
+                [_selectedPhotoIDs addObject:photoObject.id_str];
             }
             
             [_collectionView selectItemAtIndexPath:[NSIndexPath indexPathForRow:[_album.photos indexOfObject:photoObject] inSection:0] animated:YES scrollPosition:UICollectionViewScrollPositionNone];
         }
         
         _selectActionBarButton.enabled = YES;
-        _moveBarButtonItem.enabled = YES;
+        _organizeBarButtonItem.enabled = YES;
         _trashBarButtonItem.enabled = YES;
     }
 }
 
-- (void)moveBarButtonAction {
+- (void)organizeBarButtonAction {
     __weak typeof(self) wself = self;
     PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
         typeof(wself) sself = wself;
@@ -294,7 +282,33 @@
 }
 
 - (void)trashBarButtonAction {
-    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Are you sure you want to remove these items? These items will be removed from this album, but will remain in your Photo Library.", nil)];
+    NSManagedObjectID *albumID = _album.objectID;
+    __weak typeof(self) wself = self;
+    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Remove", nil) handler:^{
+        [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            NSFetchRequest *request = [NSFetchRequest new];
+            request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+            request.fetchLimit = 1;
+            for (NSString *id_str in sself.selectedPhotoIDs) {
+                request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+                NSArray *objects = [context executeFetchRequest:request error:nil];
+                PLPhotoObject *photoObject = nil;
+                if (objects.count > 0) {
+                    photoObject = objects.firstObject;
+                }
+                if (!photoObject) return;
+                
+                PLAlbumObject *album = (PLAlbumObject *)[context objectWithID:albumID];
+                [album removePhotosObject:photoObject];
+            }
+        }];
+    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }
 
 #pragma mark UICollectionViewDataSource
@@ -382,13 +396,13 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_isSelectMode) {
         _selectActionBarButton.enabled = YES;
-        _moveBarButtonItem.enabled = YES;
+        _organizeBarButtonItem.enabled = YES;
         _trashBarButtonItem.enabled = YES;
         
         PLPhotoObject *photoObject = _album.photos[indexPath.row];
-        [_selectedPhotoURLs addObject:photoObject.url];
+        [_selectedPhotoIDs addObject:photoObject.id_str];
         
-        if (_selectedPhotoURLs.count == _album.photos.count) {
+        if (_selectedPhotoIDs.count == _album.photos.count) {
             [_selectAllBarButtonItem setTitle:NSLocalizedString(@"Deselect all", nil)];
         }
     }
@@ -401,11 +415,11 @@
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_isSelectMode) {
         PLPhotoObject *photoObject = _album.photos[indexPath.row];
-        [_selectedPhotoURLs removeObject:photoObject.url];
+        [_selectedPhotoIDs removeObject:photoObject.id_str];
         
-        if (_selectedPhotoURLs.count == 0) {
+        if (_selectedPhotoIDs.count == 0) {
             _selectActionBarButton.enabled = NO;
-            _moveBarButtonItem.enabled = NO;
+            _organizeBarButtonItem.enabled = NO;
             _trashBarButtonItem.enabled = NO;
         }
         
@@ -421,7 +435,7 @@
     }
     _isSelectMode = YES;
     
-    [_selectedPhotoURLs removeAllObjects];
+    _selectedPhotoIDs = @[].mutableCopy;
     
     _collectionView.allowsMultipleSelection = YES;
     for (PLPhotoViewCell *cell in _collectionView.visibleCells) {
@@ -430,14 +444,14 @@
     
     _selectActionBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
     _selectActionBarButton.enabled = NO;
-    _moveBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Copy", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(moveBarButtonAction)];
-    _moveBarButtonItem.enabled = NO;
+    _organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction)];
+    _organizeBarButtonItem.enabled = NO;
     _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
     _trashBarButtonItem.enabled = NO;
     UIBarButtonItem *fixedBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     fixedBarButtonItem.width = 32.0f;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _moveBarButtonItem, flexibleSpace, fixedBarButtonItem, _trashBarButtonItem];
+    NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, fixedBarButtonItem, _trashBarButtonItem];
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
     [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
@@ -502,8 +516,26 @@
 
 #pragma mark NSFetchedResultsControllerDelegate
 - (void)contextDidSaveNotification {
+//    __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
+        
+        for (NSString *id_str in _selectedPhotoIDs) {
+            NSArray *selectedPhotos = [_album.photos.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+            PWPhotoObject *photo = selectedPhotos.firstObject;
+            if (photo) {
+                NSUInteger index = [_album.photos indexOfObject:photo];
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+                [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+            }
+        }
+        
+        NSArray *selectedIndexPaths = _collectionView.indexPathsForSelectedItems;
+        if (selectedIndexPaths.count == 0) {
+            _selectActionBarButton.enabled = NO;
+            _trashBarButtonItem.enabled = NO;
+            _organizeBarButtonItem.enabled = NO;
+        }
     });
 }
 
@@ -556,10 +588,15 @@
         
         UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.name]];
         [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
-            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
                 PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumID];
                 [context deleteObject:albumObject];
             }];
+            
+            [sself.navigationController popViewControllerAnimated:YES];
         }];
         [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
         [deleteActionSheet showFromTabBar:sself.tabBarController.tabBar];

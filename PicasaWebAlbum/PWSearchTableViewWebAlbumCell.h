@@ -15,6 +15,6 @@
 @property (strong, nonatomic, readonly) PWAlbumObject *album;
 @property (nonatomic) BOOL isShowAlbumType;
 
-- (void)setAlbum:(PWAlbumObject *)album isNowLoading:(BOOL)isNowLoading;
+- (void)setAlbum:(PWAlbumObject *)album searchedText:(NSString *)searchedText;
 
 @end

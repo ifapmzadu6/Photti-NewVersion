@@ -201,7 +201,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     
 }
 
-- (void)selectAddBarButtonAction {
+- (void)selectOrganizeBarButtonAction {
     PLAllPhotosViewController *viewController = (PLAllPhotosViewController *)self.viewControllers.firstObject;
     NSArray *selectedPhotos = viewController.selectedPhotos;
     
@@ -370,10 +370,10 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     UIBarButtonItem *selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
-    UIBarButtonItem *selectAddBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Copy", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectAddBarButtonAction)];
+    UIBarButtonItem *selectOrganizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(selectOrganizeBarButtonAction)];
 //    UIBarButtonItem *selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    [tabBarController setActionToolbarItems:@[selectActionBarButtonItem, flexibleSpace, selectAddBarButtonItem, flexibleSpace] animated:YES];
+    [tabBarController setActionToolbarItems:@[selectActionBarButtonItem, flexibleSpace, selectOrganizeBarButtonItem, flexibleSpace] animated:YES];
     [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {

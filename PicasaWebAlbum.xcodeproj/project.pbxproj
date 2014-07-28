@@ -11,7 +11,6 @@
 		710461821917725200DF369D /* PWPicasaParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 710461811917725200DF369D /* PWPicasaParser.m */; };
 		710461841917742A00DF369D /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 710461831917742A00DF369D /* CoreData.framework */; };
 		710461A01917759900DF369D /* PWCoreDataAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 7104619F1917759900DF369D /* PWCoreDataAPI.m */; };
-		7110001E1963F650009A329C /* PLFullAlbumViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7110001D1963F650009A329C /* PLFullAlbumViewCell.m */; };
 		711000201964EB88009A329C /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7110001F1964EB88009A329C /* MediaPlayer.framework */; };
 		71109BD1196FBC3700EEDAAE /* PLPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109BD0196FBC3700EEDAAE /* PLPhotoEditViewController.m */; };
 		71109BD51973C90000EEDAAE /* PLAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109BD41973C90000EEDAAE /* PLAlbumEditViewController.m */; };
@@ -135,6 +134,7 @@
 		71CD06171931799D00BECF6B /* PWSnowFlake.m in Sources */ = {isa = PBXBuildFile; fileRef = 71CD06161931799D00BECF6B /* PWSnowFlake.m */; };
 		71D52EE2197F49F2005CFF30 /* PDBasePhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71D52EE1197F49F2005CFF30 /* PDBasePhotoObject+methods.m */; };
 		71D52EFC197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71D52EFB197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m */; };
+		71D52F2219853BCF005CFF30 /* PLFullAlbumViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71D52F2119853BCF005CFF30 /* PLFullAlbumViewCell.m */; };
 		71E8850219115C7E005A78E0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8850119115C7E005A78E0 /* Foundation.framework */; };
 		71E8850419115C7E005A78E0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8850319115C7E005A78E0 /* CoreGraphics.framework */; };
 		71E8850619115C7E005A78E0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8850519115C7E005A78E0 /* UIKit.framework */; };
@@ -170,8 +170,6 @@
 		710461831917742A00DF369D /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		7104619E1917759900DF369D /* PWCoreDataAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWCoreDataAPI.h; sourceTree = "<group>"; };
 		7104619F1917759900DF369D /* PWCoreDataAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWCoreDataAPI.m; sourceTree = "<group>"; };
-		7110001C1963F650009A329C /* PLFullAlbumViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLFullAlbumViewCell.h; sourceTree = "<group>"; };
-		7110001D1963F650009A329C /* PLFullAlbumViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLFullAlbumViewCell.m; sourceTree = "<group>"; };
 		7110001F1964EB88009A329C /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		71109BCF196FBC3700EEDAAE /* PLPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPhotoEditViewController.h; sourceTree = "<group>"; };
 		71109BD0196FBC3700EEDAAE /* PLPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoEditViewController.m; sourceTree = "<group>"; };
@@ -408,6 +406,8 @@
 		71D52EE1197F49F2005CFF30 /* PDBasePhotoObject+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PDBasePhotoObject+methods.m"; sourceTree = "<group>"; };
 		71D52EFA197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskManagerViewControllerHeaderView.h; sourceTree = "<group>"; };
 		71D52EFB197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskManagerViewControllerHeaderView.m; sourceTree = "<group>"; };
+		71D52F2019853BCF005CFF30 /* PLFullAlbumViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLFullAlbumViewCell.h; sourceTree = "<group>"; };
+		71D52F2119853BCF005CFF30 /* PLFullAlbumViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLFullAlbumViewCell.m; sourceTree = "<group>"; };
 		71E884FE19115C7E005A78E0 /* PicasaWebAlbum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PicasaWebAlbum.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		71E8850119115C7E005A78E0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		71E8850319115C7E005A78E0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -497,15 +497,6 @@
 				7104619F1917759900DF369D /* PWCoreDataAPI.m */,
 			);
 			name = PWCoreDataAPI;
-			sourceTree = "<group>";
-		};
-		7110001B1963F621009A329C /* PLFullAlbumViewCell */ = {
-			isa = PBXGroup;
-			children = (
-				7110001C1963F650009A329C /* PLFullAlbumViewCell.h */,
-				7110001D1963F650009A329C /* PLFullAlbumViewCell.m */,
-			);
-			name = PLFullAlbumViewCell;
 			sourceTree = "<group>";
 		};
 		71109BCE196FBC2500EEDAAE /* PLPhotoEditViewController */ = {
@@ -1591,6 +1582,15 @@
 			name = PDTaskManagerViewControllerHeaderView;
 			sourceTree = "<group>";
 		};
+		71D52F2319853BD4005CFF30 /* PLFullAlbumViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				71D52F2019853BCF005CFF30 /* PLFullAlbumViewCell.h */,
+				71D52F2119853BCF005CFF30 /* PLFullAlbumViewCell.m */,
+			);
+			name = PLFullAlbumViewCell;
+			sourceTree = "<group>";
+		};
 		71E884F519115C7E005A78E0 = {
 			isa = PBXGroup;
 			children = (
@@ -1715,7 +1715,7 @@
 				71C07838194ABBB60071702D /* PDTaskTableViewCell */,
 				719552471929013F003EA9AF /* PLAlbumViewCell */,
 				71349CBD192F2389003CC2AA /* PLCollectionFooterView */,
-				7110001B1963F621009A329C /* PLFullAlbumViewCell */,
+				71D52F2319853BD4005CFF30 /* PLFullAlbumViewCell */,
 				71349C98192CF2D8003CC2AA /* PLParallelNavigationTitleView */,
 				71349CAE192DF789003CC2AA /* PLPhotoViewCell */,
 				71349CB2192EEA8D003CC2AA /* PLPhotoViewHeaderView */,
@@ -2067,6 +2067,7 @@
 				71E885A219120E7A005A78E0 /* PWOAuthManager.m in Sources */,
 				719BECEE1957419E005DE6E7 /* PWSettingsTableViewController.m in Sources */,
 				71E8851219115C7E005A78E0 /* PWAppDelegate.m in Sources */,
+				71D52F2219853BCF005CFF30 /* PLFullAlbumViewCell.m in Sources */,
 				71388286193E13E8009AFB1F /* PDCoreDataAPI.m in Sources */,
 				71BD2340197683F40034CD3B /* PDLocalPhotoObject+methods.m in Sources */,
 				710461A01917759900DF369D /* PWCoreDataAPI.m in Sources */,
@@ -2085,7 +2086,6 @@
 				71958C57191B8D4400CFC15F /* PWPhotoPageViewController.m in Sources */,
 				71BD235F1977AE100034CD3B /* PDCopyPhotoObject+methods.m in Sources */,
 				718E9757196E8D8000638A86 /* PWPhotoEditViewController.m in Sources */,
-				7110001E1963F650009A329C /* PLFullAlbumViewCell.m in Sources */,
 				7195524A19290161003EA9AF /* PLAlbumViewCell.m in Sources */,
 				719D92501918C54E00B75D8B /* PWPicasaPOSTRequest.m in Sources */,
 				71BD235519778ECC0034CD3B /* PDTaskObjectFactoryMethods.m in Sources */,
