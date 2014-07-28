@@ -22,6 +22,7 @@
 #import "PWIcons.h"
 
 #import "SDImageCache.h"
+#import "SDWebImageDecoder.h"
 
 #import "PWRoundedCornerBadgeLabel.h"
 
@@ -227,7 +228,7 @@
                 }];
                 if (sself.taskHash != hash) return;
                 if (!url) return;
-                [sself loadThumbnailImageWithURLString:[NSURL URLWithString:url] hash:hash completion:^(UIImage *image) {
+                [sself loadThmbnailImageWithAssetURL:[NSURL URLWithString:url] hash:hash completion:^(UIImage *image) {
                     if (idx == 0) {
                         [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
                     }
@@ -239,7 +240,7 @@
                     }
                 }];
             }
-            else {
+            else if ([obj isKindOfClass:[PDWebPhotoObject class]]) {
                 [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
                     NSString *photo_object_id_str = ((PDWebPhotoObject *)obj).photo_object_id_str;
                     NSFetchRequest *request = [NSFetchRequest new];
@@ -255,6 +256,33 @@
                 if (sself.taskHash != hash) return;
                 if (!url) return;
                 [sself loadThumbnailImageWithURLString:url hash:hash completion:^(UIImage *image) {
+                    if (idx == 0) {
+                        [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
+                    }
+                    else if (idx == 1) {
+                        [sself setImage:image toImageView:sself.subThumbnailImageView toAlpha:0.667f hash:hash];
+                    }
+                    else if (idx == 2) {
+                        [sself setImage:image toImageView:sself.subSubThumbnailImageView toAlpha:0.333f hash:hash];
+                    }
+                }];
+            }
+            else if ([obj isKindOfClass:[PDLocalCopyPhotoObject class]]) {
+                NSString *photo_object_id_str = ((PDLocalCopyPhotoObject *)obj).photo_object_id_str;
+                [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+                    NSFetchRequest *request = [NSFetchRequest new];
+                    request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+                    request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photo_object_id_str];
+                    request.fetchLimit = 1;
+                    NSError *error = nil;
+                    NSArray *objects = [context executeFetchRequest:request error:&error];
+                    if (objects.count == 0) return;
+                    PLPhotoObject *photoObject = objects.firstObject;
+                    url = photoObject.url;
+                }];
+                if (sself.taskHash != hash) return;
+                if (!url) return;
+                [sself loadThmbnailImageWithAssetURL:[NSURL URLWithString:url] hash:hash completion:^(UIImage *image) {
                     if (idx == 0) {
                         [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
                     }
@@ -546,7 +574,7 @@
                 
                 UIImage *image = [UIImage imageWithData:data];
                 if (completion) {
-                    completion(image);
+                    completion([UIImage decodedImageWithImage:image]);
                 }
                 
                 if (image && urlString) {

@@ -159,8 +159,20 @@
 }
 
 - (void)addBarButtonAction {
+    __weak typeof(self) wself = self;
     PWImagePickerController *imagePickerController = [[PWImagePickerController alloc] initWithAlbumTitle:_album.name completion:^(NSArray *selectedPhotos) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
         
+        [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toLocalAlbum:sself.album completion:^(NSError *error) {
+            if (error) {
+                NSLog(@"%@", error.description);
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+            });
+        }];
     }];
     [self.tabBarController presentViewController:imagePickerController animated:YES completion:nil];
 }

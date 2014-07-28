@@ -118,23 +118,33 @@
 + (void)makeTaskFromPhotos:(NSArray *)photos toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSManagedObjectID *, NSError *))completion {
     NSString *to_album_id_str = toLocalAlbum.id_str;
     
-    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDTaskObject class]) inManagedObjectContext:context];
         taskObject.type = @(PDTaskObjectTypePhotosToLocalAlbum);
         taskObject.to_album_id_str = to_album_id_str;
         NSManagedObjectID *taskObjectID = taskObject.objectID;
         
-        for (PWPhotoObject *photoObject in photos) {
-            PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDWebPhotoObject class]) inManagedObjectContext:context];
-            webPhoto.photo_object_id_str = photoObject.id_str;
-            webPhoto.tag_sort_index = photoObject.sortIndex;
-            webPhoto.task = taskObject;
-            [taskObject addPhotosObject:webPhoto];
+        for (PWPhotoObject *photo in photos) {
+            if ([photo isKindOfClass:[PWPhotoObject class]]) {
+                PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:@"PDWebPhotoObject" inManagedObjectContext:context];
+                webPhoto.photo_object_id_str = photo.id_str;
+                webPhoto.tag_sort_index = photo.sortIndex;
+                webPhoto.task = taskObject;
+                [taskObject addPhotosObject:webPhoto];
+            }
+            else if ([photo isKindOfClass:[PLPhotoObject class]]) {
+                PDLocalCopyPhotoObject *localCopyPhoto = [NSEntityDescription insertNewObjectForEntityForName:@"PDLocalCopyPhotoObject" inManagedObjectContext:context];
+                localCopyPhoto.photo_object_id_str = photo.id_str;
+                localCopyPhoto.is_done = @(YES);
+                [taskObject addPhotosObject:localCopyPhoto];
+            }
         }
         
-        if (completion) {
-            completion(taskObjectID, nil);
-        }
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if (completion) {
+                completion(taskObjectID, nil);
+            }
+        });
     }];
 }
 

@@ -11,7 +11,9 @@
 #import "PWColors.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
+#import "PLCoreDataAPI.h"
 #import "PWModelObject.h"
+#import "PWCoreDataAPI.h"
 #import "PWOAuthManager.h"
 
 #import "PWImagePickerNavigationController.h"
@@ -141,8 +143,14 @@
 
 #pragma mark UIBarButtonAction
 - (void)doneBarButtonAction {
+    NSMutableArray *photos = @[].mutableCopy;
+    for (NSString *id_str in _selectedPhotoIDs) {
+        id photo = [self getPhotoByID:id_str];
+        [photos addObject:photo];
+    }
+    
     if (_completion) {
-        _completion(_selectedPhotoIDs);
+        _completion(photos);
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -256,6 +264,54 @@
     else {
         
     }
+}
+
+#pragma mark GetPhotos
+- (id)getPhotoByID:(NSString *)id_str {
+    __block id photo = nil;
+    
+    void (^pwBlock)() = ^{
+        [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+            NSFetchRequest *request = [NSFetchRequest new];
+            request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+            request.fetchLimit = 1;
+            NSError *error = nil;
+            NSArray *objects = [context executeFetchRequest:request error:&error];
+            if (objects.count > 0) {
+                photo = objects.firstObject;
+            }
+        }];
+    };
+    
+    void (^plBlock)() = ^{
+        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+            NSFetchRequest *request = [NSFetchRequest new];
+            request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+            request.fetchLimit = 1;
+            NSError *error = nil;
+            NSArray *objects = [context executeFetchRequest:request error:&error];
+            if (objects.count > 0) {
+                photo = objects.firstObject;
+            }
+        }];
+    };
+    
+    if ([id_str hasPrefix:@"1"]) {
+        plBlock();
+        if (!photo) {
+            pwBlock();
+        }
+    }
+    else {
+        pwBlock();
+        if (!photo) {
+            plBlock();
+        }
+    }
+    
+    return photo;
 }
 
 @end

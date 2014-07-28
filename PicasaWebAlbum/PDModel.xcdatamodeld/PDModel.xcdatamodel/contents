@@ -10,6 +10,9 @@
         <attribute name="downloaded_data_location" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="photo_object_id_str" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="PDLocalCopyPhotoObject" representedClassName="PDLocalCopyPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES">
+        <attribute name="photo_object_id_str" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <entity name="PDLocalPhotoObject" representedClassName="PDLocalPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES">
         <attribute name="photo_object_id_str" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="prepared_body_filepath" optional="YES" attributeType="String" syncable="YES"/>
@@ -32,5 +35,6 @@
         <element name="PDLocalPhotoObject" positionX="16" positionY="-661" width="128" height="73"/>
         <element name="PDTaskObject" positionX="-119" positionY="-324" width="128" height="133"/>
         <element name="PDWebPhotoObject" positionX="-135" positionY="-661" width="128" height="73"/>
+        <element name="PDLocalCopyPhotoObject" positionX="-63" positionY="-513" width="128" height="58"/>
     </elements>
 </model>

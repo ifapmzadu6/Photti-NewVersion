@@ -24,6 +24,8 @@
 		7118F89519335B790016697E /* PWImagePickerLocaliCloudViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F89419335B790016697E /* PWImagePickerLocaliCloudViewController.m */; };
 		7118F89B19335BFF0016697E /* PWImagePickerWebAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F89A19335BFF0016697E /* PWImagePickerWebAlbumListViewController.m */; };
 		7118F89E19335C0E0016697E /* PWImagePickerWebPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F89D19335C0E0016697E /* PWImagePickerWebPhotoListViewController.m */; };
+		71197E7119862EB3009DB4D3 /* PDLocalCopyPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71197E7019862EB3009DB4D3 /* PDLocalCopyPhotoObject.m */; };
+		71197E7519862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71197E7419862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m */; };
 		711FE8E5195E99F500AF296B /* PWSettingHTMLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711FE8E4195E99F500AF296B /* PWSettingHTMLViewController.m */; };
 		711FE8E8195EA48400AF296B /* thirdpartycopyright.html in Resources */ = {isa = PBXBuildFile; fileRef = 711FE8E7195EA48400AF296B /* thirdpartycopyright.html */; };
 		711FE8F5195F2F6B00AF296B /* PWBaseNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711FE8F4195F2F6B00AF296B /* PWBaseNavigationController.m */; };
@@ -195,6 +197,10 @@
 		7118F89A19335BFF0016697E /* PWImagePickerWebAlbumListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWImagePickerWebAlbumListViewController.m; sourceTree = "<group>"; };
 		7118F89C19335C0E0016697E /* PWImagePickerWebPhotoListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWImagePickerWebPhotoListViewController.h; sourceTree = "<group>"; };
 		7118F89D19335C0E0016697E /* PWImagePickerWebPhotoListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWImagePickerWebPhotoListViewController.m; sourceTree = "<group>"; };
+		71197E6F19862EB3009DB4D3 /* PDLocalCopyPhotoObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDLocalCopyPhotoObject.h; sourceTree = "<group>"; };
+		71197E7019862EB3009DB4D3 /* PDLocalCopyPhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDLocalCopyPhotoObject.m; sourceTree = "<group>"; };
+		71197E7319862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PDLocalCopyPhotoObject+methods.h"; sourceTree = "<group>"; };
+		71197E7419862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PDLocalCopyPhotoObject+methods.m"; sourceTree = "<group>"; };
 		711FE8E3195E99F500AF296B /* PWSettingHTMLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSettingHTMLViewController.h; sourceTree = "<group>"; };
 		711FE8E4195E99F500AF296B /* PWSettingHTMLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSettingHTMLViewController.m; sourceTree = "<group>"; };
 		711FE8E7195EA48400AF296B /* thirdpartycopyright.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = thirdpartycopyright.html; sourceTree = "<group>"; };
@@ -616,6 +622,24 @@
 			name = PWImagePickerWebPhotoListViewController;
 			sourceTree = "<group>";
 		};
+		71197E7219862EB9009DB4D3 /* PDLocalCopyPhotoObject */ = {
+			isa = PBXGroup;
+			children = (
+				71197E6F19862EB3009DB4D3 /* PDLocalCopyPhotoObject.h */,
+				71197E7019862EB3009DB4D3 /* PDLocalCopyPhotoObject.m */,
+			);
+			name = PDLocalCopyPhotoObject;
+			sourceTree = "<group>";
+		};
+		71197E7619862F04009DB4D3 /* PDLocalCopyPhotoObject+methods */ = {
+			isa = PBXGroup;
+			children = (
+				71197E7319862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.h */,
+				71197E7419862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m */,
+			);
+			name = "PDLocalCopyPhotoObject+methods";
+			sourceTree = "<group>";
+		};
 		711FE8E6195E99FA00AF296B /* PWSettingHTMLViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -1004,6 +1028,7 @@
 				71D52EE9197F80A1005CFF30 /* PDWebPhotoObject */,
 				71D52EEA197F80A7005CFF30 /* PDCopyPhotoObject */,
 				71D52EEB197F80AD005CFF30 /* PDLocalPhotoObject */,
+				71197E7219862EB9009DB4D3 /* PDLocalCopyPhotoObject */,
 			);
 			name = PDModelObject;
 			sourceTree = "<group>";
@@ -1308,6 +1333,7 @@
 				71D52EE5197F807E005CFF30 /* PDLocalPhotoObject+methods */,
 				71D52EE6197F8084005CFF30 /* PDWebPhotoObject+methods */,
 				71D52EE7197F808C005CFF30 /* PDCopyPhotoObject+methods */,
+				71197E7619862F04009DB4D3 /* PDLocalCopyPhotoObject+methods */,
 			);
 			name = PDModelObjectCategory;
 			sourceTree = "<group>";
@@ -2006,6 +2032,7 @@
 				719552411928FD4C003EA9AF /* PLAssetsManager.m in Sources */,
 				71C8C1E21942AA360002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m in Sources */,
 				719D924D1918C3DF00B75D8B /* PWPicasaAPI.m in Sources */,
+				71197E7519862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m in Sources */,
 				719D923C1917848A00B75D8B /* PWPhotoLinkObject.m in Sources */,
 				71958C4E191B4BB200CFC15F /* UIImage+ImageEffects.m in Sources */,
 				71CD06131930EDD200BECF6B /* PWSearchTableViewLocalAlbumCell.m in Sources */,
@@ -2067,6 +2094,7 @@
 				71E885A219120E7A005A78E0 /* PWOAuthManager.m in Sources */,
 				719BECEE1957419E005DE6E7 /* PWSettingsTableViewController.m in Sources */,
 				71E8851219115C7E005A78E0 /* PWAppDelegate.m in Sources */,
+				71197E7119862EB3009DB4D3 /* PDLocalCopyPhotoObject.m in Sources */,
 				71D52F2219853BCF005CFF30 /* PLFullAlbumViewCell.m in Sources */,
 				71388286193E13E8009AFB1F /* PDCoreDataAPI.m in Sources */,
 				71BD2340197683F40034CD3B /* PDLocalPhotoObject+methods.m in Sources */,

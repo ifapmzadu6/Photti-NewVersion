@@ -166,7 +166,15 @@
 
 #pragma mark UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    PDTaskViewController *viewController = [[PDTaskViewController alloc] initWithTask:[_fetchedResultsController objectAtIndexPath:indexPath]];
+    PDTaskObject *taskObject = nil;
+    if (indexPath.section == 0) {
+        taskObject = _fetchedResultsController.fetchedObjects.firstObject;
+    }
+    else {
+        taskObject = _fetchedResultsController.fetchedObjects[indexPath.row+1];
+    }
+    
+    PDTaskViewController *viewController = [[PDTaskViewController alloc] initWithTask:taskObject];
     [self.navigationController pushViewController:viewController animated:YES];
 }
 

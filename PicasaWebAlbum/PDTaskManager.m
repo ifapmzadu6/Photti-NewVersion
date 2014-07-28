@@ -243,43 +243,58 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         return;
     }
     
-    NSArray *allPhotoObject = [[self class] getFirstTaskObject].photos.array;
-    PDBasePhotoObject *firstPhoto = allPhotoObject.firstObject;
-    if (firstPhoto.is_done.boolValue) {
-        PDBasePhotoObject *nextPhotoObject = nil;
-        if (allPhotoObject.count >= 2) {
-            nextPhotoObject = allPhotoObject[1];
-        }
-        PDTaskObject *taskObject = firstPhoto.task;
-        NSManagedObjectID *firstObjectID = firstPhoto.objectID;
-        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            NSManagedObject *firstObject = [context objectWithID:firstObjectID];
-            [taskObject removePhotosObject:firstPhoto];
-            [context deleteObject:firstObject];
-        }];
-        
-        if (nextPhotoObject) {
-            NSURLSessionTask *task = [nextPhotoObject makeSessionTaskWithSession:_backgroundSession];
-            if (task) {
-                [task resume];
+    [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
+    
+    [[self class] donnedASessionTask];
+}
+
+- (void)taskIsDoneAndStartNext:(PDTaskObject *)taskObject {
+    NSArray *allPhotoObject = taskObject.photos.array;
+    for (PDBasePhotoObject *photoObject in allPhotoObject) {
+        if (photoObject.is_done.boolValue) {
+            PDBasePhotoObject *nextPhotoObject = nil;
+            NSUInteger nextPhotoIndex = [allPhotoObject indexOfObject:photoObject] + 1;
+            if (nextPhotoIndex <= allPhotoObject.count - 1) {
+                nextPhotoObject = allPhotoObject[nextPhotoIndex];
+            }
+            PDTaskObject *taskObject = photoObject.task;
+            NSManagedObjectID *firstObjectID = photoObject.objectID;
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                NSManagedObject *firstObject = [context objectWithID:firstObjectID];
+                [taskObject removePhotosObject:photoObject];
+                [context deleteObject:firstObject];
+            }];
+            
+            if (nextPhotoObject) {
+                if (![nextPhotoObject isKindOfClass:[PDLocalCopyPhotoObject class]]) {
+                    NSURLSessionTask *task = [nextPhotoObject makeSessionTaskWithSession:_backgroundSession];
+                    if (task) {
+                        [task resume];
+                    }
+                    break;
+                }
+                else {
+                    [(PDLocalCopyPhotoObject *)nextPhotoObject copyToLocalAlbum];
+                }
+            }
+            else {
+                NSManagedObjectID *taskObjectID = taskObject.objectID;
+                [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                    NSManagedObject *object = [context objectWithID:taskObjectID];
+                    [context deleteObject:object];
+                }];
+                
+                [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
             }
         }
         else {
-            NSManagedObjectID *taskObjectID = taskObject.objectID;
-            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                NSManagedObject *object = [context objectWithID:taskObjectID];
-                [context deleteObject:object];
-            }];
+            NSURLSessionTask *task = [photoObject makeSessionTaskWithSession:_backgroundSession];
+            if (task) {
+                [task resume];
+            }
+            break;
         }
     }
-    else {
-        NSURLSessionTask *task = [firstPhoto makeSessionTaskWithSession:_backgroundSession];
-        if (task) {
-            [task resume];
-        }
-    }
-    
-    [[self class] donnedASessionTask];
 }
 
 #pragma mark NSURLSessionDownloadDelegate
@@ -299,7 +314,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
             }];
         }];
     }
-    if ([photoObject isKindOfClass:[PDCopyPhotoObject class]]) {
+    else if ([photoObject isKindOfClass:[PDCopyPhotoObject class]]) {
         PDCopyPhotoObject *copyPhotoObject = (PDCopyPhotoObject *)photoObject;
         [copyPhotoObject finishDownloadWithLocation:location.absoluteString];
     }

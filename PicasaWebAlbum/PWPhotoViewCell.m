@@ -143,12 +143,12 @@
         CGFloat height = _imageView.image.size.height;
         if (width > 0 && height > 0) {
             if (width > height) {
-                height = ceilf(rect.size.width * height/width * 2.0f) / 2.0f;
-                _imageView.frame = CGRectMake(0.0f, ceilf(rect.size.width-height)/2.0f, rect.size.width, height);
+                height = ceilf(rect.size.width * height/width * 2.0f + 1.0f) / 2.0f;
+                _imageView.frame = CGRectMake(0.0f, ceilf((rect.size.width-height) + 1.0f)/2.0f, rect.size.width, height);
             }
             else {
-                width = ceilf(rect.size.width * width/height * 2.0f) / 2.0f;
-                _imageView.frame = CGRectMake(ceilf(rect.size.width-width)/2.0f, 0.0f, width, rect.size.width);
+                width = ceilf(rect.size.width * width/height * 2.0f + 1.0f) / 2.0f;
+                _imageView.frame = CGRectMake(ceilf((rect.size.width-width) + 1.0f)/2.0f, 0.0f, width, rect.size.width);
             }
         }
         else {
