@@ -252,38 +252,47 @@
 }
 
 - (void)organizeBarButtonAction {
-    PWPhotoObject *photo = _photos[_index];
-    
     __weak typeof(self) wself = self;
-    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Copy", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        if (isWebAlbum) {
-            [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
-                if (error) {
-                    NSLog(@"%@", error.description);
-                    return;
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                });
-            }];
-        }
-        else {
-            [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toLocalAlbum:album completion:^(NSError *error) {
-                if (error) {
-                    NSLog(@"%@", error.description);
-                    return;
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                });
-            }];
-        }
+        PWPhotoObject *photo = sself.photos[sself.index];
+        
+        PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            if (isWebAlbum) {
+                [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
+                    if (error) {
+                        NSLog(@"%@", error.description);
+                        return;
+                    }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                    });
+                }];
+            }
+            else {
+                [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toLocalAlbum:album completion:^(NSError *error) {
+                    if (error) {
+                        NSLog(@"%@", error.description);
+                        return;
+                    }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                    });
+                }];
+            }
+        }];
+        albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+        [sself.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
     }];
-    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
-    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }
 
 - (void)trashBarButtonAction {
