@@ -27,6 +27,8 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
 @property (strong, nonatomic) NSURLSession *backgroundSession;
 
+@property (strong, nonatomic) NSURL *location;
+
 @end
 
 @implementation PDTaskManager
@@ -186,11 +188,8 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [_backgroundSession getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             if (dataTasks.count == 0 && uploadTasks.count == 0 && downloadTasks.count == 0) {
-                PDBasePhotoObject *firstPhoto = [PDTaskManager getFirstTaskObject].photos.firstObject;
-                NSURLSessionTask *task = [firstPhoto makeSessionTaskWithSession:_backgroundSession];
-                if (task && task.state != NSURLSessionTaskStateRunning) {
-//                    [task resume];
-                }
+                PDTaskObject *taskObject = [PDTaskManager getFirstTaskObject];
+                [self taskIsDoneAndStartNext:taskObject];
             }
         }];
     });
@@ -243,7 +242,29 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         return;
     }
     
-    [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
+    if ([task isKindOfClass:[NSURLSessionDownloadTask class]]) {
+        NSURL *location = _location;
+        _location = nil;
+        
+        PDBasePhotoObject *photoObject = [PDTaskManager getFirstTaskObject].photos.firstObject;
+        
+        if ([photoObject isKindOfClass:[PDWebPhotoObject class]]) {
+            PDWebPhotoObject *webPhotoObject = (PDWebPhotoObject *)photoObject;
+            NSData *data = [NSData dataWithContentsOfURL:location];
+            [webPhotoObject finishDownloadWithData:data completion:^(NSError *error) {
+                [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
+            }];
+        }
+        else if ([photoObject isKindOfClass:[PDCopyPhotoObject class]]) {
+            PDCopyPhotoObject *copyPhotoObject = (PDCopyPhotoObject *)photoObject;
+            [copyPhotoObject finishDownloadWithLocation:location.absoluteString];
+            
+            [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
+        }
+    }
+    else {
+        [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
+    }
     
     [[self class] donnedASessionTask];
 }
@@ -301,23 +322,15 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
     NSLog(@"%s", __func__);
     
-    NSData *data = [NSData dataWithContentsOfURL:location];
-    PDBasePhotoObject *photoObject = [PDTaskManager getFirstTaskObject].photos.firstObject;
+    NSString *filePath = [[self class] makeUniquePathInTmpDir];
+    NSURL *fileURL = [NSURL fileURLWithPath:filePath];
     
-    if ([photoObject isKindOfClass:[PDWebPhotoObject class]]) {
-        PDWebPhotoObject *webPhotoObject = (PDWebPhotoObject *)photoObject;
-        NSManagedObjectID *webPhotoObjectID = webPhotoObject.objectID;
-        [webPhotoObject finishDownloadWithData:data completion:^(NSError *error) {
-            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                PDWebPhotoObject *photoObject = (PDWebPhotoObject *)[context objectWithID:webPhotoObjectID];
-                photoObject.is_done = @(YES);
-            }];
-        }];
+    NSError *error = nil;
+    if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:fileURL error:&error]) {
+        NSLog(@"are");
     }
-    else if ([photoObject isKindOfClass:[PDCopyPhotoObject class]]) {
-        PDCopyPhotoObject *copyPhotoObject = (PDCopyPhotoObject *)photoObject;
-        [copyPhotoObject finishDownloadWithLocation:location.absoluteString];
-    }
+    
+    _location = fileURL;
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
@@ -396,6 +409,14 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         count = [context countForFetchRequest:request error:&error];
     }];
     return count;
+}
+
+#pragma mark FilePath
++ (NSString *)makeUniquePathInTmpDir {
+    NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
+    NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
+    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PWSnowFlake generateUniqueIDString]];
+    return filePath;
 }
 
 @end

@@ -48,49 +48,87 @@
 
 - (void)finishDownloadWithData:(NSData *)data completion:(void (^)(NSError *))completion {
     PDTaskObject *taskObject = self.task;
+    NSString *album_id_str = taskObject.to_album_id_str;
+    NSManagedObjectID *taskObjectID = taskObject.objectID;
+    NSManagedObjectID *objectID = self.objectID;
     
     [[PLAssetsManager sharedLibrary] writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
-        __block PLAlbumObject *localAlbumObject = [[self class] getLocalAlbumWithID:taskObject.to_album_id_str];
+        __block PLAlbumObject *localAlbumObject = [[self class] getLocalAlbumWithID:album_id_str];
         if (!localAlbumObject) {
             //アルバムがないので新しく作る
-            [[self class] getWebAlbumWithID:taskObject.to_album_id_str completion:^(PWAlbumObject *webAlbumObject) {
+            [[self class] getWebAlbumWithID:album_id_str completion:^(PWAlbumObject *webAlbumObject) {
                 localAlbumObject = [[self class] makeNewLocalAlbumWithWebAlbum:webAlbumObject];
             }];
             
             NSString *id_str = localAlbumObject.id_str;
             [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                taskObject.to_album_id_str = id_str;
+                PDTaskObject *task = (PDTaskObject *)[context objectWithID:taskObjectID];
+                task.to_album_id_str = id_str;
             }];
         }
         
+        NSUInteger localAlbumObjectTagType = localAlbumObject.tag_type.integerValue;
+        NSString *localAlbumObjectURL = localAlbumObject.url;
+        NSManagedObjectID *localAlbumObjectID = localAlbumObject.objectID;
         [[PLAssetsManager sharedLibrary] assetForURL:assetURL resultBlock:^(ALAsset *asset) {
-            if (localAlbumObject.tag_type.integerValue == PLAlbumObjectTagTypeImported) {
-                [[PLAssetsManager sharedLibrary] groupForURL:[NSURL URLWithString:localAlbumObject.url] resultBlock:^(ALAssetsGroup *group) {
+            if (localAlbumObjectTagType == PLAlbumObjectTagTypeImported) {
+                [[PLAssetsManager sharedLibrary] groupForURL:[NSURL URLWithString:localAlbumObjectURL] resultBlock:^(ALAssetsGroup *group) {
                     [group addAsset:asset];
                     
-                    if (completion) {
-                        completion(nil);
-                    }
+                    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                        PDWebPhotoObject *webObject = (PDWebPhotoObject *)[context objectWithID:objectID];
+                        webObject.is_done = @(YES);
+                    }];
+                    
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        if (completion) {
+                            completion(nil);
+                        }
+                    });
                 } failureBlock:^(NSError *error) {
-                    if (completion) {
-                        completion(error);
-                    }
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        if (completion) {
+                            completion(error);
+                        }
+                    });
                 }];
             }
             else {
-                [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-                    PLPhotoObject *photo = [[self class] makeNewPhotoWithAsset:asset];
-                    [localAlbumObject addPhotosObject:photo];
+                ALAssetRepresentation *representation = asset.defaultRepresentation;
+                NSURL *url = representation.url;
+                CGSize dimensions = representation.dimensions;
+                NSString *filename = representation.filename;
+                NSString *type = [asset valueForProperty:ALAssetPropertyType];
+                NSNumber *duration = nil;
+                if ([type isEqualToString:ALAssetTypeVideo]) {
+                    duration = [asset valueForProperty:ALAssetPropertyDuration];
+                }
+                NSDate *date = [asset valueForProperty:ALAssetPropertyDate];
+                CLLocation *location = [asset valueForProperty:ALAssetPropertyLocation];
+                
+                [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                    PLAlbumObject *album = (PLAlbumObject *)[context objectWithID:localAlbumObjectID];
+                    PLPhotoObject *photo = [[self class] makeNewPhotoWithURL:url dimensions:dimensions filename:filename type:type date:date duration:duration location:location enumurateDate:[NSDate date] albumType:album.tag_type context:context];
+                    [album addPhotosObject:photo];
                 }];
                 
-                if (completion) {
-                    completion(nil);
-                }
+                [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                    PDWebPhotoObject *webObject = (PDWebPhotoObject *)[context objectWithID:objectID];
+                    webObject.is_done = @(YES);
+                }];
+                
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                    if (completion) {
+                        completion(nil);
+                    }
+                });
             }
         } failureBlock:^(NSError *error) {
-            if (completion) {
-                completion(error);
-            }
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                if (completion) {
+                    completion(error);
+                }
+            });
         }];
     }];
 }
@@ -146,31 +184,24 @@
     return localAlbumObject;
 }
 
-+ (PLPhotoObject *)makeNewPhotoWithAsset:(ALAsset *)asset {
-    __block PLPhotoObject *photoObject = nil;
-    [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-        photoObject = [NSEntityDescription insertNewObjectForEntityForName:kPLPhotoObjectName inManagedObjectContext:context];
-        NSURL *url = asset.defaultRepresentation.url;
-        photoObject.url = url.absoluteString;
-        CGSize dimensions = asset.defaultRepresentation.dimensions;
-        photoObject.width = @(dimensions.width);
-        photoObject.height = @(dimensions.height);
-        photoObject.filename = asset.defaultRepresentation.filename;
-        photoObject.type = [asset valueForProperty:ALAssetPropertyType];
-        NSDate *date = [asset valueForProperty:ALAssetPropertyDate];
-        photoObject.timestamp = @((long long)([date timeIntervalSince1970]) * 1000);
-        CLLocation *location = [asset valueForProperty:ALAssetPropertyLocation];
-        photoObject.date = date;
-        photoObject.latitude = @(location.coordinate.latitude);
-        photoObject.longitude = @(location.coordinate.longitude);
-        NSDate *enumurateDate = [NSDate date];
-        photoObject.update = enumurateDate;
-        photoObject.import = enumurateDate;
-        
-        photoObject.tag_albumtype = @(PLAlbumObjectTagTypeImported);
-        photoObject.id_str = url.query;
-    }];
-    return photoObject;
++ (PLPhotoObject *)makeNewPhotoWithURL:(NSURL *)url dimensions:(CGSize)dimensions filename:(NSString *)filename type:(NSString *)type date:(NSDate *)date duration:(NSNumber *)duration location:(CLLocation *)location enumurateDate:(NSDate *)enumurateDate albumType:(NSNumber *)albumType context:(NSManagedObjectContext *)context {
+    PLPhotoObject *photo = [NSEntityDescription insertNewObjectForEntityForName:kPLPhotoObjectName inManagedObjectContext:context];
+    photo.url = url.absoluteString;
+    photo.width = @(dimensions.width);
+    photo.height = @(dimensions.height);
+    photo.filename = filename;
+    photo.type = type;
+    photo.timestamp = @((long long)([date timeIntervalSince1970]) * 1000);
+    photo.date = date;
+    photo.duration = duration;
+    photo.latitude = @(location.coordinate.latitude);
+    photo.longitude = @(location.coordinate.longitude);
+    photo.update = enumurateDate;
+    photo.import = enumurateDate;
+    photo.tag_albumtype = albumType;
+    photo.id_str = url.query;
+    
+    return photo;
 }
 
 @end

@@ -48,6 +48,7 @@
 
 + (NSString *)generateUniqueIDString {
     unsigned long long uniqueID = [PWSnowFlake generateUniqueID];
+    NSLog(@"%@", [NSString stringWithFormat:@"%llu", uniqueID]);
     return [NSString stringWithFormat:@"%llu", uniqueID];
 }
 

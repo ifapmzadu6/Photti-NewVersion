@@ -99,7 +99,9 @@
     self.downloaded_data_location = filePath;
     
     NSError *error = nil;
-    [[NSFileManager defaultManager] removeItemAtPath:location error:&error];
+    if (![[NSFileManager defaultManager] removeItemAtPath:location error:&error]) {
+        
+    }
 }
 
 #pragma mark Body
