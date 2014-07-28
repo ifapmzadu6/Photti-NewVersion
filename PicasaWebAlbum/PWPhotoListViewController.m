@@ -117,9 +117,6 @@
     if (_fetchedResultsController.fetchedObjects.count == 0) {
         [_activityIndicatorView startAnimating];
     }
-    if (_collectionView.indexPathsForVisibleItems.count == 0) {
-        [_collectionView reloadData];
-    }
     
     [self loadDataWithStartIndex:0];
 }
@@ -482,7 +479,7 @@
         [footerView setText:albumCountString];
     }
     else {
-        [footerView setText:nil];
+        [footerView setText:NSLocalizedString(@"No Photo", nil)];
     }
     
     return footerView;
@@ -663,10 +660,10 @@
             if (error.code == 401) {
                 [sself openLoginviewController];
             }
-            return;
         }
-        
-        sself.requestIndex = nextIndex;
+        else {
+            sself.requestIndex = nextIndex;
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
@@ -701,7 +698,7 @@
 
 #pragma mark NSFetchedResultsControllerDelegate
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{        
         [_collectionView reloadData];
         
         for (NSString *id_str in _selectedPhotoIDs) {

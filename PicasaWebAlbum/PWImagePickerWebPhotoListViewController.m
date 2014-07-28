@@ -245,7 +245,7 @@
         [footerView setText:albumCountString];
     }
     else {
-        [footerView setText:nil];
+        [footerView setText:NSLocalizedString(@"No Photo", nil)];
     }
     
     return footerView;
@@ -321,11 +321,13 @@
         
         if (error) {
             NSLog(@"%@", error);
-            [sself openLoginviewController];
-            return;
+            if (error.code == 401) {
+                [sself openLoginviewController];
+            }
         }
-        
-        sself.requestIndex = nextIndex;
+        else {
+            sself.requestIndex = nextIndex;
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [sself.collectionView reloadData];

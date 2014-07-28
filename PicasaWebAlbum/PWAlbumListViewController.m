@@ -213,7 +213,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         [footerView setText:albumCountString];
     }
     else {
-        [footerView setText:nil];
+        [footerView setText:NSLocalizedString(@"No Album", nil)];
     }
     
     return footerView;
@@ -339,8 +339,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
                 [sself openLoginviewController];
             }
         }
-        
-        sself.requestIndex = nextIndex;
+        else {
+            sself.requestIndex = nextIndex;
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [sself.refreshControl endRefreshing];

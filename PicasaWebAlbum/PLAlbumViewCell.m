@@ -59,6 +59,7 @@
     _imageView = [UIImageView new];
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _imageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.4f];
     [self.contentView addSubview:_imageView];
     
     _titleLabel = [UILabel new];
@@ -154,7 +155,7 @@
     _imageView.image = nil;
     [_activityIndicatorView startAnimating];
     
-    if (!album || !album.managedObjectContext) {
+    if (!album) {
         _albumHash = 0;
         return;
     }
@@ -162,20 +163,11 @@
     NSUInteger hash = album.hash;
     _albumHash = hash;
     
-    NSString *albumName = album.name;
-    NSUInteger count = album.photos.count;
-    NSString *countString = [NSString stringWithFormat:@"%ld", (long)count];
-    __weak typeof(self) wself = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if (sself.albumHash != hash) return;
-        
-        sself.titleLabel.text = albumName;
-        sself.numPhotosLabel.text = countString;
-    });
+    _titleLabel.text = album.name;
+    _numPhotosLabel.text = [NSString stringWithFormat:@"%ld", (long)album.photos.count];
     
-    if (count > 0) {
+    __weak typeof(self) wself = self;
+    if (album.photos.count > 0) {
         PLPhotoObject *thumbnail = album.thumbnail;
         if (!thumbnail) {
             thumbnail = album.photos.firstObject;
@@ -207,6 +199,10 @@
     }
     else {
         [_activityIndicatorView stopAnimating];
+        
+        UIImage *noPhotoImage = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _imageView.image = noPhotoImage;
+        _imageView.alpha = 1.0f;
     }
 }
 

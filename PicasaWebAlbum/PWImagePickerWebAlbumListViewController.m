@@ -229,8 +229,9 @@
                 [sself openLoginviewController];
             }
         }
-        
-        sself.requestIndex = nextIndex;
+        else {
+            sself.requestIndex = nextIndex;
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [sself.refreshControl endRefreshing];

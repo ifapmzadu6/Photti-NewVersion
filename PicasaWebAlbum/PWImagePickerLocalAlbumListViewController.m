@@ -166,6 +166,9 @@
             NSString *albumCountString = [NSString stringWithFormat:localizedString, (unsigned long)_fetchedResultsController.fetchedObjects.count];
             [footerView setText:albumCountString];
         }
+        else {
+            [footerView setText:NSLocalizedString(@"No Album", nil)];
+        }
         
         return footerView;
     }

@@ -11,6 +11,7 @@
 #import "PWModelObject.h"
 #import "PWPicasaAPI.h"
 #import "SDImageCache.h"
+#import "SDWebImageDecoder.h"
 
 @interface PWSearchTableViewWebAlbumCell ()
 
@@ -170,7 +171,7 @@
                 }
                 
                 UIImage *image = [UIImage imageWithData:data];
-                [sself setImage:image hash:hash];
+                [sself setImage:[UIImage decodedImageWithImage:image] hash:hash];
                 
                 if (image && urlString) {
                     [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];

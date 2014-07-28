@@ -191,7 +191,7 @@
         [footerView setText:albumCountString];
     }
     else {
-        [footerView setText:nil];
+        [footerView setText:NSLocalizedString(@"No Album", nil)];
     }
     
     return footerView;
@@ -257,8 +257,9 @@
                 [sself openLoginviewController];
             }
         }
-        
-        sself.requestIndex = nextIndex;
+        else {
+            sself.requestIndex = nextIndex;
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [sself.refreshControl endRefreshing];

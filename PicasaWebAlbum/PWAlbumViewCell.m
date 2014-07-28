@@ -13,6 +13,7 @@
 #import "PWColors.h"
 #import "Reachability.h"
 #import "SDImageCache.h"
+#import "SDWebImageDecoder.h"
 #import "PWIcons.h"
 #import "UIButton+HitEdgeInsets.h"
 #import "Reachability.h"
@@ -58,6 +59,7 @@
     _imageView = [UIImageView new];
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _imageView.tintColor = [[PWColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.4f];
     [self.contentView addSubview:_imageView];
     
     _titleLabel = [UILabel new];
@@ -140,20 +142,28 @@
     
     _titleLabel.text = nil;
     _numPhotosLabel.text = nil;
+    _imageView.image = nil;
     
     if (!album) return;
     
     NSUInteger hash = album.hash;
     _albumHash = hash;
     
-    NSString *urlString = album.tag_thumbnail_url;
-    if (!urlString) return;
-    
     _titleLabel.text = album.title;
     [self setTitleLabelFrame];
     _numPhotosLabel.text = album.tag_numphotos;
     
-    [self loadThumbnailImage:urlString hash:hash];
+    if (_album.tag_numphotos.integerValue > 0) {
+        NSString *urlString = album.tag_thumbnail_url;
+        if (!urlString) return;
+        
+        [self loadThumbnailImage:urlString hash:hash];
+    }
+    else {
+        UIImage *noPhotoImage = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _imageView.image = noPhotoImage;
+        _imageView.alpha = 1.0f;
+    }
 }
 
 - (void)loadThumbnailImage:(NSString *)urlString hash:(NSUInteger)hash {
@@ -205,7 +215,7 @@
                 }
                 
                 UIImage *image = [UIImage imageWithData:data];
-                [sself setImage:image hash:hash];
+                [sself setImage:[UIImage decodedImageWithImage:image] hash:hash];
                 
                 if (image && urlString) {
                     [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];

@@ -344,7 +344,7 @@
         [footerView setText:albumCountString];
     }
     else {
-        [footerView setText:nil];
+        [footerView setText:NSLocalizedString(@"No Photo", nil)];
     }
     
     return footerView;
