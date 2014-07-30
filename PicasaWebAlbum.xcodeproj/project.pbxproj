@@ -137,6 +137,7 @@
 		71D52EE2197F49F2005CFF30 /* PDBasePhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71D52EE1197F49F2005CFF30 /* PDBasePhotoObject+methods.m */; };
 		71D52EFC197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71D52EFB197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m */; };
 		71D52F2219853BCF005CFF30 /* PLFullAlbumViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71D52F2119853BCF005CFF30 /* PLFullAlbumViewCell.m */; };
+		71D9DE771988AF43000C8BFA /* NSURLSessionTask+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71D9DE761988AF43000C8BFA /* NSURLSessionTask+methods.m */; };
 		71E8850219115C7E005A78E0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8850119115C7E005A78E0 /* Foundation.framework */; };
 		71E8850419115C7E005A78E0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8850319115C7E005A78E0 /* CoreGraphics.framework */; };
 		71E8850619115C7E005A78E0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8850519115C7E005A78E0 /* UIKit.framework */; };
@@ -414,6 +415,8 @@
 		71D52EFB197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskManagerViewControllerHeaderView.m; sourceTree = "<group>"; };
 		71D52F2019853BCF005CFF30 /* PLFullAlbumViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLFullAlbumViewCell.h; sourceTree = "<group>"; };
 		71D52F2119853BCF005CFF30 /* PLFullAlbumViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLFullAlbumViewCell.m; sourceTree = "<group>"; };
+		71D9DE751988AF43000C8BFA /* NSURLSessionTask+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLSessionTask+methods.h"; sourceTree = "<group>"; };
+		71D9DE761988AF43000C8BFA /* NSURLSessionTask+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLSessionTask+methods.m"; sourceTree = "<group>"; };
 		71E884FE19115C7E005A78E0 /* PicasaWebAlbum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PicasaWebAlbum.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		71E8850119115C7E005A78E0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		71E8850319115C7E005A78E0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1617,6 +1620,15 @@
 			name = PLFullAlbumViewCell;
 			sourceTree = "<group>";
 		};
+		71D9DE741988AEDF000C8BFA /* NSURLSessionTask+methods */ = {
+			isa = PBXGroup;
+			children = (
+				71D9DE751988AF43000C8BFA /* NSURLSessionTask+methods.h */,
+				71D9DE761988AF43000C8BFA /* NSURLSessionTask+methods.m */,
+			);
+			name = "NSURLSessionTask+methods";
+			sourceTree = "<group>";
+		};
 		71E884F519115C7E005A78E0 = {
 			isa = PBXGroup;
 			children = (
@@ -1711,6 +1723,7 @@
 		71E8859519120BB9005A78E0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				71D9DE741988AEDF000C8BFA /* NSURLSessionTask+methods */,
 				71BD235919779E1C0034CD3B /* ALAsset+methods */,
 				71388283193E13BD009AFB1F /* PDCoreDataAPI */,
 				71649BF2195907AB00009C1F /* PDInAppPurchase */,
@@ -2037,6 +2050,7 @@
 				71958C4E191B4BB200CFC15F /* UIImage+ImageEffects.m in Sources */,
 				71CD06131930EDD200BECF6B /* PWSearchTableViewLocalAlbumCell.m in Sources */,
 				7195523619273138003EA9AF /* PWAlbumShareViewController.m in Sources */,
+				71D9DE771988AF43000C8BFA /* NSURLSessionTask+methods.m in Sources */,
 				715943BB1957469B009315E5 /* KKStaticTableView.m in Sources */,
 				713320331921E4AF00A27B3C /* PWDatePickerView.m in Sources */,
 				712F39AB1938A37D005CF60B /* PWPhotoMediaObject.m in Sources */,

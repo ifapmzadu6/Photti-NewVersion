@@ -247,6 +247,10 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         _location = nil;
         
         PDBasePhotoObject *photoObject = [PDTaskManager getFirstTaskObject].photos.firstObject;
+        if (![photoObject.session_task_identifier isEqualToNumber:@(task.taskIdentifier)]) {
+            NSLog(@"[ERROR] DB not match session task!");
+            return;
+        }
         
         if ([photoObject isKindOfClass:[PDWebPhotoObject class]]) {
             PDWebPhotoObject *webPhotoObject = (PDWebPhotoObject *)photoObject;
@@ -257,12 +261,17 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         }
         else if ([photoObject isKindOfClass:[PDCopyPhotoObject class]]) {
             PDCopyPhotoObject *copyPhotoObject = (PDCopyPhotoObject *)photoObject;
-            [copyPhotoObject finishDownloadWithLocation:location.absoluteString];
+            [copyPhotoObject finishDownloadWithLocation:location];
             
             [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
         }
     }
-    else {
+    else if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
+        PDBasePhotoObject *photoObject = [PDTaskManager getFirstTaskObject].photos.firstObject;
+        
+        if ([photoObject isKindOfClass:[PDCopyPhotoObject class]]) {
+            [(PDCopyPhotoObject *)photoObject finishUpload];
+        }
         [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
     }
     

@@ -157,7 +157,7 @@
         }
     }
     
-    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
+    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
     UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -199,8 +199,8 @@
     
 }
 
-- (void)actionBarButtonAction {
-    [self showAlbumActionSheet:_album];
+- (void)actionBarButtonAction:(id)sender {
+    [self showAlbumActionSheet:_album sender:sender];
 }
 
 - (void)addBarButtonAction {
@@ -370,55 +370,64 @@
     }];
 }
 
-- (void)trashBarButtonAction {
-    [self showTrashPhotosActionSheet];
+- (void)trashBarButtonAction:(id)sender {
+    [self showTrashPhotosActionSheet:sender];
 }
 
-- (void)organizeBarButtonAction {
+- (void)organizeBarButtonAction:(id)sender {
     __weak typeof(self) wself = self;
-    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Copy", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        NSMutableArray *selectedPhotos = @[].mutableCopy;
-        NSArray *photos = _fetchedResultsController.fetchedObjects;
-        for (NSString *id_str in _selectedPhotoIDs) {
-            NSArray *searched = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
-            if (searched.count > 0) {
-                [selectedPhotos addObject:searched.firstObject];
-            }
-        }
-        if (selectedPhotos.count == 0) return;
-        
-        if (isWebAlbum) {
-            PWAlbumObject *webAlbum = (PWAlbumObject *)album;
-            //ダウンロードはここでやる
+        PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
             
-            [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
-                if (error) {
-                    NSLog(@"%@", error.description);
+            NSMutableArray *selectedPhotos = @[].mutableCopy;
+            NSArray *photos = _fetchedResultsController.fetchedObjects;
+            for (NSString *id_str in _selectedPhotoIDs) {
+                NSArray *searched = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+                if (searched.count > 0) {
+                    [selectedPhotos addObject:searched.firstObject];
                 }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                });
-            }];
-        }
-        else {
-            PLAlbumObject *localAlbum = (PLAlbumObject *)album;
-            [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toLocalAlbum:localAlbum completion:^(NSError *error) {
-                if (error) {
-                    NSLog(@"%@", error.description);
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                });
-            }];
-        }
-        
-        [sself disableSelectMode];
+            }
+            if (selectedPhotos.count == 0) return;
+            
+            if (isWebAlbum) {
+                PWAlbumObject *webAlbum = (PWAlbumObject *)album;
+                //ダウンロードはここでやる
+                
+                [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
+                    if (error) {
+                        NSLog(@"%@", error.description);
+                    }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                    });
+                }];
+            }
+            else {
+                PLAlbumObject *localAlbum = (PLAlbumObject *)album;
+                [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toLocalAlbum:localAlbum completion:^(NSError *error) {
+                    if (error) {
+                        NSLog(@"%@", error.description);
+                    }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                    });
+                }];
+            }
+            
+            [sself disableSelectMode];
+        }];
+        albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+        [sself.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
     }];
-    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
-    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
 #pragma mark UIRefreshControl
@@ -577,9 +586,9 @@
     
     _selectActionBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
     _selectActionBarButton.enabled = NO;
-    _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
+    _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction:)];
     _trashBarButtonItem.enabled = NO;
-    _organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction)];
+    _organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction:)];
     _organizeBarButtonItem.enabled = NO;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, _trashBarButtonItem];
@@ -720,7 +729,7 @@
 }
 
 #pragma mark UIActionSheet
-- (void)showAlbumActionSheet:(PWAlbumObject *)album {
+- (void)showAlbumActionSheet:(PWAlbumObject *)album sender:(id)sender {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.title];
     __weak typeof(self) wself = self;
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Edit", nil) handler:^{
@@ -803,10 +812,10 @@
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
     
-    [actionSheet showFromTabBar:self.tabBarController.tabBar];
+    [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
-- (void)showTrashPhotosActionSheet {
+- (void)showTrashPhotosActionSheet:(id)sender {
     __weak typeof(self) wself = self;
     NSMutableArray *selectedPhotos = @[].mutableCopy;
     for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
@@ -854,8 +863,7 @@
             }
         }];
         [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-        
-        [actionSheet showFromTabBar:sself.tabBarController.tabBar];
+        [actionSheet showFromBarButtonItem:sender animated:YES];
     }];
 }
 

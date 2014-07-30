@@ -22,12 +22,19 @@
 @implementation PDCopyPhotoObject (methods)
 
 - (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session {
+    NSURLSessionTask *task = nil;
     if (self.downloaded_data_location) {
-        return [self makeUploadSessionTaskWithSession:session];
+        task = [self makeUploadSessionTaskWithSession:session];
     }
     else {
-        return [self makeDownloadSessionTaskWithSession:session];
+        task = [self makeDownloadSessionTaskWithSession:session];
     }
+    
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        self.session_task_identifier = @(task.taskIdentifier);
+    }];
+    
+    return task;
 }
 
 - (NSURLSessionTask *)makeDownloadSessionTaskWithSession:(NSURLSession *)session {
@@ -39,11 +46,11 @@
     [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *authorizedRequest, NSError *error) {
         request = authorizedRequest;
     }];
+    if (!request) return nil;
     
-    if (request) {
-        return [session downloadTaskWithRequest:request];
-    }
-    return nil;
+    NSURLSessionTask *task = [session downloadTaskWithRequest:request];
+    
+    return task;
 };
 
 - (NSURLSessionTask *)makeUploadSessionTaskWithSession:(NSURLSession *)session {
@@ -71,37 +78,45 @@
         [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
     }
     [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)fileAttributes[NSFileSize]] forHTTPHeaderField:@"Content-Length"];
-    NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
+    NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
+    NSURLSessionTask *sessionTask = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        sessionTask = [session uploadTaskWithRequest:request fromFile:filePathURL];
+    }
     
     return sessionTask;
 }
 
-- (void)finishDownloadWithLocation:(NSString *)location {
+- (void)finishDownloadWithLocation:(NSURL *)location {
     PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) return;
     
     NSString *filePath = [[self class] makeUniquePathInTmpDir];
+    NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
     
     if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
         NSError *error = nil;
-        if (![[NSFileManager defaultManager] moveItemAtPath:location toPath:filePath error:&error]) {
-            
+        if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:filePathURL error:&error]) {
+            NSLog(@"%@", error);
         }
     }
     else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-        NSData *body = [[self class] makeBodyFromFilePath:location title:photoObject.title];
+        NSData *body = [[self class] makeBodyFromFilePath:location.absoluteString title:photoObject.title];
         NSError *error = nil;
         if (![body writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
-            
+            NSLog(@"%@", error);
         }
     }
     
-    self.downloaded_data_location = filePath;
-    
-    NSError *error = nil;
-    if (![[NSFileManager defaultManager] removeItemAtPath:location error:&error]) {
-        
-    }
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        self.downloaded_data_location = filePath;
+    }];
+}
+
+- (void)finishUpload {
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        self.is_done = @(YES);
+    }];
 }
 
 #pragma mark Body

@@ -238,7 +238,7 @@
     NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
     NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
     NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PWSnowFlake generateUniqueIDString]];
-    return filePath;
+    return [filePath stringByStandardizingPath];
 }
 
 #pragma mark Data

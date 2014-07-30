@@ -87,7 +87,7 @@
         }
     }
     
-    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
+    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
     UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -154,8 +154,8 @@
 }
 
 #pragma mark UIBarButtonAction
-- (void)actionBarButtonAction {
-    [self showAlbumActionSheet:_album];
+- (void)actionBarButtonAction:(id)sender {
+    [self showAlbumActionSheet:_album sender:sender];
 }
 
 - (void)addBarButtonAction {
@@ -249,51 +249,60 @@
     }
 }
 
-- (void)organizeBarButtonAction {
+- (void)organizeBarButtonAction:(id)sender {
     __weak typeof(self) wself = self;
-    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
+    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Copy", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        NSMutableArray *selectLocalPhotos = @[].mutableCopy;
-        for (NSIndexPath *indexPath in sself.collectionView.indexPathsForSelectedItems) {
-            [selectLocalPhotos addObject:sself.album.photos[indexPath.row]];
-        }
-        
-        void (^completion)() = ^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                [sself disableSelectMode];
-                
-                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-            });
-        };
-        
-        if (isWebAlbum) {
-            [[PDTaskManager sharedManager] addTaskPhotos:selectLocalPhotos toWebAlbum:album completion:^(NSError *error) {
-                if (error) {
-                    NSLog(@"%@", error.description);
-                    return;
-                }
-                completion();
-            }];
-        }
-        else {
-            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-                PLAlbumObject *albumObject = (PLAlbumObject *)album;
-                for (PLPhotoObject *photoObject in selectLocalPhotos) {
-                    [albumObject addPhotosObject:photoObject];
-                }
-                completion();
-            }];
-        }
+        PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            NSMutableArray *selectLocalPhotos = @[].mutableCopy;
+            for (NSIndexPath *indexPath in sself.collectionView.indexPathsForSelectedItems) {
+                [selectLocalPhotos addObject:sself.album.photos[indexPath.row]];
+            }
+            
+            void (^completion)() = ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    [sself disableSelectMode];
+                    
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                });
+            };
+            
+            if (isWebAlbum) {
+                [[PDTaskManager sharedManager] addTaskPhotos:selectLocalPhotos toWebAlbum:album completion:^(NSError *error) {
+                    if (error) {
+                        NSLog(@"%@", error.description);
+                        return;
+                    }
+                    completion();
+                }];
+            }
+            else {
+                [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                    PLAlbumObject *albumObject = (PLAlbumObject *)album;
+                    for (PLPhotoObject *photoObject in selectLocalPhotos) {
+                        [albumObject addPhotosObject:photoObject];
+                    }
+                    completion();
+                }];
+            }
+        }];
+        albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+        [sself.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
     }];
-    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
-    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
-- (void)trashBarButtonAction {
+- (void)trashBarButtonAction:(id)sender {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Are you sure you want to remove these items? These items will be removed from this album, but will remain in your Photo Library.", nil)];
     NSManagedObjectID *albumID = _album.objectID;
     __weak typeof(self) wself = self;
@@ -320,7 +329,7 @@
         }];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-    [actionSheet showFromTabBar:self.tabBarController.tabBar];
+    [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
 #pragma mark UICollectionViewDataSource
@@ -456,9 +465,9 @@
     
     _selectActionBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
     _selectActionBarButton.enabled = NO;
-    _organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction)];
+    _organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction:)];
     _organizeBarButtonItem.enabled = NO;
-    _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
+    _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction:)];
     _trashBarButtonItem.enabled = NO;
     UIBarButtonItem *fixedBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     fixedBarButtonItem.width = 32.0f;
@@ -552,7 +561,7 @@
 }
 
 #pragma mark UIAlertView
-- (void)showAlbumActionSheet:(PLAlbumObject *)album {
+- (void)showAlbumActionSheet:(PLAlbumObject *)album sender:(id)sender {
     NSManagedObjectID *albumID = album.objectID;
     
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.name];
@@ -611,10 +620,10 @@
             [sself.navigationController popViewControllerAnimated:YES];
         }];
         [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-        [deleteActionSheet showFromTabBar:sself.tabBarController.tabBar];
+        [deleteActionSheet showFromTabBar:sender];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
-    [actionSheet showFromTabBar:self.tabBarController.tabBar];
+    [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
 #pragma mark HandleModelObject

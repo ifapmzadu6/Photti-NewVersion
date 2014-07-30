@@ -81,9 +81,9 @@
     
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
-    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
-    UIBarButtonItem *organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction)];
-    UIBarButtonItem *trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
+    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
+    UIBarButtonItem *organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction:)];
+    UIBarButtonItem *trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     [tabBarController setToolbarItems:@[actionBarButtonItem, flexibleSpace, organizeBarButtonItem, flexibleSpace, trashBarButtonItem] animated:YES];
 }
@@ -118,7 +118,7 @@
 }
 
 #pragma mark UIBarButtonItemAction
-- (void)actionBarButtonAction {
+- (void)actionBarButtonAction:(id)sender {
     PWPhotoObject *photo = _photos[_index];
     if (photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
         PWPhotoMediaContentObject *content = photo.media.content.firstObject;
@@ -244,14 +244,12 @@
                 }];
             }
         }
-        
         [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-        
-        [actionSheet showFromTabBar:self.tabBarController.tabBar];
+        [actionSheet showFromBarButtonItem:sender animated:YES];
     }
 }
 
-- (void)organizeBarButtonAction {
+- (void)organizeBarButtonAction:(id)sender {
     __weak typeof(self) wself = self;
     
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
@@ -292,10 +290,10 @@
         [sself.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-    [actionSheet showFromTabBar:self.tabBarController.tabBar];
+    [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
-- (void)trashBarButtonAction {
+- (void)trashBarButtonAction:(id)sender {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Are you sure you want to delete?", nil)];
     __weak typeof(self) wself = self;
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
@@ -326,7 +324,7 @@
         }];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-    [actionSheet showFromTabBar:self.tabBarController.tabBar];
+    [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
 - (void)tagBarButtonAction {
