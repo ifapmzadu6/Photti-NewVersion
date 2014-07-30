@@ -54,15 +54,16 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 
 - (void)finishDownloadWithData:(NSData *)data completion:(void (^)(NSError *))completion {
     PDTaskObject *taskObject = self.task;
-    NSString *album_id_str = taskObject.from_album_id_str;
+    NSString *local_album_id_str = taskObject.to_album_id_str;
+    NSString *web_album_id_str = taskObject.from_album_id_str;
     NSManagedObjectID *taskObjectID = taskObject.objectID;
     NSManagedObjectID *objectID = self.objectID;
     
     [[PLAssetsManager sharedLibrary] writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
-        __block PLAlbumObject *localAlbumObject = [[self class] getLocalAlbumWithID:album_id_str];
+        __block PLAlbumObject *localAlbumObject = [[self class] getLocalAlbumWithID:local_album_id_str];
         if (!localAlbumObject) {
             //アルバムがないので新しく作る
-            [[self class] getWebAlbumWithID:album_id_str completion:^(PWAlbumObject *webAlbumObject) {
+            [[self class] getWebAlbumWithID:web_album_id_str completion:^(PWAlbumObject *webAlbumObject) {
                 localAlbumObject = [[self class] makeNewLocalAlbumWithWebAlbum:webAlbumObject];
             }];
             

@@ -134,6 +134,12 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
+    [self layoutImageView];
+    
+    _activityIndicatorView.center = self.contentView.center;
+}
+
+- (void)layoutImageView {
     CGRect rect = self.contentView.bounds;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
@@ -148,7 +154,7 @@
                 _imageView.frame = CGRectMake(0.0f, ceilf((rect.size.width-height) + 0.5f)/2.0f, rect.size.width, height);
             }
             else {
-                width = ceilf(rect.size.width * width/height * 2.0f + 1.0f) / 2.0f;
+                width = ceilf(rect.size.width * width/height * 2.0f + 0.5f) / 2.0f;
                 _imageView.frame = CGRectMake(ceilf((rect.size.width-width) + 0.5f)/2.0f, 0.0f, width, rect.size.width);
             }
         }
@@ -162,9 +168,8 @@
     _videoIconView.frame = CGRectMake(CGRectGetMinX(imageFrame) + 5.0f, CGRectGetHeight(imageFrame) - 14.0f, 16.0f, 8.0f);
     _videoDurationLabel.frame = CGRectMake(CGRectGetMinX(imageFrame), CGRectGetHeight(imageFrame) - 20.0f, CGRectGetWidth(imageFrame) - 5.0f, 20.0f);
     
-    _activityIndicatorView.center = self.contentView.center;
-    _overrayView.frame = _imageView.frame;
-    _checkMark.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 32.0f, CGRectGetMaxY(_imageView.frame) - 32.0f, 28.0f, 28.0f);
+    _overrayView.frame = imageFrame;
+    _checkMark.frame = CGRectMake(CGRectGetMaxX(imageFrame) - 32.0f, CGRectGetMaxY(imageFrame) - 32.0f, 28.0f, 28.0f);
 }
 
 - (void)setIsSelectWithCheckMark:(BOOL)isSelectWithCheckMark {
@@ -283,7 +288,7 @@
         
         [_activityIndicatorView stopAnimating];
         _imageView.image = image;
-        [self setNeedsLayout];
+        [self layoutImageView];
         [UIView animateWithDuration:0.1f animations:^{
             _imageView.alpha = 1.0f;
         }];

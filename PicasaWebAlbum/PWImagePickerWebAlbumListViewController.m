@@ -14,8 +14,10 @@
 #import "PWAlbumViewCell.h"
 #import "PWImagePickerWebPhotoListViewController.h"
 #import "PWImagePickerController.h"
+#import "Reachability.h"
+#import "SDImageCache.h"
 
-@interface PWImagePickerWebAlbumListViewController ()
+@interface PWImagePickerWebAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
@@ -31,8 +33,8 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = @"Web Album";
-        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];        
+        self.title = NSLocalizedString(@"Web Album", nil);
+        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];
     }
     return self;
 }
@@ -69,25 +71,22 @@
     }
     
     [_refreshControl beginRefreshing];
-    [_activityIndicatorView startAnimating];
     
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
+    request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+    _fetchedResultsController.delegate = self;
     NSError *error = nil;
-    [_fetchedResultsController performFetch:&error];
-    if (error) {
+    if (![_fetchedResultsController performFetch:&error]) {
         NSLog(@"%@", error.description);
         return;
     }
     
-    if (_fetchedResultsController.fetchedObjects.count > 0) {
-        [_activityIndicatorView stopAnimating];
+    if (_fetchedResultsController.fetchedObjects.count == 0) {
+        [_activityIndicatorView startAnimating];
     }
-    
-    [_collectionView reloadData];
     
     [self loadDataWithStartIndex:0];
 }
@@ -213,11 +212,37 @@
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        [alertView show];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+        });
+    }
+    
     [self loadDataWithStartIndex:0];
+    
+    [self moveImageCacheFromDiskToMemoryAtVisibleCells];
+}
+
+- (void)moveImageCacheFromDiskToMemoryAtVisibleCells {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        for (PWAlbumViewCell *cell in _collectionView.visibleCells) {
+            NSString *thumbnailUrl = cell.album.tag_thumbnail_url;
+            [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:thumbnailUrl];
+        }
+    });
 }
 
 #pragma mark LoadData
 - (void)loadDataWithStartIndex:(NSUInteger)index {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [_refreshControl endRefreshing];
+        });
+        return;
+    };
+    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
@@ -261,5 +286,11 @@
     }];
 }
 
+#pragma mark NSFetchedResultsControllerDelegate
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+    });
+}
 
 @end

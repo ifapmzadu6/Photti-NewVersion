@@ -103,17 +103,13 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
     _fetchedResultsController.delegate = self;
     NSError *error = nil;
-    [_fetchedResultsController performFetch:&error];
-    if (error) {
+    if (![_fetchedResultsController performFetch:&error]) {
         NSLog(@"%@", error.description);
         return;
     }
     
     if (_fetchedResultsController.fetchedObjects.count == 0) {
         [_activityIndicatorView startAnimating];
-    }
-    if (_collectionView.indexPathsForVisibleItems.count == 0) {
-        [_collectionView reloadData];
     }
     
     [self loadDataWithStartIndex:0];
@@ -213,7 +209,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         [footerView setText:albumCountString];
     }
     else {
-        [footerView setText:NSLocalizedString(@"No Album", nil)];
+        [footerView setText:nil];
     }
     
     return footerView;
@@ -324,7 +320,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 #pragma mark LoadData
 - (void)loadDataWithStartIndex:(NSUInteger)index {
     if (![Reachability reachabilityForInternetConnection].isReachable) {
-        [_refreshControl endRefreshing];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [_refreshControl endRefreshing];
+        });
         return;
     };
     

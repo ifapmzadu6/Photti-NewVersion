@@ -17,6 +17,8 @@
 #import "PWAlbumPickerController.h"
 #import "PWNavigationController.h"
 #import "PWNewAlbumEditViewController.h"
+#import "Reachability.h"
+#import "SDImageCache.h"
 
 @interface PWAlbumPickerWebAlbumListViewController ()
 
@@ -75,23 +77,21 @@
     [self.view addSubview:_activityIndicatorView];
     
     [_refreshControl beginRefreshing];
-    [_activityIndicatorView startAnimating];
     
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-    self.fetchedResultsController.delegate = self;
+    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+    _fetchedResultsController.delegate = self;
     NSError *error = nil;
-    [self.fetchedResultsController performFetch:&error];
-    if (error) {
+    if (![_fetchedResultsController performFetch:&error]) {
         NSLog(@"%@", error.description);
         return;
     }
     
-    if (self.fetchedResultsController.fetchedObjects.count > 0) {
-        [self.activityIndicatorView stopAnimating];
+    if (_fetchedResultsController.fetchedObjects.count == 0) {
+        [_activityIndicatorView startAnimating];
     }
     
     [self loadDataWithStartIndex:0];
@@ -191,7 +191,7 @@
         [footerView setText:albumCountString];
     }
     else {
-        [footerView setText:NSLocalizedString(@"No Album", nil)];
+        [footerView setText:nil];
     }
     
     return footerView;
@@ -241,11 +241,37 @@
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        [alertView show];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+        });
+    }
+    
     [self loadDataWithStartIndex:0];
+    
+    [self moveImageCacheFromDiskToMemoryAtVisibleCells];
+}
+
+- (void)moveImageCacheFromDiskToMemoryAtVisibleCells {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        for (PWAlbumViewCell *cell in _collectionView.visibleCells) {
+            NSString *thumbnailUrl = cell.album.tag_thumbnail_url;
+            [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:thumbnailUrl];
+        }
+    });
 }
 
 #pragma mark LoadData
 - (void)loadDataWithStartIndex:(NSUInteger)index {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [_refreshControl endRefreshing];
+        });
+        return;
+    };
+    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;

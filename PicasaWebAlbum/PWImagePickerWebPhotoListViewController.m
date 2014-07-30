@@ -14,6 +14,8 @@
 #import "PWString.h"
 #import "PWRefreshControl.h"
 #import "BlocksKit+UIKit.h"
+#import "Reachability.h"
+#import "SDImageCache.h"
 
 #import "PWPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
@@ -209,7 +211,26 @@
 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
-    [self reloadData];
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        [alertView show];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+        });
+    }
+    
+    [self loadDataWithStartIndex:0];
+    
+    [self moveImageCacheFromDiskToMemoryAtVisibleCells];
+}
+
+- (void)moveImageCacheFromDiskToMemoryAtVisibleCells {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
+            NSString *thumbnailUrl = cell.photo.tag_thumbnail_url;
+            [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:thumbnailUrl];
+        }
+    });
 }
 
 #pragma mark UICollectionViewDataSource
@@ -245,7 +266,7 @@
         [footerView setText:albumCountString];
     }
     else {
-        [footerView setText:NSLocalizedString(@"No Photo", nil)];
+        [footerView setText:nil];
     }
     
     return footerView;
@@ -314,6 +335,13 @@
 
 #pragma mark LoadData
 - (void)loadDataWithStartIndex:(NSUInteger)index {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [_refreshControl endRefreshing];
+        });
+        return;
+    };
+    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:index completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;

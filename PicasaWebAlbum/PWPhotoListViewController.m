@@ -195,10 +195,6 @@
 }
 
 #pragma mark UIBarButtonAction
-- (void)pinBarButtonAction {
-    
-}
-
 - (void)actionBarButtonAction:(id)sender {
     [self showAlbumActionSheet:_album sender:sender];
 }
@@ -499,7 +495,7 @@
         [footerView setText:albumCountString];
     }
     else {
-        [footerView setText:NSLocalizedString(@"No Photo", nil)];
+        [footerView setText:nil];
     }
     
     return footerView;
@@ -666,7 +662,9 @@
 #pragma mark LoadData
 - (void)loadDataWithStartIndex:(NSUInteger)index {
     if (![Reachability reachabilityForInternetConnection].isReachable) {
-        [_refreshControl endRefreshing];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [_refreshControl endRefreshing];
+        });
         return;
     };
     
