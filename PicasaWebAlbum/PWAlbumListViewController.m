@@ -329,7 +329,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     };
     
     __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSArray *albums, NSUInteger nextIndex, NSError *error) {
+    [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -417,7 +417,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
         [alertView show];
-        [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:album.id_str index:0 completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
+        [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:album.id_str index:0 completion:^(NSUInteger nextIndex, NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [alertView dismissWithClickedButtonIndex:0 animated:YES];
             });

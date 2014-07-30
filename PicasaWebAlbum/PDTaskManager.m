@@ -20,6 +20,7 @@
 #import "PWModelObject.h"
 #import "PWCoreDataAPI.h"
 #import "PWSnowFlake.h"
+#import "NSURLResponse+methods.h"
 
 static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
@@ -234,10 +235,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     NSLog(@"%s", __func__);
     
-    NSURLResponse *response = task.response;
-    NSUInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
-    NSLog(@"Status Code = %lu", (unsigned long)statusCode);
-    if (error || (statusCode < 200 && statusCode >= 300)) {
+    if (error || !task.response.isSuccess) {
         NSLog(@"%@", error.description);
         return;
     }

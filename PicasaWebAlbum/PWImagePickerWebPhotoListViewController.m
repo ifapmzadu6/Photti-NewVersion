@@ -315,7 +315,7 @@
 #pragma mark LoadData
 - (void)loadDataWithStartIndex:(NSUInteger)index {
     __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:index completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
+    [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:index completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -337,7 +337,7 @@
 
 - (void)reloadData {    
     __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:0 completion:^(NSArray *photos, NSUInteger nextIndex, NSError *error) {
+    [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:0 completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
         if (!sself) return;
         

@@ -23,6 +23,7 @@
 #import "XmlReader.h"
 #import "PWPicasaPOSTRequest.h"
 #import "ALAsset+methods.h"
+#import "NSURLResponse+methods.h"
 
 @implementation PDLocalPhotoObject (methods)
 
@@ -165,8 +166,7 @@
 }
 
 - (void)finishMakeNewAlbumSessionWithResponse:(NSURLResponse *)response data:(NSData *)data {
-    NSUInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
-    if (statusCode != 201) {
+    if (!response.isSuccess) {
         NSLog(@"%@", response.description);
         return;
     }

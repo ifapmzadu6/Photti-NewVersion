@@ -247,7 +247,7 @@
 #pragma mark LoadData
 - (void)loadDataWithStartIndex:(NSUInteger)index {
     __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSArray *albums, NSUInteger nextIndex, NSError *error) {
+    [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
         if (!sself) return;
         

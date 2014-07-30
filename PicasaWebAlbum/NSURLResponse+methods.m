@@ -1,30 +1,33 @@
 //
-//  NSURLSessionTask+methods.m
+//  NSURLResponse+methods.m
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/07/30.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "NSURLSessionTask+methods.h"
+#import "NSURLResponse+methods.h"
 
-static NSString * const kNSURLSessionTaskHTTPHeaderContentTypeName = @"Content-Type";
+@implementation NSURLResponse (methods)
 
-@implementation NSURLSessionTask (methods)
+- (NSUInteger)statusCode {
+    return ((NSHTTPURLResponse *)self).statusCode;
+}
+
+- (NSString *)localizedStringForStatusCode {
+    return [NSHTTPURLResponse localizedStringForStatusCode:self.statusCode];
+}
 
 - (BOOL)isSuccess {
-    if (self.error) {
-        NSLog(@"%s%@", __func__, self.error);
+    if (![self isStasusCode2xxSuccess]) {
         return NO;
     }
-    
     
     return YES;
 }
 
 - (BOOL)isStasusCode2xxSuccess {
-    NSURLResponse *response = self.response;
-    NSUInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
+    NSUInteger statusCode = ((NSHTTPURLResponse *)self).statusCode;
     NSIndexSet *statusCode1xxInformational = [NSIndexSet indexSetWithIndexesInRange:kNSURLSessionTaskStatusCode1xx];
     NSIndexSet *statusCode2xxSuccess = [NSIndexSet indexSetWithIndexesInRange:kNSURLSessionTaskStatusCode2xx];
     NSIndexSet *statusCode3xxRedirectin = [NSIndexSet indexSetWithIndexesInRange:kNSURLSessionTaskStatusCode3xx];
@@ -51,16 +54,5 @@ static NSString * const kNSURLSessionTaskHTTPHeaderContentTypeName = @"Content-T
     
     return YES;
 }
-
-//- (BOOL)isResponseHeadersMatchRequestHeaders {
-//    NSDictionary *requestHeaders = self.originalRequest.allHTTPHeaderFields;
-//    NSDictionary *responseHeaders = [(NSHTTPURLResponse *)self.response allHeaderFields];
-//    
-//    
-//}
-//
-//- (BOOL)isContentTypeMatch:(NSDictionary *)headers {
-//    
-//}
 
 @end
