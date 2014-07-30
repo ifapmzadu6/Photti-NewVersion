@@ -44,6 +44,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     [[[NSURLSession sharedSession] configuration] setURLCache:nil];
 //    [[NSURLSession sharedSession] configuration].URLCache.memoryCapacity = 0;
     
+    [[PDTaskManager sharedManager] cancel];
     [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:@""] completion:^(NSMutableURLRequest *request, NSError *error) {
         [[PDTaskManager sharedManager] start];
     }];

@@ -204,13 +204,20 @@
 }
 
 - (void)addBarButtonAction {
+    __weak typeof(self) wself = self;
     PWImagePickerController *viewController = [[PWImagePickerController alloc] initWithAlbumTitle:_album.title completion:^(NSArray *selectedPhotos) {
-        if (selectedPhotos.count == 0) {
-            return;
-        }
+        typeof(wself) sself = wself;
+        if (!sself) return;
         
-        // TODO: 必ずやること
-//        [PDTaskManager sharedManager] add
+        [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:sself.album completion:^(NSError *error) {
+            if (error) {
+                NSLog(@"%@", error.description);
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+            });
+        }];
     }];
     [self presentViewController:viewController animated:YES completion:nil];
 }
@@ -468,7 +475,11 @@
     PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
     cell.isSelectWithCheckMark = _isSelectMode;
-    [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];;
+    [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
+    
+    if (indexPath.row > _requestIndex - 100) {
+        
+    }
     
     return cell;
 }
@@ -667,7 +678,7 @@
         if (error) {
             NSLog(@"%@", error);
             if (error.code == 401) {
-                [sself openLoginviewController];
+                [sself openLoginViewController];
             }
         }
         else {
@@ -684,7 +695,7 @@
     }];
 }
 
-- (void)openLoginviewController {
+- (void)openLoginViewController {
     __weak typeof(self) wself = self;
     [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
         dispatch_async(dispatch_get_main_queue(), ^{

@@ -18,9 +18,11 @@
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 
+static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWebPhotoObjectMethods";
+
 @implementation PDWebPhotoObject (methods)
 
-- (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session {
+- (void)makeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
     __block PWPhotoObject *photoObject = nil;
     [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
@@ -33,22 +35,26 @@
             photoObject = photos.firstObject;
         }
     }];
-    
-    __block NSMutableURLRequest *request = nil;
-    NSURL *url = [NSURL URLWithString:photoObject.tag_originalimage_url];
-    [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *authorizedRequest, NSError *error) {
-        request = authorizedRequest;
-    }];
-    
-    if (request) {
-        return [session downloadTaskWithRequest:request];
+    if (!photoObject) {
+        completion ? completion(nil, [NSError errorWithDomain:kPDWebPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
     }
-    return nil;
+    
+    NSURL *url = [NSURL URLWithString:photoObject.tag_originalimage_url];
+    [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
+        NSURLSessionTask *sessionTask = [session downloadTaskWithRequest:request];
+        
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            self.session_task_identifier = @(sessionTask.taskIdentifier);
+        }];
+        
+        completion ? completion(sessionTask, nil) : 0;
+    }];
 };
 
 - (void)finishDownloadWithData:(NSData *)data completion:(void (^)(NSError *))completion {
     PDTaskObject *taskObject = self.task;
-    NSString *album_id_str = taskObject.to_album_id_str;
+    NSString *album_id_str = taskObject.from_album_id_str;
     NSManagedObjectID *taskObjectID = taskObject.objectID;
     NSManagedObjectID *objectID = self.objectID;
     

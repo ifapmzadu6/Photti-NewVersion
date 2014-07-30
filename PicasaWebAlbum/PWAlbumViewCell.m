@@ -17,6 +17,7 @@
 #import "PWIcons.h"
 #import "UIButton+HitEdgeInsets.h"
 #import "Reachability.h"
+#import "NSURLResponse+methods.h"
 
 @interface PWAlbumViewCell ()
 
@@ -140,20 +141,25 @@
 - (void)setAlbum:(PWAlbumObject *)album {
     _album = album;
     
-    _titleLabel.text = nil;
-    _numPhotosLabel.text = nil;
     _imageView.image = nil;
     
-    if (!album) return;
+    if (!album) {
+        _albumHash = 0;
+        
+        _titleLabel.text = nil;
+        _numPhotosLabel.text = nil;
+        
+        return;
+    };
     
     NSUInteger hash = album.hash;
     _albumHash = hash;
     
     _titleLabel.text = album.title;
     [self setTitleLabelFrame];
-    _numPhotosLabel.text = album.tag_numphotos;
+    _numPhotosLabel.text = album.gphoto.numphotos;
     
-    if (_album.tag_numphotos.integerValue > 0) {
+    if (_album.gphoto.numphotos.integerValue > 0) {
         NSString *urlString = album.tag_thumbnail_url;
         if (!urlString) return;
         
@@ -200,6 +206,7 @@
                 NSLog(@"%@", error.description);
                 return;
             }
+            
             typeof(wself) sself = wself;
             if (!sself) return;
             if (sself.albumHash != hash) return;
@@ -210,6 +217,10 @@
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (error) {
+                    [sself loadThumbnailImage:urlString hash:hash];
+                    return;
+                }
+                if (!response.isSuccess) {
                     [sself loadThumbnailImage:urlString hash:hash];
                     return;
                 }

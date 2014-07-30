@@ -65,7 +65,7 @@
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:14.5f];
     _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
-    _titleLabel.numberOfLines = 1;
+    _titleLabel.numberOfLines = 2;
     [self.contentView addSubview:_titleLabel];
     
     _numPhotosLabel = [UILabel new];
@@ -84,7 +84,6 @@
     
     _autoUploadLabel = [UILabel new];
     _autoUploadLabel.font = [UIFont systemFontOfSize:11.0f];
-//    _autoUploadLabel.backgroundColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.8f];
     _autoUploadLabel.textColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.8f];
     _autoUploadLabel.text = @"AUTO";
     [self.contentView addSubview:_autoUploadLabel];
@@ -137,10 +136,10 @@
     
     _actionButton.frame = CGRectMake(CGRectGetMaxX(rect) - 20.0f, CGRectGetMaxY(_imageView.frame) + 5.0f, 20.0f, 30.0f);
     
-    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 3.0f, rect.size.width - 20.0f - 8.0f, 15.0f);
+    CGSize titleLabelSize = [_titleLabel sizeThatFits:CGSizeMake(rect.size.width - 20.0f - 8.0f, CGFLOAT_MAX)];
+    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 3.0f, rect.size.width - 20.0f - 8.0f, titleLabelSize.height);
     
     _autoUploadIcon.frame = CGRectMake(7.0f, CGRectGetMaxY(_imageView.frame) + 21.5f, 15.0f, 15.0f);
-    
     CGSize autoUploadLabelSize = [_autoUploadLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
     _autoUploadLabel.frame = CGRectMake(24.0f, CGRectGetMaxY(_imageView.frame) + 22.0f, autoUploadLabelSize.width + 1.0f, autoUploadLabelSize.height);
     
@@ -150,13 +149,15 @@
 - (void)setAlbum:(PLAlbumObject *)album {
     _album = album;
     
-    _titleLabel.text = nil;
-    _numPhotosLabel.text = nil;
     _imageView.image = nil;
-    [_activityIndicatorView startAnimating];
     
     if (!album) {
         _albumHash = 0;
+        
+        _titleLabel.text = nil;
+        _numPhotosLabel.text = nil;
+        [_activityIndicatorView startAnimating];
+        
         return;
     }
     
@@ -165,6 +166,18 @@
     
     _titleLabel.text = album.name;
     _numPhotosLabel.text = [NSString stringWithFormat:@"%ld", (long)album.photos.count];
+    if ([album.tag_uploading_type isEqualToNumber:@(PLAlbumObjectTagUploadingTypeYES)]) {
+        _autoUploadIcon.hidden = NO;
+        _autoUploadLabel.hidden = NO;
+        _titleLabel.numberOfLines = 1;
+    }
+    else {
+        _autoUploadIcon.hidden = YES;
+        _autoUploadLabel.hidden = YES;
+        _titleLabel.numberOfLines = 2;
+    }
+    
+    [self setNeedsLayout];
     
     __weak typeof(self) wself = self;
     if (album.photos.count > 0) {

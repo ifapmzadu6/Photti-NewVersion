@@ -43,8 +43,6 @@
     self.bouncesZoom = YES;
     self.decelerationRate = UIScrollViewDecelerationRateFast;
     self.delegate = self;
-    self.autoresizesSubviews = YES;
-    self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.exclusiveTouch = YES;
     self.zoomScale = 1.0f;
     

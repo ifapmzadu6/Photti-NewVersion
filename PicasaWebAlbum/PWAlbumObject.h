@@ -28,7 +28,6 @@
 @property (nonatomic, retain) NSString * type;
 @property (nonatomic, retain) NSString * updated;
 @property (nonatomic, retain) NSString * userid;
-@property (nonatomic, retain) NSString * tag_numphotos;
 @property (nonatomic, retain) NSString * tag_thumbnail_url;
 @property (nonatomic, retain) NSDate * tag_updated;
 @property (nonatomic, retain) PWGPhotoObject *gphoto;

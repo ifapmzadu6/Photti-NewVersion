@@ -11,8 +11,6 @@
 @interface PDLocalPhotoObject (methods)
 
 - (void)setUploadTaskToWebAlbumID:(NSString *)webAlbumID completion:(void(^)(NSError *error))completion;
-- (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session;
-- (NSURLSessionTask *)makeNewAlbumSessionTaskWithSession:(NSURLSession *)session;
 - (void)finishMakeNewAlbumSessionWithResponse:(NSURLResponse *)response data:(NSData *)data;
 
 @end

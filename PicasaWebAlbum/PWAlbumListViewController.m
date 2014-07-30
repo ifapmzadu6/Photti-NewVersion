@@ -336,7 +336,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         if (error) {
             NSLog(@"%@", error);
             if (error.code == 401) {
-                [sself openLoginviewController];
+                [sself openLoginViewController];
             }
         }
         else {
@@ -350,7 +350,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     }];
 }
 
-- (void)openLoginviewController {
+- (void)openLoginViewController {
     __weak typeof(self) wself = self;
     [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
         dispatch_async(dispatch_get_main_queue(), ^{

@@ -10,8 +10,7 @@
 
 @implementation PDBasePhotoObject (methods)
 
-- (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session {
-    return nil;
+- (void)makeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
 }
 
 @end

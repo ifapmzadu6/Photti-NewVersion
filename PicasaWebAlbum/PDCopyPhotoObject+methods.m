@@ -18,73 +18,95 @@
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 
+static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCopyPhotoObjectMethods";
 
 @implementation PDCopyPhotoObject (methods)
 
-- (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session {
-    NSURLSessionTask *task = nil;
+- (void)makeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
     if (self.downloaded_data_location) {
-        task = [self makeUploadSessionTaskWithSession:session];
+        [self makeUploadSessionTaskWithSession:session completion:^(NSURLSessionTask *task, NSError *error) {
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                self.session_task_identifier = @(task.taskIdentifier);
+            }];
+            
+            completion ? completion(task, error) : 0;
+        }];
     }
     else {
-        task = [self makeDownloadSessionTaskWithSession:session];
+        [self makeDownloadSessionTaskWithSession:session completion:^(NSURLSessionTask *task, NSError *error) {
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                self.session_task_identifier = @(task.taskIdentifier);
+            }];
+            
+            completion ? completion(task, error) : 0;
+        }];
     }
-    
-    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-        self.session_task_identifier = @(task.taskIdentifier);
-    }];
-    
-    return task;
 }
 
-- (NSURLSessionTask *)makeDownloadSessionTaskWithSession:(NSURLSession *)session {
+- (void)makeDownloadSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
     PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
-    if (!photoObject) return nil;
+    if (!photoObject) {
+        completion ? completion(nil, [NSError errorWithDomain:kPDCopyPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
+    };
     
-    __block NSMutableURLRequest *request = nil;
     NSURL *url = [NSURL URLWithString:photoObject.tag_originalimage_url];
-    [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *authorizedRequest, NSError *error) {
-        request = authorizedRequest;
+    [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
+        if (error) {
+            completion ? completion(nil, error) : 0;
+            return;
+        }
+        
+        NSURLSessionTask *task = [session downloadTaskWithRequest:request];
+        
+        completion ? completion(task, nil) : 0;
     }];
-    if (!request) return nil;
     
-    NSURLSessionTask *task = [session downloadTaskWithRequest:request];
-    
-    return task;
 };
 
-- (NSURLSessionTask *)makeUploadSessionTaskWithSession:(NSURLSession *)session {
+- (void)makeUploadSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
     PDTaskObject *taskObject = self.task;
     NSString *webAlbumID = taskObject.to_album_id_str;
-    if (!webAlbumID) return nil;
+    if (!webAlbumID) {
+        completion ? completion(nil, [NSError errorWithDomain:kPDCopyPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
+    };
     
     PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
-    if (!photoObject) return nil;
+    if (!photoObject) {
+        completion ? completion(nil, [NSError errorWithDomain:kPDCopyPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
+    };
     
-    __block NSMutableURLRequest *request = nil;
     NSString *requestUrlString = [NSString stringWithFormat:@"https://picasaweb.google.com/data/feed/api/user/default/albumid/%@", webAlbumID];
-    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:requestUrlString] completion:^(NSMutableURLRequest *authorizedRequest, NSError *error) {
-        request = authorizedRequest;
+    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:requestUrlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+        if (error) {
+            completion ? completion(nil, error) : 0;
+            return;
+        }
+        
+        request.HTTPMethod = @"POST";
+        NSString *filePath = self.downloaded_data_location;
+        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+        if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+            [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
+        }
+        else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+            [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
+            [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
+        }
+        [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)fileAttributes[NSFileSize]] forHTTPHeaderField:@"Content-Length"];
+        NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
+        NSURLSessionTask *sessionTask = nil;
+        if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+            sessionTask = [session uploadTaskWithRequest:request fromFile:filePathURL];
+            
+            completion ? completion(sessionTask, nil) : 0;
+        }
+        else {
+            completion ? completion(nil, [NSError errorWithDomain:kPDCopyPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        }
     }];
-    if (!request) return nil;
-    request.HTTPMethod = @"POST";
-    NSString *filePath = self.downloaded_data_location;
-    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-    if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
-        [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
-    }
-    else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-        [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
-        [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
-    }
-    [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)fileAttributes[NSFileSize]] forHTTPHeaderField:@"Content-Length"];
-    NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
-    NSURLSessionTask *sessionTask = nil;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-        sessionTask = [session uploadTaskWithRequest:request fromFile:filePathURL];
-    }
-    
-    return sessionTask;
 }
 
 - (void)finishDownloadWithLocation:(NSURL *)location {

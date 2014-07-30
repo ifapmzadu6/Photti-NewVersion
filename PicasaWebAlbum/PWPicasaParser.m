@@ -138,9 +138,6 @@ static NSString * const PWXMLNode = @"text";
     album.gphoto = [PWPicasaParser gphotoFromJson:json context:context];
     album.media = [PWPicasaParser mediaFromJson:NtN(json[@"media:group"]) context:context];
     
-    if (album.gphoto) {
-        album.tag_numphotos = album.gphoto.numphotos;
-    }
     if (album.media) {
         PWPhotoMediaThumbnailObject *thumbnail = album.media.thumbnail.firstObject;
         album.tag_thumbnail_url = thumbnail.url;

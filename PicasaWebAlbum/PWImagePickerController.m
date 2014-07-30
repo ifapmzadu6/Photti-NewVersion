@@ -143,14 +143,16 @@
 
 #pragma mark UIBarButtonAction
 - (void)doneBarButtonAction {
-    NSMutableArray *photos = @[].mutableCopy;
-    for (NSString *id_str in _selectedPhotoIDs) {
-        id photo = [self getPhotoByID:id_str];
-        [photos addObject:photo];
-    }
-    
-    if (_completion) {
-        _completion(photos);
+    if (_selectedPhotoIDs.count > 0) {
+        NSMutableArray *photos = @[].mutableCopy;
+        for (NSString *id_str in _selectedPhotoIDs) {
+            id photo = [self getPhotoByID:id_str];
+            [photos addObject:photo];
+        }
+        
+        if (_completion) {
+            _completion(photos);
+        }
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];

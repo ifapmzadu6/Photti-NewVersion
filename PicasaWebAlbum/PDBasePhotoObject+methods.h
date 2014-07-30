@@ -10,6 +10,6 @@
 
 @interface PDBasePhotoObject (methods)
 
-- (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session;
+- (void)makeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *task, NSError *error))completion;
 
 @end

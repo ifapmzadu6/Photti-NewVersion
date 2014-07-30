@@ -322,7 +322,7 @@
         if (error) {
             NSLog(@"%@", error);
             if (error.code == 401) {
-                [sself openLoginviewController];
+                [sself openLoginViewController];
             }
         }
         else {
@@ -344,7 +344,7 @@
         if (error) {
             NSLog(@"%@", error);
             if (error.code == 401) {
-                [sself openLoginviewController];
+                [sself openLoginViewController];
             }
             return;
         }
@@ -391,7 +391,7 @@
     }];
 }
 
-- (void)openLoginviewController {
+- (void)openLoginViewController {
     __weak typeof(self) wself = self;
     [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
         dispatch_async(dispatch_get_main_queue(), ^{

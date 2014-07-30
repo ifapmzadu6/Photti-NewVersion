@@ -25,6 +25,8 @@
 #import "ALAsset+methods.h"
 #import "NSURLResponse+methods.h"
 
+static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDLocalPhotoObjectMethods";
+
 @implementation PDLocalPhotoObject (methods)
 
 - (void)setUploadTaskToWebAlbumID:(NSString *)webAlbumID completion:(void(^)(NSError *error))completion {
@@ -104,65 +106,90 @@
     }];
 }
 
-- (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session {
+- (void)makeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
     PDTaskObject *taskObject = self.task;
     NSString *webAlbumID = taskObject.to_album_id_str;
     if (!webAlbumID) {
-        return [self makeNewAlbumSessionTaskWithSession:session];
+        [self makeNewAlbumSessionTaskWithSession:session completion:completion];
+        return;
     };
     
     NSString *requestUrlString = [NSString stringWithFormat:@"https://picasaweb.google.com/data/feed/api/user/default/albumid/%@", webAlbumID];
     
     PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
-    if (!photoObject) return nil;
+    if (!photoObject) {
+        completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
+    };
     
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:requestUrlString]];
-    [PWOAuthManager getAuthorizeHTTPHeaderFields:^(NSDictionary *headerFields, NSError *error) {
-        request.allHTTPHeaderFields = headerFields;
+    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:requestUrlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+        if (error) {
+            completion ? completion(nil, error) : 0;
+            return;
+        }
+        
+        request.HTTPMethod = @"POST";
+        NSString *filePath = self.prepared_body_filepath;
+        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+        if ([photoObject.type isEqualToString:ALAssetTypePhoto]) {
+            [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
+        }
+        else if ([photoObject.type isEqualToString:ALAssetTypeVideo]) {
+            [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
+            [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
+        }
+        [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)fileAttributes[NSFileSize]] forHTTPHeaderField:@"Content-Length"];
+        NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
+        
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            self.session_task_identifier = @(sessionTask.taskIdentifier);
+        }];
+        
+        completion ? completion(sessionTask, nil) : 0;
     }];
-    request.HTTPMethod = @"POST";
-    NSString *filePath = self.prepared_body_filepath;
-    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-    if ([photoObject.type isEqualToString:ALAssetTypePhoto]) {
-        [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
-    }
-    else if ([photoObject.type isEqualToString:ALAssetTypeVideo]) {
-        [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
-        [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
-    }
-    [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)fileAttributes[NSFileSize]] forHTTPHeaderField:@"Content-Length"];
-    NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
-    
-    return sessionTask;
 }
 
-- (NSURLSessionTask *)makeNewAlbumSessionTaskWithSession:(NSURLSession *)session {
+- (void)makeNewAlbumSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
     __block NSString *from_album_id_str = nil;
     [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         from_album_id_str = self.task.from_album_id_str;
     }];
+    if (!from_album_id_str) {
+        completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+    }
     
     PLAlbumObject *albumObject = [self getAlbumObjectWithID:from_album_id_str];
-    if (!albumObject) return nil;
+    if (!albumObject) {
+        completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
+    };
     
     NSString *postURL = @"https://picasaweb.google.com/data/feed/api/user/default";
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:postURL]];
-    request.HTTPMethod = @"POST";
-    [PWOAuthManager getAuthorizeHTTPHeaderFields:^(NSDictionary *headerFields, NSError *error) {
-        request.allHTTPHeaderFields = headerFields;
+    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:postURL] completion:^(NSMutableURLRequest *request, NSError *error) {
+        if (error) {
+            completion ? completion(nil, error) : 0;
+            return;
+        }
+        
+        NSString *body = [PWPicasaPOSTRequest makeBodyWithGPhotoID:nil Title:albumObject.name summary:nil location:nil access:nil timestamp:albumObject.timestamp.stringValue keywords:nil];
+        NSData *bodyData = [body dataUsingEncoding:NSUTF8StringEncoding];
+        NSString *filePath = [[self class] makeUniquePathInTmpDir];
+        if (![bodyData writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
+            completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+            return;
+        }
+        
+        request.HTTPMethod = @"POST";
+        [request addValue:@"application/atom+xml" forHTTPHeaderField:@"Content-Type"];
+        [request addValue:[NSString stringWithFormat:@"%ld", (long)bodyData.length] forHTTPHeaderField:@"Content-Length"];
+        NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
+        
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            self.session_task_identifier = @(sessionTask.taskIdentifier);
+        }];
+        
+        completion ? completion(sessionTask, nil) : 0;
     }];
-    NSString *body = [PWPicasaPOSTRequest makeBodyWithGPhotoID:nil Title:albumObject.name summary:nil location:nil access:nil timestamp:albumObject.timestamp.stringValue keywords:nil];
-    NSData *bodyData = [body dataUsingEncoding:NSUTF8StringEncoding];
-    NSString *filePath = [[self class] makeUniquePathInTmpDir];
-    NSError *error = nil;
-    if (![bodyData writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
-        return nil;
-    }
-    [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
-    [request addValue:@"application/atom+xml" forHTTPHeaderField:@"Content-Type"];
-    [request addValue:[NSString stringWithFormat:@"%ld", (long)bodyData.length] forHTTPHeaderField:@"Content-Length"];
-    NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
-    return sessionTask;
 }
 
 - (void)finishMakeNewAlbumSessionWithResponse:(NSURLResponse *)response data:(NSData *)data {

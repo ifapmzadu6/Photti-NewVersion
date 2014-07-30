@@ -18,7 +18,7 @@
 
 - (void)loadView {
     _webView = [[UIWebView alloc] init];
-    _webView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    _webView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _webView.scalesPageToFit = true;
     _webView.exclusiveTouch = YES;
     self.view = _webView;
