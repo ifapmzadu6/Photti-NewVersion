@@ -27,13 +27,14 @@
 #import "PWImagePickerController.h"
 
 
-@interface PWImagePickerWebPhotoListViewController ()
+@interface PWImagePickerWebPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) PWAlbumObject *album;
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (nonatomic) NSUInteger requestIndex;
 
@@ -87,20 +88,14 @@
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
     [_refreshControl beginRefreshing];
-    [_activityIndicatorView startAnimating];
     
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
     request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-    
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-    NSError *error = nil;
-    [_fetchedResultsController performFetch:&error];
-    if (error) {
-        NSLog(@"%@", error.description);
-    }
+    _fetchedResultsController.delegate = self;
     
     if (_fetchedResultsController.fetchedObjects.count > 0) {
         [_activityIndicatorView stopAnimating];
@@ -110,7 +105,7 @@
         PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
         for (NSString *id_str in tabBarController.selectedPhotoIDs) {
             NSArray *filteredPhotos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
-            if (filteredPhotos.count) {
+            if (filteredPhotos.count > 0) {
                 PWPhotoObject *photo = filteredPhotos.firstObject;
                 NSIndexPath *indexPath = [_fetchedResultsController indexPathForObject:photo];
                 [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
@@ -126,10 +121,14 @@
         self.navigationItem.rightBarButtonItem.enabled = YES;
     }
     else {
+        [_activityIndicatorView startAnimating];
+        
         self.navigationItem.rightBarButtonItem.enabled = NO;
     }
     
-    [self reloadData];
+    [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
+    
+    [self loadDataWithStartIndex:0];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -141,16 +140,13 @@
     
     CGRect rect = self.view.bounds;
     
-    _collectionView.frame = rect;
-    
-    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
-        return obj1.row > obj2.row;
-    }];
+    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
     NSIndexPath *indexPath = nil;
-    if (indexPaths.count) {
+    if (indexPaths.count > 0) {
         indexPath = indexPaths[indexPaths.count / 2];
     }
     
+    _collectionView.frame = rect;
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
     
@@ -159,6 +155,8 @@
     }
     
     _activityIndicatorView.center = self.view.center;
+    
+    [self layoutNoItem];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -343,28 +341,6 @@
     };
     
     __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:index completion:^(NSUInteger nextIndex, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        if (error) {
-            NSLog(@"%@", error);
-            if (error.code == 401) {
-                [sself openLoginViewController];
-            }
-        }
-        else {
-            sself.requestIndex = nextIndex;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.collectionView reloadData];
-        });
-    }];
-}
-
-- (void)reloadData {    
-    __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:0 completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
         if (!sself) return;
@@ -376,12 +352,8 @@
             }
             return;
         }
-        
-        sself.requestIndex = nextIndex;
-        NSError *coredataError = nil;
-        [sself.fetchedResultsController performFetch:&coredataError];
-        if (coredataError) {
-            NSLog(@"%@", coredataError.description);
+        else {
+            sself.requestIndex = nextIndex;
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -390,31 +362,6 @@
             
             [sself.refreshControl endRefreshing];
             [sself.activityIndicatorView stopAnimating];
-            
-            [sself.collectionView reloadData];
-            
-            if (sself.fetchedResultsController.fetchedObjects.count) {
-                PWImagePickerController *tabBarController = (PWImagePickerController *)sself.tabBarController;
-                for (NSString *id_str in tabBarController.selectedPhotoIDs) {
-                    NSArray *filteredPhotos = [sself.fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
-                    if (filteredPhotos.count) {
-                        PWPhotoObject *photo = filteredPhotos.firstObject;
-                        NSIndexPath *indexPath = [sself.fetchedResultsController indexPathForObject:photo];
-                        [sself.collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
-                    }
-                }
-                
-                if (sself.fetchedResultsController.fetchedObjects.count == sself.collectionView.indexPathsForSelectedItems.count) {
-                    [sself setRightNavigationItemDeselectButton];
-                }
-                else {
-                    [sself setRightNavigationItemSelectButton];
-                }
-                sself.navigationItem.rightBarButtonItem.enabled = YES;
-            }
-            else {
-                sself.navigationItem.rightBarButtonItem.enabled = NO;
-            }
         });
     }];
 }
@@ -435,10 +382,78 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            [sself reloadData];
+            [sself loadDataWithStartIndex:0];
         });
     }];
 }
 
+#pragma mark NSFetchedResultsControllerDelegate
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+        
+        PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+        for (NSString *id_str in tabBarController.selectedPhotoIDs) {
+            NSArray *filteredPhotos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+            if (filteredPhotos.count > 0) {
+                PWPhotoObject *photo = filteredPhotos.firstObject;
+                NSIndexPath *indexPath = [_fetchedResultsController indexPathForObject:photo];
+                [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+            }
+        }
+        
+        if (_fetchedResultsController.fetchedObjects.count > 0) {
+            if (_fetchedResultsController.fetchedObjects.count == _collectionView.indexPathsForSelectedItems.count) {
+                [self setRightNavigationItemDeselectButton];
+            }
+            else {
+                [self setRightNavigationItemSelectButton];
+            }
+            self.navigationItem.rightBarButtonItem.enabled = YES;
+        }
+        else {
+            self.navigationItem.rightBarButtonItem.enabled = NO;
+        }
+        
+        [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
+    });
+}
+
+#pragma NoItem
+- (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
+    if (numberOfItem == 0) {
+        [self showNoItem];
+    }
+    else {
+        [self hideNoItem];
+    }
+}
+
+- (void)showNoItem {
+    if (!_noItemImageView) {
+        _noItemImageView = [UIImageView new];
+        _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
+        [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
+    }
+}
+
+- (void)hideNoItem {
+    if (_noItemImageView) {
+        [_noItemImageView removeFromSuperview];
+        _noItemImageView = nil;
+    }
+}
+
+- (void)layoutNoItem {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 240.0f, 240.0f);
+    }
+    else {
+        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 440.0f, 440.0f);
+    }
+    _noItemImageView.center = self.view.center;
+}
 
 @end

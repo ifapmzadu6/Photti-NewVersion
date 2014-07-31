@@ -23,6 +23,7 @@
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
+@property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
@@ -67,8 +68,14 @@
     
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
     _fetchedResultsController.delegate = self;
+    NSError *error = nil;
+    if (![_fetchedResultsController performFetch:&error]) {
+        NSLog(@"%@", error.description);
+        abort();
+        return;
+    }
     
-    [_fetchedResultsController performFetch:nil];
+    [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
     
     [_indicatorView stopAnimating];
 }
@@ -102,16 +109,17 @@
     
     CGRect rect = self.view.bounds;
     
-    _collectionView.frame = rect;
-    
-    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
-        return obj1.row > obj2.row;
-    }];
+    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
     NSIndexPath *indexPath = nil;
-    if (indexPaths.count) {
+    if (indexPaths.count > 0) {
         indexPath = indexPaths[indexPaths.count / 2];
     }
     
+    PWImagePickerController *tabBarViewController = (PWImagePickerController *)self.tabBarController;
+    UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
+    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 10.0f, viewInsets.bottom, 10.0f);
+    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+    _collectionView.frame = rect;
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
     
@@ -119,14 +127,9 @@
         [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
     }
     
-    PWImagePickerController *tabBarViewController = (PWImagePickerController *)self.tabBarController;
-    UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
-    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 10.0f, viewInsets.bottom, 10.0f);
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+    _indicatorView.center = self.view.center;
     
-    if (_indicatorView) {
-        _indicatorView.center = self.view.center;
-    }
+    [self layoutNoItem];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -224,7 +227,46 @@
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {    
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
+        
+        [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
     });
+}
+
+#pragma NoItem
+- (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
+    if (numberOfItem == 0) {
+        [self showNoItem];
+    }
+    else {
+        [self hideNoItem];
+    }
+}
+
+- (void)showNoItem {
+    if (!_noItemImageView) {
+        _noItemImageView = [UIImageView new];
+        _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
+        [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
+    }
+}
+
+- (void)hideNoItem {
+    if (_noItemImageView) {
+        [_noItemImageView removeFromSuperview];
+        _noItemImageView = nil;
+    }
+}
+
+- (void)layoutNoItem {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 240.0f, 240.0f);
+    }
+    else {
+        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 440.0f, 440.0f);
+    }
+    _noItemImageView.center = self.view.center;
 }
 
 @end

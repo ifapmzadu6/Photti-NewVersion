@@ -103,21 +103,10 @@
     
     CGRect rect = self.view.bounds;
     
-    _collectionView.frame = rect;
-    
-    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
-        return obj1.row > obj2.row;
-    }];
+    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
     NSIndexPath *indexPath = nil;
-    if (indexPaths.count) {
+    if (indexPaths.count > 0) {
         indexPath = indexPaths[indexPaths.count / 2];
-    }
-    
-    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
-    [collectionViewLayout invalidateLayout];
-    
-    if (indexPath) {
-        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
     }
     
     PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
@@ -129,6 +118,13 @@
         _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top, 20.0f, viewInsets.bottom, 20.0f);
     }
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+    _collectionView.frame = rect;
+    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
+    [collectionViewLayout invalidateLayout];
+    
+    if (indexPath) {
+        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

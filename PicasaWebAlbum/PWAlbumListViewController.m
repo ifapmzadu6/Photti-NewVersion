@@ -38,6 +38,7 @@
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (nonatomic) NSUInteger requestIndex;
 
@@ -112,7 +113,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         [_activityIndicatorView startAnimating];
     }
     
-    [self loadDataWithStartIndex:0];
+    [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
+    
+    [self loadDataWithStartIndex:0];    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -147,16 +150,13 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     
     CGRect rect = self.view.bounds;
     
-    _collectionView.frame = rect;
-    
-    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
-        return obj1.row > obj2.row;
-    }];
+    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
     NSIndexPath *indexPath = nil;
-    if (indexPaths.count) {
+    if (indexPaths.count > 0) {
         indexPath = indexPaths[indexPaths.count / 2];
     }
     
+    _collectionView.frame = rect;
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
     
@@ -165,6 +165,8 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     }
     
     _activityIndicatorView.center = self.view.center;
+    
+    [self layoutNoItem];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -358,7 +360,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             [sself.refreshControl endRefreshing];
             [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
         });
-        
     } finish:^{
         dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
@@ -373,6 +374,8 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
+        
+        [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
     });
 }
 
@@ -465,6 +468,43 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
     
     [actionSheet showFromTabBar:self.tabBarController.tabBar];
+}
+
+#pragma NoItem
+- (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
+    if (numberOfItem == 0) {
+        [self showNoItem];
+    }
+    else {
+        [self hideNoItem];
+    }
+}
+
+- (void)showNoItem {
+    if (!_noItemImageView) {
+        _noItemImageView = [UIImageView new];
+        _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
+        [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
+    }
+}
+
+- (void)hideNoItem {
+    if (_noItemImageView) {
+        [_noItemImageView removeFromSuperview];
+        _noItemImageView = nil;
+    }
+}
+
+- (void)layoutNoItem {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 240.0f, 240.0f);
+    }
+    else {
+        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 440.0f, 440.0f);
+    }
+    _noItemImageView.center = self.view.center;
 }
 
 @end

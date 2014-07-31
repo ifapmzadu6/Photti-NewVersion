@@ -10,7 +10,7 @@
 
 @class PWAlbumObject;
 
-@interface PWImagePickerWebPhotoListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface PWImagePickerWebPhotoListViewController : UIViewController
 
 - (id)initWithAlbum:(PWAlbumObject *)album;
 
