@@ -73,7 +73,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-        
+    
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
     
@@ -273,37 +273,16 @@
     
     if (isContainVideo) {
         UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Choose a video quality to share (If don't match, choose a highest quality video that is smaller than you have chosen.)", nil)];
-        __weak typeof(self) wself = self;
-        [actionSheet bk_addButtonWithTitle:@"1080P" handler:^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            sself.actionLoadingVideoQuality = 1080;
-            block();
-        }];
-        [actionSheet bk_addButtonWithTitle:@"720P" handler:^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            sself.actionLoadingVideoQuality = 720;
-            block();
-        }];
-        [actionSheet bk_addButtonWithTitle:@"480P" handler:^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            sself.actionLoadingVideoQuality = 480;
-            block();
-        }];
-        [actionSheet bk_addButtonWithTitle:@"360P" handler:^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            sself.actionLoadingVideoQuality = 360;
-            block();
-        }];
-        [actionSheet bk_addButtonWithTitle:@"240P" handler:^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            sself.actionLoadingVideoQuality = 240;
-            block();
-        }];
+        NSArray *qualities = @[@(1080), @(720), @(480), @(360), @(240)];
+        for (NSNumber *quality in qualities) {
+            __weak typeof(self) wself = self;
+            [actionSheet bk_addButtonWithTitle:[NSString stringWithFormat:@"%@P", quality.stringValue] handler:^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                sself.actionLoadingVideoQuality = quality.unsignedIntegerValue;
+                block();
+            }];
+        }
         [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
         [actionSheet showFromTabBar:self.tabBarController.tabBar];
     }

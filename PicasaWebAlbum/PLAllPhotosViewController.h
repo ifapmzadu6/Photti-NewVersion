@@ -14,10 +14,7 @@
 @property (copy, nonatomic) void (^headerViewDidTapBlock)(BOOL isSelectMode);
 @property (copy, nonatomic) void (^photoDidSelectedInSelectModeBlock)(NSArray *photos);
 
-
-@property (nonatomic, readonly) BOOL isSelectMode;
-- (void)setIsSelectMode:(BOOL)isSelectMode withSelectIndexPaths:(NSArray *)selectIndexPaths;
-
+@property (nonatomic) BOOL isSelectMode;
 @property (strong, nonatomic) NSMutableArray *selectedPhotos;
 
 @end

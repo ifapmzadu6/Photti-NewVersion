@@ -136,13 +136,12 @@
 - (void)setIsSelectMode:(BOOL)isSelectMode {
     _isSelectMode = isSelectMode;
     
-    _isSelectMode = isSelectMode;
     _collectionView.allowsMultipleSelection = isSelectMode;
     for (PLPhotoViewCell *cell in _collectionView.visibleCells) {
         cell.isSelectWithCheckMark = isSelectMode;
     }
     for (PLPhotoViewHeaderView *headerView in _headers) {
-        [headerView setSelectButtonIsDeselect:!isSelectMode];
+        [headerView setSelectButtonIsDeselect:isSelectMode];
     }
 }
 
@@ -173,9 +172,17 @@
         PLPhotoObject *photoObject = [_fetchedResultsController objectAtIndexPath:indexPath];
         [headerView setText:photoObject.tag_adjusted_date];
         id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[indexPath.section];
+        if (_isSelectMode) {
+            NSUInteger count = [self numberOfSelectedIndexPathsInSection:indexPath.section];
+            [headerView setSelectButtonIsDeselect:([sectionInfo numberOfObjects] == count)];
+        }
+        else {
+            [headerView setSelectButtonIsDeselect:NO];
+        }
         NSArray *filteredPhotoObjects = [sectionInfo.objects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypePhoto]];
         NSArray *filteredVideoObjects = [sectionInfo.objects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypeVideo]];
         [headerView setDetail:[PWString photoAndVideoStringWithPhotoCount:filteredPhotoObjects.count videoCount:filteredVideoObjects.count]];
+        
         __weak typeof(self) wself = self;
         headerView.selectButtonActionBlock = ^{
             typeof(wself) sself = wself;
@@ -320,6 +327,20 @@
     if (_isSelectMode) {
         [_selectedPhotos removeObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
     }
+}
+
+#pragma mark Methods
+- (NSUInteger)numberOfSelectedIndexPathsInSection:(NSUInteger)section {
+    NSUInteger count = 0;
+    NSUInteger index = 0;
+    while (index < _collectionView.indexPathsForSelectedItems.count && count < [_collectionView numberOfItemsInSection:section]) {
+        NSIndexPath *tmpIndexPath = _collectionView.indexPathsForSelectedItems[index];
+        if (tmpIndexPath.section == section) {
+            count++;
+        }
+        index++;
+    }
+    return count;
 }
 
 #pragma mark NSFetchedResultsControllerDelegate

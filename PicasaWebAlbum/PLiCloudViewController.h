@@ -15,7 +15,6 @@
 @property (copy, nonatomic) void (^photoDidSelectedInSelectModeBlock)(NSArray *photos);
 
 @property (nonatomic) BOOL isSelectMode;
-
 @property (strong, nonatomic) NSMutableArray *selectedPhotos;
 
 @end

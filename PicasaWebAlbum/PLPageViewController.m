@@ -192,7 +192,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     UIViewController *viewController = _myViewControllers[_index];
     
     if ([viewController isKindOfClass:[PLAllPhotosViewController class]]) {
-        [(PLAllPhotosViewController *)viewController setIsSelectMode:YES withSelectIndexPaths:nil];
+        [(PLAllPhotosViewController *)viewController setIsSelectMode:YES];
     }
     else if ([viewController isKindOfClass:[PLiCloudViewController class]]) {
         [(PLiCloudViewController *)viewController setIsSelectMode:YES];
@@ -429,7 +429,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 - (void)disableSelectMode:(UIViewController *)viewController {
     if ([viewController isKindOfClass:[PLAllPhotosViewController class]]) {
         [(PLAllPhotosViewController *)viewController setSelectedPhotos:@[].mutableCopy];
-        [(PLAllPhotosViewController *)viewController setIsSelectMode:NO withSelectIndexPaths:nil];
+        [(PLAllPhotosViewController *)viewController setIsSelectMode:NO];
     }
     else if ([viewController isKindOfClass:[PLiCloudViewController class]]) {
         [(PLiCloudViewController *)viewController setSelectedPhotos:@[].mutableCopy];
