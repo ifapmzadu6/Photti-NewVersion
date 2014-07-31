@@ -319,6 +319,8 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kPDTaskManagerIsResizePhotosKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    [self setUnlimited];
 }
 
 - (void)highResolutionButtonAction {
@@ -328,6 +330,8 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kPDTaskManagerIsResizePhotosKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    [self setHighResolution];
 }
 
 - (void)setUnlimited {
