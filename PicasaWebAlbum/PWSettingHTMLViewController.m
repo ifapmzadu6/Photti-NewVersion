@@ -27,9 +27,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
-    self.navigationItem.rightBarButtonItem = doneBarButtonItem;
-    
     NSString *filePath = [[NSBundle mainBundle] pathForResource:_fileName ofType:@"html"];
     NSString *html = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
     [_webView loadHTMLString:html baseURL:nil];
@@ -37,11 +34,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-}
-
-#pragma mark UIBarButtonItem
-- (void)doneBarButtonAction {
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

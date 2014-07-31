@@ -122,31 +122,44 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
         return;
     };
     
-    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:requestUrlString] completion:^(NSMutableURLRequest *request, NSError *error) {
-        if (error) {
-            completion ? completion(nil, error) : 0;
-            return;
-        }
-        
-        request.HTTPMethod = @"POST";
-        NSString *filePath = self.prepared_body_filepath;
-        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-        if ([photoObject.type isEqualToString:ALAssetTypePhoto]) {
-            [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
-        }
-        else if ([photoObject.type isEqualToString:ALAssetTypeVideo]) {
-            [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
-            [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
-        }
-        [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)fileAttributes[NSFileSize]] forHTTPHeaderField:@"Content-Length"];
-        NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
-        
-        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            self.session_task_identifier = @(sessionTask.taskIdentifier);
+    void (^block)() = ^{
+        [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:requestUrlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+            if (error) {
+                completion ? completion(nil, error) : 0;
+                return;
+            }
+            
+            request.HTTPMethod = @"POST";
+            NSString *filePath = self.prepared_body_filepath;
+            if (!filePath) {
+                completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+                return;
+            }
+            
+            NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+            if ([photoObject.type isEqualToString:ALAssetTypePhoto]) {
+                [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
+            }
+            else if ([photoObject.type isEqualToString:ALAssetTypeVideo]) {
+                [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
+                [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
+            }
+            [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)fileAttributes[NSFileSize]] forHTTPHeaderField:@"Content-Length"];
+            NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
+            
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                self.session_task_identifier = @(sessionTask.taskIdentifier);
+            }];
+            
+            completion ? completion(sessionTask, nil) : 0;
         }];
-        
-        completion ? completion(sessionTask, nil) : 0;
-    }];
+    };
+    
+    if (!self.prepared_body_filepath) {
+        [self setUploadTaskToWebAlbumID:taskObject.to_album_id_str completion:^(NSError *error) {
+            block();
+        }];
+    }
 }
 
 - (void)makeNewAlbumSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {

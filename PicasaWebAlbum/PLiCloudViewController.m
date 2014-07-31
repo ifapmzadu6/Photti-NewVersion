@@ -133,28 +133,16 @@
 }
 
 #pragma mark Methods
-- (void)setIsSelectMode:(BOOL)isSelectMode withSelectIndexPaths:(NSArray *)selectIndexPaths {
+- (void)setIsSelectMode:(BOOL)isSelectMode {
     _isSelectMode = isSelectMode;
     
+    _isSelectMode = isSelectMode;
     _collectionView.allowsMultipleSelection = isSelectMode;
     for (PLPhotoViewCell *cell in _collectionView.visibleCells) {
         cell.isSelectWithCheckMark = isSelectMode;
     }
-    if (isSelectMode) {
-        for (NSIndexPath *indexPath in selectIndexPaths) {
-            [_collectionView selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
-            [_selectedPhotos addObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
-        }
-    }
-    if (!isSelectMode) {
-        for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
-            [_collectionView deselectItemAtIndexPath:indexPath animated:NO];
-            [_selectedPhotos removeObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
-        }
-        
-        for (PLPhotoViewHeaderView *headerView in _headers) {
-            [headerView setSelectButtonIsDeselect:NO];
-        }
+    for (PLPhotoViewHeaderView *headerView in _headers) {
+        [headerView setSelectButtonIsDeselect:!isSelectMode];
     }
 }
 
@@ -193,13 +181,14 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
+            sself.isSelectMode = YES;
             NSMutableArray *indexPaths = [NSMutableArray array];
             id<NSFetchedResultsSectionInfo> sectionInfo = sself.fetchedResultsController.sections[indexPath.section];
             for (size_t i=0; i<sectionInfo.numberOfObjects; i++) {
-                NSIndexPath *tmpIndexPath = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
-                [indexPaths addObject:tmpIndexPath];
+                NSIndexPath *selectedIndexPath = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
+                [sself.collectionView selectItemAtIndexPath:selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+                [sself.selectedPhotos addObject:[sself.fetchedResultsController objectAtIndexPath:selectedIndexPath]];
             }
-            [sself setIsSelectMode:YES withSelectIndexPaths:indexPaths];
             
             if (sself.headerViewDidTapBlock) {
                 sself.headerViewDidTapBlock(YES);
@@ -213,10 +202,16 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
+            sself.isSelectMode = NO;
             id<NSFetchedResultsSectionInfo> sectionInfo = sself.fetchedResultsController.sections[indexPath.section];
             for (size_t i=0; i<sectionInfo.numberOfObjects; i++) {
                 NSIndexPath *tmpIndexPath = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
                 [sself.collectionView deselectItemAtIndexPath:tmpIndexPath animated:YES];
+                [sself.selectedPhotos removeObject:[sself.fetchedResultsController objectAtIndexPath:tmpIndexPath]];
+            }
+            
+            if (sself.headerViewDidTapBlock) {
+                sself.headerViewDidTapBlock(NO);
             }
         };
         
@@ -319,6 +314,12 @@
     
     PLPhotoPageViewController *viewController = [[PLPhotoPageViewController alloc] initWithPhotos:_fetchedResultsController.fetchedObjects index:index];
     [self.navigationController pushViewController:viewController animated:YES];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (_isSelectMode) {
+        [_selectedPhotos removeObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
+    }
 }
 
 #pragma mark NSFetchedResultsControllerDelegate

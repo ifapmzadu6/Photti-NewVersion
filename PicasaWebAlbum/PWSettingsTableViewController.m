@@ -129,8 +129,8 @@
 #pragma mark Auto-CreateAlbumSection
 - (void)setUpCameraRollSection {
     NSString *sectionTitle = NSLocalizedString(@"Camera Roll", nil);
-    NSString *description = NSLocalizedString(@"Photti automatically create albums each day. When that is created, you are pushed a notification.", nil);
-    [_tableView addSectionWithTitle:sectionTitle description:description];
+//    NSString *description = NSLocalizedString(@"Photti automatically create albums each day. When that is created, you are pushed a notification.", nil);
+    [_tableView addSectionWithTitle:sectionTitle description:nil];
     
     __weak typeof(self) wself = self;
     [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeDefault cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
@@ -155,8 +155,8 @@
 #pragma mark TaskManagerSection
 - (void)setUpTaskManagerSection {
     NSString *sectionTitle = NSLocalizedString(@"Task Manager", nil);
-    NSString *description = NSLocalizedString(@"Photos bigger than 2048x2048 pixels and videos longer than 15minutes use your Google Storage.", nil);
-    [_tableView addSectionWithTitle:sectionTitle description:description];
+//    NSString *description = NSLocalizedString(@"Photos bigger than 2048x2048 pixels and videos longer than 15minutes use your Google Storage.", nil);
+    [_tableView addSectionWithTitle:sectionTitle description:nil];
     
     UIColor *tintColor = self.navigationController.navigationBar.tintColor;
     

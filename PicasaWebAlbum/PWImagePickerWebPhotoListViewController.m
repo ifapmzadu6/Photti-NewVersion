@@ -97,6 +97,8 @@
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
     _fetchedResultsController.delegate = self;
     
+    [_fetchedResultsController performFetch:nil];
+    
     if (_fetchedResultsController.fetchedObjects.count > 0) {
         [_activityIndicatorView stopAnimating];
         
@@ -350,7 +352,6 @@
             if (error.code == 401) {
                 [sself openLoginViewController];
             }
-            return;
         }
         else {
             sself.requestIndex = nextIndex;

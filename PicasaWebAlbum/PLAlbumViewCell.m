@@ -156,13 +156,14 @@
         
         _titleLabel.text = nil;
         _numPhotosLabel.text = nil;
-        [_activityIndicatorView startAnimating];
         
         return;
     }
     
     NSUInteger hash = album.hash;
     _albumHash = hash;
+    
+    [_activityIndicatorView startAnimating];
     
     _titleLabel.text = album.name;
     _numPhotosLabel.text = [NSString stringWithFormat:@"%ld", (long)album.photos.count];

@@ -33,6 +33,7 @@
 @property (strong, nonatomic) NSArray *myViewControllers;
 @property (strong, nonatomic) PLParallelNavigationTitleView *titleView;
 @property (nonatomic) BOOL isAllPhotoSelectMode;
+@property (nonatomic) NSUInteger index;
 
 @end
 
@@ -188,13 +189,20 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 }
 
 - (void)allPhotoSelectBarButtonAction {
-    PLAllPhotosViewController *allPhotoViewController = (PLAllPhotosViewController *)_myViewControllers[0];
-    [allPhotoViewController setIsSelectMode:YES withSelectIndexPaths:nil];
-    [self enableAllPhotoViewControllerSelectMode];
+    UIViewController *viewController = _myViewControllers[_index];
+    
+    if ([viewController isKindOfClass:[PLAllPhotosViewController class]]) {
+        [(PLAllPhotosViewController *)viewController setIsSelectMode:YES withSelectIndexPaths:nil];
+    }
+    else if ([viewController isKindOfClass:[PLiCloudViewController class]]) {
+        [(PLiCloudViewController *)viewController setIsSelectMode:YES];
+    }
+    
+    [self enableSelectMode:viewController];
 }
 
 - (void)selectCancelBarButtonAction {
-    [self disableAllPhotoViewcontrollerDeselectMode];
+    [self disableSelectMode:_myViewControllers[_index]];
 }
 
 - (void)selectActionBarButtonAction {
@@ -220,7 +228,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
                     typeof(wself) sself = wself;
                     if (!sself) return;
                     
-                    [sself disableAllPhotoViewcontrollerDeselectMode];
+                    [sself disableSelectMode:sself.myViewControllers[sself.index]];
                     
                     [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
                 });
@@ -300,15 +308,14 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         typeof(wself) sself = wself;
         if (!sself) return;
         
+        sself.index = 0;
         [sself.titleView setCurrentIndex:0];
         [sself.titleView setCurrentTitle:allPhotosViewControllerTitle];
         
         UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[searchBarButtonItem] animated:YES];
-        
         UIBarButtonItem *allPhotoSelectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select", nil) style:UIBarButtonItemStylePlain target:self action:@selector(allPhotoSelectBarButtonAction)];
         [sself.navigationItem setLeftBarButtonItem:allPhotoSelectBarButtonItem animated:YES];
-        
         for (UIView *view in sself.navigationController.navigationBar.subviews) {
             view.exclusiveTouch = YES;
         }
@@ -317,7 +324,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [sself enableAllPhotoViewControllerSelectMode];
+        [sself enableSelectMode:sself.myViewControllers[0]];
     }];
     [allPhotosViewController setPhotoDidSelectedInSelectModeBlock:^(NSArray *indexPaths) {
         typeof(wself) sself = wself;
@@ -331,16 +338,15 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         typeof(wself) sself = wself;
         if (!sself) return;
         
+        sself.index = 1;
         [sself.titleView setCurrentIndex:1];
         [sself.titleView setCurrentTitle:albumListViewControllerTitle];
         
         UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
         UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[addBarButtonItem, searchBarButtonItem] animated:YES];
-        
         UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
         [sself.navigationItem setLeftBarButtonItem:settingsBarButtonItem animated:YES];
-        
         for (UIView *view in sself.navigationController.navigationBar.subviews) {
             view.exclusiveTouch = YES;
         }
@@ -352,29 +358,43 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         typeof(wself) sself = wself;
         if (!sself) return;
         
+        sself.index = 2;
         [sself.titleView setCurrentIndex:2];
         [sself.titleView setCurrentTitle:iCloudViewControllerTitle];
         
         UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[searchBarButtonItem] animated:YES];
-        
-//        UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"選択", nil) style:UIBarButtonItemStylePlain target:sself action:@selector(selectBarButtonAction)];
-//        [sself.navigationItem setLeftBarButtonItem:selectBarButtonItem animated:YES];
-        
+        UIBarButtonItem *allPhotoSelectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select", nil) style:UIBarButtonItemStylePlain target:self action:@selector(allPhotoSelectBarButtonAction)];
+        [sself.navigationItem setLeftBarButtonItem:allPhotoSelectBarButtonItem animated:YES];
         for (UIView *view in sself.navigationController.navigationBar.subviews) {
             view.exclusiveTouch = YES;
         }
+        for (UIView *view in sself.navigationController.navigationBar.subviews) {
+            view.exclusiveTouch = YES;
+        }
+    }];
+    [iCloudViewController setHeaderViewDidTapBlock:^(BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        if (isSelectMode) {
+            [sself enableSelectMode:sself.myViewControllers[2]];
+        }
+    }];
+    [iCloudViewController setPhotoDidSelectedInSelectModeBlock:^(NSArray *indexPaths) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
     }];
     
     return @[allPhotosViewController, albumListViewController, iCloudViewController];
 }
 
 #pragma mark EnableAllPhohoViewSelectMode
-- (void)enableAllPhotoViewControllerSelectMode {
+- (void)enableSelectMode:(UIViewController *)viewController {
     _isAllPhotoSelectMode = YES;
     
-    PLAllPhotosViewController *allPhotoViewController = (PLAllPhotosViewController *)_myViewControllers[0];
-    [self setViewControllers:@[allPhotoViewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    [self setViewControllers:@[viewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     UIBarButtonItem *selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
@@ -406,13 +426,20 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
-- (void)disableAllPhotoViewcontrollerDeselectMode {
+- (void)disableSelectMode:(UIViewController *)viewController {
+    if ([viewController isKindOfClass:[PLAllPhotosViewController class]]) {
+        [(PLAllPhotosViewController *)viewController setSelectedPhotos:@[].mutableCopy];
+        [(PLAllPhotosViewController *)viewController setIsSelectMode:NO withSelectIndexPaths:nil];
+    }
+    else if ([viewController isKindOfClass:[PLiCloudViewController class]]) {
+        [(PLiCloudViewController *)viewController setSelectedPhotos:@[].mutableCopy];
+        [(PLiCloudViewController *)viewController setIsSelectMode:NO];
+    }
+    
     if (_isAllPhotoSelectMode) {
         _isAllPhotoSelectMode = NO;
         
-        PLAllPhotosViewController *allPhotoViewController = (PLAllPhotosViewController *)_myViewControllers[0];
-        [allPhotoViewController setIsSelectMode:NO withSelectIndexPaths:nil];
-        [self setViewControllers:@[allPhotoViewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+        [self setViewControllers:@[viewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     }
     
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;

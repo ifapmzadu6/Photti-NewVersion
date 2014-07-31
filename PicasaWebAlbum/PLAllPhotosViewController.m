@@ -142,7 +142,9 @@
     if (isSelectMode) {
         for (NSIndexPath *indexPath in selectIndexPaths) {
             [_collectionView selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
-            [_selectedPhotos addObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
+            if ([_selectedPhotos containsObject:[_fetchedResultsController objectAtIndexPath:indexPath]]) {
+                [_selectedPhotos addObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
+            }
         }
     }
     if (!isSelectMode) {
