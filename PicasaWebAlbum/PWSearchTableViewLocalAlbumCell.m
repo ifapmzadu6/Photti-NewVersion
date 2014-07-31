@@ -97,7 +97,7 @@
     NSMutableAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text].mutableCopy;
     if (seatchedText) {
         NSRange searchRange = NSMakeRange(0, [text length]);
-        NSRange place = NSMakeRange(0, 0);
+        NSRange place;
         while (searchRange.location < [text length]) {
             place = [text rangeOfString:seatchedText options:NSLiteralSearch range:searchRange];
             if (place.location != NSNotFound) {

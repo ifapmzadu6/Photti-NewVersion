@@ -90,12 +90,10 @@
     CGRect rect = self.view.bounds;
     
     CGFloat tHeight = 44.0f;
-    CGFloat nHeight = 44.0f;
     BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if(isLandscape) {
             tHeight = 32.0f;
-            nHeight = 32.0f;
         }
     }
     else {
