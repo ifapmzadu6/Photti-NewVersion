@@ -180,40 +180,21 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     [self.view addSubview:_highResolutionButton];
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
-        _unlimitedButton.selected = YES;
-        _highResolutionButton.selected = NO;
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            _unlimitedLabel.font = [UIFont boldSystemFontOfSize:15.0f];
-        }
-        else {
-            _unlimitedLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-        }
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            _unlimitedDescriptionLabel.font = [UIFont boldSystemFontOfSize:14.0f];
-        }
-        else {
-            _unlimitedDescriptionLabel.font = [UIFont boldSystemFontOfSize:16.0f];
-        }
+        [self setUnlimited];
     }
     else {
-        _unlimitedButton.selected = NO;
-        _highResolutionButton.selected = YES;
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            _highResolutionLabel.font = [UIFont boldSystemFontOfSize:15.0f];
-        }
-        else {
-            _highResolutionLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-        }
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            _highResolutionDescriptionLabel.font = [UIFont boldSystemFontOfSize:14.0f];
-        }
-        else {
-            _highResolutionDescriptionLabel.font = [UIFont boldSystemFontOfSize:16.0f];
-        }
+        [self setHighResolution];
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
+        [self setUnlimited];
+    }
+    else {
+        [self setHighResolution];
     }
 }
 
@@ -338,7 +319,18 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kPDTaskManagerIsResizePhotosKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)highResolutionButtonAction {
+    if (_highResolutionButton.selected) {
+        return;
+    }
     
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kPDTaskManagerIsResizePhotosKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)setUnlimited {
     _unlimitedButton.selected = YES;
     _highResolutionButton.selected = NO;
     
@@ -369,14 +361,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     }
 }
 
-- (void)highResolutionButtonAction {
-    if (_highResolutionButton.selected) {
-        return;
-    }
-    
-    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kPDTaskManagerIsResizePhotosKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    
+- (void)setHighResolution {
     _highResolutionButton.selected = YES;
     _unlimitedButton.selected = NO;
     
