@@ -23,7 +23,6 @@
 @property (nonatomic, retain) NSString * rights;
 @property (nonatomic, retain) NSNumber * sortIndex;
 @property (nonatomic, retain) NSString * summary;
-@property (nonatomic, retain) NSString * timestamp;
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSString * type;
 @property (nonatomic, retain) NSString * updated;

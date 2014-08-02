@@ -24,7 +24,6 @@
 @dynamic rights;
 @dynamic sortIndex;
 @dynamic summary;
-@dynamic timestamp;
 @dynamic title;
 @dynamic type;
 @dynamic updated;
