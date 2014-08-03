@@ -39,7 +39,10 @@
 }
 
 - (void)viewDidLoad {
-    [super viewDidLoad];    
+    [super viewDidLoad];
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.edgesForExtendedLayout = UIRectEdgeAll;
 }
 
 - (void)viewWillAppear:(BOOL)animated {

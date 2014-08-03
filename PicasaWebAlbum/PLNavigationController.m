@@ -45,10 +45,6 @@
         else if ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeUnknown) {
             [self setAutoCreateAlbumViewController];
         }
-//        else if ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
-//            PLNewAlbumCreatedViewController *newAlbumCreatedViewController = [[PLNewAlbumCreatedViewController alloc] initWithEnumuratedDate:nil];
-//            self.viewControllers = @[newAlbumCreatedViewController];
-//        }
         else {
             PLPageViewController *pageViewcontroller = [[PLPageViewController alloc] init];
             self.viewControllers = @[pageViewcontroller];            
@@ -68,7 +64,6 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 PLNewAlbumCreatedViewController *viewController = [[PLNewAlbumCreatedViewController alloc] initWithEnumuratedDate:enumuratedDate];
                 PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
-                navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
                 [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
             });
         };
@@ -81,6 +76,14 @@
     
     self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+//    PLNewAlbumCreatedViewController *viewController = [[PLNewAlbumCreatedViewController alloc] initWithEnumuratedDate:nil];
+//    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+//    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)viewWillLayoutSubviews {

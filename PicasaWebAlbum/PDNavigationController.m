@@ -18,7 +18,6 @@
 #import "PWTabBarController.h"
 
 #import "PDTaskManagerViewController.h"
-#import "PDInAppPurchaseViewController.h"
 #import "PDUploadDescriptionViewController.h"
 
 @interface PDNavigationController ()
@@ -35,18 +34,10 @@
         
 //        [PDInAppPurchase resetKeyChain];
         
-        if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
-            PDInAppPurchaseViewController *inAppPurchaseViewController = [[PDInAppPurchaseViewController alloc] init];
-            self.viewControllers = @[inAppPurchaseViewController];
-        }
-        else {
-            [self checkTaskIsNone];
-            [self badgeUpdate];
-        }
+        [self checkTaskIsNone];
+        [self badgeUpdate];
         
-        [self setInAppPurchaseBlocks];
         [self setTaskManagerChangedBlock];
-        [self setTaskManagerNotPurchaseBlock];
         [self setTaskManagerNotAllowedAccessPhotoLibraryBlock];
     }
     return self;
@@ -162,15 +153,6 @@
     [self checkTaskIsNone];
 }
 
-- (void)setTaskManagerNotPurchaseBlock {
-    PDTaskManager *taskManager = [PDTaskManager sharedManager];
-    taskManager.notPurchasedUploadDownloadAction = ^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"You need to purchase Download-Upload Addon.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-        });
-    };
-}
-
 - (void)setTaskManagerNotAllowedAccessPhotoLibraryBlock {
     PDTaskManager *taskManager = [PDTaskManager sharedManager];
     taskManager.notAllowedAccessPhotoLibraryAction = ^{
@@ -178,32 +160,6 @@
             [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Go to Settings > Privacy > Photos and switch Photti to ON to access Photo Library.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
         });
     };
-}
-
-#pragma mark PDInAppPurchase
-- (void)setInAppPurchaseBlocks {
-    PDInAppPurchase *inAppPurchase = [PDInAppPurchase sharedInstance];
-    __weak typeof(self) wself = self;
-    [inAppPurchase setPaymentQueuePurchaced:^(NSArray *transactions, bool success) {
-        if (!success) {
-            return;
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            [sself checkTaskIsNone];
-        });
-    }];
-    [inAppPurchase setPaymentQueueRestored:^(NSArray *transactions, bool success) {
-        if (!success) {
-            return;
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            [sself checkTaskIsNone];
-        });
-    }];
 }
 
 @end

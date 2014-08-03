@@ -54,6 +54,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"Web Album", nil);
+        
+        self.automaticallyAdjustsScrollViewInsets = NO;
+        self.edgesForExtendedLayout = UIRectEdgeAll;
     }
     return self;
 }
@@ -94,9 +97,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
-    
-    [_refreshControl beginRefreshing];
-    
+        
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
@@ -156,6 +157,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         indexPath = indexPaths[indexPaths.count / 2];
     }
     
+    PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
+    UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
+    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 10.0f, viewInsets.bottom, 10.0f);
+    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
     _collectionView.frame = rect;
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];

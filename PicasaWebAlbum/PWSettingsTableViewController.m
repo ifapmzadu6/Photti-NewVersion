@@ -25,6 +25,8 @@
 
 @property (weak, nonatomic) UIViewController *authViewTouchNavigationController;
 
+@property (strong, nonatomic) SKProduct *product;
+
 @end
 
 @implementation PWSettingsTableViewController
@@ -50,6 +52,7 @@
     
     _tableView = [[KKStaticTableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.cellTextFont = [UIFont systemFontOfSize:15.0f];
+    _tableView.cellTextColor = [PWColors getColor:PWColorsTypeTextColor];
     _tableView.cellDetailTextFontTypeValue1 = [UIFont systemFontOfSize:15.0f];
     _tableView.cellDetailTextFontTypeSubTitle = [UIFont systemFontOfSize:13.0f];
     _tableView.cellDetailTextColor = [UIColor colorWithWhite:0.5f alpha:1.0f];
@@ -59,7 +62,10 @@
     [self setUpWebAlbumSection];
     [self setUpCameraRollSection];
     [self setUpTaskManagerSection];
+    [self setUpInAppPurchaseSection];
     [self setUpAboutSection];
+    
+    [self setInAppPurchaseBlocks];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -94,33 +100,14 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            UIButton *button = [UIButton new];
-            [button addTarget:sself action:@selector(loginoutButtonAction) forControlEvents:UIControlEventTouchUpInside];
-            button.titleLabel.font = [UIFont systemFontOfSize:13.0f];
-            if (error) {
-                [button setTitle:NSLocalizedString(@"Login", nil) forState:UIControlStateNormal];
-            }
-            else {
-                [button setTitle:NSLocalizedString(@"Logout", nil) forState:UIControlStateNormal];
-            }
-            [button setTitleColor:tintColor forState:UIControlStateHighlighted];
-            [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
-            [button setBackgroundImage:[PWIcons imageWithColor:tintColor] forState:UIControlStateNormal];
-            button.clipsToBounds = YES;
-            button.layer.cornerRadius = 5.0f;
-            button.layer.borderColor = tintColor.CGColor;
-            button.layer.borderWidth = 1.0f;
-            CGSize buttonSize = [button sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-            button.frame = CGRectMake(0.0f, 0.0f, buttonSize.width + 24.0f, 28.0f);
-            cell.accessoryView = button;
-            
             if (error) {
                 cell.textLabel.text = NSLocalizedString(@"Not login", nil);
                 cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.0f];
+                cell.accessoryView = [sself roundedButtonWithTitle:NSLocalizedString(@"Login", nil) tintColor:tintColor action:@selector(loginoutButtonAction)];
             }
             else {
                 cell.textLabel.text = email;
+                cell.accessoryView = [sself roundedButtonWithTitle:NSLocalizedString(@"Logout", nil) tintColor:tintColor action:@selector(loginoutButtonAction)];
             }
         }];
     } cellHeight:CGFLOAT_MIN didSelect:nil];
@@ -163,7 +150,7 @@
     __weak typeof(self) wself = self;
     [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeValue1 cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
         
-        if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
+        if (![PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID]) {
             cell.textLabel.alpha = 0.3f;
             cell.detailTextLabel.alpha = 0.3f;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -179,7 +166,7 @@
     } cellHeight:CGFLOAT_MIN didSelect:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) return;
+        if (![PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID]) return;
         
         NSUInteger defaultIndex = 0;
         if (![[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
@@ -206,6 +193,80 @@
     }];
 }
 
+#pragma mark In-AppPurchaseSection
+- (void)setUpInAppPurchaseSection {
+    NSString *sectionTitle = NSLocalizedString(@"In-App Purchase", nil);
+    [_tableView addSectionWithTitle:sectionTitle];
+    
+    UIColor *tintColor = self.navigationController.navigationBar.tintColor;
+    
+    __weak typeof(self) wself = self;
+    [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeSubTitle cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.textLabel.text = NSLocalizedString(@"Remove Ads", nil);
+        cell.detailTextLabel.text = NSLocalizedString(@"Loading...", nil);
+        UIButton *button = [sself roundedButtonWithTitle:NSLocalizedString(@"Purchace", nil) tintColor:tintColor action:@selector(purchaseButtonAction:)];
+        button.enabled = NO;
+        button.alpha = 0.5f;
+        cell.accessoryView = button;
+        
+        [PDInAppPurchase getProductsWithProductIDs:@[kPDRemoveAdsPuroductID] completion:^(NSArray *products, NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (error) {
+                NSLog(@"%@", error.description);
+                return;
+            }
+            
+            NSNumberFormatter * numberFormatter = [[NSNumberFormatter alloc] init];
+            [numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+            [numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+            for (SKProduct *product in products) {
+                if ([product.productIdentifier isEqualToString:kPDRemoveAdsPuroductID]) {
+                    sself.product = products.firstObject;
+                    [numberFormatter setLocale:product.priceLocale];
+                    NSString *price = [numberFormatter stringFromNumber:product.price];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        cell.detailTextLabel.text = price;
+                        if (![PDInAppPurchase isPurchasedWithProduct:product]) {
+                            button.enabled = YES;
+                            button.alpha = 1.0f;
+                        }
+                        else {
+                            UILabel *label = [UILabel new];
+                            label.font = [UIFont systemFontOfSize:13.0f];
+                            label.text = [NSLocalizedString(@"Purchased", nil) stringByAppendingString:@"   "];
+                            label.textColor = [PWColors getColor:PWColorsTypeTextDarkColor];
+                            [label sizeToFit];
+                            cell.accessoryView = label;
+                        }
+                    });
+                    break;
+                }
+            }
+        }];
+        
+    } cellHeight:60.0f didSelect:nil];
+    
+    [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeValue1 cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.textLabel.text = NSLocalizedString(@"Restore In-App Purchase", nil);
+        UIButton *button = [sself roundedButtonWithTitle:NSLocalizedString(@"Restore", nil) tintColor:tintColor action:@selector(restoreButtonAction:)];
+        button.layer.borderColor = tintColor.CGColor;
+        button.layer.borderWidth = 0.0f;
+        [button setTitleColor:tintColor forState:UIControlStateNormal];
+        [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateNormal];
+        cell.accessoryView = button;
+    } cellHeight:CGFLOAT_MIN didSelect:nil];
+}
+
+
 #pragma mark AboutSection
 - (void)setUpAboutSection {
     NSString *sectionTitle = NSLocalizedString(@"About", nil);
@@ -229,22 +290,7 @@
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = NSLocalizedString(@"Review on iTunes Store", nil);
-        
-        UIButton *button = [UIButton new];
-        [button addTarget:sself action:@selector(openReviewOniTunesStore) forControlEvents:UIControlEventTouchUpInside];
-        button.titleLabel.font = [UIFont systemFontOfSize:13.0f];
-        [button setTitle:NSLocalizedString(@"OPEN", nil) forState:UIControlStateNormal];
-        [button setTitleColor:tintColor forState:UIControlStateHighlighted];
-        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
-        [button setBackgroundImage:[PWIcons imageWithColor:tintColor] forState:UIControlStateNormal];
-        button.clipsToBounds = YES;
-        button.layer.cornerRadius = 5.0f;
-        button.layer.borderColor = tintColor.CGColor;
-        button.layer.borderWidth = 1.0f;
-        CGSize buttonSize = [button sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-        button.frame = CGRectMake(0.0f, 0.0f, buttonSize.width + 24.0f, 28.0f);
-        cell.accessoryView = button;
+        cell.accessoryView = [sself roundedButtonWithTitle:NSLocalizedString(@"OPEN", nil) tintColor:tintColor action:@selector(openReviewOniTunesStore)];
         
     } cellHeight:CGFLOAT_MIN didSelect:nil];
     
@@ -254,22 +300,7 @@
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = @"Twitter";
-        
-        UIButton *button = [UIButton new];
-        [button addTarget:sself action:@selector(openTwitterButtonAction) forControlEvents:UIControlEventTouchUpInside];
-        button.titleLabel.font = [UIFont systemFontOfSize:13.0f];
-        [button setTitle:@"@Photti_dev" forState:UIControlStateNormal];
-        [button setTitleColor:tintColor forState:UIControlStateHighlighted];
-        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
-        [button setBackgroundImage:[PWIcons imageWithColor:tintColor] forState:UIControlStateNormal];
-        button.clipsToBounds = YES;
-        button.layer.cornerRadius = 5.0f;
-        button.layer.borderColor = tintColor.CGColor;
-        button.layer.borderWidth = 1.0f;
-        CGSize buttonSize = [button sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-        button.frame = CGRectMake(0.0f, 0.0f, buttonSize.width + 24.0f, 28.0f);
-        cell.accessoryView = button;
+        cell.accessoryView = [sself roundedButtonWithTitle:@"Photti_dev" tintColor:tintColor action:@selector(openTwitterButtonAction)];
         
     } cellHeight:CGFLOAT_MIN didSelect:nil];
     
@@ -363,6 +394,91 @@
 
 - (void)openReviewOniTunesStore {
     [PWSettingsTableViewController jumpToAppReviewPage];
+}
+
+- (void)purchaseButtonAction:(UIButton *)button {
+    if (![SKPaymentQueue canMakePayments]) {
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil) message:NSLocalizedString(@"In-App Purchase is restricted", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil) , nil] show];
+    }
+    else {
+        if (!_product) {
+            return;
+        }
+        BOOL isPurchased = [PDInAppPurchase isPurchasedWithProduct:_product];
+        if (!isPurchased) {
+            SKPayment *payment = [SKPayment paymentWithProduct:_product];
+            [[SKPaymentQueue defaultQueue] addPayment:payment];
+            
+            button.enabled = NO;
+            button.alpha = 0.5f;
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                button.enabled = YES;
+                button.alpha = 1.0f;
+            });
+        }
+    }
+}
+
+- (void)restoreButtonAction:(UIButton *)button {
+    if (![SKPaymentQueue canMakePayments]) {
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil) message:NSLocalizedString(@"In-App Purchase is restricted", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil) , nil] show];
+    }
+    else {
+        [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+        
+        button.enabled = NO;
+        button.alpha = 0.5f;
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            button.enabled = YES;
+            button.alpha = 1.0f;
+        });
+    }
+}
+
+#pragma mark UIButton
+- (UIButton *)roundedButtonWithTitle:(NSString *)title tintColor:(UIColor *)tintColor action:(SEL)action {
+    UIButton *button = [UIButton new];
+    [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
+    button.titleLabel.font = [UIFont systemFontOfSize:13.0f];
+    [button setTitle:title forState:UIControlStateNormal];
+    [button setTitleColor:tintColor forState:UIControlStateHighlighted];
+    [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
+    [button setBackgroundImage:[PWIcons imageWithColor:tintColor] forState:UIControlStateNormal];
+    button.clipsToBounds = YES;
+    button.layer.cornerRadius = 5.0f;
+    button.layer.borderColor = tintColor.CGColor;
+    button.layer.borderWidth = 1.0f;
+    CGSize buttonSize = [button sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    button.frame = CGRectMake(0.0f, 0.0f, buttonSize.width + 24.0f, 28.0f);
+    return button;
+}
+
+- (void)setInAppPurchaseBlocks {
+    PDInAppPurchase *inAppPurchase = [PDInAppPurchase sharedInstance];
+    __weak typeof(self) wself = self;
+    [inAppPurchase setPaymentQueuePurchaced:^(NSArray *transactions, bool success) {
+        if (!success) {
+            return;
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself.tableView reloadData];
+        });
+    }];
+    [inAppPurchase setPaymentQueueRestored:^(NSArray *transactions, bool success) {
+        if (!success) {
+            return;
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself.tableView reloadData];
+        });
+    }];
 }
 
 @end

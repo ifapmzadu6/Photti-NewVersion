@@ -72,9 +72,7 @@
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
-    
-    [_refreshControl beginRefreshing];
-    
+        
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];

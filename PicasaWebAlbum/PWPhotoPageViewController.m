@@ -86,6 +86,7 @@
     UIBarButtonItem *trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     [tabBarController setToolbarItems:@[actionBarButtonItem, flexibleSpace, organizeBarButtonItem, flexibleSpace, trashBarButtonItem] animated:YES];
+    [tabBarController setAdsHidden:YES animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

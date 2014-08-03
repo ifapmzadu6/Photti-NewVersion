@@ -10,7 +10,7 @@
 @import StoreKit;
 @import Security;
 
-static NSString * const kPDUploadAndDownloadPuroductID = @"34789274982com.photti.picasawebalbum.uploadanddownload";
+static NSString * const kPDRemoveAdsPuroductID = @"34789274982com.photti.picasawebalbum.uploadanddownload";
 
 @interface PDInAppPurchase : NSObject <SKPaymentTransactionObserver, SKProductsRequestDelegate>
 

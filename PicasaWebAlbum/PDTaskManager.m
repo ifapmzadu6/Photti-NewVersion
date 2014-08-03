@@ -59,10 +59,6 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 }
 
 - (BOOL)checkOKAddTask {
-    if (![PDInAppPurchase isPurchasedWithKey:kPDUploadAndDownloadPuroductID]) {
-        if (_notPurchasedUploadDownloadAction) _notPurchasedUploadDownloadAction();
-        return NO;
-    }
     if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
         if (_notAllowedAccessPhotoLibraryAction) _notAllowedAccessPhotoLibraryAction();
         return NO;

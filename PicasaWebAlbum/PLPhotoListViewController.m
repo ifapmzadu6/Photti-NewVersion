@@ -111,6 +111,7 @@
     else {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
     }
+    [tabBarController setAdsHidden:NO animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

@@ -93,6 +93,7 @@
             [tabBarController setTabBarHidden:YES animated:YES completion:nil];
         }];
     }
+    [tabBarController setAdsHidden:YES animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

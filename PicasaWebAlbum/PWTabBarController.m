@@ -15,9 +15,11 @@
 #import "PLNavigationController.h"
 #import "PDNavigationController.h"
 
+#import "GADBannerView.h"
+
 static const CGFloat animationDuration = 0.25f;
 
-@interface PWTabBarController ()
+@interface PWTabBarController () <UITabBarControllerDelegate, UINavigationBarDelegate>
 
 @property (strong, nonatomic) UIToolbar *toolbar;
 @property (strong, nonatomic) UIToolbar *actionToolbar;
@@ -31,6 +33,8 @@ static const CGFloat animationDuration = 0.25f;
 @property (nonatomic) BOOL isActionToolbarAnimation;
 @property (nonatomic) BOOL isActionNavigationBarHidden;
 @property (nonatomic) BOOL isActionNavigationBarAnimation;
+
+@property (strong, nonatomic) GADBannerView *bannerView;
 
 @end
 
@@ -46,31 +50,6 @@ static const CGFloat animationDuration = 0.25f;
         self.viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
         self.selectedIndex = 1;
         self.delegate = self;
-        
-        _toolbar = [[UIToolbar alloc] init];
-        _toolbar.exclusiveTouch = YES;
-        [self.view addSubview:_toolbar];
-        
-        _toolbar.alpha = 0.0f;
-        _isToolbarHidden = YES;
-        
-        _actionToolbar = [[UIToolbar alloc] init];
-        _actionToolbar.barTintColor = [UIColor blackColor];
-        _actionToolbar.exclusiveTouch = YES;
-        [self.view addSubview:_actionToolbar];
-        
-        _actionToolbar.alpha = 0.0f;
-        _isActionToolbarHidden = YES;
-        
-        _actionNavigationBar = [[UINavigationBar alloc] init];
-        _actionNavigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor colorWithWhite:0.8f alpha:1.0f]};
-        _actionNavigationBar.barTintColor = [UIColor blackColor];
-        _actionNavigationBar.delegate = self;
-        _actionNavigationBar.exclusiveTouch = YES;
-        [self.view addSubview:_actionNavigationBar];
-        
-        _actionNavigationBar.alpha = 0.0f;
-        _isActionNavigationBarHidden = YES;
     }
     return self;
 }
@@ -82,6 +61,33 @@ static const CGFloat animationDuration = 0.25f;
     
     self.tabBar.barTintColor = [UIColor colorWithWhite:0.95f alpha:1.0f];
     self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    
+    _toolbar = [[UIToolbar alloc] init];
+    _toolbar.exclusiveTouch = YES;
+    [self.view addSubview:_toolbar];
+    
+    _toolbar.alpha = 0.0f;
+    _isToolbarHidden = YES;
+    
+    _actionToolbar = [[UIToolbar alloc] init];
+    _actionToolbar.barTintColor = [UIColor blackColor];
+    _actionToolbar.exclusiveTouch = YES;
+    [self.view addSubview:_actionToolbar];
+    
+    _actionToolbar.alpha = 0.0f;
+    _isActionToolbarHidden = YES;
+    
+    _actionNavigationBar = [[UINavigationBar alloc] init];
+    _actionNavigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor colorWithWhite:0.8f alpha:1.0f]};
+    _actionNavigationBar.barTintColor = [UIColor blackColor];
+    _actionNavigationBar.delegate = self;
+    _actionNavigationBar.exclusiveTouch = YES;
+    [self.view addSubview:_actionNavigationBar];
+    
+    _actionNavigationBar.alpha = 0.0f;
+    _isActionNavigationBarHidden = YES;
+    
+    [self setGoogleAdsBannerView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -162,6 +168,33 @@ static const CGFloat animationDuration = 0.25f;
 #pragma clang diagnostic pop
 }
 
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    
+    CGRect rect = self.view.bounds;
+    CGFloat tHeight = 44.0f;
+    CGFloat adHeight = 50.0f;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            tHeight = 32.0f;
+            adHeight = 32.0f;
+        }
+    }
+    else {
+        tHeight = 56.0f;
+        adHeight = 90.0f;
+    }
+    
+    _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
+    
+    if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        _bannerView.adSize = kGADAdSizeSmartBannerLandscape;
+    }
+    else {
+        _bannerView.adSize = kGADAdSizeSmartBannerPortrait;
+    }
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     
@@ -177,18 +210,20 @@ static const CGFloat animationDuration = 0.25f;
 - (UIEdgeInsets)viewInsets {
     CGFloat tHeight = 44.0f;
     CGFloat nHeight = 44.0f;
-    BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
+    CGFloat adHeight = 50.0f;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if(isLandscape) {
+        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
             tHeight = 32.0f;
             nHeight = 32.0f;
+            adHeight = 32.0f;
         }
     }
     else {
         tHeight = 56.0f;
+        adHeight = 90.0f;
     }
     
-    return UIEdgeInsetsMake(nHeight + 20.0f, 0.0f, tHeight, 0.0f);
+    return UIEdgeInsetsMake(nHeight + 20.0f, 0.0f, tHeight + adHeight, 0.0f);
 }
 
 #pragma mark UITabBarControllerDelegate
@@ -451,6 +486,36 @@ static const CGFloat animationDuration = 0.25f;
             UINavigationController *navigationController = (UINavigationController *)viewController;
             navigationController.navigationBar.userInteractionEnabled = enabled;
         }
+    }
+}
+
+#pragma mark GoogleAds
+- (void)setGoogleAdsBannerView {
+    if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        _bannerView = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerLandscape];
+    }
+    else {
+        _bannerView = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
+    }
+    _bannerView.adUnitID = @"ca-app-pub-9347360948699796/7365185266";
+    _bannerView.rootViewController = self;
+    [self.view addSubview:_bannerView];
+    
+    [_bannerView loadRequest:[GADRequest request]];
+}
+
+- (void)setAdsHidden:(BOOL)hidden animated:(BOOL)animated {
+    _isAdsHidden = hidden;
+    
+    void (^animation)() = ^{
+        _bannerView.alpha = hidden ? 0 : 1;
+    };
+    
+    if (animated) {
+        [UIView animateWithDuration:animationDuration animations:animation];
+    }
+    else {
+        animation();
     }
 }
 

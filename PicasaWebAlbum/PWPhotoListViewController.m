@@ -64,9 +64,12 @@
     if (self) {
         _album = album;
         
+        _selectedPhotoIDs = @[].mutableCopy;
+        
         self.title = album.title;
         
-        _selectedPhotoIDs = @[].mutableCopy;
+        self.automaticallyAdjustsScrollViewInsets = NO;
+        self.edgesForExtendedLayout = UIRectEdgeAll;
     }
     return self;
 }
@@ -102,9 +105,7 @@
     
 //    UIBarButtonItem *mapBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Info"] style:UIBarButtonItemStylePlain target:self action:@selector(mapBarButtonAction)];
 //    self.navigationItem.rightBarButtonItem = mapBarButtonItem;
-    
-    [_refreshControl beginRefreshing];
-    
+        
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
@@ -135,6 +136,10 @@
         indexPath = indexPaths[indexPaths.count / 2];
     }
     
+    PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
+    UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
+    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 0.0f, 0.0f, viewInsets.bottom, 0.0f);
+    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
     _collectionView.frame = rect;
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];
@@ -179,6 +184,7 @@
     else {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
     }
+    [tabBarController setAdsHidden:NO animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

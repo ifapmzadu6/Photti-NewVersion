@@ -167,7 +167,7 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
 }
 
 + (void)resetKeyChain {
-    NSString *key = kPDUploadAndDownloadPuroductID;
+    NSString *key = kPDRemoveAdsPuroductID;
     [SFHFKeychainUtils deleteItemForUsername:key andServiceName:kServiceName error:nil];
 }
 

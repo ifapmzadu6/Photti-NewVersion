@@ -8,18 +8,20 @@
 
 @import UIKit;
 
-@interface PWTabBarController : UITabBarController <UITabBarControllerDelegate, UINavigationBarDelegate>
+@interface PWTabBarController : UITabBarController
+
+@property (nonatomic, readonly) BOOL isTabBarHidden;
+@property (nonatomic, readonly) BOOL isToolbarHideen;
+@property (nonatomic, readonly) BOOL isActionToolbarHidden;
+@property (nonatomic, readonly) BOOL isAdsHidden;
 
 - (UIEdgeInsets)viewInsets;
-- (BOOL)isTabBarHidden;
 - (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
-- (BOOL)isToolbarHideen;
 - (void)setToolbarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
 - (void)setToolbarFadeout:(BOOL)fadeout animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
 - (void)setToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated;
 - (void)setToolbarTintColor:(UIColor *)tintColor;
 - (void)setActionToolbarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
-- (BOOL)isActionToolbarHidden;
 - (void)setActionToolbarItems:(NSArray *)toolbarItems animated:(BOOL)animated;
 - (void)setActionToolbarTintColor:(UIColor *)tintColor;
 - (void)setActionNavigationBarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
@@ -27,5 +29,7 @@
 - (void)setActionNavigationTintColor:(UIColor *)tintColor;
 
 - (void)setUserInteractionEnabled:(BOOL)enabled;
+
+- (void)setAdsHidden:(BOOL)hidden animated:(BOOL)animated;
 
 @end

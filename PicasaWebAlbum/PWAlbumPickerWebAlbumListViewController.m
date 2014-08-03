@@ -76,9 +76,7 @@
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_activityIndicatorView];
-    
-    [_refreshControl beginRefreshing];
-    
+        
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];

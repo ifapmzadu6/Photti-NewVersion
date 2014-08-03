@@ -50,7 +50,7 @@
     
     CGRect rect = self.bounds;
     
-    _textLabel.frame = CGRectMake(12.0f, 0.0f, rect.size.width - 24.0f, rect.size.height);
+    _textLabel.frame = CGRectMake(12.0f, 0.0f, CGRectGetWidth(rect) - 24.0f, 50.0f);
 }
 
 - (void)setText:(NSString *)text {

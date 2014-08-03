@@ -86,9 +86,7 @@
     
     [self setRightNavigationItemSelectButton];
     self.navigationItem.rightBarButtonItem.enabled = NO;
-    
-    [_refreshControl beginRefreshing];
-    
+        
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
