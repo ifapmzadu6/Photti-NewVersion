@@ -10,6 +10,7 @@
 
 #import "PWColors.h"
 #import "SDImageCache.h"
+#import "PDInAppPurchase.h"
 
 #import "PWNavigationController.h"
 #import "PLNavigationController.h"
@@ -185,13 +186,15 @@ static const CGFloat animationDuration = 0.25f;
         adHeight = 90.0f;
     }
     
-    _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
-    
-    if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        _bannerView.adSize = kGADAdSizeSmartBannerLandscape;
-    }
-    else {
-        _bannerView.adSize = kGADAdSizeSmartBannerPortrait;
+    if (!_isAdsHidden) {
+        _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
+        
+        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            _bannerView.adSize = kGADAdSizeSmartBannerLandscape;
+        }
+        else {
+            _bannerView.adSize = kGADAdSizeSmartBannerPortrait;
+        }
     }
 }
 
@@ -221,6 +224,10 @@ static const CGFloat animationDuration = 0.25f;
     else {
         tHeight = 56.0f;
         adHeight = 90.0f;
+    }
+    
+    if (_isAdsHidden) {
+        adHeight = 0;
     }
     
     return UIEdgeInsetsMake(nHeight + 20.0f, 0.0f, tHeight + adHeight, 0.0f);
@@ -293,7 +300,7 @@ static const CGFloat animationDuration = 0.25f;
     _isToolbarAnimation = YES;
     
     void (^animation)() = ^{
-        _toolbar.alpha = !hidden;
+        _toolbar.alpha = hidden ? 0 : 1;
     };
     
     if (animated) {
@@ -388,7 +395,7 @@ static const CGFloat animationDuration = 0.25f;
     _isActionToolbarAnimation = YES;
     
     void (^animation)() = ^{
-        _actionToolbar.alpha = !hidden;
+        _actionToolbar.alpha = hidden ? 0 : 1;
     };
     
     if (animated) {
@@ -440,7 +447,7 @@ static const CGFloat animationDuration = 0.25f;
     _isActionNavigationBarAnimation = YES;
     
     void (^animation)() = ^{
-        _actionNavigationBar.alpha = !hidden;
+        _actionNavigationBar.alpha = hidden ? 0 : 1;
     };
     
     if (animated) {
@@ -505,6 +512,14 @@ static const CGFloat animationDuration = 0.25f;
 }
 
 - (void)setAdsHidden:(BOOL)hidden animated:(BOOL)animated {
+    if ([PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID]) {
+        _isAdsHidden = YES;
+        
+        _bannerView.alpha = 0;
+        
+        return;
+    }
+    
     _isAdsHidden = hidden;
     
     void (^animation)() = ^{
