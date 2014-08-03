@@ -121,6 +121,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
     [tabBarController setToolbarHidden:YES animated:animated completion:nil];
+    [tabBarController setAdsHidden:NO animated:NO];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -153,6 +154,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 - (void)searchBarButtonAction {
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setTabBarHidden:YES animated:YES completion:nil];
+    [tabBarController setAdsHidden:YES animated:NO];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
     navigationController.view.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
@@ -162,6 +164,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         if (!sself) return;
         
         [tabBarController setTabBarHidden:NO animated:NO completion:nil];
+        [tabBarController setAdsHidden:NO animated:YES];
     }];
 }
 

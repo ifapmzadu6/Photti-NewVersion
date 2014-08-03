@@ -133,6 +133,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [UIView animateWithDuration:0.3f animations:^{
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];
+    [tabBarController setAdsHidden:NO animated:NO];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -292,6 +293,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (void)searchBarButtonAction {
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setTabBarHidden:YES animated:YES completion:nil];
+    [tabBarController setAdsHidden:YES animated:NO];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
     navigationController.view.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
@@ -302,6 +304,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         
         PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
         [tabBarController setTabBarHidden:NO animated:NO completion:nil];
+        [tabBarController setAdsHidden:NO animated:YES];
     }];
 }
 

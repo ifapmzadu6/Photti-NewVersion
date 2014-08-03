@@ -90,6 +90,9 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setAdsHidden:NO animated:NO];
+    
     for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
         [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
