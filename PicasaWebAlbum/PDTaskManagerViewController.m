@@ -50,7 +50,7 @@
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
-    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+//    self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     
@@ -160,22 +160,32 @@
     return headerView;
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+    return NSLocalizedString(@"Don't remove those items until the task is finished.", nil);
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayFooterView:(UITableViewHeaderFooterView *)view forSection:(NSInteger)section {
+    view.textLabel.font = [UIFont systemFontOfSize:13.0f];
+    view.textLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     return 50.0f;
 }
 
+
 #pragma mark UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    PDTaskObject *taskObject = nil;
-    if (indexPath.section == 0) {
-        taskObject = _fetchedResultsController.fetchedObjects.firstObject;
-    }
-    else {
-        taskObject = _fetchedResultsController.fetchedObjects[indexPath.row+1];
-    }
-    
-    PDTaskViewController *viewController = [[PDTaskViewController alloc] initWithTask:taskObject];
-    [self.navigationController pushViewController:viewController animated:YES];
+//    PDTaskObject *taskObject = nil;
+//    if (indexPath.section == 0) {
+//        taskObject = _fetchedResultsController.fetchedObjects.firstObject;
+//    }
+//    else {
+//        taskObject = _fetchedResultsController.fetchedObjects[indexPath.row+1];
+//    }
+//    
+//    PDTaskViewController *viewController = [[PDTaskViewController alloc] initWithTask:taskObject];
+//    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {

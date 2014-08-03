@@ -39,6 +39,9 @@
         self.automaticallyAdjustsScrollViewInsets = NO;
         
         _date = date;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowNotification) name:UIKeyboardWillShowNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHideNotification) name:UIKeyboardDidHideNotification object:nil];
     }
     return self;
 }
@@ -50,9 +53,6 @@
     
     UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
     self.navigationItem.leftBarButtonItem = doneBarButtonItem;
-//    UIBarButtonItem *uploadAllButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Upload All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(uploadAllButtonAction)];
-//    [uploadAllButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
-//    self.navigationItem.rightBarButtonItem = uploadAllButtonItem;
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
@@ -67,16 +67,16 @@
     _collectionView.showsHorizontalScrollIndicator = NO;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.clipsToBounds = NO;
-    _collectionView.userInteractionEnabled = NO;
     _collectionView.contentInset = UIEdgeInsetsMake(0.0f, 80.0f, 0.0f, 80.0f);
     _collectionView.exclusiveTouch = YES;
+    _collectionView.scrollEnabled = NO;
     [self.view addSubview:_collectionView];
     
     _createdNewAlbumLabel = [UILabel new];
-    _createdNewAlbumLabel.text = NSLocalizedString(@"Created New Albums!", nil);
-    _createdNewAlbumLabel.font = [UIFont systemFontOfSize:15.0f];
-    _createdNewAlbumLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+    _createdNewAlbumLabel.font = [UIFont systemFontOfSize:14.0f];
+    _createdNewAlbumLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _createdNewAlbumLabel.textAlignment = NSTextAlignmentCenter;
+    _createdNewAlbumLabel.numberOfLines = 0;
     [self.view addSubview:_createdNewAlbumLabel];
     
     _uploadButton = [UIButton new];
@@ -118,6 +118,8 @@
     NSError *error = nil;
     [_fetchedResultsController performFetch:&error];
     
+    [self setTitleLabelWithNumberOfAlbums:_fetchedResultsController.fetchedObjects.count];
+    
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
 }
@@ -131,14 +133,19 @@
     
     CGRect rect = self.view.bounds;
     
-    _createdNewAlbumLabel.frame = CGRectMake(60.0f, 90.0f, 200.0f, 20.0f);
-    _collectionView.frame = CGRectMake(0.0f, 110.0f, CGRectGetWidth(rect), 280.0f);
-    _uploadButton.frame = CGRectMake(110.0f, 420.0f, 100.0f, 32.0f);
-    _skipButton.frame = CGRectMake(110.0f, 470.0f, 100.0f, 32.0f);
+    _createdNewAlbumLabel.frame = CGRectMake(60.0f, 86.0f, 200.0f, 40.0f);
+    _collectionView.frame = CGRectMake(0.0f, 170.0f, CGRectGetWidth(rect), 280.0f);
+    _uploadButton.frame = CGRectMake(110.0f, 440.0f, 100.0f, 32.0f);
+    _skipButton.frame = CGRectMake(110.0f, 490.0f, 100.0f, 32.0f);
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
 }
 
 #pragma mark UIBarButtonAction
@@ -218,28 +225,28 @@
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            return CGSizeMake(160.0f, 220.0f);
+            return CGSizeMake(160.0f, 280.0f);
         }
         else {
-            return CGSizeMake(160.0f, 220.0f);
+            return CGSizeMake(160.0f, 280.0f);
         }
     }
     else {
         if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            return CGSizeMake(160.0f, 220.0f);
+            return CGSizeMake(160.0f, 280.0f);
         }
         else {
-            return CGSizeMake(160.0f, 220.0f);
+            return CGSizeMake(160.0f, 280.0f);
         }
     }
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 20.0f;
+    return 0.0f;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 20.0f;
+    return 50.0f;
 }
 
 #pragma mark NSFetchedResultsControllerDelegate
@@ -288,8 +295,24 @@
             
         }];
         
-        _createdNewAlbumLabel.text = [NSString stringWithFormat:NSLocalizedString(@"Created New %ld Albums!", nil), _fetchedResultsController.fetchedObjects.count];
+        [self setTitleLabelWithNumberOfAlbums:_fetchedResultsController.fetchedObjects.count];
     });
+}
+
+#pragma mark Methods
+- (void)setTitleLabelWithNumberOfAlbums:(NSUInteger)numberOfAlbums {
+    NSString *newAlbumString = [NSString stringWithFormat:NSLocalizedString(@"Created New %ld Albums!", nil), numberOfAlbums];
+    NSString *tapToEditString = NSLocalizedString(@"Tap the album title to edit.", nil);
+    _createdNewAlbumLabel.text = [NSString stringWithFormat:@"%@\n%@", newAlbumString, tapToEditString];
+}
+
+#pragma mark UIKeyBoardNotification
+- (void)keyboardWillShowNotification {
+    self.navigationItem.leftBarButtonItem.enabled = NO;
+}
+
+- (void)keyboardDidHideNotification {
+    self.navigationItem.leftBarButtonItem.enabled = YES;
 }
 
 @end

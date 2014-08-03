@@ -14,4 +14,6 @@
 
 @property (strong, nonatomic) PLAlbumObject *album;
 
+@property (copy, nonatomic) void (^textFieldDidEndEditing)(NSString *text);
+
 @end

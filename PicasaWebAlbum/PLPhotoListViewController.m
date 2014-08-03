@@ -172,7 +172,7 @@
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
             });
         }];
     }];
@@ -274,7 +274,7 @@
                     if (!sself) return;
                     [sself disableSelectMode];
                     
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
                 });
             };
             
@@ -577,14 +577,14 @@
         PLAlbumEditViewController *viewController = [[PLAlbumEditViewController alloc] initWithTitle:album.name timestamp:album.timestamp uploading_type:album.tag_uploading_type];
         viewController.saveButtonBlock = ^(NSString *name, NSNumber *timestamp, NSNumber *uploading_type) {
             [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-                PLAlbumObject *album = (PLAlbumObject *)[context objectWithID:albumID];
-                album.name = name;
-                album.tag_date = [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue];
-                if (![album.timestamp isEqualToNumber:timestamp]) {
-                    album.timestamp = timestamp;
-                    album.edited = @(YES);
+                PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumID];
+                albumObject.name = name;
+                albumObject.tag_date = [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue / 1000];
+                if (![albumObject.timestamp isEqualToNumber:timestamp]) {
+                    albumObject.timestamp = timestamp;
+                    albumObject.edited = @(YES);
                 }
-                album.tag_uploading_type = uploading_type;
+                albumObject.tag_uploading_type = uploading_type;
             }];
         };
         PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
@@ -603,7 +603,7 @@
         [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
             if (error) NSLog(@"%@", error.description);
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
             });
         }];
     }];

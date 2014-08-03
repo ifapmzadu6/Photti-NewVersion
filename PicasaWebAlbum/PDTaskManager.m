@@ -289,65 +289,60 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         }
         [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
     }
-    
-    [[self class] donnedASessionTask];
 }
 
 - (void)taskIsDoneAndStartNext:(PDTaskObject *)taskObject {
-    NSArray *allPhotoObject = taskObject.photos.array;
-    for (PDBasePhotoObject *photoObject in allPhotoObject) {
-        if (photoObject.is_done.boolValue) {
-            PDBasePhotoObject *nextPhotoObject = nil;
-            NSUInteger nextPhotoIndex = [allPhotoObject indexOfObject:photoObject] + 1;
-            if (nextPhotoIndex <= allPhotoObject.count - 1) {
-                nextPhotoObject = allPhotoObject[nextPhotoIndex];
-            }
-            PDTaskObject *taskObject = photoObject.task;
-            NSManagedObjectID *firstObjectID = photoObject.objectID;
-            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                NSManagedObject *firstObject = [context objectWithID:firstObjectID];
-                [taskObject removePhotosObject:photoObject];
-                [context deleteObject:firstObject];
-            }];
-            
-            if (nextPhotoObject) {
-                if (![nextPhotoObject isKindOfClass:[PDLocalCopyPhotoObject class]]) {
-                    [nextPhotoObject makeSessionTaskWithSession:_backgroundSession completion:^(NSURLSessionTask *task, NSError *error) {
-                        if (error) {
-                            NSLog(@"%@", error.description);
-                        }
-                        
-                        [task resume];
-                    }];
-                    break;
-                }
-                else {
-                    [(PDLocalCopyPhotoObject *)nextPhotoObject copyToLocalAlbum];
-                }
-            }
-            else {
-                if (taskObject.type.integerValue == PDTaskObjectTypeLocalAlbumToWebAlbum || taskObject.type.integerValue == PDTaskObjectTypePhotosToWebAlbum) {
-                    [PWPicasaAPI getListOfAlbumsWithIndex:0 completion:nil];
-                }
-                
-                NSManagedObjectID *taskObjectID = taskObject.objectID;
-                [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                    NSManagedObject *object = [context objectWithID:taskObjectID];
-                    [context deleteObject:object];
-                }];
-                
-                [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
-            }
+    if (!taskObject) {
+        if (_backgroundComplecationHandler) {
+            _backgroundComplecationHandler();
+            _backgroundComplecationHandler = nil;
         }
-        else {
+        return;
+    }
+    NSManagedObjectID *taskObjectID = taskObject.objectID;
+    
+    NSArray *allPhotoObject = taskObject.photos.array;
+    if (allPhotoObject.count == 0) {
+        if (taskObject.type.integerValue == PDTaskObjectTypeLocalAlbumToWebAlbum || taskObject.type.integerValue == PDTaskObjectTypePhotosToWebAlbum) {
+            [PWPicasaAPI getListOfAlbumsWithIndex:0 completion:nil];
+        }
+        
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PDTaskObject *tmpTaskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
+            [context deleteObject:tmpTaskObject];
+        }];
+        
+        [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
+        return;
+    }
+    
+    PDBasePhotoObject *photoObject = allPhotoObject.firstObject;
+    NSManagedObjectID *photoObjectID = photoObject.objectID;
+    if (photoObject.is_done.boolValue) {
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PDTaskObject *tmpTaskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
+            PDBasePhotoObject *tmpPhotoObject = (PDBasePhotoObject *)[context objectWithID:photoObjectID];
+            [tmpTaskObject removePhotosObject:tmpPhotoObject];
+            [context deleteObject:tmpPhotoObject];
+        }];
+        
+        [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
+    }
+    else {
+        if (![photoObject isKindOfClass:[PDLocalCopyPhotoObject class]]) {
             [photoObject makeSessionTaskWithSession:_backgroundSession completion:^(NSURLSessionTask *task, NSError *error) {
                 if (error) {
                     NSLog(@"%@", error.description);
                 }
-                
-                [task resume];
+                else {
+                    [task resume];
+                }
             }];
-            break;
+        }
+        else {
+            [(PDLocalCopyPhotoObject *)photoObject copyToLocalAlbum];
+            
+            [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
         }
     }
 }
@@ -395,15 +390,6 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
             }];
         }
     }    
-}
-
-#pragma mark DoneSessionTask
-+ (void)donnedASessionTask {
-    if ([PDTaskManager getCountOfTasks] == 0) {
-        if ([PDTaskManager sharedManager].backgroundComplecationHandler) {
-            [PDTaskManager sharedManager].backgroundComplecationHandler();
-        }
-    }
 }
 
 #pragma mark contextchanged

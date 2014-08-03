@@ -50,9 +50,6 @@
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        self.showsReorderControl = YES;
-        
         _thumbnailImageView = [UIImageView new];
         _thumbnailImageView.clipsToBounds = YES;
         _thumbnailImageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -123,7 +120,7 @@
     _taskTypeLabel.frame = CGRectMake(64.0f, 10.0f, 220.0f, 10.0f);
     
     CGSize countLabelSize = [_countLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-    _countLabel.frame = CGRectMake(CGRectGetMaxX(rect) - (countLabelSize.width + 16.0f), 20.0f, countLabelSize.width + 12.0f, 20.0f);
+    _countLabel.frame = CGRectMake(CGRectGetMaxX(rect) - (countLabelSize.width + 12.0f) - 15.0f, 20.0f, countLabelSize.width + 12.0f, 20.0f);
     
     if (_isPhotosTask) {
         _subThumbnailImageView.frame = CGRectMake(15.0f + 2.0f, 10.0f + 2.0f, rect.size.height - 24.0f, rect.size.height - 24.0f);
