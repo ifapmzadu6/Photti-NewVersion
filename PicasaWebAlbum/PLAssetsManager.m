@@ -337,6 +337,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                         NSArray *newPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
                         //NSLog(@"new = %lu", (unsigned long)newPhotos.count);
                         
+                        NSDate *todayAdjustedDate = [PLDateFormatter adjustZeroClock:[NSDate date]];
                         if (newPhotos.count > 0) {
                             //新規写真は振り分けをしなければならない
                             NSFetchRequest *request = [NSFetchRequest new];
@@ -355,13 +356,16 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                                     }
                                 }
                                 if (!isDetected) {
-                                    //自動作成版アルバムを作る
-                                    PLAlbumObject *album = [PLAssetsManager makeNewAutoCreateAlbumWithEnumurateDate:enumurateDate adjustedDate:adjustedDate context:context];
-                                    
-                                    [album addPhotosObject:newPhoto];
-                                    
-                                    [autoCreatedAlbums addObject:album];
-                                    newAutoCreatAlbumCount++;
+                                    //今日のやつはアルバムを作らない
+                                    if (![adjustedDate isEqualToDate:todayAdjustedDate]) {
+                                        //自動作成版アルバムを作る
+                                        PLAlbumObject *album = [PLAssetsManager makeNewAutoCreateAlbumWithEnumurateDate:enumurateDate adjustedDate:adjustedDate context:context];
+                                        
+                                        [album addPhotosObject:newPhoto];
+                                        
+                                        [autoCreatedAlbums addObject:album];
+                                        newAutoCreatAlbumCount++;
+                                    }
                                 }
                             }
                         }

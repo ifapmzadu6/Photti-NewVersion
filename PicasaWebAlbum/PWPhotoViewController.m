@@ -17,6 +17,7 @@
 #import "SDImageCache.h"
 #import "PWImageScrollView.h"
 #import "PWTabBarController.h"
+#import "Reachability.h"
 
 @interface PWPhotoViewController () <UIAlertViewDelegate>
 
@@ -132,6 +133,15 @@
 
 #pragma mark UIButton
 - (void)videoButtonAction {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        [alertView show];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+        });
+        return;
+    }
+    
     NSArray *contents = [_photo.media.content.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @"video/mpeg4"]];
     UIAlertView *alertView = [[UIAlertView alloc] init];
     alertView.delegate = self;
