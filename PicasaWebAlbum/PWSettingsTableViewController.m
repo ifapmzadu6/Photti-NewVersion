@@ -257,6 +257,7 @@
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = NSLocalizedString(@"Restore In-App Purchase", nil);
+        cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextDarkColor];
         UIButton *button = [sself roundedButtonWithTitle:NSLocalizedString(@"Restore", nil) tintColor:tintColor action:@selector(restoreButtonAction:)];
         button.layer.borderColor = tintColor.CGColor;
         button.layer.borderWidth = 0.0f;
