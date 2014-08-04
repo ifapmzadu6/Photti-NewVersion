@@ -526,6 +526,8 @@ static const CGFloat animationDuration = 0.25f;
         _bannerView.alpha = hidden ? 0 : 1;
     };
     
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
     if (animated) {
         [UIView animateWithDuration:animationDuration animations:animation];
     }

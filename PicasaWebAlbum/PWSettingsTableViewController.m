@@ -150,11 +150,6 @@
     __weak typeof(self) wself = self;
     [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeValue1 cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
         
-        if (![PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID]) {
-            cell.textLabel.alpha = 0.3f;
-            cell.detailTextLabel.alpha = 0.3f;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        }
         cell.textLabel.text = NSLocalizedString(@"Uploading Size", nil);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
             cell.detailTextLabel.text = NSLocalizedString(@"Resize", nil);
@@ -166,7 +161,6 @@
     } cellHeight:CGFLOAT_MIN didSelect:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        if (![PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID]) return;
         
         NSUInteger defaultIndex = 0;
         if (![[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
@@ -301,20 +295,20 @@
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = @"Twitter";
-        cell.accessoryView = [sself roundedButtonWithTitle:@"Photti_dev" tintColor:tintColor action:@selector(openTwitterButtonAction)];
+        cell.accessoryView = [sself roundedButtonWithTitle:@"@Photti_dev" tintColor:tintColor action:@selector(openTwitterButtonAction)];
         
     } cellHeight:CGFLOAT_MIN didSelect:nil];
     
     [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeDefault cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        cell.textLabel.text = NSLocalizedString(@"Open Source Licenses", nil);
+        cell.textLabel.text = NSLocalizedString(@"Open Source License", nil);
     } cellHeight:CGFLOAT_MIN didSelect:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         
         PWSettingHTMLViewController *viewController = [[PWSettingHTMLViewController alloc]init];
         viewController.fileName = @"thirdpartycopyright";
-        viewController.title = NSLocalizedString(@"Open Source Licences", nil);
+        viewController.title = NSLocalizedString(@"Open Source License", nil);
         [sself.navigationController pushViewController:viewController animated:true];
     }];
 }

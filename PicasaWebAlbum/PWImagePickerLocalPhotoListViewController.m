@@ -108,7 +108,7 @@
 }
 
 - (void)setRightNavigationItemDeselectButton {
-    UIBarButtonItem *deselectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Deselect All", nil) style:UIBarButtonItemStylePlain target:self action:@selector(deselectBarButtonAction)];
+    UIBarButtonItem *deselectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Deselect all", nil) style:UIBarButtonItemStylePlain target:self action:@selector(deselectBarButtonAction)];
     self.navigationItem.rightBarButtonItem = deselectBarButtonItem;
 }
 
