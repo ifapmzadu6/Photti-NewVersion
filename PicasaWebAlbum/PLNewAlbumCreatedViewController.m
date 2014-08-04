@@ -156,11 +156,12 @@
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
     request.predicate = [NSPredicate predicateWithFormat:@"(import = %@) AND (tag_uploading_type = %@)", _date, @(PLAlbumObjectTagUploadingTypeUnknown)];
-#ifdef DEBUG
-    //下はテスト用
+//#ifdef DEBUG
+//    //下はテスト用
 //    request.predicate = [NSPredicate predicateWithFormat:@"tag_uploading_type = %@", @(PLAlbumObjectTagUploadingTypeUnknown)];
-#endif
+//#endif
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
+    request.fetchLimit = 7;
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
     _fetchedResultsController.delegate = self;
     
@@ -260,6 +261,8 @@
 
 #pragma mark UIBarButtonAction
 - (void)doneBarButtonAction {
+    [self skipAll];
+    
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -312,7 +315,7 @@
     NSManagedObjectID *albumObjectID = albumObject.objectID;
     [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
         PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumObjectID];
-        albumObject.tag_uploading_type = @(PLAlbumObjectTagUploadingTypeYES);
+        albumObject.tag_uploading_type = @(PLAlbumObjectTagUploadingTypeNO);
     }];
 }
 
@@ -334,7 +337,15 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PLFullAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
+    PLAlbumObject *albumObject = [_fetchedResultsController objectAtIndexPath:indexPath];
+    cell.album = albumObject;
+    NSManagedObjectID *albumObjectID = albumObject.objectID;
+    cell.textFieldDidEndEditing = ^(NSString *title){
+        [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PLAlbumObject *tmpAlbumObject = (PLAlbumObject *)[context objectWithID:albumObjectID];
+            tmpAlbumObject.name = title;
+        }];
+    };
     
     return cell;
 }
@@ -440,13 +451,67 @@
 #pragma mark UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0) {
+        NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
+        for (PLAlbumObject *albumObject in _fetchedResultsController.fetchedObjects) {
+            NSManagedObjectID *albumObjectID = albumObject.objectID;
+            [context performBlockAndWait:^{
+                PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumObjectID];
+                albumObject.tag_uploading_type = @(PLAlbumObjectTagUploadingTypeYES);
+            }];
+        }
+        [context performBlockAndWait:^{
+            NSError *error = nil;
+            if (![context save:&error]) {
+                abort();
+            }
+        }];
+        [self applyAllItems:_fetchedResultsController.fetchedObjects.mutableCopy];
+        
+        [PLCoreDataAPI writeContextFinish:context];
+        
         [self dismissViewControllerAnimated:YES completion:nil];
     }
     else if (buttonIndex == 1) {
+        [self skipAll];
+        
         [self dismissViewControllerAnimated:YES completion:nil];
     }
     else if (buttonIndex == 2) {
     }
+}
+
+#pragma mark Data
+- (void)skipAll {
+    NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
+    for (PLAlbumObject *albumObject in _fetchedResultsController.fetchedObjects) {
+        NSManagedObjectID *albumObjectID = albumObject.objectID;
+        [context performBlockAndWait:^{
+            PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumObjectID];
+            albumObject.tag_uploading_type = @(PLAlbumObjectTagUploadingTypeNO);
+        }];
+    }
+    [context performBlockAndWait:^{
+        NSError *error = nil;
+        if (![context save:&error]) {
+            abort();
+        }
+    }];
+    [PLCoreDataAPI writeContextFinish:context];
+}
+
+- (void)applyAllItems:(NSMutableArray *)albums {
+    if (albums.count == 0) {
+        NSLog(@"アルバムアップロードすべて設定OK");
+        return;
+    }
+    
+    PLAlbumObject *albumObject = albums.firstObject;
+    [[PDTaskManager sharedManager] addTaskFromLocalAlbum:albumObject toWebAlbum:nil completion:^(NSError *error) {
+        if ([albums containsObject:albumObject]) {
+            [albums removeObject:albumObject];
+        }
+        [self applyAllItems:albums];
+    }];
 }
 
 @end

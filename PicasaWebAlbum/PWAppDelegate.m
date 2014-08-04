@@ -13,6 +13,7 @@
 #import "PWTabBarController.h"
 
 #import "SDImageCache.h"
+#import <Appirater.h>
 
 #import "PDTaskManager.h"
 #import "PLAssetsManager.h"
@@ -35,6 +36,9 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     [Crashlytics startWithAPIKey:@"e304869e1f84a6d87002a3e24fd4a640cfff713f"];
+    
+    [Appirater setAppId:@"892657316"];
+    [Appirater appLaunched:YES];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = [[PWTabBarController alloc] init];

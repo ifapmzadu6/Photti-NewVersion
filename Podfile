@@ -10,3 +10,5 @@ pod 'SDWebImage', :inhibit_warnings => true
 pod 'LXReorderableCollectionViewFlowLayout', :inhibit_warnings => true
 pod 'SFHFKeychainUtils', :inhibit_warnings => true
 pod 'Reachability', :inhibit_warnings => true
+pod 'Appirater', :inhibit_warnings => true
+

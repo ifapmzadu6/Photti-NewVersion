@@ -32,6 +32,8 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 @property (strong, nonatomic) NSURL *location;
 @property (strong, nonatomic) NSData *uploadResponseData;
 
+@property (nonatomic) BOOL operating;
+
 @end
 
 @implementation PDTaskManager
@@ -200,6 +202,11 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 }
 
 - (void)start {
+    if (_operating) {
+        return;
+    }
+    _operating = YES;
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [_backgroundSession getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             if (dataTasks.count == 0 && uploadTasks.count == 0 && downloadTasks.count == 0) {
@@ -309,10 +316,13 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
 - (void)taskIsDoneAndStartNext:(PDTaskObject *)taskObject {
     if (!taskObject) {
+        _operating = NO;
+        
         if (_backgroundComplecationHandler) {
             _backgroundComplecationHandler();
             _backgroundComplecationHandler = nil;
         }
+        
         return;
     }
     NSManagedObjectID *taskObjectID = taskObject.objectID;

@@ -1,4 +1,5 @@
 PODS:
+  - Appirater (2.0.2)
   - BlocksKit (2.2.3):
     - BlocksKit/All
   - BlocksKit/All (2.2.3):
@@ -41,6 +42,7 @@ PODS:
   - SFHFKeychainUtils (0.0.1)
 
 DEPENDENCIES:
+  - Appirater
   - BlocksKit
   - CocoaLumberjack
   - GData
@@ -50,6 +52,7 @@ DEPENDENCIES:
   - SFHFKeychainUtils
 
 SPEC CHECKSUMS:
+  Appirater: a5e00fb01d47a9a6acf4b2f22323b4ccf4f23fbb
   BlocksKit: 07c8a80f04275efac6a5f8b973782489c083a182
   CocoaLumberjack: 94accd5749f5c5d15134c8d50f34a973aed8ef69
   GData: 99d19dd8ee328ce77d12d504ddf9b0e0a6e3bc0d
