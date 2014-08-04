@@ -22,6 +22,7 @@
 #import "PWColors.h"
 #import "PWIcons.h"
 #import "PLCoreDataAPI.h"
+#import "PLAssetsManager.h"
 #import "PLModelObject.h"
 #import "PWSnowFlake.h"
 #import "PLDateFormatter.h"
@@ -174,7 +175,12 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
             album.id_str = [PWSnowFlake generateUniqueIDString];
-            album.name = name;
+            if (!name || [name isEqualToString:@""]) {
+                album.name = NSLocalizedString(@"New Album", nil);
+            }
+            else {
+                album.name = name;
+            }
             album.tag_date = [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue/1000.0];
             album.timestamp = timestamp;
             album.import = [NSDate date];
@@ -195,9 +201,11 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     UIViewController *viewController = _myViewControllers[_index];
     
     if ([viewController isKindOfClass:[PLAllPhotosViewController class]]) {
+        [(PLAllPhotosViewController *)viewController setSelectedPhotos:@[].mutableCopy];
         [(PLAllPhotosViewController *)viewController setIsSelectMode:YES];
     }
     else if ([viewController isKindOfClass:[PLiCloudViewController class]]) {
+        [(PLiCloudViewController *)viewController setSelectedPhotos:@[].mutableCopy];
         [(PLiCloudViewController *)viewController setIsSelectMode:YES];
     }
     
@@ -209,7 +217,44 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 }
 
 - (void)selectActionBarButtonAction {
-    // TODO: 必ずやること
+    UIViewController *viewController = _myViewControllers[_index];
+    
+    NSArray *selectedPhotos = nil;
+    if ([viewController isKindOfClass:[PLAllPhotosViewController class]]) {
+        selectedPhotos = [(PLAllPhotosViewController *)viewController selectedPhotos];
+    }
+    else if ([viewController isKindOfClass:[PLiCloudViewController class]]) {
+        selectedPhotos = [(PLiCloudViewController *)viewController selectedPhotos];
+    }
+    if (!selectedPhotos) {
+        return;
+    }
+    
+    __block NSUInteger count = 0;
+    __block NSUInteger maxCount = selectedPhotos.count;
+    NSMutableArray *assets = @[].mutableCopy;
+    __weak typeof(self) wself = self;
+    for (PLPhotoObject *photoObject in selectedPhotos) {
+        [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:photoObject.url] resultBlock:^(ALAsset *asset) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (!asset) {
+                maxCount--;
+            }
+            else {
+                [assets addObject:asset];
+                count++;
+            }
+            if (maxCount == count) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:assets applicationActivities:nil];
+                    [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
+                });
+            }
+        } failureBlock:^(NSError *error) {
+            maxCount--;
+        }];
+    }
 }
 
 - (void)selectOrganizeBarButtonAction:(id)sender {
@@ -349,6 +394,8 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[addBarButtonItem, searchBarButtonItem] animated:YES];
         UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
+        settingsBarButtonItem.landscapeImagePhone = [PWIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
+        self.navigationItem.leftBarButtonItem = settingsBarButtonItem;
         [sself.navigationItem setLeftBarButtonItem:settingsBarButtonItem animated:YES];
         for (UIView *view in sself.navigationController.navigationBar.subviews) {
             view.exclusiveTouch = YES;

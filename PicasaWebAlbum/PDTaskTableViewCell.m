@@ -109,12 +109,12 @@
     if (_isPhotosTask) {
         _thumbnailImageView.frame = CGRectMake(15.0f, 10.0f, rect.size.height - 24.0f, rect.size.height - 24.0f);
         
-        _titleLabel.frame = CGRectMake(70.0f, 22.0f, (CGRectGetWidth(rect) / 2.0f - 10.0f) - 70.0f, 15.0f);
+        _titleLabel.frame = CGRectMake(70.0f, 22.0f, (CGRectGetWidth(rect) / 2.0f - 10.0f) - 70.0f, 20.0f);
     }
     else {
         _thumbnailImageView.frame = CGRectMake(15.0f, 10.0f, rect.size.height - 20.0f, rect.size.height - 20.0f);
         
-        _titleLabel.frame = CGRectMake(70.0f, 22.0f, 220.0f, 15.0f);
+        _titleLabel.frame = CGRectMake(70.0f, 22.0f, 220.0f, 20.0f);
     }
     
     _taskTypeLabel.frame = CGRectMake(64.0f, 10.0f, 220.0f, 10.0f);

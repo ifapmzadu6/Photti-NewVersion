@@ -14,6 +14,7 @@
 
 #import "PWSettingsViewController.h"
 #import "PWShareAction.h"
+#import "PWTabBarController.h"
 
 @interface PLAutoCreateAlbumViewController ()
 
@@ -120,6 +121,11 @@
     _disableButton.layer.cornerRadius = 5.0f;
     _disableButton.exclusiveTouch = YES;
     [self.view addSubview:_disableButton];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setAdsHidden:YES animated:NO];
 }
 
 - (void)viewWillLayoutSubviews {

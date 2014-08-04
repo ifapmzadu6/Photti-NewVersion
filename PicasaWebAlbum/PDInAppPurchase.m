@@ -55,7 +55,7 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
 }
 
 + (bool)isPurchasedWithKey:(NSString *)key {
-    return YES;
+//    return YES;
     
     NSError *error = nil;
     NSString *password = [SFHFKeychainUtils getPasswordForUsername:key andServiceName:kServiceName error:&error];

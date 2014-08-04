@@ -19,6 +19,7 @@
 
 #import "PDTaskTableViewCell.h"
 #import "PDTaskManagerViewControllerHeaderView.h"
+#import "PWTabBarController.h"
 #import "PDTaskViewController.h"
 #import "PWSettingsViewController.h"
 
@@ -36,6 +37,9 @@
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"Task Manager", nil);
+        
+        self.automaticallyAdjustsScrollViewInsets = NO;
+        self.edgesForExtendedLayout = UIRectEdgeAll;
         
         NSManagedObjectContext *plcontext = [PLCoreDataAPI readContext];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:plcontext];
@@ -88,6 +92,10 @@
     
     CGRect rect = self.view.bounds;
     
+    PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
+    UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
+    _tableView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom + 50.0f, 0.0f);
+    _tableView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
     _tableView.frame = rect;
 }
 
@@ -176,6 +184,8 @@
 
 #pragma mark UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
 //    PDTaskObject *taskObject = nil;
 //    if (indexPath.section == 0) {
 //        taskObject = _fetchedResultsController.fetchedObjects.firstObject;

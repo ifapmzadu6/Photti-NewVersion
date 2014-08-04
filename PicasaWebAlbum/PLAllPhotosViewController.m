@@ -132,6 +132,20 @@
 }
 
 #pragma mark Methods
+- (void)setSelectedPhotos:(NSMutableArray *)selectedPhotos {
+    _selectedPhotos = selectedPhotos;
+    
+    for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
+        [_collectionView deselectItemAtIndexPath:indexPath animated:NO];
+    }
+    for (PLPhotoObject *photoObject in selectedPhotos) {
+        NSIndexPath *indexPath = [_fetchedResultsController indexPathForObject:photoObject];
+        if (indexPath) {
+            [_collectionView selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+        }
+    }
+}
+
 - (void)setIsSelectMode:(BOOL)isSelectMode {
     _isSelectMode = isSelectMode;
     
@@ -139,8 +153,8 @@
     for (PLPhotoViewCell *cell in _collectionView.visibleCells) {
         cell.isSelectWithCheckMark = isSelectMode;
     }
-    for (PLPhotoViewHeaderView *headerView in _headers) {
-        [headerView setSelectButtonIsDeselect:isSelectMode];
+    for (PLPhotoViewHeaderView *header in _headers) {
+        [header setSelectButtonIsDeselect:NO];
     }
 }
 
@@ -182,9 +196,14 @@
         NSArray *filteredVideoObjects = [sectionInfo.objects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypeVideo]];
         [headerView setDetail:[PWString photoAndVideoStringWithPhotoCount:filteredPhotoObjects.count videoCount:filteredVideoObjects.count]];
         __weak typeof(self) wself = self;
+        __weak typeof(headerView) wheaderView = headerView;
         headerView.selectButtonActionBlock = ^{
             typeof(wself) sself = wself;
             if (!sself) return;
+            
+            if (sself.headerViewDidTapBlock) {
+                sself.headerViewDidTapBlock(YES);
+            }
             
             sself.isSelectMode = YES;
             NSMutableArray *indexPaths = [NSMutableArray array];
@@ -194,10 +213,9 @@
                 [sself.collectionView selectItemAtIndexPath:selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
                 [sself.selectedPhotos addObject:[sself.fetchedResultsController objectAtIndexPath:selectedIndexPath]];
             }
-            
-            if (sself.headerViewDidTapBlock) {
-                sself.headerViewDidTapBlock(YES);
-            }
+            typeof(wheaderView) sheaderView = wheaderView;
+            if (!sheaderView) return;
+            [sheaderView setSelectButtonIsDeselect:YES];
             
             if (sself.photoDidSelectedInSelectModeBlock) {
                 sself.photoDidSelectedInSelectModeBlock(indexPaths);

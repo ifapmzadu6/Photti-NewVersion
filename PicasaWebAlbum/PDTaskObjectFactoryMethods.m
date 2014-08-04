@@ -71,12 +71,12 @@
     NSString *fromLocalAlbumID = fromLocalAlbum.id_str;
     NSString *toWebAlbumID = toWebAlbum.id_str;
     
-    NSManagedObjectContext *context = [PDCoreDataAPI writeContext];
-    [context performBlock:^{
+    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
         PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDTaskObject class]) inManagedObjectContext:context];
         taskObject.type = @(PDTaskObjectTypeLocalAlbumToWebAlbum);
         taskObject.from_album_id_str = fromLocalAlbumID;
         taskObject.to_album_id_str = toWebAlbumID;
+        NSManagedObjectID *taskObjectID = taskObject.objectID;
         
         NSMutableArray *id_strs = [NSMutableArray array];
         [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
@@ -85,33 +85,30 @@
             }
         }];
         
-        __block NSUInteger index = 0;
-        NSUInteger count = id_strs.count;
         for (NSString *id_str in id_strs) {
             PDLocalPhotoObject *localPhoto = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDLocalPhotoObject class]) inManagedObjectContext:context];
             localPhoto.photo_object_id_str = id_str;
             localPhoto.task = taskObject;
             [taskObject addPhotosObject:localPhoto];
             
-            NSManagedObjectID *taskObjectID = taskObject.objectID;
-            
-            [localPhoto setUploadTaskToWebAlbumID:id_str completion:^(NSError *error) {
-                index++;
-                if (index == count) {
-                    NSError *error = nil;
-                    if (![context save:&error]) {
-                        NSLog(@"%@", error.description);
-                        abort();
-                    }
-                    
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        if (completion) {
-                            completion(taskObjectID, nil);
-                        }
-                    });
-                }
-            }];
+//            [localPhoto setUploadTaskToWebAlbumID:id_str completion:^(NSError *error) {
+//                index++;
+//                if (index == count) {
+//                    NSError *error = nil;
+//                    if (![context save:&error]) {
+//                        NSLog(@"%@", error.description);
+//                        abort();
+//                    }
+//                    
+//                }
+//            }];
         }
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if (completion) {
+                completion(taskObjectID, nil);
+            }
+        });
     }];
 }
 

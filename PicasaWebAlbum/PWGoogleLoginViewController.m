@@ -14,6 +14,7 @@
 
 #import "PWSettingsViewController.h"
 #import "PWShareAction.h"
+#import "PWTabBarController.h"
 
 @interface PWGoogleLoginViewController ()
 
@@ -103,6 +104,13 @@
     _loginButton.layer.cornerRadius = 5.0f;
     _loginButton.exclusiveTouch = YES;
     [self.view addSubview:_loginButton];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setAdsHidden:YES animated:NO];
 }
 
 - (void)viewWillLayoutSubviews {

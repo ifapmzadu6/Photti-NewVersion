@@ -62,7 +62,7 @@
     [self.view addSubview:_iconImageView];
     
     _descriptionLabel = [UILabel new];
-    //    _descriptionLabel.text = @"アップロード/ダウンロード機能を有効にすると写真をウェブに無制限にアップロードまたはダウンロードできます。";
+    //_descriptionLabel.text = @"アップロード/ダウンロード機能を有効にすると写真をウェブに無制限にアップロードまたはダウンロードできます。";
     _descriptionLabel.text = NSLocalizedString(@"Purchasing Upload-Download Addon, you can download or upload unlimitedly to Web Album by Photti.", nil);
     _descriptionLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _descriptionLabel.textAlignment = NSTextAlignmentCenter;
@@ -155,7 +155,7 @@
     }
     else {
         __weak typeof(self) wself = self;
-        [PDInAppPurchase getProductsWithProductIDs:@[kPDUploadAndDownloadPuroductID] completion:^(NSArray *products, NSError *error) {
+        [PDInAppPurchase getProductsWithProductIDs:@[kPDRemoveAdsPuroductID] completion:^(NSArray *products, NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (error) {
@@ -164,7 +164,7 @@
             }
             
             for (SKProduct *product in products) {
-                if ([product.productIdentifier isEqualToString:kPDUploadAndDownloadPuroductID]) {
+                if ([product.productIdentifier isEqualToString:kPDRemoveAdsPuroductID]) {
                     sself.product = products.firstObject;
                     NSNumberFormatter * numberFormatter = [[NSNumberFormatter alloc] init];
                     [numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];

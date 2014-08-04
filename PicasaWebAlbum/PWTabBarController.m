@@ -506,7 +506,7 @@ static const CGFloat animationDuration = 0.25f;
     }
     _bannerView.adUnitID = @"ca-app-pub-9347360948699796/7365185266";
     _bannerView.rootViewController = self;
-    [self.view addSubview:_bannerView];
+    [self.view insertSubview:_bannerView belowSubview:self.tabBar];
     
     [_bannerView loadRequest:[GADRequest request]];
 }
