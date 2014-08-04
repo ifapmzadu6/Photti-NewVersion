@@ -23,7 +23,8 @@ static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCo
 @implementation PDCopyPhotoObject (methods)
 
 - (void)makeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
-    if (self.downloaded_data_location) {
+    NSString *filePath = self.downloaded_data_location;
+    if (filePath && [[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         [self makeUploadSessionTaskWithSession:session completion:^(NSURLSessionTask *task, NSError *error) {
             [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
                 self.session_task_identifier = @(task.taskIdentifier);
@@ -104,6 +105,7 @@ static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCo
             completion ? completion(sessionTask, nil) : 0;
         }
         else {
+            
             completion ? completion(nil, [NSError errorWithDomain:kPDCopyPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
         }
     }];

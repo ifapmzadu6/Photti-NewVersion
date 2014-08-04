@@ -30,6 +30,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
 @property (nonatomic) BOOL isPreparing;
 @property (strong, nonatomic) NSURL *location;
+@property (strong, nonatomic) NSData *uploadResponseData;
 
 @end
 
@@ -283,6 +284,23 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         if ([photoObject isKindOfClass:[PDCopyPhotoObject class]]) {
             [(PDCopyPhotoObject *)photoObject finishUpload];
         }
+        else if ([photoObject isKindOfClass:[PDLocalPhotoObject class]]) {
+            __block PDTaskObject *taskObject = nil;
+            [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+                taskObject = photoObject.task;
+            }];
+            
+            NSData *data = _uploadResponseData;
+            _uploadResponseData = nil;
+            if (!taskObject.to_album_id_str) {
+                [(PDLocalPhotoObject *)photoObject finishMakeNewAlbumSessionWithResponse:task.response data:data];
+            }
+            else {
+                [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                    photoObject.is_done = @(YES);
+                }];
+            }
+        }
         [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
     }
 }
@@ -370,22 +388,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 #pragma mark NSURLSessionDataTask
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
     NSLog(@"%s", __func__);
-    
-    PDBasePhotoObject *firstObject = [[self class] getFirstTaskObject].photos.firstObject;
-    if ([firstObject isKindOfClass:[PDLocalPhotoObject class]]) {
-        __block PDTaskObject *taskObject = nil;
-        [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-            taskObject = firstObject.task;
-        }];
-        if (!taskObject.to_album_id_str) {
-            [(PDLocalPhotoObject *)firstObject finishMakeNewAlbumSessionWithResponse:dataTask.response data:data];
-        }
-        else {
-            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                firstObject.is_done = @(YES);
-            }];
-        }
-    }    
+    _uploadResponseData = data;
 }
 
 #pragma mark contextchanged

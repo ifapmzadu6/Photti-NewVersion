@@ -55,9 +55,7 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
             NSData *imageData = [asset resizedDataWithMaxPixelSize:2048];
             NSError *error = nil;
             [imageData writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error];
-            if (completion) {
-                completion(error);
-            }
+            completion ? completion(error) : 0;
         }
         else if ([type isEqualToString:ALAssetTypeVideo]) {
             NSString *tmpFilePath = [[self class] makeUniquePathInTmpDir];
@@ -145,8 +143,13 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
                 [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
             }
             [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)fileAttributes[NSFileSize]] forHTTPHeaderField:@"Content-Length"];
-            NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
             
+            if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+                completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+                return;
+            }
+            
+            NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
             [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
                 self.session_task_identifier = @(sessionTask.taskIdentifier);
             }];
@@ -155,7 +158,8 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
         }];
     };
     
-    if (!self.prepared_body_filepath) {
+    NSString *filePath = self.prepared_body_filepath;
+    if (!filePath || ![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         [self setUploadTaskToWebAlbumID:taskObject.to_album_id_str completion:^(NSError *error) {
             block();
         }];

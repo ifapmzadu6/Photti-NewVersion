@@ -69,7 +69,12 @@
     [self.contentView insertSubview:_backImageView2 belowSubview:_backImageView];
     
     _titleTextField = [UITextField new];
-    _titleTextField.font = [UIFont systemFontOfSize:16.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _titleTextField.font = [UIFont systemFontOfSize:16.0f];
+    }
+    else {
+        _titleTextField.font = [UIFont systemFontOfSize:18.0f];
+    }
     _titleTextField.textColor = [PWColors getColor:PWColorsTypeTextColor];
     _titleTextField.textAlignment = NSTextAlignmentCenter;
     _titleTextField.returnKeyType = UIReturnKeyDone;
@@ -77,7 +82,12 @@
     [self.contentView addSubview:_titleTextField];
     
     _numberLabel = [UILabel new];
-    _numberLabel.font = [UIFont systemFontOfSize:13.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _numberLabel.font = [UIFont systemFontOfSize:13.0f];
+    }
+    else {
+        _numberLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
     _numberLabel.textColor = [PWColors getColor:PWColorsTypeTextDarkColor];
     _numberLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:_numberLabel];

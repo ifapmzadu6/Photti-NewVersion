@@ -80,10 +80,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-//    PLNewAlbumCreatedViewController *viewController = [[PLNewAlbumCreatedViewController alloc] initWithEnumuratedDate:nil];
-//    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
-//    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)viewWillLayoutSubviews {

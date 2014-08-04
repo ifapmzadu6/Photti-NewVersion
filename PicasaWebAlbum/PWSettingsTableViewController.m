@@ -13,6 +13,7 @@
 #import "PWPicasaAPI.h"
 #import "PLAssetsManager.h"
 #import "PDTaskManager.h"
+#import "PDCoreDataAPI.h"
 #import "PDInAppPurchase.h"
 #import "BlocksKit+UIKit.h"
 #import "KKStaticTableView.h"
@@ -185,6 +186,20 @@
         viewController.footerString = NSLocalizedString(@"Photos bigger than 2048x2048 pixels and videos longer than 15minutes use your Google Storage.", nil);
         [sself.navigationController pushViewController:viewController animated:YES];
     }];
+    
+    [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeValue1 cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.textLabel.text = NSLocalizedString(@"Delete all tasks", nil);
+        cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextDarkColor];
+        UIButton *button = [sself roundedButtonWithTitle:NSLocalizedString(@"Delete", nil) tintColor:tintColor action:@selector(deleteAllTasksButtonAction)];
+        button.layer.borderWidth = 0.0f;
+        [button setTitleColor:tintColor forState:UIControlStateNormal];
+        [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateNormal];
+        cell.accessoryView = button;
+    } cellHeight:CGFLOAT_MIN didSelect:nil];
 }
 
 #pragma mark In-AppPurchaseSection
@@ -253,7 +268,6 @@
         cell.textLabel.text = NSLocalizedString(@"Restore In-App Purchase", nil);
         cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextDarkColor];
         UIButton *button = [sself roundedButtonWithTitle:NSLocalizedString(@"Restore", nil) tintColor:tintColor action:@selector(restoreButtonAction:)];
-        button.layer.borderColor = tintColor.CGColor;
         button.layer.borderWidth = 0.0f;
         [button setTitleColor:tintColor forState:UIControlStateNormal];
         [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateNormal];
@@ -389,6 +403,23 @@
 
 - (void)openReviewOniTunesStore {
     [PWSettingsTableViewController jumpToAppReviewPage];
+}
+
+- (void)deleteAllTasksButtonAction {
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Are you sure you want to delete all tasks?", nil)];
+    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
+        [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+            NSFetchRequest *request = [NSFetchRequest new];
+            request.entity = [NSEntityDescription entityForName:@"PDTaskObject" inManagedObjectContext:context];
+            NSError *error = nil;
+            NSArray *tasks = [context executeFetchRequest:request error:&error];
+            for (PDTaskObject *task in tasks) {
+                [context deleteObject:task];
+            }
+        }];
+    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    [actionSheet showInView:self.view];
 }
 
 - (void)purchaseButtonAction:(UIButton *)button {

@@ -70,13 +70,28 @@
     _collectionView.showsHorizontalScrollIndicator = NO;
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.clipsToBounds = NO;
-    _collectionView.contentInset = UIEdgeInsetsMake(0.0f, 80.0f, 0.0f, 80.0f);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _collectionView.contentInset = UIEdgeInsetsMake(0.0f, 80.0f, 0.0f, 80.0f);
+    }
+    else {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            _collectionView.contentInset = UIEdgeInsetsMake(0.0f, 256.0f, 0.0f, 256.0f);
+        }
+        else {
+            _collectionView.contentInset = UIEdgeInsetsMake(0.0f, 192.0f, 0.0f, 192.0f);
+        }
+    }
     _collectionView.exclusiveTouch = YES;
     _collectionView.scrollEnabled = NO;
     [self.view addSubview:_collectionView];
     
     _createdNewAlbumLabel = [UILabel new];
-    _createdNewAlbumLabel.font = [UIFont systemFontOfSize:14.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _createdNewAlbumLabel.font = [UIFont systemFontOfSize:14.0f];
+    }
+    else {
+        _createdNewAlbumLabel.font = [UIFont systemFontOfSize:16.0f];
+    }
     _createdNewAlbumLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
     _createdNewAlbumLabel.textAlignment = NSTextAlignmentCenter;
     _createdNewAlbumLabel.numberOfLines = 0;
@@ -84,7 +99,12 @@
     
     _uploadButton = [UIButton new];
     [_uploadButton addTarget:self action:@selector(uploadButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    _uploadButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _uploadButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _uploadButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     [_uploadButton setTitle:NSLocalizedString(@"Upload", nil) forState:UIControlStateNormal];
     [_uploadButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateNormal];
     [_uploadButton setTitleColor:[PWColors getColor:PWColorsTypeBackgroundLightColor] forState:UIControlStateNormal];
@@ -100,7 +120,12 @@
     
     _skipButton = [UIButton new];
     [_skipButton addTarget:self action:@selector(skipButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    _skipButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _skipButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _skipButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     [_skipButton setTitle:NSLocalizedString(@"Skip", nil) forState:UIControlStateNormal];
     [_skipButton setTitleColor:[PWColors getColor:PWColorsTypeBackgroundLightColor] forState:UIControlStateHighlighted];
     [_skipButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
@@ -112,7 +137,12 @@
     
     _applyAllItemsButton = [UIButton new];
     [_applyAllItemsButton addTarget:self action:@selector(applyAllItemsButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    _applyAllItemsButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _applyAllItemsButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
+    }
+    else {
+        _applyAllItemsButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
     [_applyAllItemsButton setTitle:NSLocalizedString(@"Apply the same operation to all items", nil) forState:UIControlStateNormal];
     [_applyAllItemsButton setTitleColor:[PWColors getColor:PWColorsTypeBackgroundLightColor] forState:UIControlStateHighlighted];
     [_applyAllItemsButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
@@ -126,7 +156,8 @@
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
 //    request.predicate = [NSPredicate predicateWithFormat:@"(import = %@) AND (tag_uploading_type = %@)", _date, @(PLAlbumObjectTagUploadingTypeUnknown)];
-    request.predicate = [NSPredicate predicateWithFormat:@"tag_uploading_type = %@", @(PLAlbumObjectTagUploadingTypeUnknown)];
+    //下はテスト用
+//    request.predicate = [NSPredicate predicateWithFormat:@"tag_uploading_type = %@", @(PLAlbumObjectTagUploadingTypeUnknown)];
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
     _fetchedResultsController.delegate = self;
@@ -156,19 +187,45 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            _createdNewAlbumLabel.frame = CGRectMake(60.0f, 86.0f, 200.0f, 40.0f);
+            _createdNewAlbumLabel.frame = CGRectMake(0.0f, 86.0f, 320.0f, 40.0f);
             _collectionView.frame = CGRectMake(242.0f, 80.0f, 320.0f, 280.0f);
             _uploadButton.frame = CGRectMake(110.0f, 155.0f, 100.0f, 32.0f);
             _skipButton.frame = CGRectMake(110.0f, 205.0f, 100.0f, 32.0f);
             _applyAllItemsButton.frame = CGRectMake(17.0f, CGRectGetHeight(rect) - 60.0f, 255.0f + 30.0f, 30.0f);
         }
         else {
-            _createdNewAlbumLabel.frame = CGRectMake(60.0f, 86.0f, 200.0f, 40.0f);
+            _createdNewAlbumLabel.frame = CGRectMake(0.0f, 86.0f, 320.0f, 40.0f);
             _collectionView.frame = CGRectMake(0.0f, 150.0f, 320.0f, 280.0f);
             _uploadButton.frame = CGRectMake(110.0f, 400.0f, 100.0f, 32.0f);
             _skipButton.frame = CGRectMake(110.0f, 450.0f, 100.0f, 32.0f);
             _applyAllItemsButton.frame = CGRectMake(20.0f, CGRectGetHeight(rect) - 50.0f, CGRectGetWidth(rect) - 20.0f*2.0f, 30.0f);
         }
+    }
+    else {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            _createdNewAlbumLabel.frame = CGRectMake(312.0f, 100.0f, 400.0f, 40.0f);
+            _collectionView.contentInset = UIEdgeInsetsMake(0.0f, 256.0f, 0.0f, 256.0f);
+            _collectionView.frame = CGRectMake(0.0f, 120.0f, 1024.0f, 500.0f);
+            _uploadButton.frame = CGRectMake(382.0f, 670.0f, 260.0f, 60.0f);
+            _skipButton.frame = CGRectMake(70.0f, 670.0f, 260.0f, 60.0f);
+            _applyAllItemsButton.frame = CGRectMake(680.0f, 670.0f, 300.0f, 60.0f);
+        }
+        else {
+            _createdNewAlbumLabel.frame = CGRectMake(184.0f, 100.0f, 400.0f, 40.0f);
+            _collectionView.contentInset = UIEdgeInsetsMake(0.0f, 192.0f, 0.0f, 192.0f);
+            _collectionView.frame = CGRectMake(0.0f, 170.0f, 768.0f, 500.0f);
+            _uploadButton.frame = CGRectMake(244.0f, 700.0f, 260.0f, 60.0f);
+            _skipButton.frame = CGRectMake(244.0f, 790.0f, 260.0f, 60.0f);
+            _applyAllItemsButton.frame = CGRectMake(184.0f, CGRectGetHeight(rect) - 100.0f, 400.0f, 60.0f);
+        }
+    }
+    
+    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
+    [collectionViewLayout invalidateLayout];
+    
+    if (_fetchedResultsController.fetchedObjects.count > 0) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
     }
 }
 
@@ -182,10 +239,6 @@
 }
 
 #pragma mark UIBarButtonAction
-- (void)uploadAllButtonAction {
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
 - (void)doneBarButtonAction {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -278,10 +331,10 @@
     }
     else {
         if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            return CGSizeMake(160.0f, 280.0f);
+            return CGSizeMake(512.0f, 400.0f);
         }
         else {
-            return CGSizeMake(160.0f, 280.0f);
+            return CGSizeMake(384.0f, 400.0f);
         }
     }
 }
@@ -334,6 +387,10 @@
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (controller.fetchedObjects.count == 0) {
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
+        
         [_collectionView performBatchUpdates:^{
             [_fetchedResultsReloadOperation start];
         } completion:^(BOOL finished) {

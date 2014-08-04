@@ -40,9 +40,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-//    [[SDImageCache sharedImageCache] setMaxMemoryCost:10 * 10^6];
     [[[NSURLSession sharedSession] configuration] setURLCache:nil];
-//    [[NSURLSession sharedSession] configuration].URLCache.memoryCapacity = 0;
     
     [[PDTaskManager sharedManager] cancel];
     [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:@""] completion:^(NSMutableURLRequest *request, NSError *error) {
@@ -77,6 +75,8 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 
 #pragma mark Background Fetch
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    [[PDTaskManager sharedManager] start];
+    
     NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:[NSDate date]];
     NSDate *beforeDate = [[NSUserDefaults standardUserDefaults] objectForKey:kPWAppDelegateBackgroundFetchDateKey];
     if ([adjustedDate isEqualToDate:beforeDate]) {
@@ -108,7 +108,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
         }
         
         completionHandler(UIBackgroundFetchResultNoData);
-    }];    
+    }];
 }
 
 #pragma mark Background Transfer

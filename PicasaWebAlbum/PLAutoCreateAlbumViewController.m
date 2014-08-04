@@ -59,7 +59,7 @@
     [self.view addSubview:_iconImageView];
     
     _titleLabel = [UILabel new];
-    _titleLabel.text = @"Auto-Create Album";
+    _titleLabel.text = NSLocalizedString(@"Auto-Create Album", nil);
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _titleLabel.font = [UIFont systemFontOfSize:15.0f];
     }
