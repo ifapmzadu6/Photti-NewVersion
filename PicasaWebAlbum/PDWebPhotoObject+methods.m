@@ -40,7 +40,15 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         return;
     }
     
-    NSURL *url = [NSURL URLWithString:photoObject.tag_originalimage_url];
+    NSURL *url = nil;
+    if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+        url = [NSURL URLWithString:photoObject.tag_originalimage_url];
+    }
+    else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+        NSArray *contents = [photoObject.media.content.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @"video/mpeg4"]];
+        PWPhotoMediaContentObject *content = contents.lastObject;
+        url = [NSURL URLWithString:content.url];
+    }
     [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
         NSURLSessionTask *sessionTask = [session downloadTaskWithRequest:request];
         
@@ -52,7 +60,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     }];
 };
 
-- (void)finishDownloadWithData:(NSData *)data completion:(void (^)(NSError *))completion {
+- (void)finishDownloadWithLocation:(NSURL *)location completion:(void (^)(NSError *))completion {
     PDTaskObject *taskObject = self.task;
     NSString *local_album_id_str = taskObject.to_album_id_str;
     NSString *web_album_id_str = taskObject.from_album_id_str;
@@ -90,8 +98,8 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     NSString *localAlbumObjectURL = localAlbumObject.url;
     NSManagedObjectID *localAlbumObjectID = localAlbumObject.objectID;
     
-    [[PLAssetsManager sharedLibrary] writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
-        if (error) {
+    void (^completionBlock)(NSURL *, NSError *) = ^(NSURL *assetURL, NSError *error){
+        if (error || !assetURL) {
             NSLog(@"%@", error.description);
             [PLCoreDataAPI writeContextFinish:plContext];
             return;
@@ -172,7 +180,26 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
                 }
             });
         }];
-    }];
+    };
+    
+    PWPhotoObject *webPhotoObject = [PDWebPhotoObject getWebPhotoObjectWithID:self.photo_object_id_str context:[PWCoreDataAPI readContext]];
+    if (webPhotoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+        NSData *data = [NSData dataWithContentsOfURL:location];
+        [[PLAssetsManager sharedLibrary] writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:completionBlock];
+    }
+    else if (webPhotoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+        NSURL *newLocation = [location URLByAppendingPathExtension:@"mp4"];
+        NSError *error = nil;
+        if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:newLocation error:&error]) {
+            NSLog(@"%@", error.description);
+        }
+        if ([[PLAssetsManager sharedLibrary] videoAtPathIsCompatibleWithSavedPhotosAlbum:newLocation]) {
+            [[PLAssetsManager sharedLibrary] writeVideoAtPathToSavedPhotosAlbum:newLocation completionBlock:completionBlock];
+        }
+        else {
+            completion ? completion([NSError errorWithDomain:kPDWebPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        }
+    }
 }
 
 
@@ -199,6 +226,19 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     NSArray *albums = [context executeFetchRequest:request error:&error];
     if (albums.count > 0) {
         return albums.firstObject;
+    }
+    return nil;
+}
+
++ (PWPhotoObject *)getWebPhotoObjectWithID:(NSString *)id_str context:(NSManagedObjectContext *)context {
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+    request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+    request.fetchLimit = 1;
+    NSError *error = nil;
+    NSArray *objects = [context executeFetchRequest:request error:&error];
+    if (objects.count > 0) {
+        return objects.firstObject;
     }
     return nil;
 }

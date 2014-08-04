@@ -264,8 +264,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         
         if ([photoObject isKindOfClass:[PDWebPhotoObject class]]) {
             PDWebPhotoObject *webPhotoObject = (PDWebPhotoObject *)photoObject;
-            NSData *data = [NSData dataWithContentsOfURL:location];
-            [webPhotoObject finishDownloadWithData:data completion:^(NSError *error) {
+            [webPhotoObject finishDownloadWithLocation:location completion:^(NSError *error) {
                 if (error) {
                     NSLog(@"%@", error.description);
                     return;

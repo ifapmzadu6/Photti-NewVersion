@@ -10,6 +10,6 @@
 
 @interface PDWebPhotoObject (methods)
 
-- (void)finishDownloadWithData:(NSData *)data completion:(void (^)(NSError *error))completion;
+- (void)finishDownloadWithLocation:(NSURL *)location completion:(void (^)(NSError *error))completion;
 
 @end
