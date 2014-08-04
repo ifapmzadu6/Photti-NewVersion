@@ -295,11 +295,11 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
                 title = @"EXIF";
             }
             else if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-                title = @"VIDEO";
+                title = NSLocalizedString(@"Video", nil);
             }
             break;
         case PWPhotoEditViewControllerSectionTypeDESCRIPTION:
-            title = @"DESCRIPTION";
+            title = NSLocalizedString(@"Description", nil);
             break;
         default:
             break;

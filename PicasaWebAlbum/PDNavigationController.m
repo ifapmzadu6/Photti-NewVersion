@@ -29,7 +29,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"Task Manager", nil);
+        self.title = NSLocalizedString(@"Task Manager", @"l");
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Upload"] selectedImage:[UIImage imageNamed:@"UploadSelect"]];
         
 //        [PDInAppPurchase resetKeyChain];

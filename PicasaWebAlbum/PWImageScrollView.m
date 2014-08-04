@@ -101,6 +101,7 @@
 	_isZoom = NO;
 }
 
+#pragma mark Methods
 - (void)setImage:(UIImage *)image {
     if (_imageView) {
         _imageView.image = image;
@@ -137,6 +138,14 @@
     return _imageView.image;
 }
 
+- (void)setIsDisableZoom:(BOOL)isDisableZoom {
+    _isDisableZoom = isDisableZoom;
+    
+    if (isDisableZoom) {
+        self.maximumZoomScale = self.minimumZoomScale;
+    }
+}
+
 #pragma mark - UIScrollViewDelegate
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     return  _imageView;
@@ -149,9 +158,6 @@
     }
 }
 
-
-
-
 - (void)setMaxMinZoomScalesForCurrentBounds {
     CGSize boundsSize = self.bounds.size;
     
@@ -163,6 +169,10 @@
 	
     self.minimumZoomScale = minScale;
     self.maximumZoomScale = minScale * 9.0f;
+    
+    if (_isDisableZoom) {
+        self.maximumZoomScale = self.minimumZoomScale;
+    }
 }
 
 #pragma mark -

@@ -123,7 +123,7 @@
     CGFloat scale = size / 120.0f;
     
     //// Color Declarations
-    UIColor* color2 = [UIColor colorWithRed: 0.5f green: 0.5f blue: 0.5f alpha: 0.5f];
+    UIColor* color2 = [UIColor colorWithRed: 0.5f green: 0.5f blue: 0.5f alpha: 1.0f];
     
     //// Bezier Drawing
     UIBezierPath* bezierPath = UIBezierPath.bezierPath;
@@ -162,7 +162,6 @@
 
 + (UIImage *)videoIconWithColor:(UIColor *)color size:(CGSize)size {
     UIGraphicsBeginImageContextWithOptions(size, NO, 0.0f);
-//    CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGFloat widthScale = size.width / 100.0f;
     CGFloat heightScale = size.height / 50.0f;
@@ -180,7 +179,6 @@
     [bezierPath addCurveToPoint: CGPointMake(70*widthScale, 21.47*heightScale) controlPoint1: CGPointMake(70*widthScale, 26.33*heightScale) controlPoint2: CGPointMake(70*widthScale, 23.67*heightScale)];
     [bezierPath addCurveToPoint: CGPointMake(100*widthScale, 0) controlPoint1: CGPointMake(79.63*widthScale, 14.57*heightScale) controlPoint2: CGPointMake(100*widthScale, 0)];
     [bezierPath addLineToPoint: CGPointMake(100*widthScale, 0)];
-    [bezierPath closePath];
     [bezierPath closePath];
     [color setFill];
     [bezierPath fill];

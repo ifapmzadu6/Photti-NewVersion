@@ -88,9 +88,6 @@
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.alwaysBounceVertical = YES;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        _collectionView.contentInset = UIEdgeInsetsMake(20.0f, 20.0f, 20.0f, 20.0f);
-    }
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
@@ -138,7 +135,12 @@
     
     PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
-    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 0.0f, 0.0f, viewInsets.bottom, 0.0f);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+    }
+    else {
+        _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 20.0f, 20.0f, viewInsets.bottom + 20.0f, 20.0f);
+    }
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
     _collectionView.frame = rect;
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;

@@ -56,9 +56,18 @@
     [self loadThumbnailImage];
     
     if ([_photo.type isEqualToString:ALAssetTypeVideo]) {
+        _imageScrollView.isDisableZoom = YES;
+        
         _videoButton = [UIButton new];
         [_videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
-        _videoButton.frame = CGRectMake(0.0f, 0.0f, 92.0f, 92.0f);
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            _videoButton.frame = CGRectMake(0.0f, 0.0f, 92.0f, 92.0f);
+            [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:92.0f] forState:UIControlStateNormal];
+        }
+        else {
+            _videoButton.frame = CGRectMake(0.0f, 0.0f, 170.0f, 170.0f);
+            [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:170.0f] forState:UIControlStateNormal];
+        }
         [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:0.8f] size:92.0f] forState:UIControlStateNormal];
         _videoButton.exclusiveTouch = YES;
         [self.view addSubview:_videoButton];

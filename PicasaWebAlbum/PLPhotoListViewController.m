@@ -51,10 +51,13 @@
         
         _album = album;
         
+        _selectedPhotoIDs = @[].mutableCopy;
+        
         NSManagedObjectContext *context = [PLCoreDataAPI readContext];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification) name:NSManagedObjectContextDidSaveNotification object:context];
         
-        _selectedPhotoIDs = @[].mutableCopy;
+        self.automaticallyAdjustsScrollViewInsets = NO;
+        self.edgesForExtendedLayout = UIRectEdgeAll;
     }
     return self;
 }
@@ -136,6 +139,15 @@
         indexPath = indexPaths[indexPaths.count / 2];
     }
     
+    PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
+    UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+    }
+    else {
+        _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 20.0f, 20.0f, viewInsets.bottom + 20.0f, 20.0f);
+    }
+    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
     _collectionView.frame = rect;
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];

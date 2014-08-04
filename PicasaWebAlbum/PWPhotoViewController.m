@@ -77,7 +77,7 @@
     }
     
     if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-        _imageScrollView.isDisableZoom = NO;
+        _imageScrollView.isDisableZoom = YES;
         
         _videoButton = [UIButton new];
         [_videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
@@ -86,8 +86,8 @@
             [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:92.0f] forState:UIControlStateNormal];
         }
         else {
-            _videoButton.frame = CGRectMake(0.0f, 0.0f, 155.0f, 155.0f);
-            [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:155.0f] forState:UIControlStateNormal];
+            _videoButton.frame = CGRectMake(0.0f, 0.0f, 170.0f, 170.0f);
+            [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:170.0f] forState:UIControlStateNormal];
         }
         _videoButton.exclusiveTouch = YES;
         [self.view addSubview:_videoButton];

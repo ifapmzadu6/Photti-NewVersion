@@ -172,30 +172,7 @@ static const CGFloat animationDuration = 0.25f;
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
-    CGRect rect = self.view.bounds;
-    CGFloat tHeight = 44.0f;
-    CGFloat adHeight = 50.0f;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            tHeight = 32.0f;
-            adHeight = 32.0f;
-        }
-    }
-    else {
-        tHeight = 56.0f;
-        adHeight = 90.0f;
-    }
-    
-    if (!_isAdsHidden) {
-        _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
-        
-        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            _bannerView.adSize = kGADAdSizeSmartBannerLandscape;
-        }
-        else {
-            _bannerView.adSize = kGADAdSizeSmartBannerPortrait;
-        }
-    }
+    [self layoutBannerView];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -526,13 +503,39 @@ static const CGFloat animationDuration = 0.25f;
         _bannerView.alpha = hidden ? 0 : 1;
     };
     
-    [self.view setNeedsLayout];
-    [self.view layoutIfNeeded];
+    [self layoutBannerView];
     if (animated) {
         [UIView animateWithDuration:animationDuration animations:animation];
     }
     else {
         animation();
+    }
+}
+
+- (void)layoutBannerView {
+    CGRect rect = self.view.bounds;
+    CGFloat tHeight = 44.0f;
+    CGFloat adHeight = 50.0f;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            tHeight = 32.0f;
+            adHeight = 32.0f;
+        }
+    }
+    else {
+        tHeight = 56.0f;
+        adHeight = 90.0f;
+    }
+    
+    if (!_isAdsHidden) {
+        _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
+        
+        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            _bannerView.adSize = kGADAdSizeSmartBannerLandscape;
+        }
+        else {
+            _bannerView.adSize = kGADAdSizeSmartBannerPortrait;
+        }
     }
 }
 

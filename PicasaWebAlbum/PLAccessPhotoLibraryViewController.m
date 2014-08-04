@@ -14,6 +14,7 @@
 
 #import "PWSettingsViewController.h"
 #import "PWShareAction.h"
+#import "PWTabBarController.h"
 
 @interface PLAccessPhotoLibraryViewController ()
 
@@ -106,6 +107,9 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    [tabBarController setAdsHidden:YES animated:NO];
     
     [self setDescriptionLabelText];
     [self updateAccessButton];
