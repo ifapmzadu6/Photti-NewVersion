@@ -18,7 +18,7 @@
 #import "PWImageScrollView.h"
 #import "PWTabBarController.h"
 
-@interface PWPhotoViewController ()
+@interface PWPhotoViewController () <UIAlertViewDelegate>
 
 @property (strong, nonatomic) UIImage *initialImage;
 
@@ -132,11 +132,55 @@
 
 #pragma mark UIButton
 - (void)videoButtonAction {
-    // TODO: 通信速度によって切り替える
     NSArray *contents = [_photo.media.content.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @"video/mpeg4"]];
-    PWPhotoMediaContentObject *content = contents.lastObject;
-    
-    NSURL *videoUrl = [NSURL URLWithString:content.url];
+    UIAlertView *alertView = [[UIAlertView alloc] init];
+    alertView.delegate = self;
+    alertView.title = NSLocalizedString(@"Video Quality", nil);
+    for (PWPhotoMediaContentObject *content in contents.reverseObjectEnumerator) {
+        NSInteger width = content.width.integerValue;
+        NSInteger height = content.height.integerValue;
+        NSString *title = [NSString stringWithFormat:@"%ldP", width >= height ? (long)width : (long)height];
+        [alertView addButtonWithTitle:title];
+    }
+    [alertView addButtonWithTitle:NSLocalizedString(@"Cancel", nil)];
+    [alertView setCancelButtonIndex:alertView.numberOfButtons - 1];
+    [alertView show];
+}
+
+#pragma mark MPMoviePlayerPlayback
+- (void)moviePlaybackStateChanged:(NSNotification *)notification {
+    if (_moviePlayerController.playbackState == MPMusicPlaybackStatePlaying) {
+        if (_moviePlayerPlaceholderView) {
+            _moviePlayerController.controlStyle = MPMovieControlStyleFullscreen;
+            
+            [_moviePlayerPlaceholderView removeFromSuperview];
+            _moviePlayerPlaceholderView = nil;
+        }
+    }
+}
+
+- (void)moviePlaybackDidFinish:(NSNotification *)notification {
+    NSDictionary *userInfo = notification.userInfo;
+    NSUInteger reason = [[userInfo objectForKey:@"MPMoviePlayerPlaybackDidFinishReasonUserInfoKey"] intValue];
+	if (reason == MPMovieFinishReasonUserExited || reason == MPMovieFinishReasonPlaybackEnded) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayerController];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackStateDidChangeNotification object:_moviePlayerController];
+        
+        if (_statusBarHiddenBeforePlay) {
+            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+        }
+        
+		[UIView animateWithDuration:0.3f animations:^{
+			_moviePlayerController.view.alpha = 0.0f;
+		} completion:^(BOOL finished) {
+			[_moviePlayerController.view removeFromSuperview];
+			_moviePlayerController = nil;
+		}];
+    }
+}
+
+#pragma mark Video
+- (void)playVideoWithUrl:(NSURL *)videoUrl {
     _moviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:videoUrl];
     if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
         CGSize size = [UIScreen mainScreen].bounds.size;
@@ -184,38 +228,6 @@
         
         [_moviePlayerController prepareToPlay];
     }];
-}
-
-#pragma mark MPMoviePlayerPlayback
-- (void)moviePlaybackStateChanged:(NSNotification *)notification {
-    if (_moviePlayerController.playbackState == MPMusicPlaybackStatePlaying) {
-        if (_moviePlayerPlaceholderView) {
-            _moviePlayerController.controlStyle = MPMovieControlStyleFullscreen;
-            
-            [_moviePlayerPlaceholderView removeFromSuperview];
-            _moviePlayerPlaceholderView = nil;
-        }
-    }
-}
-
-- (void)moviePlaybackDidFinish:(NSNotification *)notification {
-    NSDictionary *userInfo = notification.userInfo;
-    NSUInteger reason = [[userInfo objectForKey:@"MPMoviePlayerPlaybackDidFinishReasonUserInfoKey"] intValue];
-	if (reason == MPMovieFinishReasonUserExited || reason == MPMovieFinishReasonPlaybackEnded) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayerController];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackStateDidChangeNotification object:_moviePlayerController];
-        
-        if (_statusBarHiddenBeforePlay) {
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-        }
-        
-		[UIView animateWithDuration:0.3f animations:^{
-			_moviePlayerController.view.alpha = 0.0f;
-		} completion:^(BOOL finished) {
-			[_moviePlayerController.view removeFromSuperview];
-			_moviePlayerController = nil;
-		}];
-    }
 }
 
 #pragma mark LoadImage
@@ -338,6 +350,19 @@
         [task resume];
         sself.highResolutionTask = task;
     }];
+}
+
+#pragma mark UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == alertView.cancelButtonIndex) {
+        
+    }
+    else  {
+        NSArray *contents = [_photo.media.content.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @"video/mpeg4"]];
+        PWPhotoMediaContentObject *content = contents[contents.count - 1 - buttonIndex];
+        
+        [self playVideoWithUrl:[NSURL URLWithString:content.url]];
+    }
 }
 
 @end
