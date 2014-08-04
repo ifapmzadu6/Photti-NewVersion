@@ -389,11 +389,21 @@
 #pragma mark UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            return CGSizeMake(112.0f, 112.0f);
+        if ((int)[[UIScreen mainScreen] bounds].size.height > 480) {
+            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                return CGSizeMake(112.0f, 112.0f);
+            }
+            else {
+                return CGSizeMake(106.0f, 106.0f);
+            }
         }
         else {
-            return CGSizeMake(106.0f, 106.0f);
+            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                return CGSizeMake(118.5f, 118.5f);
+            }
+            else {
+                return CGSizeMake(106.0f, 106.0f);
+            }
         }
     }
     else {

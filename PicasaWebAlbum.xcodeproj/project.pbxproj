@@ -75,6 +75,7 @@
 		715A31A3198E9073002A0A37 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 715A31A2198E9073002A0A37 /* AudioToolbox.framework */; };
 		715A31A5198E907E002A0A37 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 715A31A4198E907E002A0A37 /* MessageUI.framework */; };
 		715A31AB198F5876002A0A37 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 715A31AD198F5876002A0A37 /* Localizable.strings */; };
+		715A31B4198FD5E8002A0A37 /* NSFileManager+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 715A31B3198FD5E8002A0A37 /* NSFileManager+methods.m */; };
 		716243331952090300168825 /* PLPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 716243321952090300168825 /* PLPhotoObject.m */; };
 		71649BF1195907A400009C1F /* PDInAppPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 71649BF0195907A400009C1F /* PDInAppPurchase.m */; };
 		717456E6196AB4F5003D2436 /* XmlReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 717456E5196AB4F5003D2436 /* XmlReader.m */; };
@@ -310,6 +311,8 @@
 		715A31AE198F5966002A0A37 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		715A31AF198F5966002A0A37 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		715A31B0198F5966002A0A37 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		715A31B2198FD5E8002A0A37 /* NSFileManager+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+methods.h"; sourceTree = "<group>"; };
+		715A31B3198FD5E8002A0A37 /* NSFileManager+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+methods.m"; sourceTree = "<group>"; };
 		716243311952090300168825 /* PLPhotoObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPhotoObject.h; sourceTree = "<group>"; };
 		716243321952090300168825 /* PLPhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoObject.m; sourceTree = "<group>"; };
 		71649BEF195907A400009C1F /* PDInAppPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDInAppPurchase.h; sourceTree = "<group>"; };
@@ -1062,6 +1065,15 @@
 			path = GoogleMobileAdsSdkiOS;
 			sourceTree = "<group>";
 		};
+		715A31B5198FD5F6002A0A37 /* NSFileManager+methods */ = {
+			isa = PBXGroup;
+			children = (
+				715A31B2198FD5E8002A0A37 /* NSFileManager+methods.h */,
+				715A31B3198FD5E8002A0A37 /* NSFileManager+methods.m */,
+			);
+			name = "NSFileManager+methods";
+			sourceTree = "<group>";
+		};
 		71649BF2195907AB00009C1F /* PDInAppPurchase */ = {
 			isa = PBXGroup;
 			children = (
@@ -1761,8 +1773,9 @@
 		71E8859519120BB9005A78E0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				715A30FF1989372A002A0A37 /* NSURLResponse+methods */,
 				71BD235919779E1C0034CD3B /* ALAsset+methods */,
+				715A31B5198FD5F6002A0A37 /* NSFileManager+methods */,
+				715A30FF1989372A002A0A37 /* NSURLResponse+methods */,
 				71388283193E13BD009AFB1F /* PDCoreDataAPI */,
 				71649BF2195907AB00009C1F /* PDInAppPurchase */,
 				7177479C1936F572005179B6 /* PDModelObject */,
@@ -2163,6 +2176,7 @@
 				71A2546C19195EDB009914F7 /* PWNavigationController.m in Sources */,
 				719CFE5D1959D339008B4308 /* PLAutoCreateAlbumViewController.m in Sources */,
 				71CD060F1930E68500BECF6B /* PWSearchTableViewWebAlbumCell.m in Sources */,
+				715A31B4198FD5E8002A0A37 /* NSFileManager+methods.m in Sources */,
 				71109C181974201700EEDAAE /* PLNewAlbumEditViewController.m in Sources */,
 				712E03B41920B5570035D9E0 /* PWString.m in Sources */,
 				71349CC4192F3731003CC2AA /* PLiCloudViewController.m in Sources */,

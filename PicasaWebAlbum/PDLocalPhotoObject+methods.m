@@ -24,6 +24,7 @@
 #import "PWPicasaPOSTRequest.h"
 #import "ALAsset+methods.h"
 #import "NSURLResponse+methods.h"
+#import "NSFileManager+methods.h"
 
 static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDLocalPhotoObjectMethods";
 
@@ -134,6 +135,7 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
                 return;
             }
             
+            [NSFileManager cancelProtect:filePath];
             NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
             if ([photoObject.type isEqualToString:ALAssetTypePhoto]) {
                 [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];

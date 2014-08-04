@@ -15,6 +15,7 @@
 #import "PLCoreDataAPI.h"
 #import "PWModelObject.h"
 #import "PWCoreDataAPI.h"
+#import "NSFileManager+methods.h"
 
 @implementation PDTaskObjectFactoryMethods
 
@@ -90,18 +91,6 @@
             localPhoto.photo_object_id_str = id_str;
             localPhoto.task = taskObject;
             [taskObject addPhotosObject:localPhoto];
-            
-//            [localPhoto setUploadTaskToWebAlbumID:id_str completion:^(NSError *error) {
-//                index++;
-//                if (index == count) {
-//                    NSError *error = nil;
-//                    if (![context save:&error]) {
-//                        NSLog(@"%@", error.description);
-//                        abort();
-//                    }
-//                    
-//                }
-//            }];
         }
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -162,10 +151,6 @@
                 localPhotoObject.task = taskObject;
                 [taskObject addPhotosObject:localPhotoObject];
                 
-//                ここでアップロードの準備をしてもいい？
-//                とりあえずアップロード直前で考える
-//                時間制限もしあればここでアップロードの準備
-//                [localPhotoObject setUploadTaskToWebAlbumID:localPhoto.id_str completion:^(NSError *error) {
             }
             else if ([photo isKindOfClass:[PWPhotoObject class]]) {
                 PWPhotoObject *webPhoto = (PWPhotoObject *)photo;

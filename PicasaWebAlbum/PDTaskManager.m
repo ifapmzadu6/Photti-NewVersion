@@ -242,8 +242,6 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 #pragma mark NSURLSessionTaskDelegate
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
 //    NSLog(@"%s", __func__);
-    
-//    NSLog(@"Send Data = %lld / %lld", totalBytesSent, totalBytesExpectedToSend);
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
@@ -268,6 +266,11 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
             PDWebPhotoObject *webPhotoObject = (PDWebPhotoObject *)photoObject;
             NSData *data = [NSData dataWithContentsOfURL:location];
             [webPhotoObject finishDownloadWithData:data completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"%@", error.description);
+                    return;
+                }
+                
                 [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
             }];
         }
@@ -363,7 +366,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
 #pragma mark NSURLSessionDownloadDelegate
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
-    NSLog(@"%s", __func__);
+//    NSLog(@"%s", __func__);
     
     NSString *filePath = [[self class] makeUniquePathInTmpDir];
     NSURL *fileURL = [NSURL fileURLWithPath:filePath];
@@ -378,8 +381,6 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
 //    NSLog(@"%s", __func__);
-    
-//    NSLog(@"Received Data = %lld / %lld", totalBytesWritten, totalBytesExpectedToWrite);
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
@@ -387,7 +388,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 
 #pragma mark NSURLSessionDataTask
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
-    NSLog(@"%s", __func__);
+//    NSLog(@"%s", __func__);
     _uploadResponseData = data;
 }
 

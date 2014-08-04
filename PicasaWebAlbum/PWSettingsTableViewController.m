@@ -65,6 +65,7 @@
     [self setUpTaskManagerSection];
     [self setUpInAppPurchaseSection];
     [self setUpAboutSection];
+    [self setUpOtherAppSection];
     
     [self setInAppPurchaseBlocks];
 }
@@ -327,6 +328,38 @@
     }];
 }
 
+#pragma mark OtherAppSection
+- (void)setUpOtherAppSection {
+    NSString *sectionTitle = NSLocalizedString(@"Other Apps", nil);
+    [_tableView addSectionWithTitle:sectionTitle];
+    
+    UIColor *tintColor = self.navigationController.navigationBar.tintColor;
+    
+    __weak typeof(self) wself = self;
+    [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeSubTitle cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.imageView.image = [UIImage imageNamed:@"VideoCast"];
+        cell.textLabel.text = @"SmartVideoCast";
+        cell.detailTextLabel.text = @"Made for Chromecast.";
+        cell.accessoryView = [sself roundedButtonWithTitle:NSLocalizedString(@"OPEN", nil) tintColor:tintColor action:@selector(openVideoCastiTunesStore)];
+        
+    } cellHeight:50.0f didSelect:nil];
+    [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeSubTitle cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.imageView.image = [UIImage imageNamed:@"Pixitti"];
+        cell.textLabel.text = @"Pixitti";
+        cell.detailTextLabel.text = @"Pixiv viewer.";
+        cell.accessoryView = [sself roundedButtonWithTitle:NSLocalizedString(@"OPEN", nil) tintColor:tintColor action:@selector(openPixittiiTunesStore)];
+        
+    } cellHeight:50.0f didSelect:nil];
+}
+
 #pragma mark Review on iTunes Store
 + (void)jumpToAppReviewPage {
     NSURL *reviewLink = [NSURL URLWithString:[NSString stringWithFormat:@"http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=%@&mt=8&type=Purple+Software", @"892657316"]];
@@ -505,6 +538,17 @@
             [sself.tableView reloadData];
         });
     }];
+}
+
+#pragma mark OtherAppAction
+- (void)openVideoCastiTunesStore {
+    NSURL *reviewLink = [NSURL URLWithString:[NSString stringWithFormat:@"https://itunes.apple.com/app/pixitti-pixivkuraianto/id%@", @"888164735"]];
+    [[UIApplication sharedApplication] openURL:reviewLink];
+}
+
+- (void)openPixittiiTunesStore {
+    NSURL *reviewLink = [NSURL URLWithString:[NSString stringWithFormat:@"https://itunes.apple.com/app/pixitti-pixivkuraianto/id%@", @"717068044"]];
+    [[UIApplication sharedApplication] openURL:reviewLink];
 }
 
 @end

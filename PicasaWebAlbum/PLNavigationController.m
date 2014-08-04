@@ -60,6 +60,7 @@
             if (!sself) return;
             
             if (newAlbumCount == 0) return;
+            if (newAlbumCount > 7) return;
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 PLNewAlbumCreatedViewController *viewController = [[PLNewAlbumCreatedViewController alloc] initWithEnumuratedDate:enumuratedDate];
@@ -79,7 +80,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
+    [super viewWillAppear:animated];    
 }
 
 - (void)viewWillLayoutSubviews {

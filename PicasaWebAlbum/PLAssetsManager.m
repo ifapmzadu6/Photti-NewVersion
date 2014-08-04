@@ -202,17 +202,13 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
 
 - (void)enumurateAssetsWithCompletion:(void (^)(NSError *error))completion {
     if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized || [PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeUnknown) {
-        if (completion) {
-            completion([NSError errorWithDomain:kPLAssetsManagerErrorDomain code:500 userInfo:nil]);
-        }
+        completion ? completion([NSError errorWithDomain:kPLAssetsManagerErrorDomain code:500 userInfo:nil]) : 0;
         return;
     }
     
     __weak typeof(self) wself = self;
     if (_isLibraryUpDated) {
-        if (completion) {
-            completion(nil);
-        }
+        completion ? completion(nil) : 0;
         return;
     }
     _isLibraryUpDated = YES;
@@ -226,8 +222,6 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         NSManagedObjectContext *context = [PLCoreDataAPI writeContext];
         
-        // PhotoStreamはiCloud
-//        ALAssetsGroupType assetsGroupType = ALAssetsGroupAlbum | ALAssetsGroupEvent | ALAssetsGroupFaces | ALAssetsGroupSavedPhotos;
         [_library enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
             typeof(wself) sself = wself;
             if (!sself) return;
@@ -288,10 +282,14 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     NSDate *date = [result valueForProperty:ALAssetPropertyDate];
                     CLLocation *location = [result valueForProperty:ALAssetPropertyLocation];
                     [context performBlockAndWait:^{
-                        NSArray *tmpphotos = [allPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", url.query]];
+                        NSArray *tmpphotos = [allPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@ ", url.query]];
                         if (tmpphotos.count > 0) {
                             PLPhotoObject *photo = tmpphotos.firstObject;
                             photo.update = enumurateDate;
+                            
+                            if (![album.photos.array containsObject:photo]) {
+                                [album addPhotosObject:photo];
+                            }
                         }
                         else {
                             PLPhotoObject *photo = [PLAssetsManager makeNewPhotoWithURL:url dimensions:dimensions filename:filename type:type date:date duration:duration location:location enumurateDate:enumurateDate albumType:albumType context:context];

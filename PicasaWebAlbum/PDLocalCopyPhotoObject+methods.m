@@ -44,8 +44,4 @@
     }];
 }
 
-//- (NSURLSessionTask *)makeSessionTaskWithSession:(NSURLSession *)session {
-//    return nil;
-//}
-
 @end

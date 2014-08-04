@@ -17,6 +17,7 @@
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
+#import "NSFileManager+methods.h"
 
 static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCopyPhotoObjectMethods";
 
@@ -88,6 +89,7 @@ static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCo
         
         request.HTTPMethod = @"POST";
         NSString *filePath = self.downloaded_data_location;
+        [NSFileManager cancelProtect:filePath];
         NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
         if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
             [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
@@ -131,7 +133,7 @@ static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCo
             NSLog(@"%@", error);
         }
     }
-    
+    [NSFileManager cancelProtect:filePath];
     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         self.downloaded_data_location = filePath;
     }];

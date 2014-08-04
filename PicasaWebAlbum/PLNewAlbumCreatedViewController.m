@@ -155,9 +155,11 @@
     NSManagedObjectContext *context = [PLCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-//    request.predicate = [NSPredicate predicateWithFormat:@"(import = %@) AND (tag_uploading_type = %@)", _date, @(PLAlbumObjectTagUploadingTypeUnknown)];
+    request.predicate = [NSPredicate predicateWithFormat:@"(import = %@) AND (tag_uploading_type = %@)", _date, @(PLAlbumObjectTagUploadingTypeUnknown)];
+#ifdef DEBUG
     //下はテスト用
 //    request.predicate = [NSPredicate predicateWithFormat:@"tag_uploading_type = %@", @(PLAlbumObjectTagUploadingTypeUnknown)];
+#endif
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
     _fetchedResultsController.delegate = self;
@@ -186,19 +188,37 @@
     CGRect rect = self.view.bounds;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            _createdNewAlbumLabel.frame = CGRectMake(0.0f, 86.0f, 320.0f, 40.0f);
-            _collectionView.frame = CGRectMake(242.0f, 80.0f, 320.0f, 280.0f);
-            _uploadButton.frame = CGRectMake(110.0f, 155.0f, 100.0f, 32.0f);
-            _skipButton.frame = CGRectMake(110.0f, 205.0f, 100.0f, 32.0f);
-            _applyAllItemsButton.frame = CGRectMake(17.0f, CGRectGetHeight(rect) - 60.0f, 255.0f + 30.0f, 30.0f);
+        if ((int)[[UIScreen mainScreen] bounds].size.height > 480) {
+            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                _createdNewAlbumLabel.frame = CGRectMake(0.0f, 86.0f, 320.0f, 40.0f);
+                _collectionView.frame = CGRectMake(242.0f, 80.0f, 320.0f, 280.0f);
+                _uploadButton.frame = CGRectMake(110.0f, 155.0f, 100.0f, 32.0f);
+                _skipButton.frame = CGRectMake(110.0f, 205.0f, 100.0f, 32.0f);
+                _applyAllItemsButton.frame = CGRectMake(17.0f, CGRectGetHeight(rect) - 60.0f, 255.0f + 30.0f, 30.0f);
+            }
+            else {
+                _createdNewAlbumLabel.frame = CGRectMake(0.0f, 86.0f, 320.0f, 40.0f);
+                _collectionView.frame = CGRectMake(0.0f, 150.0f, 320.0f, 280.0f);
+                _uploadButton.frame = CGRectMake(110.0f, 400.0f, 100.0f, 32.0f);
+                _skipButton.frame = CGRectMake(110.0f, 450.0f, 100.0f, 32.0f);
+                _applyAllItemsButton.frame = CGRectMake(20.0f, CGRectGetHeight(rect) - 50.0f, CGRectGetWidth(rect) - 20.0f*2.0f, 30.0f);
+            }
         }
         else {
-            _createdNewAlbumLabel.frame = CGRectMake(0.0f, 86.0f, 320.0f, 40.0f);
-            _collectionView.frame = CGRectMake(0.0f, 150.0f, 320.0f, 280.0f);
-            _uploadButton.frame = CGRectMake(110.0f, 400.0f, 100.0f, 32.0f);
-            _skipButton.frame = CGRectMake(110.0f, 450.0f, 100.0f, 32.0f);
-            _applyAllItemsButton.frame = CGRectMake(20.0f, CGRectGetHeight(rect) - 50.0f, CGRectGetWidth(rect) - 20.0f*2.0f, 30.0f);
+            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                _createdNewAlbumLabel.frame = CGRectMake(10.0f, 86.0f, 260.0f, 40.0f);
+                _collectionView.frame = CGRectMake(190.0f, 74.0f, 320.0f, 280.0f);
+                _uploadButton.frame = CGRectMake(90.0f, 155.0f, 100.0f, 32.0f);
+                _skipButton.frame = CGRectMake(90.0f, 205.0f, 100.0f, 32.0f);
+                _applyAllItemsButton.frame = CGRectMake(6.0f, CGRectGetHeight(rect) - 60.0f, 255.0f + 30.0f, 30.0f);
+            }
+            else {
+                _createdNewAlbumLabel.frame = CGRectMake(30.0f, 86.0f, 260.0f, 40.0f);
+                _collectionView.frame = CGRectMake(0.0f, 130.0f, 320.0f, 280.0f);
+                _uploadButton.frame = CGRectMake(110.0f, 350.0f, 100.0f, 32.0f);
+                _skipButton.frame = CGRectMake(110.0f, 390.0f, 100.0f, 32.0f);
+                _applyAllItemsButton.frame = CGRectMake(20.0f, CGRectGetHeight(rect) - 50.0f, CGRectGetWidth(rect) - 20.0f*2.0f, 30.0f);
+            }
         }
     }
     else {

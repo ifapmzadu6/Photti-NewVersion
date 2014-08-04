@@ -81,6 +81,8 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
+            [UIApplication sharedApplication].applicationIconBadgeNumber = count;
+            
             if (count > 0) {
                 sself.tabBarItem.badgeValue = [NSString stringWithFormat:@"%ld", (long)count];
             }
