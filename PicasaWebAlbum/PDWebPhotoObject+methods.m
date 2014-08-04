@@ -77,13 +77,41 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         }];
     }
     NSUInteger localAlbumObjectTagType = localAlbumObject.tag_type.integerValue;
+    if (localAlbumObjectTagType == PLAlbumObjectTagTypeImported) {
+        [plContext performBlockAndWait:^{
+            NSError *error = nil;
+            if (![plContext save:&error]) {
+                abort();
+            }
+        }];
+        
+        [PLCoreDataAPI writeContextFinish:plContext];
+    }
     NSString *localAlbumObjectURL = localAlbumObject.url;
     NSManagedObjectID *localAlbumObjectID = localAlbumObject.objectID;
     
     [[PLAssetsManager sharedLibrary] writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+        if (error) {
+            NSLog(@"%@", error.description);
+            [PLCoreDataAPI writeContextFinish:plContext];
+            return;
+        }
+        
         [[PLAssetsManager sharedLibrary] assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+            if (!asset) {
+                NSLog(@"%@", error.description);
+                [PLCoreDataAPI writeContextFinish:plContext];
+                return;
+            }
+            
             if (localAlbumObjectTagType == PLAlbumObjectTagTypeImported) {
                 [[PLAssetsManager sharedLibrary] groupForURL:[NSURL URLWithString:localAlbumObjectURL] resultBlock:^(ALAssetsGroup *group) {
+                    if (!group) {
+                        NSLog(@"%@", error.description);
+                        [PLCoreDataAPI writeContextFinish:plContext];
+                        return;
+                    }
+                    
                     [group addAsset:asset];
                     
                     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
@@ -136,6 +164,8 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
                 });
             }
         } failureBlock:^(NSError *error) {
+            [PLCoreDataAPI writeContextFinish:plContext];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (completion) {
                     completion(error);
