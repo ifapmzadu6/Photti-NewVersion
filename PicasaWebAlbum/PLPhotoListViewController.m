@@ -179,14 +179,23 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
+        BOOL isOnlyLocal = YES;
+        for (id photo in selectedPhotos) {
+            if ([photo isKindOfClass:[PWPhotoObject class]]) {
+                isOnlyLocal = NO;
+            }
+        }
+        
         [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toLocalAlbum:sself.album completion:^(NSError *error) {
             if (error) {
                 NSLog(@"%@", error.description);
             }
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-            });
+            if (!isOnlyLocal) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                });
+            }
         }];
     }];
     [self.tabBarController presentViewController:imagePickerController animated:YES completion:nil];
@@ -278,7 +287,8 @@
             
             NSMutableArray *selectLocalPhotos = @[].mutableCopy;
             for (NSIndexPath *indexPath in sself.collectionView.indexPathsForSelectedItems) {
-                [selectLocalPhotos addObject:sself.album.photos[indexPath.row]];
+                PLPhotoObject *photoObject = sself.album.photos[indexPath.row];
+                [selectLocalPhotos addObject:photoObject];
             }
             
             void (^completion)() = ^{
@@ -287,7 +297,9 @@
                     if (!sself) return;
                     [sself disableSelectMode];
                     
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                    if (isWebAlbum) {
+                        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                    }
                 });
             };
             
@@ -454,6 +466,25 @@
     }
     else {
         PLPhotoPageViewController *viewController = [[PLPhotoPageViewController alloc] initWithPhotos:_album.photos.array index:indexPath.row];
+        viewController.isEnableDeletePhotoButton = YES;
+        NSManagedObjectID *albumID = _album.objectID;
+        __weak typeof(self) wself = self;
+        viewController.deletePhotoButtonBlock = ^(NSUInteger index){
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            PLPhotoObject *photo = sself.album.photos[index];
+            NSManagedObjectID *photoID = photo.objectID;
+            [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumID];
+                PLPhotoObject *photoObject = (PLPhotoObject *)[context objectWithID:photoID];
+                [albumObject removePhotosObject:photoObject];
+            }];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [sself.navigationController popViewControllerAnimated:YES];
+            });
+        };
         [self.navigationController pushViewController:viewController animated:YES];
     }
 }
@@ -537,7 +568,9 @@
     }
     _isSelectMode = NO;
     
-    _collectionView.allowsMultipleSelection = YES;
+    _selectedPhotoIDs = @[].mutableCopy;
+    
+    _collectionView.allowsMultipleSelection = NO;
     for (PLPhotoViewCell *cell in _collectionView.visibleCells) {
         cell.isSelectWithCheckMark = NO;
     }
@@ -647,7 +680,7 @@
             [sself.navigationController popViewControllerAnimated:YES];
         }];
         [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-        [deleteActionSheet showFromTabBar:sender];
+        [deleteActionSheet showFromBarButtonItem:sender animated:YES];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
     [actionSheet showFromBarButtonItem:sender animated:YES];

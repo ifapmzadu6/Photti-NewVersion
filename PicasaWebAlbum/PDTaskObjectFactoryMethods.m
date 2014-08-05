@@ -110,15 +110,17 @@
         taskObject.to_album_id_str = to_album_id_str;
         NSManagedObjectID *taskObjectID = taskObject.objectID;
         
-        for (PWPhotoObject *photo in photos) {
-            if ([photo isKindOfClass:[PWPhotoObject class]]) {
+        for (id tmpphoto in photos) {
+            if ([tmpphoto isKindOfClass:[PWPhotoObject class]]) {
+                PWPhotoObject *photo = (PWPhotoObject *)tmpphoto;
                 PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:@"PDWebPhotoObject" inManagedObjectContext:context];
                 webPhoto.photo_object_id_str = photo.id_str;
                 webPhoto.tag_sort_index = photo.sortIndex;
                 webPhoto.task = taskObject;
                 [taskObject addPhotosObject:webPhoto];
             }
-            else if ([photo isKindOfClass:[PLPhotoObject class]]) {
+            else if ([tmpphoto isKindOfClass:[PLPhotoObject class]]) {
+                PLPhotoObject *photo = (PLPhotoObject *)tmpphoto;
                 PDLocalCopyPhotoObject *localCopyPhoto = [NSEntityDescription insertNewObjectForEntityForName:@"PDLocalCopyPhotoObject" inManagedObjectContext:context];
                 localCopyPhoto.photo_object_id_str = photo.id_str;
                 localCopyPhoto.is_done = @(YES);

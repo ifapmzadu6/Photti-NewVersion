@@ -10,6 +10,9 @@
 
 @interface PLPhotoPageViewController : UIPageViewController <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
+@property (nonatomic) BOOL isEnableDeletePhotoButton;
+@property (copy, nonatomic) void (^deletePhotoButtonBlock)(NSUInteger index);
+
 - (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index;
 
 @end

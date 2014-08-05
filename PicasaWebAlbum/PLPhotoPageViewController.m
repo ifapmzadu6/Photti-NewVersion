@@ -70,9 +70,12 @@
     
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction)];
     UIBarButtonItem *organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction:)];
-//    UIBarButtonItem *deleteButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction)];
+    UIBarButtonItem *trashButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, organizeBarButtonItem, flexibleSpace];
+    if (_isEnableDeletePhotoButton) {
+        toolbarItems = [toolbarItems arrayByAddingObject:trashButtonItem];
+    }
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
@@ -199,7 +202,6 @@
             [sself presentViewController:navigationController animated:YES completion:nil];
         });
     } failureBlock:^(NSError *error) {
-        
     }];
 }
 
@@ -221,8 +223,22 @@
             [sself presentViewController:navigationController animated:YES completion:nil];
         });
     } failureBlock:^(NSError *error) {
-        
     }];
+}
+
+- (void)trashBarButtonAction:(id)sender {
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Are you sure you want to delete?", nil)];
+    __weak typeof(self) wself = self;
+    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Remove", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        if (sself.deletePhotoButtonBlock) {
+            sself.deletePhotoButtonBlock(sself.index);
+        }
+    }];
+    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
 #pragma mark UIPageViewControllerDataSource
