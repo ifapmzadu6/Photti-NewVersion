@@ -369,6 +369,35 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                         }
                     }
                     
+                    // 前日に撮った写真からアルバム作成
+                    @autoreleasepool {
+                        if (sself.autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
+                            NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:date];
+                            NSDate *yesterday = [adjustedDate dateByAddingTimeInterval: - 24.0f * 60.0f * 60.0f];
+                            
+                            NSFetchRequest *request = [NSFetchRequest new];
+                            request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+                            request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO) AND (tag_date = %@)", @(PLAlbumObjectTagTypeAutomatically), yesterday];
+                            NSError *error = nil;
+                            NSArray *yesterdayAlbums = [context executeFetchRequest:request error:&error];
+                            if (yesterdayAlbums.count == 0) {
+                                //今回の読み込みで追加された新規写真
+                                NSFetchRequest *newPhotoRequest = [[NSFetchRequest alloc] init];
+                                newPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+                                newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (date > %@) AND (date < %@)", @(ALAssetsGroupPhotoStream), yesterday, adjustedDate];
+                                newPhotoRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
+                                NSError *error = nil;
+                                NSArray *yesterdayPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
+                                if (yesterdayPhotos.count > 0) {
+                                    PLAlbumObject *album = [PLAssetsManager makeNewAutoCreateAlbumWithEnumurateDate:enumurateDate adjustedDate:yesterday context:context];
+                                    for (PLPhotoObject *photo in yesterdayPhotos) {
+                                        [album addPhotosObject:photo];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
                     // 自動作成されたアルバムで写真枚数が0になったものを削除
                     @autoreleasepool {
                         NSFetchRequest *request = [NSFetchRequest new];
