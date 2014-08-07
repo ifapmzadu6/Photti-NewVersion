@@ -8,7 +8,7 @@
 
 @import UIKit;
 
-@interface PLiCloudViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate>
+@interface PLiCloudViewController : UIViewController
 
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 @property (copy, nonatomic) void (^headerViewDidTapBlock)(BOOL isSelectMode);
