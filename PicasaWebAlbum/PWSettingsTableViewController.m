@@ -143,7 +143,7 @@
 
 #pragma mark TaskManagerSection
 - (void)setUpTaskManagerSection {
-    NSString *sectionTitle = NSLocalizedString(@"Task Manager", nil);
+    NSString *sectionTitle = NSLocalizedString(@"Tasks", nil);
 //    NSString *description = NSLocalizedString(@"Photos bigger than 2048x2048 pixels and videos longer than 15minutes use your Google Storage.", nil);
     [_tableView addSectionWithTitle:sectionTitle description:nil];
     
@@ -195,6 +195,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = NSLocalizedString(@"Delete all tasks", nil);
         cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextDarkColor];
+        cell.detailTextLabel.text = nil;
         UIButton *button = [sself roundedButtonWithTitle:NSLocalizedString(@"Delete", nil) tintColor:tintColor action:@selector(deleteAllTasksButtonAction)];
         button.layer.borderWidth = 0.0f;
         [button setTitleColor:tintColor forState:UIControlStateNormal];
@@ -542,12 +543,13 @@
 
 #pragma mark OtherAppAction
 - (void)openVideoCastiTunesStore {
-    NSURL *reviewLink = [NSURL URLWithString:[NSString stringWithFormat:@"https://itunes.apple.com/app/pixitti-pixivkuraianto/id%@", @"888164735"]];
+    // TODO : URLを直す
+    NSURL *reviewLink = [NSURL URLWithString:[NSString stringWithFormat:@"https://itunes.apple.com/app/id%@", @"888164735"]];
     [[UIApplication sharedApplication] openURL:reviewLink];
 }
 
 - (void)openPixittiiTunesStore {
-    NSURL *reviewLink = [NSURL URLWithString:[NSString stringWithFormat:@"https://itunes.apple.com/app/pixitti-pixivkuraianto/id%@", @"717068044"]];
+    NSURL *reviewLink = [NSURL URLWithString:[NSString stringWithFormat:@"https://itunes.apple.com/app/id%@", @"717068044"]];
     [[UIApplication sharedApplication] openURL:reviewLink];
 }
 

@@ -25,6 +25,7 @@
 #import "ALAsset+methods.h"
 #import "NSURLResponse+methods.h"
 #import "NSFileManager+methods.h"
+#import "PDTaskManager.h"
 
 static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDLocalPhotoObjectMethods";
 
@@ -53,7 +54,15 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
         
         NSString *type = [asset valueForProperty:ALAssetPropertyType];
         if ([type isEqualToString:ALAssetTypePhoto]) {
-            NSData *imageData = [asset resizedDataWithMaxPixelSize:2048];
+            NSData *imageData = nil;
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
+                imageData = [asset resizedDataWithMaxPixelSize:2048];
+            }
+            else {
+                ALAssetRepresentation *representation = asset.defaultRepresentation;
+                UIImage *image = [UIImage imageWithCGImage:representation.fullResolutionImage scale:1.0f orientation:(UIImageOrientation)representation.orientation];
+                imageData = UIImageJPEGRepresentation(image, 1.0f);
+            }
             NSError *error = nil;
             [imageData writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error];
             completion ? completion(error) : 0;

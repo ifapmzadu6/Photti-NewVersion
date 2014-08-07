@@ -36,7 +36,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"Task Manager", nil);
+        self.title = NSLocalizedString(@"Tasks", nil);
     }
     return self;
 }
