@@ -21,6 +21,7 @@
 
 #import "PWPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
+#import "PWPhotoCollectionViewFlowLayout.h"
 #import "PWTabBarController.h"
 #import "PWNavigationController.h"
 #import "PWPhotoPageViewController.h"
@@ -80,7 +81,7 @@
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
     
-    UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
+    PWPhotoCollectionViewFlowLayout *collectionViewLayout = [[PWPhotoCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
@@ -102,7 +103,7 @@
     
 //    UIBarButtonItem *mapBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Info"] style:UIBarButtonItemStylePlain target:self action:@selector(mapBarButtonAction)];
 //    self.navigationItem.rightBarButtonItem = mapBarButtonItem;
-        
+    
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
@@ -488,58 +489,6 @@
     }
     
     return footerView;
-}
-
-#pragma mark UICollectionViewDelegateFlowLayout
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if ((int)[[UIScreen mainScreen] bounds].size.height > 480) {
-            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                return CGSizeMake(112.0f, 112.0f);
-            }
-            else {
-                return CGSizeMake(106.0f, 106.0f);
-            }
-        }
-        else {
-            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                return CGSizeMake(118.5f, 118.5f);
-            }
-            else {
-                return CGSizeMake(106.0f, 106.0f);
-            }
-        }
-    }
-    else {
-        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            return CGSizeMake(172.0f, 187.0f);
-        }
-        else {
-            return CGSizeMake(172.0f, 187.0f);
-        }
-    }
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 1.0f;
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            return 2.0f;
-        }
-        else {
-            return 1.0f;
-        }
-    }
-    else {
-        return 10.0f;
-    }
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    return CGSizeMake(0.0f, 50.0f);
 }
 
 #pragma mark UICollectionViewDelegate

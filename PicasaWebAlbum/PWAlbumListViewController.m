@@ -14,6 +14,7 @@
 #import "PWAlbumViewCell.h"
 #import "PWRefreshControl.h"
 #import "PLCollectionFooterView.h"
+#import "PWAlbumCollectionViewFlowLayout.h"
 #import "BlocksKit+UIKit.h"
 #import "Reachability.h"
 #import "PWSnowFlake.h"
@@ -67,7 +68,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     
-    UICollectionViewFlowLayout *collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
+    PWAlbumCollectionViewFlowLayout *collectionViewLayout = [[PWAlbumCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
@@ -221,51 +222,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     }
     
     return footerView;
-}
-
-#pragma mark UICollectionViewDelegateFlowLayout
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if ((int)[[UIScreen mainScreen] bounds].size.height > 480) {
-            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                return CGSizeMake(177.0f, ceilf(177.0f * 3.0f / 4.0f) + 40.0f);
-            }
-            else {
-                return CGSizeMake(146.0f, ceilf(146.0f * 3.0f / 4.0f) + 40.0f);
-            }
-        }
-        else {
-            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                return CGSizeMake(147.0f, ceilf(147.0f * 3.0f / 4.0f) + 40.0f);
-            }
-            else {
-                return CGSizeMake(146.0f, ceilf(146.0f * 3.0f / 4.0f) + 40.0f);
-            }
-        }
-    }
-    else {
-        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            return CGSizeMake(192.0f, ceilf(192.0f * 3.0f / 4.0f) + 40.0f);
-        }
-        else {
-            return CGSizeMake(181.0f, ceilf(181.0f * 3.0f / 4.0f) + 40.0f);
-        }
-    }
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 1.0f;
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        return 8.0f;
-    }
-    return 20.0f;
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    return CGSizeMake(0.0f, 50.0f);
 }
 
 #pragma mark UICollectionViewDelegate

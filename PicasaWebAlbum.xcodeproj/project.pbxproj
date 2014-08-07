@@ -26,6 +26,8 @@
 		7118F89E19335C0E0016697E /* PWImagePickerWebPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F89D19335C0E0016697E /* PWImagePickerWebPhotoListViewController.m */; };
 		71197E7119862EB3009DB4D3 /* PDLocalCopyPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71197E7019862EB3009DB4D3 /* PDLocalCopyPhotoObject.m */; };
 		71197E7519862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71197E7419862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m */; };
+		711AF61F1993AA7100640D2D /* PWAlbumCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 711AF61E1993AA7100640D2D /* PWAlbumCollectionViewFlowLayout.m */; };
+		711AF6231993ACFA00640D2D /* PWPhotoCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 711AF6221993ACFA00640D2D /* PWPhotoCollectionViewFlowLayout.m */; };
 		711FE8E5195E99F500AF296B /* PWSettingHTMLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711FE8E4195E99F500AF296B /* PWSettingHTMLViewController.m */; };
 		711FE8E8195EA48400AF296B /* thirdpartycopyright.html in Resources */ = {isa = PBXBuildFile; fileRef = 711FE8E7195EA48400AF296B /* thirdpartycopyright.html */; };
 		711FE8F5195F2F6B00AF296B /* PWBaseNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711FE8F4195F2F6B00AF296B /* PWBaseNavigationController.m */; };
@@ -209,6 +211,10 @@
 		71197E7019862EB3009DB4D3 /* PDLocalCopyPhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDLocalCopyPhotoObject.m; sourceTree = "<group>"; };
 		71197E7319862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PDLocalCopyPhotoObject+methods.h"; sourceTree = "<group>"; };
 		71197E7419862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PDLocalCopyPhotoObject+methods.m"; sourceTree = "<group>"; };
+		711AF61D1993AA7100640D2D /* PWAlbumCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		711AF61E1993AA7100640D2D /* PWAlbumCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlbumCollectionViewFlowLayout.m; sourceTree = "<group>"; };
+		711AF6211993ACFA00640D2D /* PWPhotoCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPhotoCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		711AF6221993ACFA00640D2D /* PWPhotoCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPhotoCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		711FE8E3195E99F500AF296B /* PWSettingHTMLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSettingHTMLViewController.h; sourceTree = "<group>"; };
 		711FE8E4195E99F500AF296B /* PWSettingHTMLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSettingHTMLViewController.m; sourceTree = "<group>"; };
 		711FE8E7195EA48400AF296B /* thirdpartycopyright.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = thirdpartycopyright.html; sourceTree = "<group>"; };
@@ -674,6 +680,24 @@
 				71197E7419862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m */,
 			);
 			name = "PDLocalCopyPhotoObject+methods";
+			sourceTree = "<group>";
+		};
+		711AF61C1993AA4400640D2D /* PWAlbumCollectionViewFlowLayout */ = {
+			isa = PBXGroup;
+			children = (
+				711AF61D1993AA7100640D2D /* PWAlbumCollectionViewFlowLayout.h */,
+				711AF61E1993AA7100640D2D /* PWAlbumCollectionViewFlowLayout.m */,
+			);
+			name = PWAlbumCollectionViewFlowLayout;
+			sourceTree = "<group>";
+		};
+		711AF6201993ACBF00640D2D /* PWPhotoCollectionViewFloyLayout */ = {
+			isa = PBXGroup;
+			children = (
+				711AF6211993ACFA00640D2D /* PWPhotoCollectionViewFlowLayout.h */,
+				711AF6221993ACFA00640D2D /* PWPhotoCollectionViewFlowLayout.m */,
+			);
+			name = PWPhotoCollectionViewFloyLayout;
 			sourceTree = "<group>";
 		};
 		711FE8E6195E99FA00AF296B /* PWSettingHTMLViewController */ = {
@@ -1773,6 +1797,8 @@
 		71E8859519120BB9005A78E0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				711AF6201993ACBF00640D2D /* PWPhotoCollectionViewFloyLayout */,
+				711AF61C1993AA4400640D2D /* PWAlbumCollectionViewFlowLayout */,
 				71BD235919779E1C0034CD3B /* ALAsset+methods */,
 				715A31B5198FD5F6002A0A37 /* NSFileManager+methods */,
 				715A30FF1989372A002A0A37 /* NSURLResponse+methods */,
@@ -2168,7 +2194,9 @@
 				71BD2340197683F40034CD3B /* PDLocalPhotoObject+methods.m in Sources */,
 				710461A01917759900DF369D /* PWCoreDataAPI.m in Sources */,
 				71649BF1195907A400009C1F /* PDInAppPurchase.m in Sources */,
+				711AF6231993ACFA00640D2D /* PWPhotoCollectionViewFlowLayout.m in Sources */,
 				71388289193E30AC009AFB1F /* PDTask.m in Sources */,
+				711AF61F1993AA7100640D2D /* PWAlbumCollectionViewFlowLayout.m in Sources */,
 				71BA33871978292600CD0011 /* PDTaskObject.m in Sources */,
 				711FE8F91961C62A00AF296B /* PLNewAlbumCreatedViewController.m in Sources */,
 				71A25464191940B0009914F7 /* PWPhotoListViewController.m in Sources */,
