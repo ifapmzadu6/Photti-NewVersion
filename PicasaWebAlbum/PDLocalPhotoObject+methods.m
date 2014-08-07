@@ -59,9 +59,7 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
                 imageData = [asset resizedDataWithMaxPixelSize:2048];
             }
             else {
-                ALAssetRepresentation *representation = asset.defaultRepresentation;
-                UIImage *image = [UIImage imageWithCGImage:representation.fullResolutionImage scale:1.0f orientation:(UIImageOrientation)representation.orientation];
-                imageData = UIImageJPEGRepresentation(image, 1.0f);
+                imageData = [asset resizedDataWithMaxPixelSize:NSUIntegerMax];
             }
             NSError *error = nil;
             [imageData writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error];
