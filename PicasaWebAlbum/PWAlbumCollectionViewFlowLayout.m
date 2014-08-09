@@ -50,8 +50,4 @@
     return 20.0f;
 }
 
-- (CGSize)footerReferenceSize {
-    return CGSizeMake(0.0f, 50.0f);
-}
-
 @end
