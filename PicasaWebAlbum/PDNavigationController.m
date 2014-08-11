@@ -48,7 +48,6 @@
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
-    self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
     self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
 }
 
