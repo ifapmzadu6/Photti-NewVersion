@@ -77,6 +77,23 @@ static NSString * const PWXMLNode = @"text";
                 
                 completion ? completion(index + totalResults.integerValue, nil) : 0;
             }
+            else {
+                [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                    NSFetchRequest *request = [NSFetchRequest new];
+                    request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+                    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+                    NSError *error = nil;
+                    NSArray *objects = [context executeFetchRequest:request error:&error];
+                    if (objects.count > 0) {
+                        for (NSUInteger i = index; i < objects.count; i++) {
+                            PWAlbumObject *album = objects[i];
+                            [context deleteObject:album];
+                        }
+                    }
+                }];
+                
+                completion ? completion(index, nil) : 0;
+            }
         }
         else {
             if (completion) {
