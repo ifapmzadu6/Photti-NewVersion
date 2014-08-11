@@ -10,6 +10,7 @@
 
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
+#import "NSMutableAttributedString+methods.h"
 
 @interface PWSearchTableViewLocalAlbumCell ()
 
@@ -17,7 +18,7 @@
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UILabel *albumTypeLabel;
 
-@property (nonatomic) NSUInteger urlHash;
+@property (nonatomic) NSUInteger albumHash;
 
 @end
 
@@ -92,27 +93,27 @@
     [super setSelected:selected animated:animated];
 }
 
-- (void)setAlbum:(PLAlbumObject *)album searchedText:(NSString *)seatchedText {
-    NSString *text = album.name;
-    NSMutableAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text].mutableCopy;
-    if (seatchedText) {
-        NSRange searchRange = NSMakeRange(0, [text length]);
-        NSRange place;
-        while (searchRange.location < [text length]) {
-            place = [text rangeOfString:seatchedText options:NSLiteralSearch range:searchRange];
-            if (place.location != NSNotFound) {
-                [attributedText addAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:15.0f]} range:place];
-            }
-            searchRange.location = place.location + place.length;
-            searchRange.length = [text length] - searchRange.location;
-        }
+- (void)setAlbum:(PLAlbumObject *)album searchedText:(NSString *)searchedText {
+    _album = album;
+    
+    if (!album) {
+        _titleLabel.text = nil;
+        _thumbnailImageView.image = nil;
+        _albumTypeLabel.text = nil;
+        
+        _albumHash = 0;
+        return;
     }
+    
+    NSUInteger hash = album.hash;
+    _albumHash = hash;
+    
+    NSString *title = album.name;
+    NSMutableAttributedString *attributedText = [[NSAttributedString alloc] initWithString:title].mutableCopy;
+    [attributedText addAttrubutes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:15.0f]} string:searchedText];
     _titleLabel.attributedText = attributedText;
     
     _thumbnailImageView.image = nil;
-    
-    NSUInteger hash = album.hash;
-    _urlHash = hash;
     
     PLPhotoObject *thumbnail = album.thumbnail;
     if (!thumbnail) {
@@ -124,14 +125,14 @@
         [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            if (sself.urlHash != hash) return;
+            if (sself.albumHash != hash) return;
             
             UIImage *image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                if (sself.urlHash != hash) return;
+                if (sself.albumHash != hash) return;
                 
                 sself.thumbnailImageView.image = image;
             });

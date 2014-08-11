@@ -12,6 +12,7 @@
 #import "PWPicasaAPI.h"
 #import "SDImageCache.h"
 #import "SDWebImageDecoder.h"
+#import "NSMutableAttributedString+methods.h"
 
 @interface PWSearchTableViewWebAlbumCell ()
 
@@ -93,31 +94,25 @@
     }
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-}
-
 - (void)setAlbum:(PWAlbumObject *)album searchedText:(NSString *)searchedText {
     _album = album;
     
-    NSString *text = album.title;
-    NSMutableAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text].mutableCopy;
-    if (searchedText) {
-        NSRange searchRange = NSMakeRange(0, [text length]);
-        NSRange place;
-        while (searchRange.location < [text length]) {
-            place = [text rangeOfString:searchedText options:NSLiteralSearch range:searchRange];
-            if (place.location != NSNotFound) {
-                [attributedText addAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:15.0f]} range:place];
-            }
-            searchRange.location = place.location + place.length;
-            searchRange.length = [text length] - searchRange.location;
-        }
+    if (!album) {
+        _titleLabel.text = nil;
+        _thumbnailImageView.image = nil;
+        _albumTypeLabel.text = nil;
+        
+        _albumHash = 0;
+        return;
     }
-    _titleLabel.attributedText = attributedText;
     
     NSUInteger hash = album.hash;
     _albumHash = hash;
+    
+    NSString *title = album.title;
+    NSMutableAttributedString *attributedText = [[NSAttributedString alloc] initWithString:title].mutableCopy;
+    [attributedText addAttrubutes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:15.0f]} string:searchedText];
+    _titleLabel.attributedText = attributedText;
     
     NSString *urlString = album.tag_thumbnail_url;
     if (!urlString) return;
