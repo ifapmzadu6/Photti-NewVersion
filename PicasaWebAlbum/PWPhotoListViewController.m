@@ -706,6 +706,10 @@
             if (!sself) return;
             
             [sself loadDataWithStartIndex:0];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                sself.navigationItem.title = album.title;
+            });
         };
         PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
         navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
