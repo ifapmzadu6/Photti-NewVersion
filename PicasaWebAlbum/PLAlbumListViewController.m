@@ -236,6 +236,7 @@
             }];
         };
         PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{

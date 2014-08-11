@@ -1809,8 +1809,8 @@
 		71E8859519120BB9005A78E0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				71BDE39D1998FA8100853E85 /* NSAttributedString+methods */,
 				71BD235919779E1C0034CD3B /* ALAsset+methods */,
+				71BDE39D1998FA8100853E85 /* NSAttributedString+methods */,
 				715A31B5198FD5F6002A0A37 /* NSFileManager+methods */,
 				715A30FF1989372A002A0A37 /* NSURLResponse+methods */,
 				71388283193E13BD009AFB1F /* PDCoreDataAPI */,
