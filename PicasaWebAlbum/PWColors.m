@@ -86,8 +86,6 @@
     
 	[self setColor:[UIColor colorWithWhite:1.0f alpha:1.0f]
 			  type:PWColorsTypeBackgroundColor];
-//    [self setColor:[UIColor colorWithRed:240.0f/255.0f green:243.0f/255.0f blue:245.0f/255.0f alpha:1.0f]
-//			  type:PWColorsTypeBackgroundLightColor];
     [self setColor:[UIColor colorWithRed:235.0f/255.0f green:238.0f/255.0f blue:240.0f/255.0f alpha:1.0f]
 			  type:PWColorsTypeBackgroundLightColor];
 	[self setColor:[UIColor colorWithRed:210.0f/255.0f green:213.0f/255.0f blue:215.0f/255.0f alpha:1.0f]
