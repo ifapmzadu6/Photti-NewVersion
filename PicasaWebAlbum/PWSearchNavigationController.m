@@ -602,6 +602,8 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     __weak typeof(self) wself = self;
     NSArray *webAlbumHistoryItems = [historyItems filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @(PWSearchNavigationControllerItemTypeWebAlbum)]];
     NSArray *localAlbumHistoryItems = [historyItems filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @(PWSearchNavigationControllerItemTypeLocalAlbum)]];
+    __block NSUInteger numberOfWebAlbums = webAlbumHistoryItems.count;
+    __block NSUInteger numberOfLocalAlbums = localAlbumHistoryItems.count;
     
     void (^localHistorySearchBlock)(PWSearchNavigationControllerHistoryItem *) = ^(PWSearchNavigationControllerHistoryItem *historyItem) {
         typeof(wself) sself = wself;
@@ -621,8 +623,12 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
                 item.updateUsingByHistorySort = historyItem.update;
                 [items addObject:item];
             }
+            else {
+                [sself removeHistory:historyItem];
+                numberOfLocalAlbums--;
+            }
             
-            if (items.count == webAlbumHistoryItems.count + localAlbumHistoryItems.count) {
+            if (items.count == numberOfWebAlbums + numberOfLocalAlbums) {
                 [items sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"updateUsingByHistorySort" ascending:NO]]];
                 [sself reloadDataWithItems:items hash:hash];
             }
@@ -649,9 +655,13 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
                     item.updateUsingByHistorySort = historyItem.update;
                     [items addObject:item];
                 }
+                else {
+                    [sself removeHistory:historyItem];
+                    numberOfWebAlbums--;
+                }
                 
-                if (items.count == webAlbumHistoryItems.count) {
-                    if (localAlbumHistoryItems.count == 0) {
+                if (items.count == numberOfWebAlbums) {
+                    if (numberOfLocalAlbums == 0) {
                         [items sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"updateUsingByHistorySort" ascending:NO]]];
                         [sself reloadDataWithItems:items hash:hash];
                     }

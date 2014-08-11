@@ -89,10 +89,6 @@
     }
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-}
-
 - (void)setAlbum:(PLAlbumObject *)album searchedText:(NSString *)searchedText {
     _album = album;
     
