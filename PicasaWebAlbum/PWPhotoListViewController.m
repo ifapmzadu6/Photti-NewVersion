@@ -55,6 +55,7 @@
 @property (nonatomic) NSUInteger actionLoadingVideoQuality;
 
 @property (weak, nonatomic) PWPhotoPageViewController *photoPageViewController;
+@property (strong, nonatomic) NSCache *photoViewCache;
 
 @end
 
@@ -66,6 +67,8 @@
         _album = album;
         
         _selectedPhotoIDs = @[].mutableCopy;
+        _photoViewCache = [[NSCache alloc] init];
+        _photoViewCache.countLimit = 10;
         
         self.title = album.title;
         
@@ -511,7 +514,7 @@
         UIImage *image = cell.imageView.image;
         
         NSArray *photos = [_fetchedResultsController fetchedObjects];
-        PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row image:image];
+        PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row image:image cache:_photoViewCache];
         [self.navigationController pushViewController:viewController animated:YES];
         
         _photoPageViewController = viewController;
