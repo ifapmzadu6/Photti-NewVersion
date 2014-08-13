@@ -63,8 +63,6 @@
         _initialImage = nil;
         
         [self loadScreenResolutionImage];
-        
-        _zoomView = _imageScrollView.imageView;
     }
     else {
         _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -73,8 +71,6 @@
         [_indicatorView startAnimating];
         
         [self loadImage];
-        
-        _zoomView = _imageScrollView;
     }
     
     if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {

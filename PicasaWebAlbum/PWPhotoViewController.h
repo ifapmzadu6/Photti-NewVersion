@@ -18,6 +18,4 @@
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 @property (copy, nonatomic) void (^handleSingleTapBlock)();
 
-@property (strong, nonatomic) UIView *zoomView;
-
 @end
