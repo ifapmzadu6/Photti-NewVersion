@@ -22,7 +22,7 @@
 + (void)makeTaskFromWebAlbum:(PWAlbumObject *)fromWebAlbum toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSManagedObjectID *, NSError *))completion {
     NSString *webAlbumId = fromWebAlbum.id_str;
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         NSMutableArray *photoObjectIDs = @[].mutableCopy;
         NSMutableDictionary *photoObjectSortIndexs = @{}.mutableCopy;
         [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
@@ -79,7 +79,7 @@
         taskObject.to_album_id_str = toWebAlbumID;
         NSManagedObjectID *taskObjectID = taskObject.objectID;
         
-        NSMutableArray *id_strs = [NSMutableArray array];
+        NSMutableArray *id_strs = @[].mutableCopy;
         [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
             for (PLPhotoObject *photoObject in fromLocalAlbum.photos.array) {
                 [id_strs addObject:photoObject.id_str];
@@ -93,7 +93,7 @@
             [taskObject addPhotosObject:localPhoto];
         }
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             if (completion) {
                 completion(taskObjectID, nil);
             }
@@ -128,7 +128,7 @@
             }
         }
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             if (completion) {
                 completion(taskObjectID, nil);
             }
@@ -152,7 +152,6 @@
                 localPhotoObject.photo_object_id_str = localPhoto.id_str;
                 localPhotoObject.task = taskObject;
                 [taskObject addPhotosObject:localPhotoObject];
-                
             }
             else if ([photo isKindOfClass:[PWPhotoObject class]]) {
                 PWPhotoObject *webPhoto = (PWPhotoObject *)photo;
@@ -165,7 +164,7 @@
             }
         }
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             if (completion) {
                 completion(taskObjectID, nil);
             }
