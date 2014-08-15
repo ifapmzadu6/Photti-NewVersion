@@ -214,7 +214,6 @@ static const CGFloat animationDuration = 0.25f;
 
 #pragma mark UITabBarControllerDelegate
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
-//    [viewController viewWillAppear:NO];
     
     return YES;
 }
@@ -230,6 +229,20 @@ static const CGFloat animationDuration = 0.25f;
         self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     }
     else if (index == 2) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
+    }
+}
+
+- (void)setSelectedIndex:(NSUInteger)selectedIndex {
+    [super setSelectedIndex:selectedIndex];
+    
+    if (selectedIndex == 0) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    }
+    else if (selectedIndex == 1) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    }
+    else if (selectedIndex == 2) {
         self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
     }
 }

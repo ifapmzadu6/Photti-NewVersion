@@ -58,6 +58,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.view.backgroundColor = [UIColor whiteColor];
     self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     
     _myViewControllers = [self makeViewControllers];
@@ -65,7 +66,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
                    direction:UIPageViewControllerNavigationDirectionForward
                     animated:NO
                   completion:nil];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     //ScrollViewDelegate
     [self.view.subviews.firstObject setDelegate:self];
