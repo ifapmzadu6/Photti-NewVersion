@@ -22,7 +22,7 @@
       "idiom" : "ipad",
       "extent" : "full-screen",
       "minimum-system-version" : "7.0",
-      "filename" : "aaaa.png",
+      "filename" : "aaa_normal.png",
       "scale" : "1x"
     },
     {
@@ -30,7 +30,7 @@
       "idiom" : "ipad",
       "extent" : "full-screen",
       "minimum-system-version" : "7.0",
-      "filename" : "ssasas.png",
+      "filename" : "aaaas_normal.png",
       "scale" : "1x"
     },
     {
