@@ -493,9 +493,7 @@ static const CGFloat animationDuration = 0.25f;
 - (void)setAdsHidden:(BOOL)hidden animated:(BOOL)animated {
     if ([PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID]) {
         _isAdsHidden = YES;
-        
         _bannerView.alpha = 0;
-        
         return;
     }
     
@@ -533,9 +531,8 @@ static const CGFloat animationDuration = 0.25f;
         adHeight = 90.0f;
     }
     
-    _bannerView.alpha = 1.0f;
-    
     if (!_isAdsHidden) {
+        _bannerView.alpha = 1.0f;
         _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
         
         if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
