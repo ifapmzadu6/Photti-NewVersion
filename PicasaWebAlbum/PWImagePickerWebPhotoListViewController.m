@@ -271,6 +271,11 @@
     return footerView;
 }
 
+#pragma mark UICollectionViewFlowLayout
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    return CGSizeMake(0.0f, 50.0f);
+}
+
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;

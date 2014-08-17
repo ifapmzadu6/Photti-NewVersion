@@ -399,6 +399,11 @@
     return footerView;
 }
 
+#pragma mark UICollectionViewFlowLayout
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    return CGSizeMake(0.0f, 50.0f);
+}
+
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_isSelectMode) {
@@ -581,6 +586,9 @@
         
         PLAlbumEditViewController *viewController = [[PLAlbumEditViewController alloc] initWithTitle:album.name timestamp:album.timestamp uploading_type:album.tag_uploading_type];
         viewController.saveButtonBlock = ^(NSString *name, NSNumber *timestamp, NSNumber *uploading_type) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
             [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                 PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumID];
                 albumObject.name = name;
@@ -591,8 +599,11 @@
                 }
                 albumObject.tag_uploading_type = uploading_type;
             }];
+            
+            sself.navigationItem.title = name;
         };
         PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{

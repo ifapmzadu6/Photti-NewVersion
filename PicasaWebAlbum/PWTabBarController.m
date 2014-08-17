@@ -167,6 +167,8 @@ static const CGFloat animationDuration = 0.25f;
         }
     }
 #pragma clang diagnostic pop
+    
+    [self willLayoutBannerView];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -212,7 +214,6 @@ static const CGFloat animationDuration = 0.25f;
 
 #pragma mark UITabBarControllerDelegate
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
-//    [viewController viewWillAppear:NO];
     
     return YES;
 }
@@ -228,6 +229,20 @@ static const CGFloat animationDuration = 0.25f;
         self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     }
     else if (index == 2) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
+    }
+}
+
+- (void)setSelectedIndex:(NSUInteger)selectedIndex {
+    [super setSelectedIndex:selectedIndex];
+    
+    if (selectedIndex == 0) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    }
+    else if (selectedIndex == 1) {
+        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    }
+    else if (selectedIndex == 2) {
         self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
     }
 }
@@ -489,11 +504,13 @@ static const CGFloat animationDuration = 0.25f;
 }
 
 - (void)setAdsHidden:(BOOL)hidden animated:(BOOL)animated {
+    if (_isAdsHidden == hidden) {
+        return;
+    }
+    
     if ([PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID]) {
         _isAdsHidden = YES;
-        
         _bannerView.alpha = 0;
-        
         return;
     }
     
@@ -512,6 +529,10 @@ static const CGFloat animationDuration = 0.25f;
     }
 }
 
+- (void)willLayoutBannerView {
+    _bannerView.alpha = 0.0f;
+}
+
 - (void)layoutBannerView {
     CGRect rect = self.view.bounds;
     CGFloat tHeight = 44.0f;
@@ -528,13 +549,18 @@ static const CGFloat animationDuration = 0.25f;
     }
     
     if (!_isAdsHidden) {
-        _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
+        _bannerView.alpha = 1.0f;
+        CGRect adRect = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
         
-        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            _bannerView.adSize = kGADAdSizeSmartBannerLandscape;
-        }
-        else {
-            _bannerView.adSize = kGADAdSizeSmartBannerPortrait;
+        if (!CGRectEqualToRect(_bannerView.frame, adRect)) {
+            _bannerView.frame = adRect;
+            
+            if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                _bannerView.adSize = kGADAdSizeSmartBannerLandscape;
+            }
+            else {
+                _bannerView.adSize = kGADAdSizeSmartBannerPortrait;
+            }
         }
     }
 }

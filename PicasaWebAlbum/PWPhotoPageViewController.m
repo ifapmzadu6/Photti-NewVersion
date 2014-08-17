@@ -32,7 +32,7 @@
 @property (nonatomic) NSUInteger index;
 @property (nonatomic) NSString *id_str;
 
-@property (strong, nonatomic) NSCache *photoViewCache;
+@property (weak, nonatomic) NSCache *photoViewCache;
 
 @property (weak, nonatomic) NSURLSessionDataTask *sessionDataTask;
 
@@ -40,15 +40,14 @@
 
 @implementation PWPhotoPageViewController
 
-- (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index image:(UIImage *)image {
+- (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index image:(UIImage *)image cache:(NSCache *)cache {
     NSDictionary *option = [NSDictionary dictionaryWithObjectsAndKeys:@(40.0f), UIPageViewControllerOptionInterPageSpacingKey, nil];
     self = [self initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:option];
     if (self) {
         _photos = photos;
         _index = index;
         
-        _photoViewCache = [[NSCache alloc] init];
-        _photoViewCache.countLimit = 10;
+        _photoViewCache = cache;
         
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
@@ -112,10 +111,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-    [_photoViewCache removeAllObjects];
 }
 
 #pragma mark UIBarButtonItemAction
@@ -398,7 +393,7 @@
     }
     
     PWPhotoObject *photo = _photos[index];
-    PWPhotoViewController *viewController = [[PWPhotoViewController alloc] initWithPhoto:photo image:image];
+    PWPhotoViewController *viewController = [[PWPhotoViewController alloc] initWithPhoto:photo image:image cache:_photoViewCache];
     NSString *title = [NSString stringWithFormat:@"%ld/%ld", (long)index + 1, (long)_photos.count];
     viewController.title = title;
     NSString *id_str = photo.id_str;
@@ -440,8 +435,6 @@
             sself.navigationController.interactivePopGestureRecognizer.enabled = NO;
         }
     };
-    
-    viewController.photoViewCache = _photoViewCache;
     
     return viewController;
 }

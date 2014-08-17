@@ -76,7 +76,6 @@
     [super viewDidLoad];
     
     self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
-    self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
 }
 
 - (void)viewWillAppear:(BOOL)animated {

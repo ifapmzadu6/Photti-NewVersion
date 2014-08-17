@@ -19,6 +19,4 @@
 
 + (NSArray *)parseListOfPhotoFromJson:(NSDictionary *)json albumID:(NSString *)albumID context:(NSManagedObjectContext *)context;
 
-+ (PWPhotoLinkObject *)linkFromJson:(NSDictionary *)json context:(NSManagedObjectContext *)context;
-
 @end

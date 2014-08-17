@@ -12,13 +12,10 @@
 
 @interface PWPhotoViewController : UIViewController
 
-- (id)initWithPhoto:(PWPhotoObject *)photo image:(UIImage *)image;
+- (id)initWithPhoto:(PWPhotoObject *)photo image:(UIImage *)image cache:(NSCache *)cache;
 
 @property (weak, nonatomic, readonly) PWPhotoObject *photo;
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 @property (copy, nonatomic) void (^handleSingleTapBlock)();
-@property (weak, nonatomic) NSCache *photoViewCache;
-
-@property (strong, nonatomic) UIView *zoomView;
 
 @end

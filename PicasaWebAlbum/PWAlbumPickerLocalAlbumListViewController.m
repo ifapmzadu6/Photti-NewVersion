@@ -201,6 +201,11 @@
     return nil;
 }
 
+#pragma mark UICollectionViewFlowLayout
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    return CGSizeMake(0.0f, 50.0f);
+}
+
 #pragma mark UIcollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PLAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];

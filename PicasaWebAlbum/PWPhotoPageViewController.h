@@ -10,7 +10,7 @@
 
 @interface PWPhotoPageViewController : UIPageViewController <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate>
 
-- (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index image:(UIImage *)image;
+- (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index image:(UIImage *)image cache:(NSCache *)cache;
 
 - (void)changePhotos:(NSArray *)photos;
 

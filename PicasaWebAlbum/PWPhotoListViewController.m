@@ -55,6 +55,7 @@
 @property (nonatomic) NSUInteger actionLoadingVideoQuality;
 
 @property (weak, nonatomic) PWPhotoPageViewController *photoPageViewController;
+@property (strong, nonatomic) NSCache *photoViewCache;
 
 @end
 
@@ -66,6 +67,8 @@
         _album = album;
         
         _selectedPhotoIDs = @[].mutableCopy;
+        _photoViewCache = [NSCache new];
+        _photoViewCache.countLimit = 10;
         
         self.title = album.title;
         
@@ -491,6 +494,11 @@
     return footerView;
 }
 
+#pragma mark UICollectionViewFlowLayout
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    return CGSizeMake(0.0f, 50.0f);
+}
+
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {    
     if (_isSelectMode) {
@@ -506,7 +514,7 @@
         UIImage *image = cell.imageView.image;
         
         NSArray *photos = [_fetchedResultsController fetchedObjects];
-        PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row image:image];
+        PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row image:image cache:_photoViewCache];
         [self.navigationController pushViewController:viewController animated:YES];
         
         _photoPageViewController = viewController;
@@ -701,6 +709,10 @@
             if (!sself) return;
             
             [sself loadDataWithStartIndex:0];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                sself.navigationItem.title = album.title;
+            });
         };
         PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
         navigationController.modalPresentationStyle = UIModalPresentationFormSheet;

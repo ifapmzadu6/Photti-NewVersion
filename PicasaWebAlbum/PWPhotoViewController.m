@@ -22,6 +22,7 @@
 @interface PWPhotoViewController () <UIAlertViewDelegate>
 
 @property (strong, nonatomic) UIImage *initialImage;
+@property (strong, nonatomic) NSCache *cache;
 
 @property (strong, nonatomic) PWImageScrollView *imageScrollView;
 @property (strong, nonatomic) UIButton *videoButton;
@@ -40,12 +41,12 @@
 
 @implementation PWPhotoViewController
 
-- (id)initWithPhoto:(PWPhotoObject *)photo image:(UIImage *)image {
+- (id)initWithPhoto:(PWPhotoObject *)photo image:(UIImage *)image cache:(NSCache *)cache {
     self = [self init];
     if (self) {
         _photo = photo;
-        
         _initialImage = image;
+        _cache = cache;
     }
     return self;
 }
@@ -62,8 +63,6 @@
         _initialImage = nil;
         
         [self loadScreenResolutionImage];
-        
-        _zoomView = _imageScrollView.imageView;
     }
     else {
         _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -72,8 +71,6 @@
         [_indicatorView startAnimating];
         
         [self loadImage];
-        
-        _zoomView = _imageScrollView;
     }
     
     if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
@@ -244,16 +241,6 @@
 - (void)loadImage {
     NSString *urlString = _photo.tag_thumbnail_url;
     
-    UIImage *memoryCache = [_photoViewCache objectForKey:urlString];
-    if (memoryCache) {
-        [_indicatorView stopAnimating];
-        [_imageScrollView setImage:memoryCache];
-        
-        [self loadScreenResolutionImage];
-        
-        return;
-    }
-    
     UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
     if (memoryCachedImage) {
         [_indicatorView stopAnimating];
@@ -328,6 +315,15 @@
     
     NSString *urlString = _photo.tag_screenimage_url;
     if (!urlString) return;
+    
+    UIImage *memoryCache = [_cache objectForKey:urlString];
+    if (memoryCache) {
+        [_indicatorView stopAnimating];
+        [_imageScrollView setImage:memoryCache];
+        
+        return;
+    }
+    
     NSURL *url = [NSURL URLWithString:urlString];
     __weak typeof(self) wself = self;
     [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
@@ -354,7 +350,7 @@
             });
             
             if (image && urlString) {
-                [sself.photoViewCache setObject:image forKey:urlString];
+                [sself.cache setObject:image forKey:urlString];
             }
         }];
         [task resume];
