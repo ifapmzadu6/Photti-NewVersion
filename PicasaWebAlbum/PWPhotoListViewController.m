@@ -67,7 +67,7 @@
         _album = album;
         
         _selectedPhotoIDs = @[].mutableCopy;
-        _photoViewCache = [NSCache new];
+        _photoViewCache = [[NSCache alloc] init];
         _photoViewCache.countLimit = 10;
         
         self.title = album.title;

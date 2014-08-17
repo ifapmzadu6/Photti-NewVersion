@@ -109,6 +109,7 @@
 		719BECEA19568EAE005DE6E7 /* PWSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719BECE919568EAE005DE6E7 /* PWSettingsViewController.m */; };
 		719BECEE1957419E005DE6E7 /* PWSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719BECED1957419E005DE6E7 /* PWSettingsTableViewController.m */; };
 		719CFE5119598B85008B4308 /* PWGoogleLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719CFE5019598B85008B4308 /* PWGoogleLoginViewController.m */; };
+		719CFE5519599F11008B4308 /* PWShareAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 719CFE5419599F11008B4308 /* PWShareAction.m */; };
 		719CFE591959A55B008B4308 /* PLAccessPhotoLibraryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719CFE581959A55B008B4308 /* PLAccessPhotoLibraryViewController.m */; };
 		719CFE5D1959D339008B4308 /* PLAutoCreateAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719CFE5C1959D339008B4308 /* PLAutoCreateAlbumViewController.m */; };
 		719D92301917848A00B75D8B /* PWPhotoMediaThumbnailObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 719D922F1917848A00B75D8B /* PWPhotoMediaThumbnailObject.m */; };
@@ -373,6 +374,8 @@
 		719BECED1957419E005DE6E7 /* PWSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSettingsTableViewController.m; sourceTree = "<group>"; };
 		719CFE4F19598B85008B4308 /* PWGoogleLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWGoogleLoginViewController.h; sourceTree = "<group>"; };
 		719CFE5019598B85008B4308 /* PWGoogleLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWGoogleLoginViewController.m; sourceTree = "<group>"; };
+		719CFE5319599F11008B4308 /* PWShareAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWShareAction.h; sourceTree = "<group>"; };
+		719CFE5419599F11008B4308 /* PWShareAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWShareAction.m; sourceTree = "<group>"; };
 		719CFE571959A55B008B4308 /* PLAccessPhotoLibraryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLAccessPhotoLibraryViewController.h; sourceTree = "<group>"; };
 		719CFE581959A55B008B4308 /* PLAccessPhotoLibraryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLAccessPhotoLibraryViewController.m; sourceTree = "<group>"; };
 		719CFE5B1959D339008B4308 /* PLAutoCreateAlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLAutoCreateAlbumViewController.h; sourceTree = "<group>"; };
@@ -1288,6 +1291,15 @@
 			name = PWGoogleLoginViewController;
 			sourceTree = "<group>";
 		};
+		719CFE5219599EF7008B4308 /* PWShareAction */ = {
+			isa = PBXGroup;
+			children = (
+				719CFE5319599F11008B4308 /* PWShareAction.h */,
+				719CFE5419599F11008B4308 /* PWShareAction.m */,
+			);
+			name = PWShareAction;
+			sourceTree = "<group>";
+		};
 		719CFE561959A53F008B4308 /* PLAccessPhotoLibraryViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -1817,6 +1829,7 @@
 				71A25475191B3222009914F7 /* PWIcons */,
 				711AF6201993ACBF00640D2D /* PWPhotoCollectionViewFloyLayout */,
 				71E885A31912158D005A78E0 /* PWPicasaAPI */,
+				719CFE5219599EF7008B4308 /* PWShareAction */,
 				71CD06141931779D00BECF6B /* PWSnowFlake */,
 				712E03B11920B53D0035D9E0 /* PWString */,
 			);
@@ -2156,6 +2169,7 @@
 				718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */,
 				71BD234C19778C020034CD3B /* PDWebPhotoObject.m in Sources */,
 				71CD06171931799D00BECF6B /* PWSnowFlake.m in Sources */,
+				719CFE5519599F11008B4308 /* PWShareAction.m in Sources */,
 				7118F89519335B790016697E /* PWImagePickerLocaliCloudViewController.m in Sources */,
 				719D92541918D84700B75D8B /* PWAlbumViewCell.m in Sources */,
 				71958C5C191B933500CFC15F /* PWPhotoViewController.m in Sources */,

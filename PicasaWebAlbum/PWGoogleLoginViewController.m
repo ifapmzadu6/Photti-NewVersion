@@ -16,6 +16,7 @@
 #import "PLAssetsManager.h"
 
 #import "PWSettingsViewController.h"
+#import "PWShareAction.h"
 #import "PWTabBarController.h"
 
 @interface PWGoogleLoginViewController ()
@@ -46,6 +47,7 @@
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareBarButtonAction)];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
@@ -238,6 +240,10 @@
 - (void)settingsBarButtonAction {
     PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeWeb];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)shareBarButtonAction {
+    [PWShareAction showFromViewController:self.tabBarController];
 }
 
 #pragma mark UIButton
