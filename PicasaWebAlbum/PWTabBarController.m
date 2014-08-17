@@ -504,6 +504,10 @@ static const CGFloat animationDuration = 0.25f;
 }
 
 - (void)setAdsHidden:(BOOL)hidden animated:(BOOL)animated {
+    if (_isAdsHidden == hidden) {
+        return;
+    }
+    
     if ([PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID]) {
         _isAdsHidden = YES;
         _bannerView.alpha = 0;
@@ -546,13 +550,17 @@ static const CGFloat animationDuration = 0.25f;
     
     if (!_isAdsHidden) {
         _bannerView.alpha = 1.0f;
-        _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
+        CGRect adRect = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
         
-        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            _bannerView.adSize = kGADAdSizeSmartBannerLandscape;
-        }
-        else {
-            _bannerView.adSize = kGADAdSizeSmartBannerPortrait;
+        if (!CGRectEqualToRect(_bannerView.frame, adRect)) {
+            _bannerView.frame = adRect;
+            
+            if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                _bannerView.adSize = kGADAdSizeSmartBannerLandscape;
+            }
+            else {
+                _bannerView.adSize = kGADAdSizeSmartBannerPortrait;
+            }
         }
     }
 }
