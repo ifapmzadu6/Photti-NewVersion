@@ -304,17 +304,6 @@
     [deleteActionSheet showFromTabBar:self.tabBarController.tabBar];
 }
 
-#pragma mark NewAlbum
-- (void)makeNewWebAlbumWithLocalAlbum:(PLAlbumObject *)album completion:(void(^)(PWAlbumObject *album, NSError *error))completion {
-    [PWPicasaAPI postCreatingNewAlbumRequestWithTitle:album.name
-                                              summary:nil
-                                             location:nil
-                                               access:kPWPicasaAPIGphotoAccessProtected
-                                            timestamp:album.timestamp.stringValue
-                                             keywords:nil
-                                           completion:completion];
-}
-
 #pragma NoItem
 - (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
     if (numberOfItem == 0) {
