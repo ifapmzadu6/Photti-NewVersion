@@ -576,79 +576,62 @@
 
 #pragma mark UIAlertView
 - (void)showAlbumActionSheet:(PLAlbumObject *)album sender:(id)sender {
-    NSManagedObjectID *albumID = album.objectID;
-    
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.name];
     __weak typeof(self) wself = self;
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Edit", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
-        PLAlbumEditViewController *viewController = [[PLAlbumEditViewController alloc] initWithTitle:album.name timestamp:album.timestamp uploading_type:album.tag_uploading_type];
-        viewController.saveButtonBlock = ^(NSString *name, NSNumber *timestamp, NSNumber *uploading_type) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-                PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumID];
-                albumObject.name = name;
-                albumObject.tag_date = [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue / 1000];
-                if (![albumObject.timestamp isEqualToNumber:timestamp]) {
-                    albumObject.timestamp = timestamp;
-                    albumObject.edited = @(YES);
-                }
-                albumObject.tag_uploading_type = uploading_type;
-            }];
-            
-            sself.navigationItem.title = name;
-        };
-        PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+        [sself editActionSheetAction:album];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
-        [sself shareAlbum:album];
+        [sself shareActionSheetAction:album];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Upload", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
-        [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
-            if (error) NSLog(@"%@", error.description);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-            });
-        }];
+        [sself uploadActionSheetAction:album];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
-        UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.name]];
-        [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumID];
-                [context deleteObject:albumObject];
-            }];
-            
-            [sself.navigationController popViewControllerAnimated:YES];
-        }];
-        [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-        [deleteActionSheet showFromBarButtonItem:sender animated:YES];
+        [sself deleteActionSheetAction:album sender:sender];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
-#pragma mark HandleModelObject
-- (void)shareAlbum:(PLAlbumObject *)album {
-    NSMutableArray *assets = [NSMutableArray array];
+- (void)editActionSheetAction:(PLAlbumObject *)album {
+    PLAlbumEditViewController *viewController = [[PLAlbumEditViewController alloc] initWithTitle:album.name timestamp:album.timestamp uploading_type:album.tag_uploading_type];
+    __weak typeof(self) wself = self;
+    NSManagedObjectID *albumID = album.objectID;
+    viewController.saveButtonBlock = ^(NSString *name, NSNumber *timestamp, NSNumber *uploading_type) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+            PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumID];
+            albumObject.name = name;
+            albumObject.tag_date = [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue / 1000];
+            if (![albumObject.timestamp isEqualToNumber:timestamp]) {
+                albumObject.timestamp = timestamp;
+                albumObject.edited = @(YES);
+            }
+            albumObject.tag_uploading_type = uploading_type;
+        }];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            sself.navigationItem.title = name;
+        });
+    };
+    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)shareActionSheetAction:(PLAlbumObject *)album {
+    NSMutableArray *assets = @[].mutableCopy;
     for (PLPhotoObject *photo in album.photos) {
         [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:photo.url] resultBlock:^(ALAsset *asset) {
             if (asset) {
@@ -661,9 +644,42 @@
                 });
             }
         } failureBlock:^(NSError *error) {
-            
+            NSLog(@"%@", error);
         }];
     }
+}
+
+- (void)uploadActionSheetAction:(PLAlbumObject *)album {
+    [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
+        if (error) {
+            NSLog(@"%@", error.description);
+            return;
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+        });
+    }];
+}
+
+- (void)deleteActionSheetAction:(PLAlbumObject *)album sender:(id)sender {
+    UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.name]];
+    __weak typeof(self) wself = self;
+    NSManagedObjectID *albumID = album.objectID;
+    [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumID];
+            [context deleteObject:albumObject];
+        }];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sself.navigationController popViewControllerAnimated:YES];
+        });
+    }];
+    [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    [deleteActionSheet showFromBarButtonItem:sender animated:YES];
 }
 
 #pragma NoItem
