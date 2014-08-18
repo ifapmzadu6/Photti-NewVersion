@@ -510,6 +510,9 @@ static const CGFloat animationDuration = 0.25f;
         return;
     }
     
+    if (_isAdsHidden == hidden) {
+        return;
+    }
     _isAdsHidden = hidden;
     
     void (^animation)() = ^{
@@ -547,13 +550,6 @@ static const CGFloat animationDuration = 0.25f;
     if (!_isAdsHidden) {
         _bannerView.alpha = 1.0f;
         _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
-        
-        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            _bannerView.adSize = kGADAdSizeSmartBannerLandscape;
-        }
-        else {
-            _bannerView.adSize = kGADAdSizeSmartBannerPortrait;
-        }
     }
 }
 
