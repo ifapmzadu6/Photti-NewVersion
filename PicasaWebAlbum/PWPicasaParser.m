@@ -296,12 +296,17 @@ static NSString * const PWXMLNode = @"text";
     }
     
     if (photo.media) {
-        PWPhotoMediaThumbnailObject *thumbnailObject = photo.media.thumbnail.array.firstObject;
-        photo.tag_thumbnail_url = thumbnailObject.url;
-        
         PWPhotoMediaContentObject *content = photo.media.content.firstObject;
         photo.tag_screenimage_url = content.url;
         photo.tag_originalimage_url = content.url;
+        
+        if ([content.type isEqualToString:@"image/gif"]) {
+            photo.tag_thumbnail_url = content.url;
+        }
+        else {
+            PWPhotoMediaThumbnailObject *thumbnailObject = photo.media.thumbnail.firstObject;
+            photo.tag_thumbnail_url = thumbnailObject.url;
+        }
     }
     
     return photo;

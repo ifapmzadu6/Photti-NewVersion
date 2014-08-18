@@ -18,12 +18,15 @@
 #import "PWCoreDataAPI.h"
 #import "Reachability.h"
 #import "NSURLResponse+methods.h"
+#import <FLAnimatedImageView.h>
+#import <FLAnimatedImage.h>
 
 @interface PWPhotoViewCell ()
 
 @property (strong, nonatomic) UIImageView *videoBackgroundView;
 @property (strong, nonatomic) UIImageView *videoIconView;
 @property (strong, nonatomic) UILabel *videoDurationLabel;
+@property (strong, nonatomic) FLAnimatedImageView *imageView;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIView *overrayView;
 @property (strong, nonatomic) UIImageView *checkMark;
@@ -33,8 +36,6 @@
 @end
 
 @implementation PWPhotoViewCell
-
-
 
 - (id)init {
     self = [super init];
@@ -60,7 +61,7 @@
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.contentView addSubview:_activityIndicatorView];
     
-    _imageView = [UIImageView new];
+    _imageView = [FLAnimatedImageView new];
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.contentView addSubview:_imageView];
@@ -172,6 +173,10 @@
     _checkMark.frame = CGRectMake(CGRectGetMaxX(imageFrame) - 32.0f, CGRectGetMaxY(imageFrame) - 32.0f, 28.0f, 28.0f);
 }
 
+- (UIImage *)image {
+    return _imageView.image;
+}
+
 - (void)setIsSelectWithCheckMark:(BOOL)isSelectWithCheckMark {
     _isSelectWithCheckMark = isSelectWithCheckMark;
     
@@ -197,35 +202,47 @@
 }
 
 - (void)loadImageWithURLString:(NSString *)urlString hash:(NSUInteger)hash {
-    UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
-    if (memoryCachedImage) {
-        if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-            _videoBackgroundView.hidden = NO;
+    NSURL *url = [NSURL URLWithString:urlString];
+    BOOL isGifImage = [url.pathExtension isEqualToString:@"gif"];
+    
+    if (!isGifImage) {
+        UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
+        if (memoryCachedImage) {
+            if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+                _videoBackgroundView.hidden = NO;
+                
+                NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
+                _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
+                _videoDurationLabel.hidden = NO;
+                _videoIconView.hidden = NO;
+            }
             
-            NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
-            _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
-            _videoDurationLabel.hidden = NO;
-            _videoIconView.hidden = NO;
+            _imageView.image = memoryCachedImage;
+            _imageView.alpha = 1.0f;
+            [self setNeedsLayout];
+            
+            return;
         }
-        
-        _imageView.image = memoryCachedImage;
-        _imageView.alpha = 1.0f;
-        [self setNeedsLayout];
-        
-        return;
     }
     
     _imageView.alpha = 0.0f;
+    _imageView.image = nil;
     [_activityIndicatorView startAnimating];
     
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (_photoHash != hash) return;
-        
-        if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
-            UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
-            [self setImage:diskCachedImage hash:hash];
-            
+        SDImageCache *sharedImageCache = [SDImageCache sharedImageCache];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[sharedImageCache defaultCachePathForKey:urlString]]) {
+            if (isGifImage) {
+                NSData *data = [self diskImageDataBySearchingAllPathsForKey:urlString];
+                FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
+                [self setAnimatedImage:animatedImage hash:hash];
+            }
+            else {
+                UIImage *diskCachedImage = [sharedImageCache imageFromDiskCacheForKey:urlString];
+                [self setImage:[UIImage decodedImageWithImage:diskCachedImage] hash:hash];
+            }
             return;
         }
         
@@ -235,7 +252,7 @@
         
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         
-        [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+        [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
                 NSLog(@"%@", error.description);
                 return;
@@ -249,20 +266,24 @@
                 
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                if (error) {
-                    [sself loadImageWithURLString:urlString hash:hash];
-                    return;
-                }
-                if (!response.isSuccess) {
+                if (error || !response.isSuccess) {
                     [sself loadImageWithURLString:urlString hash:hash];
                     return;
                 }
                 
-                UIImage *image = [UIImage imageWithData:data];
-                [sself setImage:[UIImage decodedImageWithImage:image] hash:hash];
-                
-                if (image && urlString) {
-                    [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                if (isGifImage) {
+                    FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
+                    [sself setAnimatedImage:animatedImage hash:hash];
+                    
+                    [sself storeData:data key:urlString];
+                }
+                else {
+                    UIImage *image = [UIImage imageWithData:data];
+                    [sself setImage:[UIImage decodedImageWithImage:image] hash:hash];
+                    
+                    if (image && urlString) {
+                        [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                    }
                 }
             }];
             [task resume];
@@ -293,6 +314,51 @@
             _imageView.alpha = 1.0f;
         }];
     });
+}
+
+#pragma mark AnimatedImage
+- (void)setAnimatedImage:(FLAnimatedImage *)animatedImage hash:(NSUInteger)hash {
+    if (!animatedImage) return;
+    if (_photoHash != hash) return;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (_photoHash != hash) return;
+        
+        if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+            _videoBackgroundView.hidden = NO;
+            
+            NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
+            _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
+            _videoDurationLabel.hidden = NO;
+            _videoIconView.hidden = NO;
+        }
+        
+        [_activityIndicatorView stopAnimating];
+        _imageView.animatedImage = animatedImage;
+        [self layoutImageView];
+        _imageView.alpha = 1.0f;
+    });
+}
+
+- (NSData *)diskImageDataBySearchingAllPathsForKey:(NSString *)key {
+    NSString *defaultPath = [[SDImageCache sharedImageCache] defaultCachePathForKey:key];
+    NSData *data = [NSData dataWithContentsOfFile:defaultPath];
+    if (data) {
+        return data;
+    }
+    return nil;
+}
+
+- (void)storeData:(NSData *)data key:(NSString *)key {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *diskCachePath = [paths[0] stringByAppendingPathComponent:@"com.hackemist.SDWebImageCache.default"];
+    if (data) {
+        if (![[NSFileManager defaultManager] fileExistsAtPath:diskCachePath]) {
+            [[NSFileManager defaultManager] createDirectoryAtPath:diskCachePath withIntermediateDirectories:YES attributes:nil error:NULL];
+        }
+        
+        [[NSFileManager defaultManager] createFileAtPath:[[SDImageCache sharedImageCache] defaultCachePathForKey:key] contents:data attributes:nil];
+    }
 }
 
 @end

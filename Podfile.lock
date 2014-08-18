@@ -20,6 +20,7 @@ PODS:
   - CocoaLumberjack/Core (1.9.2)
   - CocoaLumberjack/Extensions (1.9.2):
     - CocoaLumberjack/Core
+  - FLAnimatedImage (1.0.1)
   - GData (1.12.0):
     - GData/Core
     - GData/XMLNode
@@ -45,6 +46,7 @@ DEPENDENCIES:
   - Appirater
   - BlocksKit
   - CocoaLumberjack
+  - FLAnimatedImage
   - GData
   - LXReorderableCollectionViewFlowLayout
   - Reachability
@@ -55,6 +57,7 @@ SPEC CHECKSUMS:
   Appirater: a5e00fb01d47a9a6acf4b2f22323b4ccf4f23fbb
   BlocksKit: 07c8a80f04275efac6a5f8b973782489c083a182
   CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
+  FLAnimatedImage: a91333b191d57ecf7f86b85bf93145a7f63dafe5
   GData: 99d19dd8ee328ce77d12d504ddf9b0e0a6e3bc0d
   gtm-oauth2: 64f2d404a50676ab63b5437a02a7567da8f8b7fa
   GTMHTTPFetcher: 0f02d5a5803dd08736462981064de6a7f59cf9bd

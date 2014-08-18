@@ -15,6 +15,6 @@
 @property (strong, nonatomic) PWPhotoObject *photo;
 @property (nonatomic) BOOL isSelectWithCheckMark;
 
-@property (strong, nonatomic) UIImageView *imageView;
+- (UIImage *)image;
 
 @end

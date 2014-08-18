@@ -85,6 +85,7 @@
 		718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */; };
 		718E9757196E8D8000638A86 /* PWPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 718E9756196E8D8000638A86 /* PWPhotoEditViewController.m */; };
 		718FF6B9197D6A3300C3D3BF /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 718FF6B8197D6A3300C3D3BF /* Crashlytics.framework */; };
+		7194EC7219A23B0F00FD90BB /* icon_80.png in Resources */ = {isa = PBXBuildFile; fileRef = 7194EC7119A23B0F00FD90BB /* icon_80.png */; };
 		7195523619273138003EA9AF /* PWAlbumShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7195523519273138003EA9AF /* PWAlbumShareViewController.m */; };
 		7195523E1928FB3F003EA9AF /* PLModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7195523C1928FB3F003EA9AF /* PLModel.xcdatamodeld */; };
 		719552411928FD4C003EA9AF /* PLAssetsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 719552401928FD4C003EA9AF /* PLAssetsManager.m */; };
@@ -332,6 +333,7 @@
 		718E9755196E8D8000638A86 /* PWPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPhotoEditViewController.h; sourceTree = "<group>"; };
 		718E9756196E8D8000638A86 /* PWPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPhotoEditViewController.m; sourceTree = "<group>"; };
 		718FF6B8197D6A3300C3D3BF /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
+		7194EC7119A23B0F00FD90BB /* icon_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon_80.png; path = Images.xcassets/AppIcon.appiconset/icon_80.png; sourceTree = "<group>"; };
 		7195523419273138003EA9AF /* PWAlbumShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumShareViewController.h; sourceTree = "<group>"; };
 		7195523519273138003EA9AF /* PWAlbumShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlbumShareViewController.m; sourceTree = "<group>"; };
 		7195523D1928FB3F003EA9AF /* PLModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PLModel.xcdatamodel; sourceTree = "<group>"; };
@@ -1143,6 +1145,14 @@
 			name = PWPhotoEditViewController;
 			sourceTree = "<group>";
 		};
+		7194EC7019A23AFE00FD90BB /* images */ = {
+			isa = PBXGroup;
+			children = (
+				7194EC7119A23B0F00FD90BB /* icon_80.png */,
+			);
+			name = images;
+			sourceTree = "<group>";
+		};
 		7195523319273112003EA9AF /* PWAlbumShareViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -1777,6 +1787,7 @@
 		71E8850819115C7E005A78E0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				7194EC7019A23AFE00FD90BB /* images */,
 				713746D0193DD6500097470A /* PicasaWebAlbum.entitlements */,
 				715A31AD198F5876002A0A37 /* Localizable.strings */,
 				711FE8E7195EA48400AF296B /* thirdpartycopyright.html */,
@@ -2041,6 +2052,7 @@
 				715A31AB198F5876002A0A37 /* Localizable.strings in Resources */,
 				71E8851D19115C7E005A78E0 /* Images.xcassets in Resources */,
 				71E8850C19115C7E005A78E0 /* InfoPlist.strings in Resources */,
+				7194EC7219A23B0F00FD90BB /* icon_80.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

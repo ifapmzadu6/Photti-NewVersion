@@ -32,6 +32,8 @@
 #import "PWImagePickerController.h"
 #import "PWAlbumPickerController.h"
 
+static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
+
 @interface PWPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, UIAlertViewDelegate>
 
 @property (strong, nonatomic) PWAlbumObject *album;
@@ -104,27 +106,30 @@
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_activityIndicatorView];
+    [_activityIndicatorView startAnimating];                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
     
-//    UIBarButtonItem *mapBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Info"] style:UIBarButtonItemStylePlain target:self action:@selector(mapBarButtonAction)];
-//    self.navigationItem.rightBarButtonItem = mapBarButtonItem;
-    
-    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
-    NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
-    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-    _fetchedResultsController.delegate = self;
-    
-    [_fetchedResultsController performFetch:nil];
-    
-    if (_fetchedResultsController.fetchedObjects.count == 0) {
-        [_activityIndicatorView startAnimating];
-    }
-    
-    [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
-    
-    [self loadDataWithStartIndex:0];
+    [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
+        NSFetchRequest *request = [NSFetchRequest new];
+        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:[kPWPhotoListViewControllerName stringByAppendingString:_album.id_str]];
+        _fetchedResultsController.delegate = self;
+        
+        [_fetchedResultsController performFetch:nil];
+        
+        if (_fetchedResultsController.fetchedObjects.count == 0) {
+            [_activityIndicatorView startAnimating];
+        }
+        else {
+            [_activityIndicatorView stopAnimating];
+            [_collectionView reloadData];
+        }
+        
+        [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
+        
+        [self loadDataWithStartIndex:0];
+    }];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -467,10 +472,6 @@
     cell.isSelectWithCheckMark = _isSelectMode;
     [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
     
-    if (indexPath.row > _requestIndex - 500) {
-        [self loadDataWithStartIndex:_requestIndex];
-    }
-    
     return cell;
 }
 
@@ -512,7 +513,7 @@
     }
     else {
         PWPhotoViewCell *cell = (PWPhotoViewCell *)[_collectionView cellForItemAtIndexPath:indexPath];
-        UIImage *image = cell.imageView.image;
+        UIImage *image = cell.image;
         
         NSArray *photos = [_fetchedResultsController fetchedObjects];
         PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row image:image cache:_photoViewCache];

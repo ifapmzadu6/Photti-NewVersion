@@ -11,4 +11,6 @@ pod 'LXReorderableCollectionViewFlowLayout', :inhibit_warnings => true
 pod 'SFHFKeychainUtils', :inhibit_warnings => true
 pod 'Reachability', :inhibit_warnings => true
 pod 'Appirater', :inhibit_warnings => true
+pod 'FLAnimatedImage', :inhibit_warnings => true
+
 
