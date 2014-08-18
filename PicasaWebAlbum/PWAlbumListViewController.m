@@ -365,104 +365,121 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Edit", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
-        PWAlbumEditViewController *viewController = [[PWAlbumEditViewController alloc] initWithAlbum:album];
-        viewController.successBlock = ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself loadDataWithStartIndex:0];
-        };
-        PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+        [sself editActionSheetAction:album];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
-        PWAlbumShareViewController *viewController = [[PWAlbumShareViewController alloc] initWithAlbum:album];
-        viewController.changedAlbumBlock = ^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
-            });
-        };
-        PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+        [sself shareActionSheetAction:album];
     }];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Download", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        if (![Reachability reachabilityForInternetConnection].isReachable) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-            [alertView show];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [alertView dismissWithClickedButtonIndex:0 animated:YES];
-            });
-            return;
-        }
-        
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
-        [alertView show];
-        [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:album.id_str index:0 completion:^(NSUInteger nextIndex, NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [alertView dismissWithClickedButtonIndex:0 animated:YES];
-            });
-            
-            if (error) {
-                NSLog(@"%@", error.description);
-                return;
-            }
-            
-            [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
-                if (error) {
-                    NSLog(@"%@", error.description);
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                });
-            }];
-        }];
+        [sself downloadActionSheetAction:album];
     }];
     [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        if (![Reachability reachabilityForInternetConnection].isReachable) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-            [alertView show];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [alertView dismissWithClickedButtonIndex:0 animated:YES];
-            });
-            return;
-        }
-        
-        UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.title]];
-        [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-            [alertView show];
-            
-            [PWPicasaAPI deleteAlbum:album completion:^(NSError *error) {
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                
-                if (error) {
-                    NSLog(@"%@", error.description);
-                }
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                    [sself loadDataWithStartIndex:0];
-                });
-            }];
-        }];
-        [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-        
-        [deleteActionSheet showFromTabBar:sself.tabBarController.tabBar];
+        [sself deleteActionSheetAction:album];
     }];
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
     
     [actionSheet showFromTabBar:self.tabBarController.tabBar];
+}
+
+- (void)editActionSheetAction:(PWAlbumObject *)album {
+    PWAlbumEditViewController *viewController = [[PWAlbumEditViewController alloc] initWithAlbum:album];
+    __weak typeof(self) wself = self;
+    viewController.successBlock = ^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself loadDataWithStartIndex:0];
+    };
+    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)shareActionSheetAction:(PWAlbumObject *)album {
+    PWAlbumShareViewController *viewController = [[PWAlbumShareViewController alloc] initWithAlbum:album];
+    __weak typeof(self) wself = self;
+    viewController.changedAlbumBlock = ^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
+        });
+    };
+    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)downloadActionSheetAction:(PWAlbumObject *)album {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        [alertView show];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+        });
+        return;
+    }
+    
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
+    [alertView show];
+    [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:album.id_str index:0 completion:^(NSUInteger nextIndex, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+        });
+        if (error) {
+            NSLog(@"%@", error.description);
+            return;
+        }
+        
+        [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
+            if (error) {
+                NSLog(@"%@", error.description);
+                return;
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+            });
+        }];
+    }];
+}
+
+- (void)deleteActionSheetAction:(PWAlbumObject *)album {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        [alertView show];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+        });
+        return;
+    }
+    
+    UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.title]];
+    __weak typeof(self) wself = self;
+    [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        [alertView show];
+        
+        [PWPicasaAPI deleteAlbum:album completion:^(NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (error) {
+                NSLog(@"%@", error.description);
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                [sself loadDataWithStartIndex:0];
+            });
+        }];
+    }];
+    [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    [deleteActionSheet showFromTabBar:self.tabBarController.tabBar];
 }
 
 #pragma NoItem
