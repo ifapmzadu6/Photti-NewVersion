@@ -167,8 +167,6 @@ static const CGFloat animationDuration = 0.25f;
         }
     }
 #pragma clang diagnostic pop
-    
-    [self willLayoutBannerView];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -506,7 +504,7 @@ static const CGFloat animationDuration = 0.25f;
 - (void)setAdsHidden:(BOOL)hidden animated:(BOOL)animated {
     if ([PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID]) {
         _isAdsHidden = YES;
-        _bannerView.alpha = 0;
+        _bannerView.hidden = YES;
         return;
     }
     
@@ -528,10 +526,6 @@ static const CGFloat animationDuration = 0.25f;
     }
 }
 
-- (void)willLayoutBannerView {
-    _bannerView.alpha = 0.0f;
-}
-
 - (void)layoutBannerView {
     CGRect rect = self.view.bounds;
     CGFloat tHeight = 44.0f;
@@ -547,10 +541,7 @@ static const CGFloat animationDuration = 0.25f;
         adHeight = 90.0f;
     }
     
-    if (!_isAdsHidden) {
-        _bannerView.alpha = 1.0f;
-        _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
-    }
+    _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
 }
 
 @end
