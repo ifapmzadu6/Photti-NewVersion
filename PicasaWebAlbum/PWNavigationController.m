@@ -29,8 +29,6 @@
         self.title = NSLocalizedString(@"Web Album", nil);
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];
         
-//        [PWOAuthManager logout];
-        
         if ([PWOAuthManager isLogined]) {
             PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
             self.viewControllers = @[albumListViewController];
