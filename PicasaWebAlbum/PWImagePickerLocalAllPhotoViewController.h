@@ -8,7 +8,7 @@
 
 @import UIKit;
 
-@interface PWImagePickerLocalAllPhotoViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface PWImagePickerLocalAllPhotoViewController : UIViewController
 
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 
