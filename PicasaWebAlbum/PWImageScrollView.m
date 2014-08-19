@@ -125,6 +125,7 @@
 	_imageSize = CGSizeMake(imageWidth, imageHeight);
 	
 	_imageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, imageWidth, imageHeight)];
+    _imageView.backgroundColor = [UIColor whiteColor];
 	_imageView.contentMode = UIViewContentModeScaleAspectFill;
     _imageView.clipsToBounds = YES;
 	_imageView.image = image;
@@ -157,6 +158,7 @@
 	_imageSize = CGSizeMake(imageWidth, imageHeight);
 	
 	_imageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, imageWidth, imageHeight)];
+    _imageView.backgroundColor = [UIColor whiteColor];
 	_imageView.contentMode = UIViewContentModeScaleAspectFill;
     _imageView.clipsToBounds = YES;
 	_imageView.animatedImage = animatedImage;
