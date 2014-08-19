@@ -166,7 +166,7 @@
     [self setMaxMinZoomScalesForCurrentBounds];
     self.zoomScale = self.minimumZoomScale;
 	
-	_isZoom = NO;    
+	_isZoom = NO;
 }
 
 - (UIImage *)image {

@@ -18,8 +18,6 @@
 #import <BlocksKit+UIKit.h>
 #import <SDImageCache.h>
 #import <Reachability.h>
-#import <FLAnimatedImage.h>
-#import <FLAnimatedImageView.h>
 
 #import "PWPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
@@ -62,6 +60,8 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 @property (weak, nonatomic) PWPhotoPageViewController *photoPageViewController;
 @property (strong, nonatomic) NSCache *photoViewCache;
 
+@property (strong, nonatomic) NSArray *indexPathsForSelectedItemsAtViewWillAppear;
+
 @end
 
 @implementation PWPhotoListViewController
@@ -72,7 +72,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         _album = album;
         
         _selectedPhotoIDs = @[].mutableCopy;
-        _photoViewCache = [[NSCache alloc] init];
+        _photoViewCache = [NSCache new];
         _photoViewCache.countLimit = 10;
         
         self.title = album.title;
@@ -170,9 +170,11 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    _indexPathsForSelectedItemsAtViewWillAppear = nil;
     if (!_isSelectMode) {
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
         
+        _indexPathsForSelectedItemsAtViewWillAppear = _collectionView.indexPathsForSelectedItems;
         for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
             [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
         }
@@ -206,6 +208,11 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
+    
+    if (_indexPathsForSelectedItemsAtViewWillAppear) {
+        [_collectionView reloadItemsAtIndexPaths:_indexPathsForSelectedItemsAtViewWillAppear];
+        _indexPathsForSelectedItemsAtViewWillAppear = nil;
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
