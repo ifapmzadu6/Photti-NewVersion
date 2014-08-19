@@ -25,6 +25,7 @@
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSMutableArray *headers;
+@property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
@@ -74,6 +75,8 @@
         abort();
         return;
     }
+    
+    [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -127,6 +130,8 @@
     if (indexPath) {
         [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
     }
+    
+    [self layoutNoItem];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -329,7 +334,46 @@
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
+        
+        [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
     });
+}
+
+#pragma NoItem
+- (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
+    if (numberOfItem == 0) {
+        [self showNoItem];
+    }
+    else {
+        [self hideNoItem];
+    }
+}
+
+- (void)showNoItem {
+    if (!_noItemImageView) {
+        _noItemImageView = [UIImageView new];
+        _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
+        [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
+    }
+}
+
+- (void)hideNoItem {
+    if (_noItemImageView) {
+        [_noItemImageView removeFromSuperview];
+        _noItemImageView = nil;
+    }
+}
+
+- (void)layoutNoItem {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 240.0f, 240.0f);
+    }
+    else {
+        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 440.0f, 440.0f);
+    }
+    _noItemImageView.center = self.view.center;
 }
 
 @end

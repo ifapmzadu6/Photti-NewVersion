@@ -74,6 +74,8 @@
         abort();
         return;
     }
+    
+    [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -127,6 +129,8 @@
     if (indexPath) {
         [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
     }
+    
+    [self layoutNoItem];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -328,6 +332,8 @@
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
+        
+        [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
     });
 }
 

@@ -8,8 +8,6 @@
 
 #import "PWCoreDataAPI.h"
 
-#import "DDLog.h"
-
 @interface PWCoreDataAPI ()
 
 @end
