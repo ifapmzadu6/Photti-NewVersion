@@ -14,7 +14,7 @@
 
 - (id)initWithPhoto:(PWPhotoObject *)photo placeholder:(id)placeholder cache:(NSCache *)cache;
 
-@property (weak, nonatomic, readonly) PWPhotoObject *photo;
+@property (strong, nonatomic, readonly) PWPhotoObject *photo;
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 @property (copy, nonatomic) void (^handleSingleTapBlock)();
 

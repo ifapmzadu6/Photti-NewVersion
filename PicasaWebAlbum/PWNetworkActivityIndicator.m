@@ -22,8 +22,6 @@
 - (void)setNumberOfConnection:(NSUInteger)numberOfConnection {
     _numberOfConnection = numberOfConnection;
     
-    NSLog(@"%ld", (long)numberOfConnection);
-    
     void (^block)() = ^{
         [UIApplication sharedApplication].networkActivityIndicatorVisible = (numberOfConnection > 0);
     };

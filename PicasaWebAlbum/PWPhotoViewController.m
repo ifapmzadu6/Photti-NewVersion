@@ -345,8 +345,6 @@
 }
 
 - (void)loadScreenResolutionImage {
-    [PWNetworkActivityIndicator increment];
-    
     NSString *urlString = _photo.tag_screenimage_url;
     if (!urlString) return;
     
@@ -358,6 +356,7 @@
         return;
     }
     
+    [PWNetworkActivityIndicator increment];
     NSURL *url = [NSURL URLWithString:urlString];
     __weak typeof(self) wself = self;
     [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
