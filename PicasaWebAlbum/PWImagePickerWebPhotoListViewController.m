@@ -38,6 +38,7 @@
 @property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (nonatomic) NSUInteger requestIndex;
+@property (nonatomic) BOOL isRequesting;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSMutableArray *selectedPhotoIDs;
@@ -139,6 +140,8 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
+    [_refreshControl endRefreshing];
+    
     CGRect rect = self.view.bounds;
     
     NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
@@ -158,6 +161,14 @@
     _activityIndicatorView.center = self.view.center;
     
     [self layoutNoItem];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    
+    if (_isRequesting) {
+        [_refreshControl beginRefreshing];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -304,10 +315,16 @@
         return;
     };
     
+    if (_isRequesting) {
+        return;
+    }
+    _isRequesting = YES;
+    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:0 completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
         if (!sself) return;
+        sself.isRequesting = NO;
         
         if (error) {
             NSLog(@"%@", error);

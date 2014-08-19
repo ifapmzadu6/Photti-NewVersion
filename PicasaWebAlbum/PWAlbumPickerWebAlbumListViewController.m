@@ -30,6 +30,7 @@
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic) NSUInteger requestIndex;
+@property (nonatomic) BOOL isRequesting;
 
 @end
 
@@ -106,6 +107,8 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
+    [_refreshControl endRefreshing];
+    
     CGRect rect = self.view.bounds;
     
     NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
@@ -125,6 +128,14 @@
     _activityIndicatorView.center = self.view.center;
     
     [self layoutNoItem];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    
+    if (_isRequesting) {
+        [_refreshControl beginRefreshing];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -243,10 +254,16 @@
         return;
     };
     
+    if (_isRequesting) {
+        return;
+    }
+    _isRequesting = YES;
+    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
         if (!sself) return;
+        sself.isRequesting = NO;
         
         if (error) {
             NSLog(@"%@", error);

@@ -42,6 +42,7 @@
 @property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (nonatomic) NSUInteger requestIndex;
+@property (nonatomic) BOOL isRequesting;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
@@ -151,6 +152,8 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
+    [_refreshControl endRefreshing];
+    
     CGRect rect = self.view.bounds;
     
     NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
@@ -174,6 +177,14 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     _activityIndicatorView.center = self.view.center;
     
     [self layoutNoItem];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    
+    if (_isRequesting) {
+        [_refreshControl beginRefreshing];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -307,10 +318,16 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         return;
     };
     
+    if (_isRequesting) {
+        return;
+    }
+    _isRequesting = YES;
+    
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
         if (!sself) return;
+        sself.isRequesting = NO;
         
         if (error) {
             NSLog(@"%@", error);
@@ -427,6 +444,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     }
     
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
+    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
+    [indicator startAnimating];
+    [alertView setValue:indicator forKey:@"accessoryView"];
     [alertView show];
     [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:album.id_str index:0 completion:^(NSUInteger nextIndex, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -462,7 +483,13 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.title]];
     __weak typeof(self) wself = self;
     [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
+        [indicator startAnimating];
+        [alertView setValue:indicator forKey:@"accessoryView"];
         [alertView show];
         
         [PWPicasaAPI deleteAlbum:album completion:^(NSError *error) {

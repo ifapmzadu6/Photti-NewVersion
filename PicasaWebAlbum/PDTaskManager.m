@@ -53,6 +53,10 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         
         NSManagedObjectContext *context = [PDCoreDataAPI readContext];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
+        
+        _restartTimeInterval = 60;
+        
+        [self restartTimer];
     }
     return self;
 }
@@ -234,6 +238,15 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
             for (NSURLSessionTask *task in uploadTasks) [task cancel];
             for (NSURLSessionTask *task in downloadTasks) [task cancel];
         }];
+    });
+}
+
+#pragma mark Restart
+- (void)restartTimer {
+    [self start];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_restartTimeInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self restartTimer];
     });
 }
 

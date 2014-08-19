@@ -145,6 +145,9 @@
                     [task cancel];
                 }
             }];
+            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
+            [indicator startAnimating];
             [alertView show];
             [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
                 typeof(wself) sself = wself;
@@ -194,6 +197,8 @@
                 [actionSheet bk_addButtonWithTitle:title handler:^{
                     __block UIAlertView *alertView = nil;
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        typeof(wself) sself = wself;
+                        if (!sself) return;
                         alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil];
                         [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
                             typeof(wself) sself = wself;
@@ -204,6 +209,9 @@
                                 [task cancel];
                             }
                         }];
+                        UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                        indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
+                        [indicator startAnimating];
                         [alertView show];
                     });
                     

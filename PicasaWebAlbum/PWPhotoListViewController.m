@@ -48,7 +48,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 @property (strong, nonatomic) UIBarButtonItem *organizeBarButtonItem;
 
 @property (nonatomic) NSUInteger requestIndex;
-@property (nonatomic) BOOL nowLoading;
+@property (nonatomic) BOOL isRequesting;
 @property (nonatomic) BOOL isSelectMode;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -137,6 +137,8 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
+    [_refreshControl endRefreshing];
+    
     CGRect rect = self.view.bounds;
     
     NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
@@ -165,6 +167,14 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     _activityIndicatorView.center = self.view.center;
     
     [self layoutNoItem];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    
+    if (_isRequesting) {
+        [_refreshControl beginRefreshing];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -278,12 +288,17 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     _isActionLoadingCancel = NO;
     _actionLoadingVideoQuality = 0;
     
+    __weak typeof(self) wself = self;
     void (^block)() = ^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
+        UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
+        [indicator startAnimating];
         alertView.tag = 100;
         [alertView show];
         
-        __weak typeof(self) wself = self;
         [self loadAndSaveWithPhotos:selectedPhotos savedLocations:@[].mutableCopy alertView:alertView completion:^(NSArray *savedLocations) {
             typeof(wself) sself = wself;
             if (!sself) return;
@@ -641,16 +656,16 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         return;
     };
     
-    if (_nowLoading) {
+    if (_isRequesting) {
         return;
     }
-    _nowLoading = YES;
+    _isRequesting = YES;
     
     __weak typeof(self) wself = self;
     [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:index completion:^(NSUInteger nextIndex, NSError *error) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        sself.nowLoading = NO;
+        sself.isRequesting = NO;
         
         if (error) {
             NSLog(@"%@", error);
@@ -790,6 +805,9 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     }
     
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
+    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
+    [indicator startAnimating];
     [alertView show];
     [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:album.id_str index:0 completion:^(NSUInteger nextIndex, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -825,7 +843,12 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.title]];
     __weak typeof(self) wself = self;
     [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
+        [indicator startAnimating];
         [alertView show];
         
         [PWPicasaAPI deleteAlbum:album completion:^(NSError *error) {
@@ -863,6 +886,9 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             if (!sself) return;
             
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
+            [indicator startAnimating];
             [alertView show];
             
             NSArray *indexPaths = sself.collectionView.indexPathsForSelectedItems;
