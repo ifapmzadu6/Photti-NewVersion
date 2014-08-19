@@ -491,8 +491,6 @@
             
             return;
         }
-                
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
@@ -504,8 +502,6 @@
             if (sself.taskHash != hash) return;
             
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (error) return;
@@ -551,8 +547,6 @@
             return;
         }
         
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-        
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
                 NSLog(@"%@", error.description);
@@ -562,9 +556,7 @@
             if (!sself) return;
             if (sself.taskHash != hash) return;
             
-            NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                
+            NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {                
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (error) return;

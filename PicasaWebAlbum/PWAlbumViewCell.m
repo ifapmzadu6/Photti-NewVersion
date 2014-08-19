@@ -178,6 +178,7 @@
     if (memoryCachedImage) {
         _imageView.image = memoryCachedImage;
         _imageView.alpha = 1.0f;
+        [_activityIndicatorView stopAnimating];
         
         return;
     }
@@ -199,8 +200,6 @@
             return;
         }
         
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-        
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
                 NSLog(@"%@", error.description);
@@ -212,8 +211,6 @@
             if (sself.albumHash != hash) return;
             
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (error) {

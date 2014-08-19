@@ -15,6 +15,7 @@
 #import "PWPicasaAPI.h"
 #import "PWImageScrollView.h"
 #import "PWTabBarController.h"
+#import "PWNetworkActivityIndicator.h"
 #import <Reachability.h>
 #import <FLAnimatedImage.h>
 #import <SDImageCache.h>
@@ -291,17 +292,19 @@
             return;
         }
         
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        [PWNetworkActivityIndicator increment];
         
         [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
                 NSLog(@"%@", error.description);
+                [PWNetworkActivityIndicator decrement];
                 return;
             }
             typeof(wself) sself = wself;
             if (!sself) return;
             
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                [PWNetworkActivityIndicator decrement];
                 if (error) {
                     NSLog(@"%@", error.description);
                     return;
@@ -311,8 +314,6 @@
                 if (isGifImage) {
                     FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                        
                         [sself.indicatorView stopAnimating];
                         sself.imageScrollView.animatedImage = animatedImage;
                     });
@@ -326,9 +327,6 @@
                     if (!image) return;
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        typeof(wself) sself = wself;
-                        
-                        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
                         [sself.indicatorView stopAnimating];
                         [sself.imageScrollView setImage:image];
                         
@@ -347,7 +345,7 @@
 }
 
 - (void)loadScreenResolutionImage {
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    [PWNetworkActivityIndicator increment];
     
     NSString *urlString = _photo.tag_screenimage_url;
     if (!urlString) return;
@@ -367,12 +365,12 @@
         if (!sself) return;
         if (error) {
             NSLog(@"%@", error.description);
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+            [PWNetworkActivityIndicator decrement];
             return;
         }
         
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+            [PWNetworkActivityIndicator decrement];
             if (error) {
                 return;
             }

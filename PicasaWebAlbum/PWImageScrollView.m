@@ -116,11 +116,11 @@
 	CGFloat imageHeight = dimensions.height;
 	if (CGRectGetWidth(self.bounds) > CGRectGetHeight(self.bounds)) {
 		imageHeight = ceilf(imageHeight * CGRectGetWidth(self.bounds) / imageWidth * 2.0f + 1.0f) / 2.0f;
-		imageWidth = ceilf(CGRectGetWidth(self.bounds));
+		imageWidth = CGRectGetWidth(self.bounds);
 	}
 	else {
 		imageWidth = ceilf(imageWidth * CGRectGetHeight(self.bounds) / imageHeight * 2.0f + 1.0f) / 2.0f;
-		imageHeight = ceilf(CGRectGetHeight(self.bounds));
+		imageHeight = CGRectGetHeight(self.bounds);
 	}
 	_imageSize = CGSizeMake(imageWidth, imageHeight);
 	

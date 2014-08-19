@@ -80,6 +80,7 @@
 		715A31B4198FD5E8002A0A37 /* NSFileManager+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 715A31B3198FD5E8002A0A37 /* NSFileManager+methods.m */; };
 		716243331952090300168825 /* PLPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 716243321952090300168825 /* PLPhotoObject.m */; };
 		71649BF1195907A400009C1F /* PDInAppPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 71649BF0195907A400009C1F /* PDInAppPurchase.m */; };
+		71737EBA19A3193100CBE68A /* PWNetworkActivityIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 71737EB919A3193100CBE68A /* PWNetworkActivityIndicator.m */; };
 		717456E6196AB4F5003D2436 /* XmlReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 717456E5196AB4F5003D2436 /* XmlReader.m */; };
 		7177479F1936F5A8005179B6 /* PDModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7177479D1936F5A8005179B6 /* PDModel.xcdatamodeld */; };
 		718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */; };
@@ -325,6 +326,8 @@
 		716243321952090300168825 /* PLPhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoObject.m; sourceTree = "<group>"; };
 		71649BEF195907A400009C1F /* PDInAppPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDInAppPurchase.h; sourceTree = "<group>"; };
 		71649BF0195907A400009C1F /* PDInAppPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDInAppPurchase.m; sourceTree = "<group>"; };
+		71737EB819A3193100CBE68A /* PWNetworkActivityIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWNetworkActivityIndicator.h; sourceTree = "<group>"; };
+		71737EB919A3193100CBE68A /* PWNetworkActivityIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWNetworkActivityIndicator.m; sourceTree = "<group>"; };
 		717456E4196AB4F5003D2436 /* XmlReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlReader.h; sourceTree = "<group>"; };
 		717456E5196AB4F5003D2436 /* XmlReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XmlReader.m; sourceTree = "<group>"; };
 		7177479E1936F5A8005179B6 /* PDModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PDModel.xcdatamodel; sourceTree = "<group>"; };
@@ -1112,6 +1115,15 @@
 			name = PDInAppPurchase;
 			sourceTree = "<group>";
 		};
+		71737EB719A318F800CBE68A /* PWNetworkActivityIndicator */ = {
+			isa = PBXGroup;
+			children = (
+				71737EB819A3193100CBE68A /* PWNetworkActivityIndicator.h */,
+				71737EB919A3193100CBE68A /* PWNetworkActivityIndicator.m */,
+			);
+			name = PWNetworkActivityIndicator;
+			sourceTree = "<group>";
+		};
 		7177479C1936F572005179B6 /* PDModelObject */ = {
 			isa = PBXGroup;
 			children = (
@@ -1820,6 +1832,7 @@
 		71E8859519120BB9005A78E0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				71737EB719A318F800CBE68A /* PWNetworkActivityIndicator */,
 				71BD235919779E1C0034CD3B /* ALAsset+methods */,
 				71BDE39D1998FA8100853E85 /* NSAttributedString+methods */,
 				715A31B5198FD5F6002A0A37 /* NSFileManager+methods */,
@@ -2209,6 +2222,7 @@
 				71E8850E19115C7E005A78E0 /* main.m in Sources */,
 				71BD234319768D0E0034CD3B /* PDWebPhotoObject+methods.m in Sources */,
 				712F39AE1938D011005CF60B /* PWPhotoObject.m in Sources */,
+				71737EBA19A3193100CBE68A /* PWNetworkActivityIndicator.m in Sources */,
 				71BD234619778C010034CD3B /* PDLocalPhotoObject.m in Sources */,
 				71E885A219120E7A005A78E0 /* PWOAuthManager.m in Sources */,
 				719BECEE1957419E005DE6E7 /* PWSettingsTableViewController.m in Sources */,

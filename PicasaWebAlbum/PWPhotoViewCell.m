@@ -26,12 +26,14 @@
 @property (strong, nonatomic) UIImageView *videoBackgroundView;
 @property (strong, nonatomic) UIImageView *videoIconView;
 @property (strong, nonatomic) UILabel *videoDurationLabel;
-@property (strong, nonatomic) FLAnimatedImageView *imageView;
+@property (strong, nonatomic) UIImageView *imageView;
+@property (strong, nonatomic) FLAnimatedImageView *animatedImageView;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIView *overrayView;
 @property (strong, nonatomic) UIImageView *checkMark;
 
 @property (nonatomic) NSUInteger photoHash;
+@property (weak, nonatomic) NSURLSessionTask *task;
 
 @end
 
@@ -61,10 +63,15 @@
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.contentView addSubview:_activityIndicatorView];
     
-    _imageView = [FLAnimatedImageView new];
+    _imageView = [UIImageView new];
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.contentView addSubview:_imageView];
+    
+    _animatedImageView = [FLAnimatedImageView new];
+    _animatedImageView.clipsToBounds = YES;
+    _animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [self.contentView insertSubview:_animatedImageView belowSubview:_imageView];
     
     _videoBackgroundView = [UIImageView new];
     _videoBackgroundView.image = [PWIcons gradientVerticalFromColor:UIColor.clearColor toColor:UIColor.blackColor size:CGSizeMake(200.0f, 200.0f)];
@@ -148,8 +155,8 @@
     }
     else {
         CGSize imageSize;
-        if (_imageView.animatedImage) {
-            imageSize = [FLAnimatedImage sizeForImage:_imageView.animatedImage];
+        if (!_animatedImageView.hidden) {
+            imageSize = _animatedImageView.animatedImage.size;
         }
         else {
             imageSize = _imageView.image.size;
@@ -170,6 +177,7 @@
             _imageView.frame = CGRectZero;
         }
     }
+    _animatedImageView.frame = _imageView.frame;
     
     CGRect imageFrame = _imageView.frame;
     _videoBackgroundView.frame = CGRectMake(CGRectGetMinX(imageFrame), CGRectGetMaxY(imageFrame) - 20.0f, CGRectGetWidth(imageFrame), 20.0f);
@@ -185,7 +193,7 @@
 }
 
 - (FLAnimatedImage *)animatedImage {
-    return _imageView.animatedImage;
+    return _animatedImageView.animatedImage;
 }
 
 - (void)setIsSelectWithCheckMark:(BOOL)isSelectWithCheckMark {
@@ -200,11 +208,18 @@
     NSUInteger hash = photo.hash;
     _photoHash = hash;
     
-    if (!photo) return;
+    NSURLSessionTask *task = _task;
+    if (task && task.state == NSURLSessionTaskStateRunning) {
+        [task cancel];
+    }
     
     _videoBackgroundView.hidden = YES;
     _videoDurationLabel.hidden = YES;
     _videoIconView.hidden = YES;
+    
+    if (!photo) {
+        return;
+    }
     
     NSString *urlString = photo.tag_thumbnail_url;
     if (!urlString) return;
@@ -228,40 +243,45 @@
                 _videoIconView.hidden = NO;
             }
             
+            [_activityIndicatorView stopAnimating];
             _imageView.image = memoryCachedImage;
-            _imageView.alpha = 1.0f;
+            _imageView.hidden = NO;
+            _animatedImageView.hidden = YES;
             [self setNeedsLayout];
             
             return;
         }
     }
     
-    _imageView.alpha = 0.0f;
     _imageView.image = nil;
+    _imageView.hidden = YES;
+    _animatedImageView.animatedImage = nil;
+    _animatedImageView.hidden = YES;
     [_activityIndicatorView startAnimating];
     
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (_photoHash != hash) return;
         SDImageCache *sharedImageCache = [SDImageCache sharedImageCache];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[sharedImageCache defaultCachePathForKey:urlString]]) {
             if (isGifImage) {
-                NSData *data = [self diskImageDataBySearchingAllPathsForKey:urlString];
-                FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
-                [self setAnimatedImage:animatedImage hash:hash];
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[sharedImageCache defaultCachePathForKey:urlString]]) {
+                    NSData *data = [self diskImageDataBySearchingAllPathsForKey:urlString];
+                    FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
+                    [self setAnimatedImage:animatedImage hash:hash];
+                    return;
+                }
             }
             else {
-                UIImage *diskCachedImage = [sharedImageCache imageFromDiskCacheForKey:urlString];
-                [self setImage:[UIImage decodedImageWithImage:diskCachedImage] hash:hash];
+                if ([sharedImageCache diskImageExistsWithKey:urlString]) {
+                    UIImage *diskCachedImage = [sharedImageCache imageFromDiskCacheForKey:urlString];
+                    [self setImage:[UIImage decodedImageWithImage:diskCachedImage] hash:hash];
+                    return;
+                }
             }
-            return;
-        }
         
         if (![Reachability reachabilityForInternetConnection].isReachable) {
             return;
         }
-        
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         
         [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
@@ -273,12 +293,9 @@
             if (sself.photoHash != hash) return;
             
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (error || !response.isSuccess) {
-                    [sself loadImageWithURLString:urlString hash:hash];
                     return;
                 }
                 
@@ -299,11 +316,13 @@
                     }
                 }
             }];
+            sself.task = task;
             [task resume];
         }];
     });
 }
 
+#pragma mark Image
 - (void)setImage:(UIImage *)image hash:(NSUInteger)hash {
     if (!image) return;
     if (_photoHash != hash) return;
@@ -322,10 +341,10 @@
         
         [_activityIndicatorView stopAnimating];
         _imageView.image = image;
-        [self layoutImageView];
-        [UIView animateWithDuration:0.1f animations:^{
-            _imageView.alpha = 1.0f;
-        }];
+        _imageView.hidden = NO;
+        _animatedImageView.animatedImage = nil;
+        _animatedImageView.hidden = YES;
+        [self setNeedsLayout];
     });
 }
 
@@ -347,9 +366,11 @@
         }
         
         [_activityIndicatorView stopAnimating];
-        _imageView.animatedImage = animatedImage;
-        _imageView.alpha = 1.0f;
-        [self layoutImageView];
+        _animatedImageView.animatedImage = animatedImage;
+        _animatedImageView.hidden = NO;
+        _imageView.image = nil;
+        _imageView.hidden = YES;
+        [self setNeedsLayout];
     });
 }
 

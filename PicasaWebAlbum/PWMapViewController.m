@@ -9,6 +9,7 @@
 @import MapKit;
 
 #import "PWMapViewController.h"
+#import "PWNetworkActivityIndicator.h"
 #import <BlocksKit+UIKit.h>
 
 @interface PWAnnotation : NSObject <MKAnnotation>
@@ -100,8 +101,6 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 - (void)viewWillLayoutSubviews {
@@ -174,15 +173,11 @@
 }
 
 - (void)mapViewWillStartLoadingMap:(MKMapView *)mapView {
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+	[PWNetworkActivityIndicator increment];
 }
 
 - (void)mapViewDidFinishLoadingMap:(MKMapView *)mapView {
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-}
-
-- (void)mapViewDidStopLocatingUser:(MKMapView *)mapView {
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	[PWNetworkActivityIndicator decrement];
 }
 
 @end

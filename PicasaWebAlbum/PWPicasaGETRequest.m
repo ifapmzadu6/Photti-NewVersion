@@ -75,7 +75,7 @@ static NSString * const PWPicasaGETRequestPhotoThumbnailMaxSizeName = @"1024";
             request.allHTTPHeaderFields = headerFields;
             [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
-            [task resume];
+            [task resume];            
         }
     }];
 }
