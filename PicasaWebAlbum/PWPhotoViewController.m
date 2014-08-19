@@ -318,7 +318,9 @@
                         sself.imageScrollView.animatedImage = animatedImage;
                     });
                     
-                    [sself storeData:data key:urlString];
+                    if (data && urlString) {
+                        [sself storeData:data key:urlString];
+                    }
                 }
                 else {
                     UIImage *image = [UIImage imageWithData:data];

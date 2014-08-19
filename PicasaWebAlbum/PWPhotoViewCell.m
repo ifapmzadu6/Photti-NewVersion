@@ -279,7 +279,9 @@
                     FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
                     [sself setAnimatedImage:animatedImage hash:hash];
                     
-                    [sself storeData:data key:urlString];
+                    if (data && urlString) {
+                        [sself storeData:data key:urlString];
+                    }
                 }
                 else {
                     UIImage *image = [UIImage imageWithData:data];
