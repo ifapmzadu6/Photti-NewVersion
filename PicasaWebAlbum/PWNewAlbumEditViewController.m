@@ -32,7 +32,6 @@
     UIBarButtonItem *createBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Save", nil) style:UIBarButtonItemStylePlain target:self action:@selector(createBarButtonAction)];
     [createBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
     self.navigationItem.rightBarButtonItem = createBarButtonItem;
-    
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
@@ -62,7 +61,6 @@
 
 #pragma mark UIBarButtonItem
 - (void)createBarButtonAction {
-    
     if (![Reachability reachabilityForInternetConnection].isReachable) {
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
         [alertView show];
@@ -76,6 +74,7 @@
     UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
     [indicator startAnimating];
+    [alertView setValue:indicator forKey:@"accessoryView"];
     [alertView show];
     
     NSString *albumTitle = nil;

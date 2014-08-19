@@ -219,10 +219,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
     
-//    if (_indexPathsForSelectedItemsAtViewWillAppear) {
-//        [_collectionView reloadItemsAtIndexPaths:_indexPathsForSelectedItemsAtViewWillAppear];
-//        _indexPathsForSelectedItemsAtViewWillAppear = nil;
-//    }
+    if (_indexPathsForSelectedItemsAtViewWillAppear) {
+        [_collectionView reloadItemsAtIndexPaths:_indexPathsForSelectedItemsAtViewWillAppear];
+        _indexPathsForSelectedItemsAtViewWillAppear = nil;
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -296,6 +296,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
         [indicator startAnimating];
+        [alertView setValue:indicator forKey:@"accessoryView"];
         alertView.tag = 100;
         [alertView show];
         
@@ -849,6 +850,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
         [indicator startAnimating];
+        [alertView setValue:indicator forKey:@"accessoryView"];
         [alertView show];
         
         [PWPicasaAPI deleteAlbum:album completion:^(NSError *error) {
@@ -889,6 +891,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
             indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
             [indicator startAnimating];
+            [alertView setValue:indicator forKey:@"accessoryView"];
             [alertView show];
             
             NSArray *indexPaths = sself.collectionView.indexPathsForSelectedItems;
