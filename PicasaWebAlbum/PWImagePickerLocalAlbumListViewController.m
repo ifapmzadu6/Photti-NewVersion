@@ -15,7 +15,7 @@
 #import "PLCollectionFooterView.h"
 #import "PWAlbumCollectionViewFlowLayout.h"
 #import "PWImagePickerController.h"
-#import "BlocksKit+UIKit.h"
+#import <BlocksKit+UIKit.h>
 #import "PLModelObject.h"
 
 #import "PWImagePickerLocalPhotoListViewController.h"

@@ -21,7 +21,7 @@
 #import "PWString.h"
 #import "PWIcons.h"
 
-#import "SDImageCache.h"
+#import <SDImageCache.h>
 #import "SDWebImageDecoder.h"
 
 #import "PWRoundedCornerBadgeLabel.h"

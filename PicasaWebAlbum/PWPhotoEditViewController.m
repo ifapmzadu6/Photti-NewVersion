@@ -10,7 +10,7 @@
 
 #import "PWColors.h"
 #import "PWPicasaAPI.h"
-#import "SDImageCache.h"
+#import <SDImageCache.h>
 
 typedef enum _PWPhotoEditViewControllerSectionType {
     PWPhotoEditViewControllerSectionTypeDESCRIPTION,

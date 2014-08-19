@@ -21,7 +21,7 @@
 #import "PLPhotoPageViewController.h"
 #import "PWBaseNavigationController.h"
 #import "PLAlbumEditViewController.h"
-#import "BlocksKit+UIKit.h"
+#import <BlocksKit+UIKit.h>
 #import "PDTaskManager.h"
 #import "PWImagePickerController.h"
 #import "PWAlbumPickerController.h"

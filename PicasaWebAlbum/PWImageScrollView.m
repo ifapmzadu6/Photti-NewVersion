@@ -8,9 +8,12 @@
 
 #import "PWImageScrollView.h"
 
-@interface PWImageScrollView ()
+#import <FLAnimatedImage.h>
+#import <FLAnimatedImageView.h>
 
-//@property (strong, nonatomic) UIImageView *imageView;
+@interface PWImageScrollView () <UIScrollViewDelegate>
+
+@property (strong, nonatomic) FLAnimatedImageView *imageView;
 
 @property (nonatomic) CGPoint pointToCenterAfterResize;
 @property (nonatomic) CGFloat scaleToRestoreAfterResize;
@@ -111,17 +114,17 @@
 	CGSize dimensions = image.size;
 	CGFloat imageWidth = dimensions.width;
 	CGFloat imageHeight = dimensions.height;
-	if (self.bounds.size.width > self.bounds.size.height) {
-		imageHeight = ceilf(imageHeight * self.bounds.size.width / imageWidth * 2.0f + 1.0f) / 2.0f;
-		imageWidth = ceilf(self.bounds.size.width);
+	if (CGRectGetWidth(self.bounds) > CGRectGetHeight(self.bounds)) {
+		imageHeight = ceilf(imageHeight * CGRectGetWidth(self.bounds) / imageWidth * 2.0f + 1.0f) / 2.0f;
+		imageWidth = ceilf(CGRectGetWidth(self.bounds));
 	}
 	else {
-		imageWidth = ceilf(imageWidth * self.bounds.size.height / imageHeight * 2.0f + 1.0f) / 2.0f;
-		imageHeight = ceilf(self.bounds.size.height);
+		imageWidth = ceilf(imageWidth * CGRectGetHeight(self.bounds) / imageHeight * 2.0f + 1.0f) / 2.0f;
+		imageHeight = ceilf(CGRectGetHeight(self.bounds));
 	}
 	_imageSize = CGSizeMake(imageWidth, imageHeight);
 	
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, imageWidth, imageHeight)];
+	_imageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, imageWidth, imageHeight)];
 	_imageView.contentMode = UIViewContentModeScaleAspectFill;
     _imageView.clipsToBounds = YES;
 	_imageView.image = image;
@@ -132,6 +135,38 @@
     self.zoomScale = self.minimumZoomScale;
 	
 	_isZoom = NO;
+}
+
+- (void)setAnimatedImage:(FLAnimatedImage *)animatedImage {
+    if (_imageView) {
+        _imageView.animatedImage = animatedImage;
+        return;
+    }
+    
+	CGSize dimensions = animatedImage.size;
+	CGFloat imageWidth = dimensions.width;
+	CGFloat imageHeight = dimensions.height;
+	if (CGRectGetWidth(self.bounds) > CGRectGetHeight(self.bounds)) {
+		imageHeight = ceilf(imageHeight * CGRectGetWidth(self.bounds) / imageWidth * 2.0f + 1.0f) / 2.0f;
+		imageWidth = ceilf(CGRectGetWidth(self.bounds));
+	}
+	else {
+		imageWidth = ceilf(imageWidth * CGRectGetHeight(self.bounds) / imageHeight * 2.0f + 1.0f) / 2.0f;
+		imageHeight = ceilf(CGRectGetHeight(self.bounds));
+	}
+	_imageSize = CGSizeMake(imageWidth, imageHeight);
+	
+	_imageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, imageWidth, imageHeight)];
+	_imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _imageView.clipsToBounds = YES;
+	_imageView.animatedImage = animatedImage;
+	[self addSubview:_imageView];
+	
+	self.contentSize = _imageSize;
+    [self setMaxMinZoomScalesForCurrentBounds];
+    self.zoomScale = self.minimumZoomScale;
+	
+	_isZoom = NO;    
 }
 
 - (UIImage *)image {

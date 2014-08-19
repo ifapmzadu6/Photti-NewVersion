@@ -11,12 +11,12 @@
 #import "PWModelObject.h"
 #import "PWPicasaAPI.h"
 #import "PWColors.h"
-#import "Reachability.h"
-#import "SDImageCache.h"
+#import <Reachability.h>
+#import <SDImageCache.h>
 #import "SDWebImageDecoder.h"
 #import "PWIcons.h"
 #import "UIButton+HitEdgeInsets.h"
-#import "Reachability.h"
+#import <Reachability.h>
 #import "NSURLResponse+methods.h"
 
 @interface PWAlbumViewCell ()

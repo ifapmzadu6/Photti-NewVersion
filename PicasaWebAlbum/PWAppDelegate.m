@@ -12,7 +12,7 @@
 
 #import "PWTabBarController.h"
 
-#import "SDImageCache.h"
+#import <SDImageCache.h>
 #import <Appirater.h>
 
 #import "PDTaskManager.h"

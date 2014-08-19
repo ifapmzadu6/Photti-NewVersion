@@ -11,7 +11,7 @@
 #import "PWColors.h"
 #import "PWIcons.h"
 #import "PLModelObject.h"
-#import "BlocksKit+UIKit.h"
+#import <BlocksKit+UIKit.h>
 #import "PWDatePickerView.h"
 
 @interface PLAlbumEditViewController () <UITableViewDataSource, UITableViewDelegate>

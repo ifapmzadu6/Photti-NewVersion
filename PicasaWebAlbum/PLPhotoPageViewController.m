@@ -22,7 +22,7 @@
 #import "PWAlbumPickerController.h"
 #import "PLCoreDataAPI.h"
 #import "PDTaskManager.h"
-#import "BlocksKit+UIKit.h"
+#import <BlocksKit+UIKit.h>
 
 @interface PLPhotoPageViewController ()
 

@@ -9,7 +9,7 @@
 @import MapKit;
 
 #import "PWMapViewController.h"
-#import "BlocksKit+UIKit.h"
+#import <BlocksKit+UIKit.h>
 
 @interface PWAnnotation : NSObject <MKAnnotation>
 @property (nonatomic) CLLocationCoordinate2D coordinate;

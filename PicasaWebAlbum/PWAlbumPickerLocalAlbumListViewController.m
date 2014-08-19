@@ -18,7 +18,7 @@
 #import "PLDateFormatter.h"
 #import "PLCollectionFooterView.h"
 #import "PLModelObject.h"
-#import "BlocksKit+UIKit.h"
+#import <BlocksKit+UIKit.h>
 #import "PWAlbumPickerController.h"
 #import "PWBaseNavigationController.h"
 #import "PLNewAlbumEditViewController.h"

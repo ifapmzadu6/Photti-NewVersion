@@ -13,7 +13,7 @@
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
 #import "PDInAppPurchase.h"
-#import "BlocksKit+UIKit.h"
+#import <BlocksKit+UIKit.h>
 
 #import "PWTabBarController.h"
 

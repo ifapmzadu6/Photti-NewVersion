@@ -9,7 +9,7 @@
 
 #import "PLNewAlbumEditViewController.h"
 
-#import "BlocksKit+UIKit.h"
+#import <BlocksKit+UIKit.h>
 
 @interface PLNewAlbumEditViewController ()
 

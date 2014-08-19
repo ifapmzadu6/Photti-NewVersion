@@ -12,11 +12,11 @@
 #import "PWColors.h"
 #import "PWIcons.h"
 #import "PLDateFormatter.h"
-#import "Reachability.h"
-#import "SDImageCache.h"
+#import <Reachability.h>
+#import <SDImageCache.h>
 #import "SDWebImageDecoder.h"
 #import "PWCoreDataAPI.h"
-#import "Reachability.h"
+#import <Reachability.h>
 #import "NSURLResponse+methods.h"
 #import <FLAnimatedImageView.h>
 #import <FLAnimatedImage.h>
@@ -175,6 +175,10 @@
 
 - (UIImage *)image {
     return _imageView.image;
+}
+
+- (FLAnimatedImage *)animatedImage {
+    return _imageView.animatedImage;
 }
 
 - (void)setIsSelectWithCheckMark:(BOOL)isSelectWithCheckMark {
@@ -340,6 +344,7 @@
     });
 }
 
+#pragma mark DiscCache
 - (NSData *)diskImageDataBySearchingAllPathsForKey:(NSString *)key {
     NSString *defaultPath = [[SDImageCache sharedImageCache] defaultCachePathForKey:key];
     NSData *data = [NSData dataWithContentsOfFile:defaultPath];

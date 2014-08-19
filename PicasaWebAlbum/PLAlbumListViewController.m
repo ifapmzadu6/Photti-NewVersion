@@ -19,7 +19,7 @@
 #import "PLPhotoListViewController.h"
 #import "PWBaseNavigationController.h"
 #import "PLAlbumEditViewController.h"
-#import "BlocksKit+UIKit.h"
+#import <BlocksKit+UIKit.h>
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
 

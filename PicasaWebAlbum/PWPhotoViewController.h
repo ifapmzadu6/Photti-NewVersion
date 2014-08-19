@@ -12,7 +12,7 @@
 
 @interface PWPhotoViewController : UIViewController
 
-- (id)initWithPhoto:(PWPhotoObject *)photo image:(UIImage *)image cache:(NSCache *)cache;
+- (id)initWithPhoto:(PWPhotoObject *)photo placeholder:(id)placeholder cache:(NSCache *)cache;
 
 @property (weak, nonatomic, readonly) PWPhotoObject *photo;
 @property (copy, nonatomic) void (^viewDidAppearBlock)();

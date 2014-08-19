@@ -14,10 +14,12 @@
 #import "PWString.h"
 #import "PWSnowFlake.h"
 #import "PWRefreshControl.h"
-#import "BlocksKit+UIKit.h"
-#import "SDImageCache.h"
 #import "PDTaskManager.h"
-#import "Reachability.h"
+#import <BlocksKit+UIKit.h>
+#import <SDImageCache.h>
+#import <Reachability.h>
+#import <FLAnimatedImage.h>
+#import <FLAnimatedImageView.h>
 
 #import "PWPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
@@ -513,10 +515,16 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     }
     else {
         PWPhotoViewCell *cell = (PWPhotoViewCell *)[_collectionView cellForItemAtIndexPath:indexPath];
-        UIImage *image = cell.image;
+        id placeholder = nil;
+        if (cell.animatedImage) {
+            placeholder = cell.animatedImage;
+        }
+        else {
+            placeholder = cell.image;
+        }
         
         NSArray *photos = [_fetchedResultsController fetchedObjects];
-        PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row image:image cache:_photoViewCache];
+        PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row placeholder:placeholder cache:_photoViewCache];
         [self.navigationController pushViewController:viewController animated:YES];
         
         _photoPageViewController = viewController;

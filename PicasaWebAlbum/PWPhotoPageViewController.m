@@ -16,16 +16,16 @@
 #import "PWPicasaAPI.h"
 #import "PWPhotoViewController.h"
 #import "PWTabBarController.h"
-#import "BlocksKit+UIKit.h"
-#import "Reachability.h"
-#import "SDImageCache.h"
+#import <BlocksKit+UIKit.h>
+#import <Reachability.h>
+#import <SDImageCache.h>
 #import "PWBaseNavigationController.h"
 #import "PWPhotoEditViewController.h"
 #import "PWMapViewController.h"
 #import "PWAlbumPickerController.h"
 #import "PDTaskManager.h"
 
-@interface PWPhotoPageViewController ()
+@interface PWPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate>
 
 @property (strong, nonatomic) NSArray *photos;
 
@@ -40,7 +40,7 @@
 
 @implementation PWPhotoPageViewController
 
-- (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index image:(UIImage *)image cache:(NSCache *)cache {
+- (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index placeholder:(id)placeholder cache:(NSCache *)cache {
     NSDictionary *option = [NSDictionary dictionaryWithObjectsAndKeys:@(40.0f), UIPageViewControllerOptionInterPageSpacingKey, nil];
     self = [self initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:option];
     if (self) {
@@ -54,7 +54,7 @@
         
         self.delegate = self;
         self.dataSource = self;
-        [self setViewControllers:@[[self makePhotoViewController:index thumbnailImage:image]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+        [self setViewControllers:@[[self makePhotoViewController:index placeholder:placeholder]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
         self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     }
     return self;
@@ -350,7 +350,7 @@
     if (filteredPhotos.count) {
         PWPhotoObject *newPhoto = filteredPhotos.firstObject;
         NSUInteger newIndex = [photos indexOfObject:newPhoto];
-        [self setViewControllers:@[[self makePhotoViewController:newIndex thumbnailImage:nil]]
+        [self setViewControllers:@[[self makePhotoViewController:newIndex placeholder:nil]]
                        direction:UIPageViewControllerNavigationDirectionForward
                         animated:NO
                       completion:nil];
@@ -364,13 +364,13 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
     PWPhotoViewController *photoViewController = (PWPhotoViewController *)viewController;
     NSInteger index = [_photos indexOfObject:photoViewController.photo];
-    return [self makePhotoViewController:index - 1 thumbnailImage:nil];
+    return [self makePhotoViewController:index - 1 placeholder:nil];
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController {
     PWPhotoViewController *photoViewController = (PWPhotoViewController *)viewController;
     NSInteger index = [_photos indexOfObject:photoViewController.photo];
-    return [self makePhotoViewController:index + 1 thumbnailImage:nil];
+    return [self makePhotoViewController:index + 1 placeholder:nil];
 }
 
 #pragma mark UIScrollViewDelegate
@@ -387,13 +387,13 @@
 }
 
 #pragma mark PWPhotoViewController
-- (UIViewController *)makePhotoViewController:(NSInteger)index thumbnailImage:(UIImage *)image {
+- (UIViewController *)makePhotoViewController:(NSInteger)index placeholder:(id)placeholder {
     if (index < 0 || index == _photos.count) {
         return nil;
     }
     
     PWPhotoObject *photo = _photos[index];
-    PWPhotoViewController *viewController = [[PWPhotoViewController alloc] initWithPhoto:photo image:image cache:_photoViewCache];
+    PWPhotoViewController *viewController = [[PWPhotoViewController alloc] initWithPhoto:photo placeholder:placeholder cache:_photoViewCache];
     NSString *title = [NSString stringWithFormat:@"%ld/%ld", (long)index + 1, (long)_photos.count];
     viewController.title = title;
     NSString *id_str = photo.id_str;

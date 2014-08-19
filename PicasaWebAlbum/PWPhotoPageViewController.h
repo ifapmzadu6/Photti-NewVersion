@@ -8,9 +8,9 @@
 
 @import UIKit;
 
-@interface PWPhotoPageViewController : UIPageViewController <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate>
+@interface PWPhotoPageViewController : UIPageViewController
 
-- (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index image:(UIImage *)image cache:(NSCache *)cache;
+- (id)initWithPhotos:(NSArray *)photos index:(NSUInteger)index placeholder:(id)placeholder cache:(NSCache *)cache;
 
 - (void)changePhotos:(NSArray *)photos;
 

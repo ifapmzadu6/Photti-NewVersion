@@ -14,7 +14,7 @@
 #import "PWIcons.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
-#import "SDImageCache.h"
+#import <SDImageCache.h>
 #import "PWImageScrollView.h"
 #import "PWTabBarController.h"
 

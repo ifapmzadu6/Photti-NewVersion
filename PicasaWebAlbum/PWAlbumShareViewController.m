@@ -10,7 +10,7 @@
 
 #import "PWColors.h"
 #import "PWIcons.h"
-#import "Reachability.h"
+#import <Reachability.h>
 
 @interface PWAlbumShareViewController ()
 

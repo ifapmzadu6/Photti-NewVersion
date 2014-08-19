@@ -9,7 +9,7 @@
 #import "PWTabBarController.h"
 
 #import "PWColors.h"
-#import "SDImageCache.h"
+#import <SDImageCache.h>
 #import "PDInAppPurchase.h"
 
 #import "PWNavigationController.h"

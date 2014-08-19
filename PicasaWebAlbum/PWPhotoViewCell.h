@@ -8,7 +8,7 @@
 
 @import UIKit;
 
-@class PWPhotoObject;
+@class PWPhotoObject, FLAnimatedImage;
 
 @interface PWPhotoViewCell : UICollectionViewCell
 
@@ -16,5 +16,6 @@
 @property (nonatomic) BOOL isSelectWithCheckMark;
 
 - (UIImage *)image;
+- (FLAnimatedImage *)animatedImage;
 
 @end

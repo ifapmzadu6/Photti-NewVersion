@@ -10,7 +10,7 @@
 
 #import "PWModelObject.h"
 #import "PWPicasaAPI.h"
-#import "SDImageCache.h"
+#import <SDImageCache.h>
 #import "SDWebImageDecoder.h"
 #import "NSMutableAttributedString+methods.h"
 
