@@ -13,6 +13,7 @@
 #import "PWString.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
+#import "PLCoreDataAPI.h"
 #import "PLPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PWPhotoCollectionViewFlowLayout.h"
@@ -21,6 +22,7 @@
 @interface PWImagePickerLocalPhotoListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
+@property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButton;
 @property (strong, nonatomic) UIBarButtonItem *trashBarButtonItem;
@@ -38,6 +40,9 @@
         self.title = album.name;
         
         _album = album;
+        
+        NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification) name:NSManagedObjectContextDidSaveNotification object:context];
     }
     return self;
 }
@@ -76,6 +81,8 @@
     else {
         [self setRightNavigationItemSelectButton];
     }
+    
+    [self refreshNoItemWithNumberOfItem:_album.photos.count];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -96,10 +103,17 @@
     if (indexPath) {
         [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
     }
+    
+    [self layoutNoItem];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+- (void)dealloc {
+    NSManagedObjectContext *context = [PLCoreDataAPI readContext];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
 }
 
 #pragma mark UIBarButtonItem
@@ -199,6 +213,52 @@
     if (_album.photos.count != _collectionView.indexPathsForSelectedItems.count) {
         [self setRightNavigationItemSelectButton];
     }
+}
+
+#pragma mark NSFetchedResultsControllerDelegate
+- (void)contextDidSaveNotification {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+        
+        [self refreshNoItemWithNumberOfItem:_album.photos.count];
+    });
+}
+
+#pragma NoItem
+- (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
+    if (numberOfItem == 0) {
+        [self showNoItem];
+    }
+    else {
+        [self hideNoItem];
+    }
+}
+
+- (void)showNoItem {
+    if (!_noItemImageView) {
+        _noItemImageView = [UIImageView new];
+        _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
+        [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
+    }
+}
+
+- (void)hideNoItem {
+    if (_noItemImageView) {
+        [_noItemImageView removeFromSuperview];
+        _noItemImageView = nil;
+    }
+}
+
+- (void)layoutNoItem {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 240.0f, 240.0f);
+    }
+    else {
+        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 440.0f, 440.0f);
+    }
+    _noItemImageView.center = self.view.center;
 }
 
 @end

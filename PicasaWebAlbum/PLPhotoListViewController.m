@@ -549,7 +549,6 @@
 
 #pragma mark NSFetchedResultsControllerDelegate
 - (void)contextDidSaveNotification {
-//    __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
         
