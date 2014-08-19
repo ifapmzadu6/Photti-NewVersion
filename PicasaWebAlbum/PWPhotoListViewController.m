@@ -209,10 +209,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
     
-    if (_indexPathsForSelectedItemsAtViewWillAppear) {
-        [_collectionView reloadItemsAtIndexPaths:_indexPathsForSelectedItemsAtViewWillAppear];
-        _indexPathsForSelectedItemsAtViewWillAppear = nil;
-    }
+//    if (_indexPathsForSelectedItemsAtViewWillAppear) {
+//        [_collectionView reloadItemsAtIndexPaths:_indexPathsForSelectedItemsAtViewWillAppear];
+//        _indexPathsForSelectedItemsAtViewWillAppear = nil;
+//    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

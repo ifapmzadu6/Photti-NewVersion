@@ -147,12 +147,19 @@
         _imageView.frame = rect;
     }
     else {
-        CGFloat width = _imageView.image.size.width;
-        CGFloat height = _imageView.image.size.height;
+        CGSize imageSize;
+        if (_imageView.animatedImage) {
+            imageSize = [FLAnimatedImage sizeForImage:_imageView.animatedImage];
+        }
+        else {
+            imageSize = _imageView.image.size;
+        }
+        CGFloat width = imageSize.width;
+        CGFloat height = imageSize.height;
         if (width > 0 && height > 0) {
             if (width > height) {
                 height = ceilf(rect.size.width * height/width * 2.0f + 0.5f) / 2.0f;
-                _imageView.frame = CGRectMake(0.0f, ceilf((rect.size.width-height) + 0.5f)/2.0f, rect.size.width, height);
+                _imageView.frame = CGRectMake(0.0f, ceilf((rect.size.height-height) + 0.5f)/2.0f, rect.size.width, height);
             }
             else {
                 width = ceilf(rect.size.width * width/height * 2.0f + 0.5f) / 2.0f;
@@ -165,9 +172,9 @@
     }
     
     CGRect imageFrame = _imageView.frame;
-    _videoBackgroundView.frame = CGRectMake(CGRectGetMinX(imageFrame), CGRectGetHeight(imageFrame) - 20.0f, CGRectGetWidth(imageFrame), 20.0f);
-    _videoIconView.frame = CGRectMake(CGRectGetMinX(imageFrame) + 5.0f, CGRectGetHeight(imageFrame) - 14.0f, 16.0f, 8.0f);
-    _videoDurationLabel.frame = CGRectMake(CGRectGetMinX(imageFrame), CGRectGetHeight(imageFrame) - 20.0f, CGRectGetWidth(imageFrame) - 5.0f, 20.0f);
+    _videoBackgroundView.frame = CGRectMake(CGRectGetMinX(imageFrame), CGRectGetMaxY(imageFrame) - 20.0f, CGRectGetWidth(imageFrame), 20.0f);
+    _videoIconView.frame = CGRectMake(CGRectGetMinX(imageFrame) + 5.0f, CGRectGetMaxY(imageFrame) - 14.0f, 16.0f, 8.0f);
+    _videoDurationLabel.frame = CGRectMake(CGRectGetMinX(imageFrame), CGRectGetMaxY(imageFrame) - 20.0f, CGRectGetWidth(imageFrame) - 5.0f, 20.0f);
     
     _overrayView.frame = imageFrame;
     _checkMark.frame = CGRectMake(CGRectGetMaxX(imageFrame) - 32.0f, CGRectGetMaxY(imageFrame) - 32.0f, 28.0f, 28.0f);
@@ -341,8 +348,8 @@
         
         [_activityIndicatorView stopAnimating];
         _imageView.animatedImage = animatedImage;
-        [self layoutImageView];
         _imageView.alpha = 1.0f;
+        [self layoutImageView];
     });
 }
 
