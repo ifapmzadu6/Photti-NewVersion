@@ -115,7 +115,8 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-        _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:[kPWPhotoListViewControllerName stringByAppendingString:_album.id_str]];
+        NSString *cacheName = [kPWPhotoListViewControllerName stringByAppendingString:_album.id_str];
+        _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:cacheName];
         _fetchedResultsController.delegate = self;
         
         [_fetchedResultsController performFetch:nil];
