@@ -27,10 +27,10 @@
     };
     
     if ([NSThread isMainThread]) {
-        block();
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), block);
     }
     else {
-        dispatch_async(dispatch_get_main_queue(), block);
+        block();
     }
 }
 
