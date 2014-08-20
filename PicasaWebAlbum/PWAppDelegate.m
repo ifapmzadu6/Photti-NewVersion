@@ -125,7 +125,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 
 #pragma mark Background Transfer
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler {
-//    NSLog(@"%s", __func__);
+    NSLog(@"%s", __func__);
     
     PDTaskManager *sharedManager = [PDTaskManager sharedManager];
     sharedManager.backgroundComplecationHandler = completionHandler;

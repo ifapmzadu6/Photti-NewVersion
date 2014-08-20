@@ -76,7 +76,7 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         block();
     }
     else {
-        dispatch_sync(dispatch_get_main_queue(), block);
+        dispatch_async(dispatch_get_main_queue(), block);
     }
 }
 
@@ -124,7 +124,7 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         block();
     }
     else {
-        dispatch_sync(dispatch_get_main_queue(), block);
+        dispatch_async(dispatch_get_main_queue(), block);
     }
 }
 
@@ -180,7 +180,7 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         block();
     }
     else {
-        dispatch_sync(dispatch_get_main_queue(), block);
+        dispatch_async(dispatch_get_main_queue(), block);
     }
 }
 
