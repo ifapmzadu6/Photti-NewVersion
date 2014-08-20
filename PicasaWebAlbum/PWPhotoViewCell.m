@@ -234,20 +234,22 @@
     if (!isGifImage) {
         UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
         if (memoryCachedImage) {
-            if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-                _videoBackgroundView.hidden = NO;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+                    _videoBackgroundView.hidden = NO;
+                    
+                    NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
+                    _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
+                    _videoDurationLabel.hidden = NO;
+                    _videoIconView.hidden = NO;
+                }
                 
-                NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
-                _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
-                _videoDurationLabel.hidden = NO;
-                _videoIconView.hidden = NO;
-            }
-            
-            [_activityIndicatorView stopAnimating];
-            _imageView.image = memoryCachedImage;
-            _imageView.hidden = NO;
-            _animatedImageView.hidden = YES;
-            [self setNeedsLayout];
+                [_activityIndicatorView stopAnimating];
+                _imageView.image = memoryCachedImage;
+                _imageView.hidden = NO;
+                _animatedImageView.hidden = YES;
+                [self setNeedsLayout];
+            });
             
             return;
         }

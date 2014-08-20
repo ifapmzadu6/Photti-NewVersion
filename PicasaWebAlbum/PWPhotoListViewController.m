@@ -462,17 +462,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     }
     
     [self loadDataWithStartIndex:0];
-    
-    [self moveImageCacheFromDiskToMemoryAtVisibleCells];
-}
-
-- (void)moveImageCacheFromDiskToMemoryAtVisibleCells {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
-            NSString *thumbnailUrl = cell.photo.tag_thumbnail_url;
-            [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:thumbnailUrl];
-        }
-    });
 }
 
 #pragma mark UICollectionViewDataSource
@@ -657,29 +646,31 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     _isRequesting = YES;
     
     __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:index completion:^(NSUInteger nextIndex, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        sself.isRequesting = NO;
-        
-        if (error) {
-            NSLog(@"%@", error);
-            if (error.code == 401) {
-                [sself openLoginViewController];
-            }
-        }
-        else {
-            sself.requestIndex = nextIndex;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:index completion:^(NSUInteger nextIndex, NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;
+            sself.isRequesting = NO;
             
-            [sself.refreshControl endRefreshing];
-            [sself.activityIndicatorView stopAnimating];
-        });
-    }];
+            if (error) {
+                NSLog(@"%@", error);
+                if (error.code == 401) {
+                    [sself openLoginViewController];
+                }
+            }
+            else {
+                sself.requestIndex = nextIndex;
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                [sself.refreshControl endRefreshing];
+                [sself.activityIndicatorView stopAnimating];
+            });
+        }];
+    });
 }
 
 - (void)openLoginViewController {

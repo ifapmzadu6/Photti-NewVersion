@@ -168,7 +168,7 @@
     else {
         UIImage *noPhotoImage = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         _imageView.image = noPhotoImage;
-        _imageView.alpha = 1.0f;
+        _imageView.hidden = NO;
     }
 }
 
@@ -176,14 +176,16 @@
     
     UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
     if (memoryCachedImage) {
-        _imageView.image = memoryCachedImage;
-        _imageView.alpha = 1.0f;
-        [_activityIndicatorView stopAnimating];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _imageView.image = memoryCachedImage;
+            _imageView.hidden = NO;
+            [_activityIndicatorView stopAnimating];
+        });
         
         return;
     }
     
-    _imageView.alpha = 0.0f;
+    _imageView.hidden = YES;
     [_activityIndicatorView startAnimating];
     
     __weak typeof(self) wself = self;
@@ -243,9 +245,7 @@
         
         [_activityIndicatorView stopAnimating];
         _imageView.image = image;
-        [UIView animateWithDuration:0.1f animations:^{
-            _imageView.alpha = 1.0f;
-        }];
+        _imageView.hidden = NO;
     });
 }
 
