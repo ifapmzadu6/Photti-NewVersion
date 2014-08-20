@@ -232,17 +232,6 @@
     }
     
     [self loadDataWithStartIndex:0];
-    
-    [self moveImageCacheFromDiskToMemoryAtVisibleCells];
-}
-
-- (void)moveImageCacheFromDiskToMemoryAtVisibleCells {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        for (PWAlbumViewCell *cell in _collectionView.visibleCells) {
-            NSString *thumbnailUrl = cell.album.tag_thumbnail_url;
-            [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:thumbnailUrl];
-        }
-    });
 }
 
 #pragma mark LoadData
