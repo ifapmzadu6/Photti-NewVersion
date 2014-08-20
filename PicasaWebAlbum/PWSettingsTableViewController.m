@@ -6,6 +6,8 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
+@import StoreKit;
+
 #import "PWSettingsTableViewController.h"
 
 #import "PWColors.h"
@@ -20,7 +22,7 @@
 #import "PWSettingHTMLViewController.h"
 #import "PWSelectItemFromArrayViewController.h"
 
-@interface PWSettingsTableViewController ()
+@interface PWSettingsTableViewController () <SKStoreProductViewControllerDelegate>
 
 @property (strong, nonatomic) KKStaticTableView *tableView;
 
@@ -361,10 +363,17 @@
     } cellHeight:50.0f didSelect:nil];
 }
 
-#pragma mark Review on iTunes Store
-+ (void)jumpToAppReviewPage {
-    NSURL *reviewLink = [NSURL URLWithString:[NSString stringWithFormat:@"http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=%@&mt=8&type=Purple+Software", @"892657316"]];
-    [[UIApplication sharedApplication] openURL:reviewLink];
+#pragma mark Open iTunes Store
+- (void)openItunesStoreWithAppID:(NSNumber *)appId {
+    SKStoreProductViewController *storeViewController = [[SKStoreProductViewController alloc] init];
+    [storeViewController loadProductWithParameters:@{SKStoreProductParameterITunesItemIdentifier:appId} completionBlock:nil];
+    storeViewController.delegate = self;
+    [self.navigationController presentViewController:storeViewController animated:YES completion:nil];
+}
+
+#pragma mark SKStoreProductViewControllerDelegate
+- (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController {
+    [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark Twitter
@@ -436,7 +445,7 @@
 }
 
 - (void)openReviewOniTunesStore {
-    [PWSettingsTableViewController jumpToAppReviewPage];
+    [self openItunesStoreWithAppID:@892657316];
 }
 
 - (void)deleteAllTasksButtonAction {
@@ -543,14 +552,11 @@
 
 #pragma mark OtherAppAction
 - (void)openVideoCastiTunesStore {
-    // TODO : URLを直す
-    NSURL *reviewLink = [NSURL URLWithString:[NSString stringWithFormat:@"https://itunes.apple.com/app/id%@", @"888164735"]];
-    [[UIApplication sharedApplication] openURL:reviewLink];
+    [self openItunesStoreWithAppID:@888164735];
 }
 
 - (void)openPixittiiTunesStore {
-    NSURL *reviewLink = [NSURL URLWithString:[NSString stringWithFormat:@"https://itunes.apple.com/app/id%@", @"717068044"]];
-    [[UIApplication sharedApplication] openURL:reviewLink];
+    [self openItunesStoreWithAppID:@717068044];
 }
 
 @end
