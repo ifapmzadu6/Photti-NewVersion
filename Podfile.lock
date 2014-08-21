@@ -1,18 +1,18 @@
 PODS:
-  - Appirater (2.0.2)
-  - BlocksKit (2.2.3):
+  - Appirater (2.0.3)
+  - BlocksKit (2.2.5):
     - BlocksKit/All
-  - BlocksKit/All (2.2.3):
+  - BlocksKit/All (2.2.5):
     - BlocksKit/Core
     - BlocksKit/DynamicDelegate
     - BlocksKit/MessageUI
     - BlocksKit/UIKit
-  - BlocksKit/Core (2.2.3)
-  - BlocksKit/DynamicDelegate (2.2.3)
-  - BlocksKit/MessageUI (2.2.3):
+  - BlocksKit/Core (2.2.5)
+  - BlocksKit/DynamicDelegate (2.2.5)
+  - BlocksKit/MessageUI (2.2.5):
     - BlocksKit/Core
     - BlocksKit/DynamicDelegate
-  - BlocksKit/UIKit (2.2.3):
+  - BlocksKit/UIKit (2.2.5):
     - BlocksKit/Core
     - BlocksKit/DynamicDelegate
   - FLAnimatedImage (1.0.1)
@@ -48,8 +48,8 @@ DEPENDENCIES:
   - SFHFKeychainUtils
 
 SPEC CHECKSUMS:
-  Appirater: a5e00fb01d47a9a6acf4b2f22323b4ccf4f23fbb
-  BlocksKit: 07c8a80f04275efac6a5f8b973782489c083a182
+  Appirater: 793f3723354b1b155f7ddc87fc6017bea889ce50
+  BlocksKit: 4439e7f30a9f90743462ca63545a15c1f4304cef
   FLAnimatedImage: a91333b191d57ecf7f86b85bf93145a7f63dafe5
   GData: 99d19dd8ee328ce77d12d504ddf9b0e0a6e3bc0d
   gtm-oauth2: 64f2d404a50676ab63b5437a02a7567da8f8b7fa
