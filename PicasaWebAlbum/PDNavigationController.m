@@ -39,13 +39,12 @@
         _tabBarImageLandspaceSelected = [PWIcons imageWithImage:tabBarImageSelected insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:tabBarImage selectedImage:tabBarImageSelected];
         
-//        [PDInAppPurchase resetKeyChain];
-        
         [self checkTaskIsNone];
         [self badgeUpdate];
         
         [self setTaskManagerChangedBlock];
         [self setTaskManagerNotAllowedAccessPhotoLibraryBlock];
+        [self setTaskManagerNotLoginGoogleAccountBlock];
     }
     return self;
 }
@@ -167,6 +166,15 @@
     taskManager.notAllowedAccessPhotoLibraryAction = ^{
         dispatch_async(dispatch_get_main_queue(), ^{
             [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Go to Settings > Privacy > Photos and switch Photti to ON to access Photo Library.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+        });
+    };
+}
+
+- (void)setTaskManagerNotLoginGoogleAccountBlock {
+    PDTaskManager *taskManager = [PDTaskManager sharedManager];
+    taskManager.notLoginGoogleAccountAction = ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"You need to login Web Album.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
         });
     };
 }

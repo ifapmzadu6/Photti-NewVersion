@@ -71,6 +71,11 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         return NO;
     }
     
+    if (![PWOAuthManager isLogined]) {
+        if (_notLoginGoogleAccountAction) _notLoginGoogleAccountAction();
+        return NO;
+    }
+    
     return YES;
 }
 
