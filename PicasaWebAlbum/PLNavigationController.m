@@ -12,6 +12,7 @@
 #import "PWIcons.h"
 #import "PLAssetsManager.h"
 
+#import "PWTabBarAdsController.h"
 #import "PLPageViewController.h"
 #import "PWBaseNavigationController.h"
 #import "PLAccessPhotoLibraryViewController.h"
@@ -19,6 +20,9 @@
 #import "PLNewAlbumCreatedViewController.h"
 
 @interface PLNavigationController ()
+
+@property (strong, nonatomic) UIImage *tabBarImageLandscape;
+@property (strong, nonatomic) UIImage *tabBarImageLandspaceSelected;
 
 @end
 
@@ -28,7 +32,11 @@
     self = [super init];
     if (self) {
         NSString *title = NSLocalizedString(@"Camera Roll", nil);
-        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:[UIImage imageNamed:@"Picture"] selectedImage:[UIImage imageNamed:@"PictureSelected"]];
+        UIImage *tabBarImage = [UIImage imageNamed:@"Picture"];
+        UIImage *tabBarImageSelected = [UIImage imageNamed:@"PictureSelected"];
+        _tabBarImageLandscape = [PWIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        _tabBarImageLandspaceSelected = [PWIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:tabBarImage selectedImage:tabBarImageSelected];
         
         if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
             PLAccessPhotoLibraryViewController *accessPhotoLibraryViewController = [[PLAccessPhotoLibraryViewController alloc] init];
@@ -95,10 +103,11 @@
 
 #pragma mark UITabBarItem
 - (void)updateTabBarItem {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-            self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    if (tabBarController.isPhone) {
+        if (tabBarController.isLandscape) {
+            self.tabBarItem.image = _tabBarImageLandscape;
+            self.tabBarItem.selectedImage = _tabBarImageLandspaceSelected;
         }
         else {
             self.tabBarItem.image = [UIImage imageNamed:@"Picture"];

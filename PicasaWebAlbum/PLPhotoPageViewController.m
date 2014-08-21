@@ -12,7 +12,7 @@
 
 #import "PWColors.h"
 #import "PWIcons.h"
-#import "PWTabBarController.h"
+#import "PWTabBarAdsController.h"
 #import "PLPhotoViewController.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
@@ -76,7 +76,7 @@
     if (_isEnableDeletePhotoButton) {
         toolbarItems = [toolbarItems arrayByAddingObject:trashButtonItem];
     }
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
     if ([tabBarController isTabBarHidden]) {
@@ -92,7 +92,7 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
+            PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
             [tabBarController setTabBarHidden:YES animated:YES completion:nil];
         }];
     }
@@ -102,7 +102,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
 }
 
@@ -281,7 +281,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
+        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
         if ([tabBarController isToolbarHideen]) {
             [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
             [sself.navigationController setNavigationBarHidden:NO animated:YES];

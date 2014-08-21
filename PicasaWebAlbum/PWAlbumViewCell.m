@@ -176,11 +176,9 @@
     
     UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
     if (memoryCachedImage) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _imageView.image = memoryCachedImage;
-            _imageView.hidden = NO;
-            [_activityIndicatorView stopAnimating];
-        });
+        _imageView.image = memoryCachedImage;
+        _imageView.hidden = NO;
+        [_activityIndicatorView stopAnimating];
         
         return;
     }

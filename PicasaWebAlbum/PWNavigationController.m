@@ -8,16 +8,19 @@
 
 #import "PWNavigationController.h"
 
+#import "PWAppDelegate.h"
 #import "PWColors.h"
 #import "PWIcons.h"
 #import "PWOAuthManager.h"
 
 #import "PWAlbumListViewController.h"
 #import "PWGoogleLoginViewController.h"
-#import "PWTabBarController.h"
-
+#import "PWTabBarAdsController.h"
 
 @interface PWNavigationController () <UINavigationBarDelegate>
+
+@property (strong, nonatomic) UIImage *tabBarImageLandscape;
+@property (strong, nonatomic) UIImage *tabBarImageLandspaceSelected;
 
 @end
 
@@ -27,10 +30,14 @@
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"Web Album", nil);
-        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];
+        UIImage *tabBarImage = [UIImage imageNamed:@"Picasa"];
+        UIImage *tabBarImageSelected = [UIImage imageNamed:@"PicasaSelected"];
+        _tabBarImageLandscape = [PWIcons imageWithImage:tabBarImage insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        _tabBarImageLandspaceSelected = [PWIcons imageWithImage:tabBarImageSelected insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:tabBarImage selectedImage:tabBarImageSelected];
         
         if ([PWOAuthManager isLogined]) {
-            PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
+            PWAlbumListViewController *albumListViewController = [PWAlbumListViewController new];
             self.viewControllers = @[albumListViewController];
         }
         else {
@@ -61,10 +68,11 @@
 
 #pragma mark UITabBarItem
 - (void)updateTabBarItem {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Picasa"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-            self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"PicasaSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    if (tabBarController.isPhone) {
+        if (tabBarController.isLandscape) {
+            self.tabBarItem.image = _tabBarImageLandscape;
+            self.tabBarItem.selectedImage = _tabBarImageLandspaceSelected;
         }
         else {
             self.tabBarItem.image = [UIImage imageNamed:@"Picasa"];
@@ -77,7 +85,7 @@
 - (void)setLoginViewController {
     UIViewController *viewController = self.viewControllers.firstObject;
     if (![viewController isKindOfClass:[PWGoogleLoginViewController class]]) {
-        PWGoogleLoginViewController *googleLoginViewController = [[PWGoogleLoginViewController alloc] init];
+        PWGoogleLoginViewController *googleLoginViewController = [PWGoogleLoginViewController new];
         __weak typeof(self) wself = self;
         googleLoginViewController.completion = ^{
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -86,7 +94,7 @@
                 
                 UIViewController *viewController = sself.viewControllers.firstObject;
                 if (![viewController isKindOfClass:[PWAlbumListViewController class]]) {
-                    PWAlbumListViewController *albumListViewController = [[PWAlbumListViewController alloc] init];
+                    PWAlbumListViewController *albumListViewController = [PWAlbumListViewController new];
                     [sself setViewControllers:@[albumListViewController] animated:YES];
                 }
             });
@@ -96,7 +104,7 @@
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 
-                PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
+                PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
                 [tabBarController setSelectedIndex:0];
             });
         };

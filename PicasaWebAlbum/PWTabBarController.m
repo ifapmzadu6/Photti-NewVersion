@@ -8,49 +8,43 @@
 
 #import "PWTabBarController.h"
 
-#import "PWColors.h"
-#import <SDImageCache.h>
-#import "PDInAppPurchase.h"
-
-#import "PWNavigationController.h"
-#import "PLNavigationController.h"
-#import "PDNavigationController.h"
-
-#import "GADBannerView.h"
-
-static const CGFloat animationDuration = 0.25f;
-
 @interface PWTabBarController () <UITabBarControllerDelegate, UINavigationBarDelegate>
 
 @property (strong, nonatomic) UIToolbar *toolbar;
 @property (strong, nonatomic) UIToolbar *actionToolbar;
 @property (strong, nonatomic) UINavigationBar *actionNavigationBar;
 
-@property (nonatomic) BOOL isTabBarHidden;
+@property (nonatomic, readwrite) BOOL isTabBarHidden;
 @property (nonatomic) BOOL isTabBarAnimation;
-@property (nonatomic) BOOL isToolbarHidden;
+@property (nonatomic, readwrite) BOOL isToolbarHidden;
 @property (nonatomic) BOOL isToolbarAnimation;
-@property (nonatomic) BOOL isActionToolbarHidden;
+@property (nonatomic, readwrite) BOOL isActionToolbarHidden;
 @property (nonatomic) BOOL isActionToolbarAnimation;
-@property (nonatomic) BOOL isActionNavigationBarHidden;
+@property (nonatomic, readwrite) BOOL isActionNavigationBarHidden;
 @property (nonatomic) BOOL isActionNavigationBarAnimation;
 
-@property (strong, nonatomic) GADBannerView *bannerView;
+@property (nonatomic, readwrite) BOOL isPhone;
+@property (nonatomic, readwrite) BOOL isLandscape;
+
+@property (strong, nonatomic) NSArray *colors;
 
 @end
 
 @implementation PWTabBarController
 
-- (id)init {
+- (id)initWithIndex:(NSUInteger)index viewControllers:(NSArray *)viewControllers colors:(NSArray *)colors {
     self = [super init];
     if (self) {
-        PLNavigationController *localNavigationController = [[PLNavigationController alloc] init];
-        PWNavigationController *webNavigationViewController = [[PWNavigationController alloc] init];
-        PDNavigationController *taskNavigationController = [[PDNavigationController alloc] init];
+        if (viewControllers.count != colors.count) {
+            return self;
+        }
         
-        self.viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
-        self.selectedIndex = 1;
+        self.viewControllers = viewControllers;
+        self.selectedIndex = index;
         self.delegate = self;
+        
+        _colors = colors;
+        _isPhone = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone);
     }
     return self;
 }
@@ -60,7 +54,6 @@ static const CGFloat animationDuration = 0.25f;
     
     self.view.backgroundColor = [UIColor whiteColor];
     self.tabBar.barTintColor = [UIColor colorWithWhite:0.95f alpha:1.0f];
-    self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
     
     _toolbar = [[UIToolbar alloc] init];
     _toolbar.exclusiveTouch = YES;
@@ -86,56 +79,41 @@ static const CGFloat animationDuration = 0.25f;
     
     _actionNavigationBar.alpha = 0.0f;
     _isActionNavigationBarHidden = YES;
-    
-    [self setGoogleAdsBannerView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        for(UIView *view in self.view.subviews) {
-            if([view isKindOfClass:[UITabBar class]]) {
-                view.alpha = !_isTabBarHidden;
-            }
-        }
-        _actionNavigationBar.alpha = !_isActionNavigationBarHidden;
-        _toolbar.alpha = !_isToolbarHidden;
-        _actionToolbar.alpha = !_isActionToolbarHidden;
-    });
+    self.tabBar.tintColor = _colors[self.selectedIndex];
+    
+    [self resetViewHidden];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        for(UIView *view in self.view.subviews) {
-            if([view isKindOfClass:[UITabBar class]]) {
-                view.alpha = !_isTabBarHidden;
-            }
+    [self resetViewHidden];
+}
+
+- (void)resetViewHidden {
+    for(UIView *view in self.view.subviews) {
+        if([view isKindOfClass:[UITabBar class]]) {
+            view.alpha = !_isTabBarHidden;
         }
-        _actionNavigationBar.alpha = !_isActionNavigationBarHidden;
-        _toolbar.alpha = !_isToolbarHidden;
-        _actionToolbar.alpha = !_isActionToolbarHidden;
-    });
+    }
+    _actionNavigationBar.alpha = !_isActionNavigationBarHidden;
+    _toolbar.alpha = !_isToolbarHidden;
+    _actionToolbar.alpha = !_isActionToolbarHidden;
 }
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
+    _isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
+    
     CGRect rect = self.view.bounds;
-    CGFloat tHeight = 44.0f;
-    CGFloat nHeight = 44.0f;
-    BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if(isLandscape) {
-            tHeight = 32.0f;
-            nHeight = 32.0f;
-        }
-    }
-    else {
-        tHeight = 56.0f;
-    }
+    CGFloat tHeight = self.tabBarHeight;
+    CGFloat nHeight = self.navigationBarHeight;
     
     if (!_isTabBarAnimation) {
         for(UIView *view in self.view.subviews) {
@@ -168,16 +146,8 @@ static const CGFloat animationDuration = 0.25f;
 #pragma clang diagnostic pop
 }
 
-- (void)viewDidLayoutSubviews {
-    [super viewDidLayoutSubviews];
-    
-    [self layoutBannerView];
-}
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    
-    [[SDImageCache sharedImageCache] clearMemory];
 }
 
 #pragma mark UINavigationBarDelegate
@@ -186,27 +156,31 @@ static const CGFloat animationDuration = 0.25f;
 }
 
 #pragma methods
-- (UIEdgeInsets)viewInsets {
-    CGFloat tHeight = 44.0f;
-    CGFloat nHeight = 44.0f;
-    CGFloat adHeight = 50.0f;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            tHeight = 32.0f;
-            nHeight = 32.0f;
-            adHeight = 32.0f;
+- (CGFloat)tabBarHeight {
+    CGFloat height = 44.0f;
+    if (_isPhone) {
+        if(_isLandscape) {
+            height = 32.0f;
         }
     }
     else {
-        tHeight = 56.0f;
-        adHeight = 90.0f;
+        height = 56.0f;
     }
-    
-    if (_isAdsHidden) {
-        adHeight = 0;
+    return height;
+}
+
+- (CGFloat)navigationBarHeight {
+    CGFloat height = 44.0f;
+    if (_isPhone) {
+        if(_isLandscape) {
+            height = 32.0f;
+        }
     }
-    
-    return UIEdgeInsetsMake(nHeight + 20.0f, 0.0f, tHeight + adHeight, 0.0f);
+    return height + 20.0f;
+}
+
+- (UIEdgeInsets)viewInsets {
+    return UIEdgeInsetsMake(self.navigationBarHeight, 0.0f, self.tabBarHeight, 0.0f);
 }
 
 #pragma mark UITabBarControllerDelegate
@@ -219,31 +193,14 @@ static const CGFloat animationDuration = 0.25f;
     [viewController viewDidAppear:NO];
     
     NSUInteger index = [self.viewControllers indexOfObject:viewController];
-    if (index == 0) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
-    }
-    else if (index == 1) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
-    }
-    else if (index == 2) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
-    }
+    self.tabBar.tintColor = _colors[index];
 }
 
 - (void)setSelectedIndex:(NSUInteger)selectedIndex {
     [super setSelectedIndex:selectedIndex];
     
-    if (selectedIndex == 0) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
-    }
-    else if (selectedIndex == 1) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
-    }
-    else if (selectedIndex == 2) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
-    }
+    self.tabBar.tintColor = _colors[selectedIndex];
 }
-
 
 #pragma mark TabBarHidden
 - (BOOL)isTabBarHidden {
@@ -314,16 +271,7 @@ static const CGFloat animationDuration = 0.25f;
     _isToolbarAnimation = YES;
     
     CGRect rect = self.view.bounds;
-    CGFloat tHeight = 44.0f;
-    BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if(isLandscape) {
-            tHeight = 32.0f;
-        }
-    }
-    else {
-        tHeight = 56.0f;
-    }
+    CGFloat tHeight = self.tabBarHeight;
     if (fadeout) {
         _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
     }
@@ -483,64 +431,6 @@ static const CGFloat animationDuration = 0.25f;
             navigationController.navigationBar.userInteractionEnabled = enabled;
         }
     }
-}
-
-#pragma mark GoogleAds
-- (void)setGoogleAdsBannerView {
-    if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        _bannerView = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerLandscape];
-    }
-    else {
-        _bannerView = [[GADBannerView alloc] initWithAdSize:kGADAdSizeSmartBannerPortrait];
-    }
-    _bannerView.adUnitID = @"ca-app-pub-9347360948699796/7365185266";
-    _bannerView.rootViewController = self;
-    [self.view insertSubview:_bannerView belowSubview:self.tabBar];
-    
-    [_bannerView loadRequest:[GADRequest request]];
-}
-
-- (void)setAdsHidden:(BOOL)hidden animated:(BOOL)animated {
-    if ([PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID]) {
-        _isAdsHidden = YES;
-        _bannerView.hidden = YES;
-        return;
-    }
-    
-    if (_isAdsHidden == hidden) {
-        return;
-    }
-    _isAdsHidden = hidden;
-    
-    void (^animation)() = ^{
-        _bannerView.alpha = hidden ? 0 : 1;
-    };
-    
-    [self layoutBannerView];
-    if (animated) {
-        [UIView animateWithDuration:animationDuration animations:animation];
-    }
-    else {
-        animation();
-    }
-}
-
-- (void)layoutBannerView {
-    CGRect rect = self.view.bounds;
-    CGFloat tHeight = 44.0f;
-    CGFloat adHeight = 50.0f;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            tHeight = 32.0f;
-            adHeight = 32.0f;
-        }
-    }
-    else {
-        tHeight = 56.0f;
-        adHeight = 90.0f;
-    }
-    
-    _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tHeight - adHeight, CGRectGetWidth(rect), adHeight);
 }
 
 @end

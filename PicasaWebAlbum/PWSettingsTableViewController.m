@@ -10,6 +10,7 @@
 
 #import "PWSettingsTableViewController.h"
 
+#import <BlocksKit+UIKit.h>
 #import "PWColors.h"
 #import "PWIcons.h"
 #import "PWPicasaAPI.h"
@@ -17,7 +18,7 @@
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
 #import "PDInAppPurchase.h"
-#import <BlocksKit+UIKit.h>
+#import "PWTabBarAdsController.h"
 #import "KKStaticTableView.h"
 #import "PWSettingHTMLViewController.h"
 #import "PWSelectItemFromArrayViewController.h"
@@ -120,7 +121,6 @@
 #pragma mark Auto-CreateAlbumSection
 - (void)setUpCameraRollSection {
     NSString *sectionTitle = NSLocalizedString(@"Camera Roll", nil);
-//    NSString *description = NSLocalizedString(@"Photti automatically create albums each day. When that is created, you are pushed a notification.", nil);
     [_tableView addSectionWithTitle:sectionTitle description:nil];
     
     __weak typeof(self) wself = self;
@@ -146,7 +146,6 @@
 #pragma mark TaskManagerSection
 - (void)setUpTaskManagerSection {
     NSString *sectionTitle = NSLocalizedString(@"Tasks", nil);
-//    NSString *description = NSLocalizedString(@"Photos bigger than 2048x2048 pixels and videos longer than 15minutes use your Google Storage.", nil);
     [_tableView addSectionWithTitle:sectionTitle description:nil];
     
     UIColor *tintColor = self.navigationController.navigationBar.tintColor;
@@ -239,7 +238,7 @@
             [numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
             for (SKProduct *product in products) {
                 if ([product.productIdentifier isEqualToString:kPDRemoveAdsPuroductID]) {
-                    sself.product = products.firstObject;
+                    sself.product = product;
                     [numberFormatter setLocale:product.priceLocale];
                     NSString *price = [numberFormatter stringFromNumber:product.price];
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -445,7 +444,7 @@
 }
 
 - (void)openReviewOniTunesStore {
-    [self openItunesStoreWithAppID:@892657316];
+    [self openItunesStoreWithAppID:@(APPID.integerValue)];
 }
 
 - (void)deleteAllTasksButtonAction {
@@ -529,9 +528,15 @@
     PDInAppPurchase *inAppPurchase = [PDInAppPurchase sharedInstance];
     __weak typeof(self) wself = self;
     [inAppPurchase setPaymentQueuePurchaced:^(NSArray *transactions, bool success) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
         if (!success) {
             return;
         }
+        
+        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+        tabBarController.isRemoveAdsAddonPurchased = [PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;
@@ -539,9 +544,15 @@
         });
     }];
     [inAppPurchase setPaymentQueueRestored:^(NSArray *transactions, bool success) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
         if (!success) {
             return;
         }
+        
+        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+        tabBarController.isRemoveAdsAddonPurchased = [PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;

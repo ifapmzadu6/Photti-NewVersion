@@ -17,7 +17,7 @@
 #import "PLPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PWPhotoCollectionViewFlowLayout.h"
-#import "PWTabBarController.h"
+#import "PWTabBarAdsController.h"
 #import "PLPhotoPageViewController.h"
 #import "PWBaseNavigationController.h"
 #import "PLAlbumEditViewController.h"
@@ -99,7 +99,7 @@
     UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
@@ -108,7 +108,7 @@
         [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
+            PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
             [tabBarController setTabBarHidden:YES animated:NO completion:nil];
         }];
     }
@@ -121,7 +121,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
 }
 
@@ -483,7 +483,7 @@
     fixedBarButtonItem.width = 32.0f;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, fixedBarButtonItem, _trashBarButtonItem];
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
     [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
     __weak typeof(self) wself = self;
@@ -491,7 +491,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
+        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];
     
@@ -533,7 +533,7 @@
         [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarHidden:NO animated:NO completion:nil];
     [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
     

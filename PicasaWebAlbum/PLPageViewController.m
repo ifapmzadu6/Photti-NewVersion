@@ -14,7 +14,7 @@
 #import "PLiCloudViewController.h"
 #import "PWBaseNavigationController.h"
 #import "PLNewAlbumEditViewController.h"
-#import "PWTabBarController.h"
+#import "PWTabBarAdsController.h"
 #import "PWSearchNavigationController.h"
 #import "PWSettingsViewController.h"
 #import "PWAlbumPickerController.h"
@@ -118,7 +118,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
     [tabBarController setToolbarHidden:YES animated:animated completion:nil];
@@ -134,7 +134,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
     
     _titleView.isDisableLayoutSubViews = NO;
@@ -153,7 +153,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 
 #pragma mark UIBarButtonAction
 - (void)searchBarButtonAction {
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setTabBarHidden:YES animated:YES completion:nil];
     [tabBarController setAdsHidden:YES animated:NO];
     
@@ -446,7 +446,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     
     [self setViewControllers:@[viewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     UIBarButtonItem *selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
     UIBarButtonItem *selectOrganizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(selectOrganizeBarButtonAction:)];
 //    UIBarButtonItem *selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction)];
@@ -458,7 +458,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
+        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];
     UIBarButtonItem *selectCancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(selectCancelBarButtonAction)];
@@ -492,7 +492,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         [self setViewControllers:@[viewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     }
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
     

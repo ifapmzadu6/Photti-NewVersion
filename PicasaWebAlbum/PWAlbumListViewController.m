@@ -27,7 +27,7 @@
 
 #import "PWPhotoListViewController.h"
 #import "PWSearchNavigationController.h"
-#import "PWTabBarController.h"
+#import "PWTabBarAdsController.h"
 #import "PWBaseNavigationController.h"
 #import "PWAlbumEditViewController.h"
 #import "PWNewAlbumEditViewController.h"
@@ -99,7 +99,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
-        
+    
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
@@ -129,7 +129,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
     [UIView animateWithDuration:0.3f animations:^{
@@ -145,7 +145,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
 }
 
@@ -262,7 +262,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 #pragma mark BarButtonAction
 - (void)searchBarButtonAction {
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setTabBarHidden:YES animated:YES completion:nil];
     [tabBarController setAdsHidden:YES animated:NO];
     
@@ -273,7 +273,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
+        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
         [tabBarController setTabBarHidden:NO animated:NO completion:nil];
         [tabBarController setAdsHidden:NO animated:YES];
     }];

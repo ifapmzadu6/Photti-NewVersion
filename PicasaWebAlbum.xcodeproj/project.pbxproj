@@ -83,6 +83,7 @@
 		71737EBA19A3193100CBE68A /* PWNetworkActivityIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 71737EB919A3193100CBE68A /* PWNetworkActivityIndicator.m */; };
 		717456E6196AB4F5003D2436 /* XmlReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 717456E5196AB4F5003D2436 /* XmlReader.m */; };
 		7177479F1936F5A8005179B6 /* PDModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7177479D1936F5A8005179B6 /* PDModel.xcdatamodeld */; };
+		7187904319A58B71005545E1 /* PWTabBarAdsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7187904219A58B71005545E1 /* PWTabBarAdsController.m */; };
 		718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */; };
 		718E9757196E8D8000638A86 /* PWPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 718E9756196E8D8000638A86 /* PWPhotoEditViewController.m */; };
 		718FF6B9197D6A3300C3D3BF /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 718FF6B8197D6A3300C3D3BF /* Crashlytics.framework */; };
@@ -330,6 +331,8 @@
 		717456E4196AB4F5003D2436 /* XmlReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlReader.h; sourceTree = "<group>"; };
 		717456E5196AB4F5003D2436 /* XmlReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XmlReader.m; sourceTree = "<group>"; };
 		7177479E1936F5A8005179B6 /* PDModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PDModel.xcdatamodel; sourceTree = "<group>"; };
+		7187904119A58B71005545E1 /* PWTabBarAdsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWTabBarAdsController.h; sourceTree = "<group>"; };
+		7187904219A58B71005545E1 /* PWTabBarAdsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWTabBarAdsController.m; sourceTree = "<group>"; };
 		718A0917194D301500480E57 /* PWRoundedCornerBadgeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWRoundedCornerBadgeLabel.h; sourceTree = "<group>"; };
 		718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWRoundedCornerBadgeLabel.m; sourceTree = "<group>"; };
 		718E9755196E8D8000638A86 /* PWPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPhotoEditViewController.h; sourceTree = "<group>"; };
@@ -1136,6 +1139,15 @@
 			name = PDModelObject;
 			sourceTree = "<group>";
 		};
+		7187904019A58B3A005545E1 /* PWTabBarAdsController */ = {
+			isa = PBXGroup;
+			children = (
+				7187904119A58B71005545E1 /* PWTabBarAdsController.h */,
+				7187904219A58B71005545E1 /* PWTabBarAdsController.m */,
+			);
+			name = PWTabBarAdsController;
+			sourceTree = "<group>";
+		};
 		718A0916194D2FE500480E57 /* PWRoundedCornerBadgeLabel */ = {
 			isa = PBXGroup;
 			children = (
@@ -1912,6 +1924,7 @@
 				71958C59191B931F00CFC15F /* PWPhotoViewController */,
 				71A2546D1919CFD0009914F7 /* PWSearchNavigationController */,
 				719BECE619568D93005DE6E7 /* PWSettingsViewController */,
+				7187904019A58B3A005545E1 /* PWTabBarAdsController */,
 				719D92551918E06A00B75D8B /* PWTabBarController */,
 			);
 			name = ViewController;
@@ -2235,6 +2248,7 @@
 				712E03B41920B5570035D9E0 /* PWString.m in Sources */,
 				71349CC4192F3731003CC2AA /* PLiCloudViewController.m in Sources */,
 				71958C57191B8D4400CFC15F /* PWPhotoPageViewController.m in Sources */,
+				7187904319A58B71005545E1 /* PWTabBarAdsController.m in Sources */,
 				71BD235F1977AE100034CD3B /* PDCopyPhotoObject+methods.m in Sources */,
 				718E9757196E8D8000638A86 /* PWPhotoEditViewController.m in Sources */,
 				7195524A19290161003EA9AF /* PLAlbumViewCell.m in Sources */,

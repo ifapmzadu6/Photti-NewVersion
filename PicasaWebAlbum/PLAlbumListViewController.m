@@ -13,7 +13,7 @@
 #import "PLDateFormatter.h"
 #import "PLAlbumViewCell.h"
 #import "PLAssetsManager.h"
-#import "PWTabBarController.h"
+#import "PWTabBarAdsController.h"
 #import "PLCollectionFooterView.h"
 #import "PWAlbumCollectionViewFlowLayout.h"
 #import "PLPhotoListViewController.h"
@@ -91,7 +91,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setAdsHidden:NO animated:NO];
     
     for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {

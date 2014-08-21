@@ -11,7 +11,6 @@
 @interface PWGoogleLoginViewController : UIViewController
 
 @property (copy, nonatomic) void (^completion)();
-// TODO : スキップボタンでローカルへ
 @property (copy, nonatomic) void (^skipAction)();
 
 

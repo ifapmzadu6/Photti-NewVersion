@@ -11,7 +11,7 @@
 #import "PWColors.h"
 #import "PWIcons.h"
 #import "PDTaskManager.h"
-#import "PWTabBarController.h"
+#import "PWTabBarAdsController.h"
 
 #import "PWSettingsViewController.h"
 
@@ -189,7 +189,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setAdsHidden:YES animated:NO];
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {

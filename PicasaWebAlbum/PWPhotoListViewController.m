@@ -22,7 +22,7 @@
 #import "PWPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PWPhotoCollectionViewFlowLayout.h"
-#import "PWTabBarController.h"
+#import "PWTabBarAdsController.h"
 #import "PWNavigationController.h"
 #import "PWPhotoPageViewController.h"
 #import "PWBaseNavigationController.h"
@@ -84,7 +84,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
     
     PWPhotoCollectionViewFlowLayout *collectionViewLayout = [[PWPhotoCollectionViewFlowLayout alloc] init];
@@ -106,31 +106,30 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_activityIndicatorView];
-    [_activityIndicatorView startAnimating];                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+    [_activityIndicatorView startAnimating];
     
-    [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-        NSString *cacheName = [kPWPhotoListViewControllerName stringByAppendingString:_album.id_str];
-        _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:cacheName];
-        _fetchedResultsController.delegate = self;
-        
-        [_fetchedResultsController performFetch:nil];
-        
-        if (_fetchedResultsController.fetchedObjects.count == 0) {
-            [_activityIndicatorView startAnimating];
-        }
-        else {
-            [_activityIndicatorView stopAnimating];
-            [_collectionView reloadData];
-        }
-        
-        [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
-        
-        [self loadDataWithStartIndex:0];
-    }];
+    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+    request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+    NSString *cacheName = [kPWPhotoListViewControllerName stringByAppendingString:_album.id_str];
+    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:cacheName];
+    _fetchedResultsController.delegate = self;
+    
+    [_fetchedResultsController performFetch:nil];
+    
+    if (_fetchedResultsController.fetchedObjects.count == 0) {
+        [_activityIndicatorView startAnimating];
+    }
+    else {
+        [_activityIndicatorView stopAnimating];
+        [_collectionView reloadData];
+    }
+    
+    [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
+    
+    [self loadDataWithStartIndex:0];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -192,7 +191,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
@@ -200,7 +199,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
+            PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
             [tabBarController setTabBarHidden:YES animated:NO completion:nil];
         }];
     }
@@ -213,7 +212,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
     
     [_collectionView reloadData];
@@ -419,7 +418,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             
             if (isWebAlbum) {
                 PWAlbumObject *webAlbum = (PWAlbumObject *)album;
-                //ダウンロードはここでやる
                 
                 [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
                     if (error) {
@@ -571,7 +569,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     _organizeBarButtonItem.enabled = NO;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, _trashBarButtonItem];
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
     [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
     __weak typeof(self) wself = self;
@@ -579,7 +577,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        PWTabBarController *tabBarController = (PWTabBarController *)sself.tabBarController;
+        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];
     
@@ -617,7 +615,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
     
-    PWTabBarController *tabBarController = (PWTabBarController *)self.tabBarController;
+    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarHidden:NO animated:NO completion:nil];
     [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
     

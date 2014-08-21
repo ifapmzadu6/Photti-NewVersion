@@ -8,17 +8,21 @@
 
 #import "PWAppDelegate.h"
 
+#import "PWNavigationController.h"
+#import "PLNavigationController.h"
+#import "PDNavigationController.h"
+#import "PWTabBarAdsController.h"
+
 #import <Crashlytics/Crashlytics.h>
-
-#import "PWTabBarController.h"
-
 #import <SDImageCache.h>
 #import <Appirater.h>
 
 #import "PDTaskManager.h"
 #import "PLAssetsManager.h"
 #import "PLDateFormatter.h"
+#import "PDInAppPurchase.h"
 
+#import "PWColors.h"
 #import "PWPicasaAPI.h"
 
 @implementation PWAppDelegate
@@ -31,32 +35,41 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     
-    [[NSUserDefaults standardUserDefaults] registerDefaults:@{kPDTaskManagerIsResizePhotosKey: @(YES),
-                                                              kPWAppDelegateBackgroundFetchDateKey: [NSDate date]}];
+    NSDictionary *userDefaults = @{kPDTaskManagerIsResizePhotosKey: @(YES),
+                                   kPWAppDelegateBackgroundFetchDateKey: [NSDate date]};
+    [[NSUserDefaults standardUserDefaults] registerDefaults:userDefaults];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     [Crashlytics startWithAPIKey:@"e304869e1f84a6d87002a3e24fd4a640cfff713f"];
     
-    [Appirater setAppId:@"892657316"];
+    [Appirater setAppId:APPID];
     [Appirater appLaunched:YES];
-    
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = [[PWTabBarController alloc] init];
-    self.window.backgroundColor = [UIColor whiteColor];
-    [self.window makeKeyAndVisible];
     
     [[[NSURLSession sharedSession] configuration] setURLCache:nil];
     
-    [[PDTaskManager sharedManager] cancel];
-    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:@""] completion:^(NSMutableURLRequest *request, NSError *error) {
-        [[PDTaskManager sharedManager] start];
-    }];
+    PLNavigationController *localNavigationController = [PLNavigationController new];
+    PWNavigationController *webNavigationViewController = [PWNavigationController new];
+    PDNavigationController *taskNavigationController = [PDNavigationController new];
+    
+    NSUInteger initialTabPageIndex = 1;
+    if ([ALAssetsLibrary authorizationStatus] == kCLAuthorizationStatusAuthorized && ![PWOAuthManager isLogined]) {
+        initialTabPageIndex = 0;
+    }
+    NSArray *viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
+    NSArray *colors = @[[PWColors getColor:PWColorsTypeTintLocalColor], [PWColors getColor:PWColorsTypeTintWebColor], [PWColors getColor:PWColorsTypeTintUploadColor]];
+    
+    PWTabBarAdsController *tabBarController = [[PWTabBarAdsController alloc] initWithIndex:initialTabPageIndex viewControllers:viewControllers colors:colors];
+    tabBarController.isRemoveAdsAddonPurchased = [PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = tabBarController;
+    [self.window makeKeyAndVisible];
     
     return YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-//    NSLog(@"%s", __func__);    
+//    NSLog(@"%s", __func__);
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -78,7 +91,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 //    NSLog(@"%s", __func__);
 }
 
-
+#pragma mark Local Notification
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     
 }
