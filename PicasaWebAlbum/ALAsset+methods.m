@@ -55,7 +55,7 @@
         CFRelease(imageSource);
         
         //metadataの埋め込み
-        resizedData = [[NSMutableData alloc] init];
+        resizedData = [NSMutableData new];
         CGImageDestinationRef dest = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)resizedData, kUTTypeJPEG, 1, nil);
         CGImageDestinationAddImage(dest, imageRef, (__bridge CFDictionaryRef)metadata);
         CFRelease(imageRef);
@@ -81,6 +81,7 @@ CGContextRef createBitmapContext (int pixelsWide, int pixelsHigh) {
         if (!bitmapContext) {
             free(bitmapData);
         }
+        CGColorSpaceRelease(colorSpace);
     }
     return bitmapContext;
 }
