@@ -142,12 +142,12 @@
 }
 
 - (void)showUploadDescriptionViewController {
-    PDUploadDescriptionViewController *viewController = [[PDUploadDescriptionViewController alloc] init];
+    PDUploadDescriptionViewController *viewController = [PDUploadDescriptionViewController new];
     [self setViewControllers:@[viewController] animated:YES];
 }
 
 - (void)showTaskManagerViewController {
-    PDTaskManagerViewController *taskManagerViewController = [[PDTaskManagerViewController alloc] init];
+    PDTaskManagerViewController *taskManagerViewController = [PDTaskManagerViewController new];
     [self setViewControllers:@[taskManagerViewController] animated:YES];
 }
 

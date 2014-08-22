@@ -66,10 +66,10 @@
     
     _titleTextColor = [PWColors getColor:PWColorsTypeTextColor];
     
-    _pageControll = [[UIPageControl alloc] init];
+    _pageControll = [UIPageControl new];
     _pageControll.currentPageIndicatorTintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
     _pageControll.pageIndicatorTintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
-//    _pageControll.pageIndicatorTintColor = [UIColor colorWithWhite:0.85f alpha:1.0f];
+    _pageControll.userInteractionEnabled = NO;
     [_clipBackgroundView addSubview:_pageControll];
 }
 

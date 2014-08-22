@@ -49,6 +49,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 
 @property (nonatomic) NSUInteger requestIndex;
 @property (nonatomic) BOOL isRequesting;
+@property (nonatomic) BOOL isRefreshControlAnimating;
 @property (nonatomic) BOOL isSelectMode;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -135,7 +136,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-    [_refreshControl endRefreshing];
+    _isRefreshControlAnimating = _refreshControl.isRefreshing;
+    if (_refreshControl.isRefreshing) {
+        [_refreshControl endRefreshing];
+    }
     
     CGRect rect = self.view.bounds;
     
@@ -170,7 +174,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
-    if (_isRequesting) {
+    if (_isRequesting && _isRefreshControlAnimating) {
         [_refreshControl beginRefreshing];
     }
 }

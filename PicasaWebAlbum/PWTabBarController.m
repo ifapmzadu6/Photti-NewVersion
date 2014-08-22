@@ -131,7 +131,7 @@
         _actionToolbar.frame = toolbarFrame;
     }
     
-    CGRect navigationbarFrame = CGRectMake(0.0f, 0.0f, rect.size.width, nHeight + 20.0f);
+    CGRect navigationbarFrame = CGRectMake(0.0f, 0.0f, rect.size.width, nHeight);
     if (!_isActionNavigationBarAnimation) {
         _actionNavigationBar.frame = navigationbarFrame;
     }

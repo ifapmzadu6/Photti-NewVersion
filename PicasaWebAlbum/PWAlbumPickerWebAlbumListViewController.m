@@ -31,6 +31,7 @@
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic) NSUInteger requestIndex;
 @property (nonatomic) BOOL isRequesting;
+@property (nonatomic) BOOL isRefreshControlAnimating;
 
 @end
 
@@ -107,7 +108,10 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-    [_refreshControl endRefreshing];
+    _isRefreshControlAnimating = _refreshControl.isRefreshing;
+    if (_refreshControl.isRefreshing) {
+        [_refreshControl endRefreshing];
+    }
     
     CGRect rect = self.view.bounds;
     
@@ -133,7 +137,7 @@
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
-    if (_isRequesting) {
+    if (_isRequesting && _isRefreshControlAnimating) {
         [_refreshControl beginRefreshing];
     }
 }
