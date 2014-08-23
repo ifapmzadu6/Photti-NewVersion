@@ -24,10 +24,11 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 
 - (void)makeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
     __block PWPhotoObject *photoObject = nil;
+    NSString *photoObjectID = self.photo_object_id_str;
     [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-        request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", self.photo_object_id_str];
+        request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photoObjectID];
         request.fetchLimit = 1;
         NSError *error = nil;
         NSArray *photos = [context executeFetchRequest:request error:&error];
@@ -49,11 +50,13 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         PWPhotoMediaContentObject *content = contents.lastObject;
         url = [NSURL URLWithString:content.url];
     }
+    NSManagedObjectID *selfObjectID = self.objectID;
     [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
         NSURLSessionTask *sessionTask = [session downloadTaskWithRequest:request];
         
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            self.session_task_identifier = @(sessionTask.taskIdentifier);
+            PDWebPhotoObject *selfObject = (PDWebPhotoObject *)[context objectWithID:selfObjectID];
+            selfObject.session_task_identifier = @(sessionTask.taskIdentifier);
         }];
         
         completion ? completion(sessionTask, nil) : 0;
@@ -70,21 +73,38 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     NSManagedObjectContext *plContext = [PLCoreDataAPI writeContext];
     
     __block PLAlbumObject *localAlbumObject = [PDWebPhotoObject getLocalAlbumWithID:local_album_id_str context:plContext];
+    __block NSString *id_str = nil;
+    __block NSUInteger localAlbumObjectTagType = NSUIntegerMax;
+    __block NSString *localAlbumObjectURL = nil;
+    __block NSManagedObjectID *localAlbumObjectID = nil;
     if (!localAlbumObject) {
         //アルバムがないので新しく作る
         [plContext performBlockAndWait:^{
             PWAlbumObject *webAlbumObject = [PDWebPhotoObject getWebAlbumWithID:web_album_id_str context:[PWCoreDataAPI readContext]];
             
             localAlbumObject = [PDWebPhotoObject makeNewLocalAlbumWithWebAlbum:webAlbumObject context:plContext];
+            id_str = localAlbumObject.id_str;
+            localAlbumObjectTagType = localAlbumObject.tag_type.integerValue;
+            localAlbumObjectURL = localAlbumObject.url;
+            localAlbumObjectID = localAlbumObject.objectID;
         }];
         
-        NSString *id_str = localAlbumObject.id_str;
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
             PDTaskObject *task = (PDTaskObject *)[context objectWithID:taskObjectID];
             task.to_album_id_str = id_str;
         }];
     }
-    NSUInteger localAlbumObjectTagType = localAlbumObject.tag_type.integerValue;
+    else {
+        id_str = localAlbumObject.id_str;
+        localAlbumObjectTagType = localAlbumObject.tag_type.integerValue;
+        localAlbumObjectURL = localAlbumObject.url;
+        localAlbumObjectID = localAlbumObject.objectID;
+    }
+    if (!localAlbumObject) {
+        completion ? completion([NSError errorWithDomain:kPDWebPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
+    }
+    
     if (localAlbumObjectTagType == PLAlbumObjectTagTypeImported) {
         [plContext performBlockAndWait:^{
             NSError *error = nil;
@@ -95,8 +115,6 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         
         [PLCoreDataAPI writeContextFinish:plContext];
     }
-    NSString *localAlbumObjectURL = localAlbumObject.url;
-    NSManagedObjectID *localAlbumObjectID = localAlbumObject.objectID;
     
     void (^completionBlock)(NSURL *, NSError *) = ^(NSURL *assetURL, NSError *error){
         if (error || !assetURL) {
@@ -164,7 +182,9 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
                 
                 [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
                     PDWebPhotoObject *webObject = (PDWebPhotoObject *)[context objectWithID:objectID];
-                    webObject.is_done = @(YES);
+                    if (webObject) {
+                        webObject.is_done = @(YES);
+                    }
                 }];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{

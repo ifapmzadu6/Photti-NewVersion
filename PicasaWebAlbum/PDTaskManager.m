@@ -345,32 +345,38 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
     }
     NSManagedObjectID *taskObjectID = taskObject.objectID;
     
-    NSArray *allPhotoObject = taskObject.photos.array;
-    if (allPhotoObject.count == 0) {
+    NSOrderedSet *photos = taskObject.photos;
+    if (photos.count == 0) {
         if (taskObject.type.integerValue == PDTaskObjectTypeLocalAlbumToWebAlbum || taskObject.type.integerValue == PDTaskObjectTypePhotosToWebAlbum) {
             [PWPicasaAPI getListOfAlbumsWithIndex:0 completion:nil];
         }
         
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
             PDTaskObject *tmpTaskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
-            [context deleteObject:tmpTaskObject];
+            if (tmpTaskObject) {
+                [context deleteObject:tmpTaskObject];
+            }
         }];
         
-        [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
+        [self taskIsDoneAndStartNext:[PDTaskManager getFirstTaskObject]];
         return;
     }
     
-    PDBasePhotoObject *photoObject = allPhotoObject.firstObject;
+    PDBasePhotoObject *photoObject = photos.firstObject;
     NSManagedObjectID *photoObjectID = photoObject.objectID;
     if (photoObject.is_done.boolValue) {
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
             PDTaskObject *tmpTaskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
             PDBasePhotoObject *tmpPhotoObject = (PDBasePhotoObject *)[context objectWithID:photoObjectID];
-            [tmpTaskObject removePhotosObject:tmpPhotoObject];
-            [context deleteObject:tmpPhotoObject];
+            if (tmpTaskObject) {
+                [tmpTaskObject removePhotosObject:tmpPhotoObject];
+            }
+            if (tmpPhotoObject) {
+                [context deleteObject:tmpPhotoObject];
+            }
         }];
         
-        [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
+        [self taskIsDoneAndStartNext:[PDTaskManager getFirstTaskObject]];
     }
     else {
         if (![photoObject isKindOfClass:[PDLocalCopyPhotoObject class]]) {
@@ -386,7 +392,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         else {
             [(PDLocalCopyPhotoObject *)photoObject copyToLocalAlbum];
             
-            [self taskIsDoneAndStartNext:[[self class] getFirstTaskObject]];
+            [self taskIsDoneAndStartNext:[PDTaskManager getFirstTaskObject]];
         }
     }
 }
