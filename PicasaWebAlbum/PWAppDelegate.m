@@ -17,6 +17,8 @@
 #import <SDImageCache.h>
 #import <Appirater.h>
 
+#import "GAI.h"
+
 #import "PDTaskManager.h"
 #import "PLAssetsManager.h"
 #import "PLDateFormatter.h"
@@ -31,21 +33,35 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+    // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
+    // NSLocalNotification
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     
+    // User Defaults
     NSDictionary *userDefaults = @{kPDTaskManagerIsResizePhotosKey: @(YES),
                                    kPWAppDelegateBackgroundFetchDateKey: [NSDate date]};
     [[NSUserDefaults standardUserDefaults] registerDefaults:userDefaults];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
+    // Crashlytics
     [Crashlytics startWithAPIKey:@"e304869e1f84a6d87002a3e24fd4a640cfff713f"];
     
+    // Appirater
     [Appirater setAppId:APPID];
     [Appirater appLaunched:YES];
     
+    // NSURLSession
     [[[NSURLSession sharedSession] configuration] setURLCache:nil];
+    
+    // Google Analytics
+    [GAI sharedInstance].trackUncaughtExceptions = YES;
+    [GAI sharedInstance].dispatchInterval = 20;
+    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
+    [[GAI sharedInstance] trackerWithTrackingId:@"UA-53899497-2"];
+    [[[GAI sharedInstance] defaultTracker] setAllowIDFACollection:YES];
+    
     
     PLNavigationController *localNavigationController = [PLNavigationController new];
     PWNavigationController *webNavigationViewController = [PWNavigationController new];

@@ -16,6 +16,10 @@
 		71109BD51973C90000EEDAAE /* PLAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109BD41973C90000EEDAAE /* PLAlbumEditViewController.m */; };
 		71109C14197407E600EEDAAE /* PLRoundedCornerBorderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109C13197407E500EEDAAE /* PLRoundedCornerBorderView.m */; };
 		71109C181974201700EEDAAE /* PLNewAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109C171974201700EEDAAE /* PLNewAlbumEditViewController.m */; };
+		71166F7119A7AA3C00A55A21 /* libAdIdAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71166F2319A7AA3C00A55A21 /* libAdIdAccess.a */; };
+		71166F7219A7AA3C00A55A21 /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71166F2419A7AA3C00A55A21 /* libGoogleAnalyticsServices.a */; };
+		71166F7B19A7AA9900A55A21 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 71166F7A19A7AA9900A55A21 /* libz.dylib */; };
+		71166F7F19A8175600A55A21 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 71166F7E19A8175600A55A21 /* libsqlite3.0.dylib */; };
 		7118F86B193318F40016697E /* PLPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F86A193318F40016697E /* PLPhotoListViewController.m */; };
 		7118F882193355600016697E /* PWImagePickerNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F881193355600016697E /* PWImagePickerNavigationController.m */; };
 		7118F88919335B070016697E /* PWImagePickerLocalPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F88819335B070016697E /* PWImagePickerLocalPageViewController.m */; };
@@ -194,6 +198,26 @@
 		71109C13197407E500EEDAAE /* PLRoundedCornerBorderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLRoundedCornerBorderView.m; sourceTree = "<group>"; };
 		71109C161974201700EEDAAE /* PLNewAlbumEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLNewAlbumEditViewController.h; sourceTree = "<group>"; };
 		71109C171974201700EEDAAE /* PLNewAlbumEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLNewAlbumEditViewController.m; sourceTree = "<group>"; };
+		71166ED719A7AA3B00A55A21 /* GAI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAI.h; sourceTree = "<group>"; };
+		71166ED819A7AA3B00A55A21 /* GAIDictionaryBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIDictionaryBuilder.h; sourceTree = "<group>"; };
+		71166ED919A7AA3B00A55A21 /* GAIEcommerceFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceFields.h; sourceTree = "<group>"; };
+		71166EDA19A7AA3B00A55A21 /* GAIEcommerceProduct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceProduct.h; sourceTree = "<group>"; };
+		71166EDB19A7AA3B00A55A21 /* GAIEcommerceProductAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceProductAction.h; sourceTree = "<group>"; };
+		71166EDC19A7AA3B00A55A21 /* GAIEcommercePromotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIEcommercePromotion.h; sourceTree = "<group>"; };
+		71166EDD19A7AA3B00A55A21 /* GAIFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIFields.h; sourceTree = "<group>"; };
+		71166EDE19A7AA3B00A55A21 /* GAILogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAILogger.h; sourceTree = "<group>"; };
+		71166EDF19A7AA3B00A55A21 /* GAITrackedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAITrackedViewController.h; sourceTree = "<group>"; };
+		71166EE019A7AA3B00A55A21 /* GAITracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAITracker.h; sourceTree = "<group>"; };
+		71166F1D19A7AA3C00A55A21 /* TAGContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAGContainer.h; sourceTree = "<group>"; };
+		71166F1E19A7AA3C00A55A21 /* TAGContainerOpener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAGContainerOpener.h; sourceTree = "<group>"; };
+		71166F1F19A7AA3C00A55A21 /* TAGDataLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAGDataLayer.h; sourceTree = "<group>"; };
+		71166F2019A7AA3C00A55A21 /* TAGLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAGLogger.h; sourceTree = "<group>"; };
+		71166F2119A7AA3C00A55A21 /* TAGManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAGManager.h; sourceTree = "<group>"; };
+		71166F2319A7AA3C00A55A21 /* libAdIdAccess.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libAdIdAccess.a; sourceTree = "<group>"; };
+		71166F2419A7AA3C00A55A21 /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAnalyticsServices.a; sourceTree = "<group>"; };
+		71166F7A19A7AA9900A55A21 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		71166F7C19A816BE00A55A21 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		71166F7E19A8175600A55A21 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		7118F869193318F40016697E /* PLPhotoListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPhotoListViewController.h; sourceTree = "<group>"; };
 		7118F86A193318F40016697E /* PLPhotoListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoListViewController.m; sourceTree = "<group>"; };
 		7118F880193355600016697E /* PWImagePickerNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWImagePickerNavigationController.h; sourceTree = "<group>"; };
@@ -489,9 +513,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71166F7F19A8175600A55A21 /* libsqlite3.0.dylib in Frameworks */,
+				71166F7B19A7AA9900A55A21 /* libz.dylib in Frameworks */,
 				715A31A5198E907E002A0A37 /* MessageUI.framework in Frameworks */,
 				715A31A3198E9073002A0A37 /* AudioToolbox.framework in Frameworks */,
 				715A31A1198E902C002A0A37 /* AdSupport.framework in Frameworks */,
+				71166F7219A7AA3C00A55A21 /* libGoogleAnalyticsServices.a in Frameworks */,
 				715A319F198E9025002A0A37 /* CoreTelephony.framework in Frameworks */,
 				715A3173198E0243002A0A37 /* StoreKit.framework in Frameworks */,
 				71E8850419115C7E005A78E0 /* CoreGraphics.framework in Frameworks */,
@@ -503,6 +530,7 @@
 				7195525E192B14C6003EA9AF /* MapKit.framework in Frameworks */,
 				712E03AC191F60E40035D9E0 /* AssetsLibrary.framework in Frameworks */,
 				71958C4B191B4AA400CFC15F /* QuartzCore.framework in Frameworks */,
+				71166F7119A7AA3C00A55A21 /* libAdIdAccess.a in Frameworks */,
 				71958C47191B4A9500CFC15F /* OpenGLES.framework in Frameworks */,
 				71958C45191B4A8F00CFC15F /* CoreVideo.framework in Frameworks */,
 				715A319C198E8FF9002A0A37 /* lGoogleAdMobAds.a in Frameworks */,
@@ -589,6 +617,62 @@
 				71109C171974201700EEDAAE /* PLNewAlbumEditViewController.m */,
 			);
 			name = PLNewAlbumEditViewController;
+			sourceTree = "<group>";
+		};
+		71166EA919A7AA3B00A55A21 /* GoogleAnalyticsServicesiOS */ = {
+			isa = PBXGroup;
+			children = (
+				71166EAA19A7AA3B00A55A21 /* GoogleAnalytics */,
+				71166EE219A7AA3B00A55A21 /* GoogleTagManager */,
+				71166F2319A7AA3C00A55A21 /* libAdIdAccess.a */,
+				71166F2419A7AA3C00A55A21 /* libGoogleAnalyticsServices.a */,
+			);
+			path = GoogleAnalyticsServicesiOS;
+			sourceTree = "<group>";
+		};
+		71166EAA19A7AA3B00A55A21 /* GoogleAnalytics */ = {
+			isa = PBXGroup;
+			children = (
+				71166ED619A7AA3B00A55A21 /* Library */,
+			);
+			path = GoogleAnalytics;
+			sourceTree = "<group>";
+		};
+		71166ED619A7AA3B00A55A21 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				71166ED719A7AA3B00A55A21 /* GAI.h */,
+				71166ED819A7AA3B00A55A21 /* GAIDictionaryBuilder.h */,
+				71166ED919A7AA3B00A55A21 /* GAIEcommerceFields.h */,
+				71166EDA19A7AA3B00A55A21 /* GAIEcommerceProduct.h */,
+				71166EDB19A7AA3B00A55A21 /* GAIEcommerceProductAction.h */,
+				71166EDC19A7AA3B00A55A21 /* GAIEcommercePromotion.h */,
+				71166EDD19A7AA3B00A55A21 /* GAIFields.h */,
+				71166EDE19A7AA3B00A55A21 /* GAILogger.h */,
+				71166EDF19A7AA3B00A55A21 /* GAITrackedViewController.h */,
+				71166EE019A7AA3B00A55A21 /* GAITracker.h */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		71166EE219A7AA3B00A55A21 /* GoogleTagManager */ = {
+			isa = PBXGroup;
+			children = (
+				71166F1C19A7AA3C00A55A21 /* Library */,
+			);
+			path = GoogleTagManager;
+			sourceTree = "<group>";
+		};
+		71166F1C19A7AA3C00A55A21 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				71166F1D19A7AA3C00A55A21 /* TAGContainer.h */,
+				71166F1E19A7AA3C00A55A21 /* TAGContainerOpener.h */,
+				71166F1F19A7AA3C00A55A21 /* TAGDataLayer.h */,
+				71166F2019A7AA3C00A55A21 /* TAGLogger.h */,
+				71166F2119A7AA3C00A55A21 /* TAGManager.h */,
+			);
+			path = Library;
 			sourceTree = "<group>";
 		};
 		7118F85A193318700016697E /* PLPhotoListViewController */ = {
@@ -1430,7 +1514,7 @@
 			name = PWIcons;
 			sourceTree = "<group>";
 		};
-		71BD233D197683C80034CD3B /* PDModelObjectCategory */ = {
+		71BD233D197683C80034CD3B /* PDModelObject+methods */ = {
 			isa = PBXGroup;
 			children = (
 				71D52EE3197F806D005CFF30 /* PDTaskObjectFactoryMethods */,
@@ -1440,7 +1524,7 @@
 				71D52EE7197F808C005CFF30 /* PDCopyPhotoObject+methods */,
 				71197E7619862F04009DB4D3 /* PDLocalCopyPhotoObject+methods */,
 			);
-			name = PDModelObjectCategory;
+			name = "PDModelObject+methods";
 			sourceTree = "<group>";
 		};
 		71BD235919779E1C0034CD3B /* ALAsset+methods */ = {
@@ -1754,10 +1838,14 @@
 		71E8850019115C7E005A78E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				71166F7E19A8175600A55A21 /* libsqlite3.0.dylib */,
+				71166F7C19A816BE00A55A21 /* libsqlite3.dylib */,
+				71166F7A19A7AA9900A55A21 /* libz.dylib */,
 				715A31A4198E907E002A0A37 /* MessageUI.framework */,
 				715A31A2198E9073002A0A37 /* AudioToolbox.framework */,
 				715A31A0198E902C002A0A37 /* AdSupport.framework */,
 				715A319E198E9025002A0A37 /* CoreTelephony.framework */,
+				71166EA919A7AA3B00A55A21 /* GoogleAnalyticsServicesiOS */,
 				715A317A198E8FF9002A0A37 /* GoogleMobileAdsSdkiOS */,
 				715A3172198E0243002A0A37 /* StoreKit.framework */,
 				718FF6B8197D6A3300C3D3BF /* Crashlytics.framework */,
@@ -1839,7 +1927,7 @@
 				71388283193E13BD009AFB1F /* PDCoreDataAPI */,
 				71649BF2195907AB00009C1F /* PDInAppPurchase */,
 				7177479C1936F572005179B6 /* PDModelObject */,
-				71BD233D197683C80034CD3B /* PDModelObjectCategory */,
+				71BD233D197683C80034CD3B /* PDModelObject+methods */,
 				714318D9193DF7070066A1F8 /* PDTask */,
 				714318C5193DF6DB0066A1F8 /* PDTaskManager */,
 				712E03AD191F613C0035D9E0 /* PLAssetsLibrary */,
@@ -2402,6 +2490,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/GoogleMobileAdsSdkiOS",
+					"$(PROJECT_DIR)/GoogleAnalyticsServicesiOS",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -2435,6 +2524,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/GoogleMobileAdsSdkiOS",
+					"$(PROJECT_DIR)/GoogleAnalyticsServicesiOS",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
