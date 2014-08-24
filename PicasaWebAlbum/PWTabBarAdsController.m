@@ -42,26 +42,9 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-//    CGRect rect = self.view.bounds;
-//    CGRect bannerRect = _bannerView.bounds;
-//    CGFloat adViewHeight = self.adViewHeight;
-//    _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - self.tabBarHeight - adViewHeight, CGRectGetWidth(rect), adViewHeight);
-}
-
-- (void)viewDidLayoutSubviews {
-    [super viewDidLayoutSubviews];
-    
     CGRect rect = self.view.bounds;
-    CGRect bannerRect = _bannerView.bounds;
     CGFloat adViewHeight = self.adViewHeight;
-    _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - self.tabBarHeight - adViewHeight, CGRectGetWidth(bannerRect), adViewHeight);
-    
-    if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        _bannerView.adSize = kGADAdSizeSmartBannerLandscape;
-    }
-    else {
-        _bannerView.adSize = kGADAdSizeSmartBannerPortrait;
-    }
+    _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - self.tabBarHeight - adViewHeight, CGRectGetWidth(rect), adViewHeight);
 }
 
 - (CGFloat)adViewHeight {
