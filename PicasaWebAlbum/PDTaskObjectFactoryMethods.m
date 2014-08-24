@@ -32,6 +32,12 @@
             request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
             NSError *error = nil;
             NSArray *photos = [context executeFetchRequest:request error:&error];
+            if (error) {
+                if (completion) {
+                    completion(nil, error);
+                }
+                return;
+            }
             if (photos.count == 0) {
                 if (completion) {
                     completion(nil, [NSError errorWithDomain:@"PDTaskObject (methods)" code:0 userInfo:nil]);
@@ -47,7 +53,7 @@
         
         __block NSManagedObjectID *taskObjectID = nil;
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDTaskObject class]) inManagedObjectContext:context];
+            PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:@"PDTaskObject" inManagedObjectContext:context];
             taskObject.type = @(PDTaskObjectTypeWebAlbumToLocalAlbum);
             taskObject.from_album_id_str = webAlbumId;
             
@@ -71,9 +77,10 @@
 + (void)makeTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSManagedObjectID *, NSError *))completion {
     NSString *fromLocalAlbumID = fromLocalAlbum.id_str;
     NSString *toWebAlbumID = toWebAlbum.id_str;
+    NSOrderedSet *fromLocalAlbums = fromLocalAlbum.photos;
     
     [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDTaskObject class]) inManagedObjectContext:context];
+        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:@"PDTaskObject" inManagedObjectContext:context];
         taskObject.type = @(PDTaskObjectTypeLocalAlbumToWebAlbum);
         taskObject.from_album_id_str = fromLocalAlbumID;
         taskObject.to_album_id_str = toWebAlbumID;
@@ -81,7 +88,7 @@
         
         NSMutableArray *id_strs = @[].mutableCopy;
         [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-            for (PLPhotoObject *photoObject in fromLocalAlbum.photos.array) {
+            for (PLPhotoObject *photoObject in fromLocalAlbums) {
                 [id_strs addObject:photoObject.id_str];
             }
         }];
@@ -148,7 +155,7 @@
         for (id photo in photos) {
             if ([photo isKindOfClass:[PLPhotoObject class]]) {
                 PLPhotoObject *localPhoto = photo;
-                PDLocalPhotoObject *localPhotoObject = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDLocalPhotoObject class]) inManagedObjectContext:context];
+                PDLocalPhotoObject *localPhotoObject = [NSEntityDescription insertNewObjectForEntityForName:@"PDLocalPhotoObject" inManagedObjectContext:context];
                 localPhotoObject.photo_object_id_str = localPhoto.id_str;
                 localPhotoObject.task = taskObject;
                 [taskObject addPhotosObject:localPhotoObject];
@@ -156,7 +163,7 @@
             else if ([photo isKindOfClass:[PWPhotoObject class]]) {
                 PWPhotoObject *webPhoto = (PWPhotoObject *)photo;
                 
-                PDCopyPhotoObject *copyPhotoObject = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDCopyPhotoObject class]) inManagedObjectContext:context];
+                PDCopyPhotoObject *copyPhotoObject = [NSEntityDescription insertNewObjectForEntityForName:@"PDCopyPhotoObject" inManagedObjectContext:context];
                 copyPhotoObject.photo_object_id_str = webPhoto.id_str;
                 copyPhotoObject.tag_sort_index = webPhoto.sortIndex;
                 copyPhotoObject.task = taskObject;
