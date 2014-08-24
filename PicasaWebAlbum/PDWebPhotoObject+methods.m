@@ -24,6 +24,8 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 
 - (void)makeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
     __block PWPhotoObject *photoObject = nil;
+    __block PWPhotoManagedObjectType tag_type = PWPhotoManagedObjectTypeUnknown;
+    __block NSArray *contents = nil;
     NSString *photoObjectID = self.photo_object_id_str;
     [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
@@ -34,6 +36,8 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         NSArray *photos = [context executeFetchRequest:request error:&error];
         if (photos.count > 0) {
             photoObject = photos.firstObject;
+            tag_type = photoObject.tag_type.integerValue;
+            contents = photoObject.media.content.array;
         }
     }];
     if (!photoObject) {
@@ -42,13 +46,15 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     }
     
     NSURL *url = nil;
-    if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+    if (tag_type == PWPhotoManagedObjectTypePhoto) {
         url = [NSURL URLWithString:photoObject.tag_originalimage_url];
     }
-    else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-        NSArray *contents = [photoObject.media.content.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @"video/mpeg4"]];
-        PWPhotoMediaContentObject *content = contents.lastObject;
-        url = [NSURL URLWithString:content.url];
+    else if (tag_type == PWPhotoManagedObjectTypeVideo) {
+        NSArray *mp4contents = [contents filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @"video/mpeg4"]];
+        if (mp4contents.count > 0) {
+            PWPhotoMediaContentObject *content = mp4contents.lastObject;
+            url = [NSURL URLWithString:content.url];
+        }
     }
     NSManagedObjectID *selfObjectID = self.objectID;
     [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
@@ -118,14 +124,14 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     
     void (^completionBlock)(NSURL *, NSError *) = ^(NSURL *assetURL, NSError *error){
         if (error || !assetURL) {
-            NSLog(@"%@", error.description);
+            NSLog(@"%@", error);
             [PLCoreDataAPI writeContextFinish:plContext];
             return;
         }
         
         [[PLAssetsManager sharedLibrary] assetForURL:assetURL resultBlock:^(ALAsset *asset) {
             if (!asset) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
                 [PLCoreDataAPI writeContextFinish:plContext];
                 return;
             }
@@ -133,7 +139,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
             if (localAlbumObjectTagType == PLAlbumObjectTagTypeImported) {
                 [[PLAssetsManager sharedLibrary] groupForURL:[NSURL URLWithString:localAlbumObjectURL] resultBlock:^(ALAssetsGroup *group) {
                     if (!group) {
-                        NSLog(@"%@", error.description);
+                        NSLog(@"%@", error);
                         [PLCoreDataAPI writeContextFinish:plContext];
                         return;
                     }
@@ -211,7 +217,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         NSURL *newLocation = [location URLByAppendingPathExtension:@"mp4"];
         NSError *error = nil;
         if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:newLocation error:&error]) {
-            NSLog(@"%@", error.description);
+            NSLog(@"%@", error);
         }
         if ([[PLAssetsManager sharedLibrary] videoAtPathIsCompatibleWithSavedPhotosAlbum:newLocation]) {
             [[PLAssetsManager sharedLibrary] writeVideoAtPathToSavedPhotosAlbum:newLocation completionBlock:completionBlock];
