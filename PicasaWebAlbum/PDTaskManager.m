@@ -104,17 +104,20 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
             NSLog(@"%@", error);
             return;
         }
-        NSUInteger count = [PDTaskManager getCountOfTasks];
-        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDTaskObject *taskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
-            taskObject.sort_index = @(count);
+        [PDTaskManager getCountOfTasksWithCompletion:^(NSUInteger count, NSError *error) {
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PDTaskObject *taskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
+                taskObject.sort_index = @(count);
+            }];
+            
+            if (completion) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completion(nil);
+                });
+            }
+            
+            [sself start];
         }];
-        
-        if (completion) {
-            completion(nil);
-        }
-        
-        [sself start];
     }];
 }
 
@@ -133,17 +136,20 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
             NSLog(@"%@", error);
             return;
         }
-        NSUInteger count = [PDTaskManager getCountOfTasks];
-        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDTaskObject *taskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
-            taskObject.sort_index = @(count);
+        [PDTaskManager getCountOfTasksWithCompletion:^(NSUInteger count, NSError *error) {
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PDTaskObject *taskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
+                taskObject.sort_index = @(count);
+            }];
+            
+            if (completion) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completion(nil);
+                });
+            }
+            
+            [sself start];
         }];
-        
-        if (completion) {
-            completion(nil);
-        }
-        
-        [sself start];
     }];
 }
 
@@ -162,17 +168,20 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
             NSLog(@"%@", error);
             return;
         }
-        NSUInteger count = [PDTaskManager getCountOfTasks];
-        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDTaskObject *taskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
-            taskObject.sort_index = @(count);
+        [PDTaskManager getCountOfTasksWithCompletion:^(NSUInteger count, NSError *error) {
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PDTaskObject *taskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
+                taskObject.sort_index = @(count);
+            }];
+            
+            if (completion) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completion(nil);
+                });
+            }
+            
+            [sself start];
         }];
-        
-        if (completion) {
-            completion(nil);
-        }
-        
-        [sself start];
     }];
 }
 
@@ -191,17 +200,20 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
             NSLog(@"%@", error);
             return;
         }
-        NSUInteger count = [PDTaskManager getCountOfTasks];
-        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDTaskObject *taskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
-            taskObject.sort_index = @(count);
+        [PDTaskManager getCountOfTasksWithCompletion:^(NSUInteger count, NSError *error) {
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PDTaskObject *taskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
+                taskObject.sort_index = @(count);
+            }];
+            
+            if (completion) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completion(nil);
+                });
+            }
+            
+            [sself start];
         }];
-        
-        if (completion) {
-            completion(nil);
-        }
-        
-        [sself start];
     }];
 }
 
@@ -236,8 +248,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
             typeof(wself) sself = wself;
             if (!sself) return;
             if (dataTasks.count == 0 && uploadTasks.count == 0 && downloadTasks.count == 0) {
-                PDTaskObject *taskObject = [PDTaskManager getFirstTaskObject];
-                [sself taskIsDoneAndStartNext:taskObject];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    PDTaskObject *taskObject = [PDTaskManager getFirstTaskObject];
+                    [sself taskIsDoneAndStartNext:taskObject];
+                });
             }
         }];
     });
@@ -477,15 +491,20 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     return taskObject;
 }
 
-+ (NSUInteger)getCountOfTasks {
++ (void)getCountOfTasksWithCompletion:(void (^)(NSUInteger, NSError *))completion {
+    if (!completion) return;
+    
     __block NSUInteger count = 0;
-    [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+    [PDCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:@"PDTaskObject" inManagedObjectContext:context];
         NSError *error = nil;
         count = [context countForFetchRequest:request error:&error];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion(count, error);
+        });
     }];
-    return count;
 }
 
 #pragma mark FilePath
