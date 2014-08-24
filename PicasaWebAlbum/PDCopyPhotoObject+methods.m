@@ -20,15 +20,18 @@
 #import "NSFileManager+methods.h"
 
 static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCopyPhotoObjectMethods";
+static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.com/data/feed/api/user/default/albumid";
 
 @implementation PDCopyPhotoObject (methods)
 
 - (void)makeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
     NSString *filePath = self.downloaded_data_location;
+    NSManagedObjectID *selfObjectID = self.objectID;
     if (filePath && [[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         [self makeUploadSessionTaskWithSession:session completion:^(NSURLSessionTask *task, NSError *error) {
             [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                self.session_task_identifier = @(task.taskIdentifier);
+                PDCopyPhotoObject *selfObject = (PDCopyPhotoObject *)[context objectWithID:selfObjectID];
+                selfObject.session_task_identifier = @(task.taskIdentifier);
             }];
             
             completion ? completion(task, error) : 0;
@@ -37,7 +40,8 @@ static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCo
     else {
         [self makeDownloadSessionTaskWithSession:session completion:^(NSURLSessionTask *task, NSError *error) {
             [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                self.session_task_identifier = @(task.taskIdentifier);
+                PDCopyPhotoObject *selfObject = (PDCopyPhotoObject *)[context objectWithID:selfObjectID];
+                selfObject.session_task_identifier = @(task.taskIdentifier);
             }];
             
             completion ? completion(task, error) : 0;
@@ -80,7 +84,8 @@ static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCo
         return;
     };
     
-    NSString *requestUrlString = [NSString stringWithFormat:@"https://picasaweb.google.com/data/feed/api/user/default/albumid/%@", webAlbumID];
+    NSString *filePath = self.downloaded_data_location;
+    NSString *requestUrlString = [NSString stringWithFormat:@"%@/%@", kPDCopyPhotoObjectPostURL, webAlbumID];
     [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:requestUrlString] completion:^(NSMutableURLRequest *request, NSError *error) {
         if (error) {
             completion ? completion(nil, error) : 0;
@@ -88,7 +93,6 @@ static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCo
         }
         
         request.HTTPMethod = @"POST";
-        NSString *filePath = self.downloaded_data_location;
         [NSFileManager cancelProtect:filePath];
         NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
         if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
@@ -117,7 +121,7 @@ static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCo
     PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) return;
     
-    NSString *filePath = [[self class] makeUniquePathInTmpDir];
+    NSString *filePath = [PDCopyPhotoObject makeUniquePathInTmpDir];
     NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
     
     if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
@@ -127,21 +131,25 @@ static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCo
         }
     }
     else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-        NSData *body = [[self class] makeBodyFromFilePath:location.absoluteString title:photoObject.title];
+        NSData *body = [PDCopyPhotoObject makeBodyFromFilePath:location.absoluteString title:photoObject.title];
         NSError *error = nil;
         if (![body writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
             NSLog(@"%@", error);
         }
     }
     [NSFileManager cancelProtect:filePath];
+    NSManagedObjectID *selfObjectID = self.objectID;
     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-        self.downloaded_data_location = filePath;
+        PDCopyPhotoObject *selfObject = (PDCopyPhotoObject *)[context objectWithID:selfObjectID];
+        selfObject.downloaded_data_location = filePath;
     }];
 }
 
 - (void)finishUpload {
+    NSManagedObjectID *selfObjectID = self.objectID;
     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-        self.is_done = @(YES);
+        PDCopyPhotoObject *selfObject = (PDCopyPhotoObject *)[context objectWithID:selfObjectID];
+        selfObject.is_done = @(YES);
     }];
 }
 
@@ -155,7 +163,7 @@ static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCo
     [body appendData:[bodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableString *firstHeaderString = [NSMutableString string];
-    [firstHeaderString appendString:@"Content-Type: application/atom+xml"];
+    [firstHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", @"application/atom+xml"]];
     [firstHeaderString appendString:@"\n\n"];
     [body appendData:[firstHeaderString dataUsingEncoding:NSUTF8StringEncoding]];
     
@@ -168,7 +176,7 @@ static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCo
     [body appendData:[firstBodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableString *secondHeaderString = [NSMutableString string];
-    [secondHeaderString appendString:@"Content-Type: video/mp4"];
+    [secondHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", @"video/mp4"]];
     [secondHeaderString appendString:@"\n\n"];
     [body appendData:[secondHeaderString dataUsingEncoding:NSUTF8StringEncoding]];
     
