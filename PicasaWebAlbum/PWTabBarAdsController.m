@@ -35,6 +35,8 @@
         _bannerView.rootViewController = self;
         [self.view insertSubview:_bannerView belowSubview:self.tabBar];
         
+        [self disableBannerBounce:_bannerView];
+        
         [_bannerView loadRequest:[GADRequest request]];
     }
 }
@@ -111,5 +113,13 @@
     }
 }
 
+- (void)disableBannerBounce:(GADBannerView *)bannerView{
+    for (UIWebView *webView in bannerView.subviews) {
+        if ([webView isKindOfClass:[UIWebView class]]) {
+            
+            webView.scrollView.bounces = NO;
+        }
+    }
+}
 
 @end
