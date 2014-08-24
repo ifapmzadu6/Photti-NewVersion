@@ -54,7 +54,7 @@ static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
         NSManagedObjectContext *context = [PDCoreDataAPI readContext];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
         
-        _restartTimeInterval = 60;
+        _restartTimeInterval = 15;
         
         [self restartTimer];
     }

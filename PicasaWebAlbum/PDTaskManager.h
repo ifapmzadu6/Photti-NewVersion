@@ -17,7 +17,7 @@ static NSString * const kPDTaskManagerIsResizePhotosKey = @"kPDTMIRPK";
 
 @interface PDTaskManager : NSObject
 
-// Default Time Interval is 1 minites
+// Default Time Interval is 15 sec.
 @property (nonatomic) NSUInteger restartTimeInterval;
 
 - (void)addTaskFromWebAlbum:(PWAlbumObject *)fromWebAlbum toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *error))completion;

@@ -12,6 +12,10 @@
 #import "PWNetworkActivityIndicator.h"
 #import <BlocksKit+UIKit.h>
 
+static NSString * const kPWMapViewControllerAppleMapURL = @"http://maps.apple.com";
+static NSString * const kPWMapViewControllerGMapURLSheme = @"comgooglemaps://";
+static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.com/";
+
 @interface PWAnnotation : NSObject <MKAnnotation>
 @property (nonatomic) CLLocationCoordinate2D coordinate;
 @end
@@ -123,13 +127,22 @@
     
     UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
     [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Open in Maps", nil) handler:^{
-        NSString *url = [NSString stringWithFormat:@"http://maps.apple.com/?%@", param];
+        NSString *url = [NSString stringWithFormat:@"%@/?%@", kPWMapViewControllerAppleMapURL, param];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
     }];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Open in Google Maps", nil) handler:^{
-        NSString *url = [NSString stringWithFormat:@"http://maps.google.com/?%@", param];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
-    }];
+    
+    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:kPWMapViewControllerGMapURLSheme]]) {
+        [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Open in Google Maps", nil) handler:^{
+            NSString *urlScheme = [NSString stringWithFormat:@"%@?%@", kPWMapViewControllerGMapURLSheme, param];
+            if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlScheme]]) {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlScheme]];
+            }
+            else {
+                NSString *url = [NSString stringWithFormat:@"%@?%@", kPWMapViewControllerGMapHTTPURL, param];
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+            }
+        }];
+    }
     [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
     [actionSheet showInView:self.view];
 }
