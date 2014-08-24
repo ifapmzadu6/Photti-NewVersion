@@ -28,6 +28,8 @@
 #import "PDTaskManager.h"
 
 static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDLocalPhotoObjectMethods";
+static NSString * const kPDLocalPhotoObjectPostURL = @"https://picasaweb.google.com/data/feed/api/user/default/albumid";
+static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb.google.com/data/feed/api/user/default";
 
 @implementation PDLocalPhotoObject (methods)
 
@@ -35,19 +37,19 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
     PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) {
         if (completion) {
-            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:nil]);
+            completion([NSError errorWithDomain:@"PDLocalPhotoObject" code:0 userInfo:nil]);
         }
         return;
     };
     
     NSString *assetUrlString = photoObject.url;
     NSString *title = photoObject.filename;
-    NSString *filePath = [[self class] makeUniquePathInTmpDir];
+    NSString *filePath = [PDLocalPhotoObject makeUniquePathInTmpDir];
     self.prepared_body_filepath = filePath;
     [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:assetUrlString] resultBlock:^(ALAsset *asset) {
         if (!asset) {
             if (completion) {
-                completion([NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:nil]);
+                completion([NSError errorWithDomain:@"PDLocalPhotoObject" code:0 userInfo:nil]);
             }
             return;
         }
@@ -66,7 +68,7 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
             completion ? completion(error) : 0;
         }
         else if ([type isEqualToString:ALAssetTypeVideo]) {
-            NSString *tmpFilePath = [[self class] makeUniquePathInTmpDir];
+            NSString *tmpFilePath = [PDLocalPhotoObject makeUniquePathInTmpDir];
             AVAsset *urlAsset = [AVURLAsset URLAssetWithURL:asset.defaultRepresentation.url options:nil];
             AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:urlAsset presetName:AVAssetExportPreset640x480];
             exportSession.outputFileType = AVFileTypeMPEG4;
@@ -84,10 +86,10 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
                     return;
                 }
                 
-                NSData *body = [[self class] makeBodyFromFilePath:tmpFilePath title:title];
+                NSData *body = [PDLocalPhotoObject makeBodyFromFilePath:tmpFilePath title:title];
                 if (!body) {
                     if (completion) {
-                        completion([NSError errorWithDomain:NSStringFromClass([self class]) code:0 userInfo:nil]);
+                        completion([NSError errorWithDomain:@"PDLocalPhotoObject" code:0 userInfo:nil]);
                     }
                     return;
                 }
@@ -120,7 +122,7 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
         return;
     };
     
-    NSString *requestUrlString = [NSString stringWithFormat:@"https://picasaweb.google.com/data/feed/api/user/default/albumid/%@", webAlbumID];
+    NSString *requestUrlString = [NSString stringWithFormat:@"%@/%@", kPDLocalPhotoObjectPostURL, webAlbumID];
     
     PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) {
@@ -129,14 +131,17 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
     };
     
     void (^block)() = ^{
+        __weak typeof(self) wself = self;
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:requestUrlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
             if (error) {
                 completion ? completion(nil, error) : 0;
                 return;
             }
             
             request.HTTPMethod = @"POST";
-            NSString *filePath = self.prepared_body_filepath;
+            NSString *filePath = sself.prepared_body_filepath;
             if (!filePath) {
                 completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
                 return;
@@ -160,7 +165,7 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
             
             NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
             [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                self.session_task_identifier = @(sessionTask.taskIdentifier);
+                sself.session_task_identifier = @(sessionTask.taskIdentifier);
             }];
             
             completion ? completion(sessionTask, nil) : 0;
@@ -180,8 +185,10 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
 
 - (void)makeNewAlbumSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
     __block NSString *from_album_id_str = nil;
+    NSManagedObjectID *selfObjectID = self.objectID;
     [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-        from_album_id_str = self.task.from_album_id_str;
+        PDLocalPhotoObject *selfObject = (PDLocalPhotoObject *)[context objectWithID:selfObjectID];
+        from_album_id_str = selfObject.task.from_album_id_str;
     }];
     if (!from_album_id_str) {
         completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
@@ -193,8 +200,8 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
         return;
     };
     
-    NSString *postURL = @"https://picasaweb.google.com/data/feed/api/user/default";
-    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:postURL] completion:^(NSMutableURLRequest *request, NSError *error) {
+    NSURL *url = [NSURL URLWithString:kPDLocalPHotoObjectPostNewAlbumURL];
+    [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
         if (error) {
             completion ? completion(nil, error) : 0;
             return;
@@ -202,7 +209,7 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
         
         NSString *body = [PWPicasaPOSTRequest makeBodyWithGPhotoID:nil Title:albumObject.name summary:nil location:nil access:nil timestamp:albumObject.timestamp.stringValue keywords:nil];
         NSData *bodyData = [body dataUsingEncoding:NSUTF8StringEncoding];
-        NSString *filePath = [[self class] makeUniquePathInTmpDir];
+        NSString *filePath = [PDLocalPhotoObject makeUniquePathInTmpDir];
         if (![bodyData writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
             completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
             return;
@@ -214,7 +221,8 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
         NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
         
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            self.session_task_identifier = @(sessionTask.taskIdentifier);
+            PDLocalPhotoObject *selfObject = (PDLocalPhotoObject *)[context objectWithID:selfObjectID];
+            selfObject.session_task_identifier = @(sessionTask.taskIdentifier);
         }];
         
         completion ? completion(sessionTask, nil) : 0;
@@ -223,7 +231,7 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
 
 - (void)finishMakeNewAlbumSessionWithResponse:(NSURLResponse *)response data:(NSData *)data {
     if (!response.isSuccess) {
-        NSLog(@"%@", response.description);
+        NSLog(@"%@", response);
         return;
     }
     
@@ -243,10 +251,14 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
         to_web_album_id_str = album.id_str;
     }];
     
-    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-        PDTaskObject *taskObject = self.task;
-        taskObject.to_album_id_str = to_web_album_id_str;
-    }];
+    if (to_web_album_id_str) {
+        NSManagedObjectID *selfObjectID = self.objectID;
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PDLocalPhotoObject *selfObject = (PDLocalPhotoObject *)[context objectWithID:selfObjectID];
+            PDTaskObject *taskObject = selfObject.task;
+            taskObject.to_album_id_str = to_web_album_id_str;
+        }];
+    }
 }
 
 
@@ -260,7 +272,7 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
     [body appendData:[bodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableString *firstHeaderString = [NSMutableString string];
-    [firstHeaderString appendString:@"Content-Type: application/atom+xml"];
+    [firstHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", @"application/atom+xml"]];
     [firstHeaderString appendString:@"\n\n"];
     [body appendData:[firstHeaderString dataUsingEncoding:NSUTF8StringEncoding]];
     
@@ -273,7 +285,7 @@ static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDL
     [body appendData:[firstBodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableString *secondHeaderString = [NSMutableString string];
-    [secondHeaderString appendString:@"Content-Type: video/mp4"];
+    [secondHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", @"video/mp4"]];
     [secondHeaderString appendString:@"\n\n"];
     [body appendData:[secondHeaderString dataUsingEncoding:NSUTF8StringEncoding]];
     
