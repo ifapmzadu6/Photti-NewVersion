@@ -285,7 +285,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
             if (isWebAlbum) {
                 [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:album completion:^(NSError *error) {
                     if (error) {
-                        NSLog(@"%@", error.description);
+                        NSLog(@"%@", error);
                         return;
                     }
                     completion();

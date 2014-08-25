@@ -54,8 +54,7 @@
     
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
-//    self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBarButtonAction)];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -119,6 +118,22 @@
 }
 
 #pragma mark UIBarButtonAction
+- (void)refreshBarButtonAction {
+    UIActivityIndicatorView *indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    UIBarButtonItem *indicatorBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:indicatorView];
+    [indicatorView startAnimating];
+    [self.navigationItem setRightBarButtonItem:indicatorBarButtonItem animated:YES];
+    
+    [[PDTaskManager sharedManager] cancel];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [[PDTaskManager sharedManager] start];
+        
+        UIBarButtonItem *refreshBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBarButtonAction)];
+        [self.navigationItem setRightBarButtonItem:refreshBarButtonItem animated:YES];
+    });
+}
+
 - (void)settingsBarButtonAction {
     PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeTaskManager];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
@@ -185,30 +200,11 @@
 #pragma mark UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-//    PDTaskObject *taskObject = nil;
-//    if (indexPath.section == 0) {
-//        taskObject = _fetchedResultsController.fetchedObjects.firstObject;
-//    }
-//    else {
-//        taskObject = _fetchedResultsController.fetchedObjects[indexPath.row+1];
-//    }
-//    
-//    PDTaskViewController *viewController = [[PDTaskViewController alloc] initWithTask:taskObject];
-//    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     return YES;
 }
-
-//- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-//    return YES;
-//}
-//
-//- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
-//    
-//}
 
 #pragma mark NSFetchedResultsController
 - (void)loadData {
@@ -224,7 +220,9 @@
         sself.fetchedResultsController.delegate = sself;
         
         NSError *error = nil;
-        [sself.fetchedResultsController performFetch:&error];
+        if (![sself.fetchedResultsController performFetch:&error]) {
+            abort();
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if (sself.tableView.indexPathsForVisibleRows.count == 0) {

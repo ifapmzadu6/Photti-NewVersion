@@ -86,7 +86,7 @@
     _fetchedResultsController.delegate = self;
     NSError *error = nil;
     if (![_fetchedResultsController performFetch:&error]) {
-        NSLog(@"%@", error.description);
+        NSLog(@"%@", error);
         abort();
         return;
     }

@@ -74,7 +74,7 @@
     _fetchedResultsController.delegate = self;
     NSError *error = nil;
     if (![_fetchedResultsController performFetch:&error]) {
-        NSLog(@"%@", error.description);
+        NSLog(@"%@", error);
         abort();
         return;
     }
@@ -282,7 +282,7 @@
 - (void)uploadActionSheetAction:(PLAlbumObject *)album {
     [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
         if (error) {
-            NSLog(@"%@", error.description);
+            NSLog(@"%@", error);
             return;
         }
         dispatch_async(dispatch_get_main_queue(), ^{

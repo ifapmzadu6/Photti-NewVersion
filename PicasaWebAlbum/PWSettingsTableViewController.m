@@ -177,7 +177,6 @@
         viewController.doneBlock = ^(NSString *selectedItem){
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             if ([selectedItem isEqualToString:NSLocalizedString(@"Resize", nil)]) {
                 [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kPDTaskManagerIsResizePhotosKey];
             }
@@ -230,7 +229,7 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             if (error) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
                 return;
             }
             

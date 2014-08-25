@@ -413,7 +413,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     
                     NSError *error = nil;
                     if (![context save:&error]) {
-                        NSLog(@"%@", error.description);
+                        NSLog(@"%@", error);
                         abort();
                     }
                     [PLCoreDataAPI writeContextFinish:context];

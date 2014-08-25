@@ -125,7 +125,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
             
             [[PLAssetsManager sharedManager] checkNewAlbumBetweenStartDate:beforeDate endDate:adjustedDate completion:^(NSArray *newAlbumDates, NSError *error) {
                 if (error) {
-                    NSLog(@"%@", error.description);
+                    NSLog(@"%@", error);
                     completionHandler(UIBackgroundFetchResultNoData);
                     return;
                 }

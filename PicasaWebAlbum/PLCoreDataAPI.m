@@ -157,14 +157,14 @@
         [[[self class] readContext] performBlockAndWait:^{
             NSError *error = nil;
             if (![[[self class] readContext] save:&error]) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
                 abort();
             }
             
             [[[self class] storeContext] performBlock:^{
                 NSError *error = nil;
                 if (![[[self class] storeContext] save:&error]) {
-                    NSLog(@"%@", error.description);
+                    NSLog(@"%@", error);
                     abort();
                 }
             }];

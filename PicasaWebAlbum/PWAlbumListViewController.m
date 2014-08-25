@@ -109,7 +109,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     _fetchedResultsController.delegate = self;
     NSError *error = nil;
     if (![_fetchedResultsController performFetch:&error]) {
-        NSLog(@"%@", error.description);
+        NSLog(@"%@", error);
         return;
     }
     
@@ -449,13 +449,13 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             [alertView dismissWithClickedButtonIndex:0 animated:YES];
         });
         if (error) {
-            NSLog(@"%@", error.description);
+            NSLog(@"%@", error);
             return;
         }
         
         [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
             if (error) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
                 return;
             }
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -491,7 +491,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             typeof(wself) sself = wself;
             if (!sself) return;
             if (error) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{

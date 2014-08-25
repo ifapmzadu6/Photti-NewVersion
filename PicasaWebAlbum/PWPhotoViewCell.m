@@ -285,7 +285,7 @@
         
         [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
                 return;
             }
             typeof(wself) sself = wself;

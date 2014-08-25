@@ -33,7 +33,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 @property (strong, nonatomic) NSURL *location;
 @property (strong, nonatomic) NSData *uploadResponseData;
 
-@property (nonatomic) BOOL operating;
+@property (nonatomic) BOOL isOperating;
 
 @end
 
@@ -237,10 +237,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 }
 
 - (void)start {
-    if (_operating) {
+    if (_isOperating) {
         return;
     }
-    _operating = YES;
+    _isOperating = YES;
     
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -268,11 +268,17 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 }
 
 - (void)cancel {
+    __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [_backgroundSession getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
             for (NSURLSessionTask *task in dataTasks) [task cancel];
             for (NSURLSessionTask *task in uploadTasks) [task cancel];
             for (NSURLSessionTask *task in downloadTasks) [task cancel];
+            
+            sself.isOperating = NO;
         }];
     });
 }
@@ -372,7 +378,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 
 - (void)taskIsDoneAndStartNext:(PDTaskObject *)taskObject {
     if (!taskObject) {
-        _operating = NO;
+        _isOperating = NO;
         
         if (_backgroundComplecationHandler) {
             _backgroundComplecationHandler();

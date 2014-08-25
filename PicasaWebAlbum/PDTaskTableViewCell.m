@@ -494,7 +494,7 @@
         
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
                 return;
             }
             typeof(wself) sself = wself;
@@ -549,7 +549,7 @@
         
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
                 return;
             }
             typeof(wself) sself = wself;

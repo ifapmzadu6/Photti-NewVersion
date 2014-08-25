@@ -272,7 +272,7 @@
             if (isWebAlbum) {
                 [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
                     if (error) {
-                        NSLog(@"%@", error.description);
+                        NSLog(@"%@", error);
                         return;
                     }
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -283,7 +283,7 @@
             else {
                 [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toLocalAlbum:album completion:^(NSError *error) {
                     if (error) {
-                        NSLog(@"%@", error.description);
+                        NSLog(@"%@", error);
                         return;
                     }
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -318,7 +318,7 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [alertView dismissWithClickedButtonIndex:0 animated:YES];
                 });
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
                 return;
             }
             

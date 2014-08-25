@@ -91,7 +91,7 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
                 break;
             case SKPaymentTransactionStateFailed://  途中でキャンセルした時orエラー
                 NSLog(@"SKPaymentTransactionStateFailed");
-                NSLog(@"%@", transaction.error.description);
+                NSLog(@"%@", transaction.error);
                 isFinished = YES;
                 [queue finishTransaction:transaction];
                 break;

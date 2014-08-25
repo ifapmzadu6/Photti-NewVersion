@@ -243,7 +243,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         
         [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:sself.album completion:^(NSError *error) {
             if (error) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -425,7 +425,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                 
                 [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
                     if (error) {
-                        NSLog(@"%@", error.description);
+                        NSLog(@"%@", error);
                     }
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
@@ -436,7 +436,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                 PLAlbumObject *localAlbum = (PLAlbumObject *)album;
                 [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toLocalAlbum:localAlbum completion:^(NSError *error) {
                     if (error) {
-                        NSLog(@"%@", error.description);
+                        NSLog(@"%@", error);
                     }
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
@@ -802,13 +802,13 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             [alertView dismissWithClickedButtonIndex:0 animated:YES];
         });
         if (error) {
-            NSLog(@"%@", error.description);
+            NSLog(@"%@", error);
             return;
         }
         
         [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
             if (error) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
                 return;
             }
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -844,7 +844,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             typeof(wself) sself = wself;
             if (!sself) return;
             if (error) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -890,7 +890,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                     typeof(wself) sself = wself;
                     if (!sself) return;
                     if (error) {
-                        NSLog(@"%@", error.description);
+                        NSLog(@"%@", error);
                         maxCount--;
                         return;
                     }

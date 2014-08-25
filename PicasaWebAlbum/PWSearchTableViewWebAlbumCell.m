@@ -150,7 +150,7 @@
         __weak typeof(self) wself = self;
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
                 return;
             }
             typeof(wself) sself = wself;
@@ -161,7 +161,7 @@
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (error) {
-                    NSLog(@"%@", error.description);
+                    NSLog(@"%@", error);
                     return;
                 }
                 

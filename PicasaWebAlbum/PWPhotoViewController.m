@@ -296,7 +296,7 @@
         
         [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
-                NSLog(@"%@", error.description);
+                NSLog(@"%@", error);
                 [PWNetworkActivityIndicator decrement];
                 return;
             }
@@ -306,7 +306,7 @@
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                 [PWNetworkActivityIndicator decrement];
                 if (error) {
-                    NSLog(@"%@", error.description);
+                    NSLog(@"%@", error);
                     return;
                 }
                 typeof(wself) sself = wself;
@@ -363,7 +363,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         if (error) {
-            NSLog(@"%@", error.description);
+            NSLog(@"%@", error);
             [PWNetworkActivityIndicator decrement];
             return;
         }
