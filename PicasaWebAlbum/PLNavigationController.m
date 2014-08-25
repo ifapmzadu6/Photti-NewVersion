@@ -39,23 +39,22 @@
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:tabBarImage selectedImage:tabBarImageSelected];
         
         if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
-            PLAccessPhotoLibraryViewController *accessPhotoLibraryViewController = [[PLAccessPhotoLibraryViewController alloc] init];
+            PLAccessPhotoLibraryViewController *accessPhotoLibraryViewController = [PLAccessPhotoLibraryViewController new];
             __weak typeof(self) wself = self;
             accessPhotoLibraryViewController.completion = ^{
                 dispatch_async(dispatch_get_main_queue(), ^{
                     typeof(wself) sself = wself;
                     if (!sself) return;
-                    [sself setAutoCreateAlbumViewController];
+                    [sself setAutoCreateAlbumViewControllerAnimated:YES];
                 });
             };
             self.viewControllers = @[accessPhotoLibraryViewController];
         }
         else if ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeUnknown) {
-            [self setAutoCreateAlbumViewController];
+            [self setAutoCreateAlbumViewControllerAnimated:NO];
         }
         else {
-            PLPageViewController *pageViewcontroller = [[PLPageViewController alloc] init];
-            self.viewControllers = @[pageViewcontroller];            
+            [self setPageViewControllerAnimated:NO];
         }
         
         [[PLAssetsManager sharedManager] enumurateAssetsWithCompletion:^(NSError *error) {
@@ -71,9 +70,7 @@
             if (newAlbumCount > 7) return;
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                PLNewAlbumCreatedViewController *viewController = [[PLNewAlbumCreatedViewController alloc] initWithEnumuratedDate:enumuratedDate];
-                PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
-                [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+                [sself modalNewAlbumCreatedViewControllerAnimated:YES enumuratedDate:enumuratedDate];
             });
         };
     }
@@ -117,7 +114,15 @@
 }
 
 #pragma mark AutoCreateViewController
-- (void)setAutoCreateAlbumViewController {
+- (void)setPageViewControllerAnimated:(BOOL)animated {
+    UIViewController *viewController = self.viewControllers.firstObject;
+    if (![viewController isKindOfClass:[PLPageViewController class]]) {
+        PLPageViewController *pageViewcontroller = [[PLPageViewController alloc] init];
+        [self setViewControllers:@[pageViewcontroller] animated:animated];
+    }
+}
+
+- (void)setAutoCreateAlbumViewControllerAnimated:(BOOL)animated {
     PLAutoCreateAlbumViewController *autoCreateAlbumViewController = [[PLAutoCreateAlbumViewController alloc] init];
     __weak typeof(self) wself = self;
     autoCreateAlbumViewController.completion = ^{
@@ -128,7 +133,13 @@
         
         [[PLAssetsManager sharedManager] enumurateAssetsWithCompletion:nil];
     };
-    [self setViewControllers:@[autoCreateAlbumViewController] animated:YES];
+    [self setViewControllers:@[autoCreateAlbumViewController] animated:animated];
+}
+
+- (void)modalNewAlbumCreatedViewControllerAnimated:(BOOL)animated enumuratedDate:(NSDate *)enumuratedDate {
+    PLNewAlbumCreatedViewController *viewController = [[PLNewAlbumCreatedViewController alloc] initWithEnumuratedDate:enumuratedDate];
+    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    [self.tabBarController presentViewController:navigationController animated:animated completion:nil];
 }
 
 #pragma mark UINavigationBarDelegate

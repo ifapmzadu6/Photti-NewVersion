@@ -37,11 +37,10 @@
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:tabBarImage selectedImage:tabBarImageSelected];
         
         if ([PWOAuthManager isLogined]) {
-            PWAlbumListViewController *albumListViewController = [PWAlbumListViewController new];
-            self.viewControllers = @[albumListViewController];
+            [self setAlbumViewControllerAnimated:NO];
         }
         else {
-            [self setLoginViewController];
+            [self setLoginViewControllerAnimated:NO];
         }
     }
     return self;
@@ -58,7 +57,7 @@
     [super viewWillAppear:animated];
     
     if (![PWOAuthManager isLogined]) {
-        [self setLoginViewController];
+        [self setLoginViewControllerAnimated:NO];
     }
 }
 
@@ -81,8 +80,17 @@
     }
 }
 
+#pragma mark AlbumViewController
+- (void)setAlbumViewControllerAnimated:(BOOL)animated {
+    UIViewController *viewController = self.viewControllers.firstObject;
+    if (![viewController isKindOfClass:[PWAlbumListViewController class]]) {
+        PWAlbumListViewController *albumListViewController = [PWAlbumListViewController new];
+        [self setViewControllers:@[albumListViewController] animated:animated];
+    }
+}
+
 #pragma mark LoginViewController
-- (void)setLoginViewController {
+- (void)setLoginViewControllerAnimated:(BOOL)animated {
     UIViewController *viewController = self.viewControllers.firstObject;
     if (![viewController isKindOfClass:[PWGoogleLoginViewController class]]) {
         PWGoogleLoginViewController *googleLoginViewController = [PWGoogleLoginViewController new];
@@ -92,11 +100,7 @@
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 
-                UIViewController *viewController = sself.viewControllers.firstObject;
-                if (![viewController isKindOfClass:[PWAlbumListViewController class]]) {
-                    PWAlbumListViewController *albumListViewController = [PWAlbumListViewController new];
-                    [sself setViewControllers:@[albumListViewController] animated:YES];
-                }
+                [sself setAlbumViewControllerAnimated:YES];
             });
         };
         googleLoginViewController.skipAction = ^{
@@ -108,7 +112,7 @@
                 [tabBarController setSelectedIndex:0];
             });
         };
-        [self setViewControllers:@[googleLoginViewController] animated:NO];
+        [self setViewControllers:@[googleLoginViewController] animated:animated];
     }
 }
 

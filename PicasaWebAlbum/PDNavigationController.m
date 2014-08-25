@@ -111,10 +111,7 @@
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 
-                UIViewController *viewController = sself.viewControllers.firstObject;
-                if (![viewController isKindOfClass:[PDTaskManagerViewController class]]) {
-                    [sself showTaskManagerViewController];
-                }
+                [sself showTaskManagerViewControllerAnimated:YES];
             });
         }
         else {
@@ -124,16 +121,10 @@
                     if (!sself) return;
                     
                     if (dataTasks.count == 0 && uploadTasks.count == 0 && downloadTasks.count == 0) {
-                        UIViewController *viewController = sself.viewControllers.firstObject;
-                        if (![viewController isKindOfClass:[PDUploadDescriptionViewController class]]) {
-                            [sself showUploadDescriptionViewController];
-                        }
+                        [sself setUploadDescriptionViewControllerAnimated:YES];
                     }
                     else {
-                        UIViewController *viewController = sself.viewControllers.firstObject;
-                        if (![viewController isKindOfClass:[PDTaskManagerViewController class]]) {
-                            [sself showTaskManagerViewController];
-                        }
+                        [sself showTaskManagerViewControllerAnimated:YES];
                     }
                 });
             }];
@@ -141,14 +132,20 @@
     }];
 }
 
-- (void)showUploadDescriptionViewController {
-    PDUploadDescriptionViewController *viewController = [PDUploadDescriptionViewController new];
-    [self setViewControllers:@[viewController] animated:YES];
+- (void)setUploadDescriptionViewControllerAnimated:(BOOL)animated {
+    UIViewController *viewController = self.viewControllers.firstObject;
+    if (![viewController isKindOfClass:[PDUploadDescriptionViewController class]]) {
+        PDUploadDescriptionViewController *viewController = [PDUploadDescriptionViewController new];
+        [self setViewControllers:@[viewController] animated:animated];
+    }
 }
 
-- (void)showTaskManagerViewController {
-    PDTaskManagerViewController *taskManagerViewController = [PDTaskManagerViewController new];
-    [self setViewControllers:@[taskManagerViewController] animated:YES];
+- (void)showTaskManagerViewControllerAnimated:(BOOL)animated {
+    UIViewController *viewController = self.viewControllers.firstObject;
+    if (![viewController isKindOfClass:[PDTaskManagerViewController class]]) {
+        PDTaskManagerViewController *taskManagerViewController = [PDTaskManagerViewController new];
+        [self setViewControllers:@[taskManagerViewController] animated:animated];
+    }
 }
 
 #pragma mark PDTaskManager
