@@ -11,12 +11,10 @@
 #import "PDModelObject.h"
 #import "PDCoreDataAPI.h"
 #import "PDTaskManager.h"
-
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
 #import "PWSnowFlake.h"
-
 #import "PWPicasaAPI.h"
 
 @interface PDTask ()
