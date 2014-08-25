@@ -90,6 +90,7 @@
 		7187904319A58B71005545E1 /* PWTabBarAdsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7187904219A58B71005545E1 /* PWTabBarAdsController.m */; };
 		718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */; };
 		718E9757196E8D8000638A86 /* PWPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 718E9756196E8D8000638A86 /* PWPhotoEditViewController.m */; };
+		718F271519AACCB100156D88 /* PWDateTimestamp.m in Sources */ = {isa = PBXBuildFile; fileRef = 718F271419AACCB100156D88 /* PWDateTimestamp.m */; };
 		718FF6B9197D6A3300C3D3BF /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 718FF6B8197D6A3300C3D3BF /* Crashlytics.framework */; };
 		7194EC7219A23B0F00FD90BB /* icon_80.png in Resources */ = {isa = PBXBuildFile; fileRef = 7194EC7119A23B0F00FD90BB /* icon_80.png */; };
 		7195523619273138003EA9AF /* PWAlbumShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7195523519273138003EA9AF /* PWAlbumShareViewController.m */; };
@@ -361,6 +362,8 @@
 		718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWRoundedCornerBadgeLabel.m; sourceTree = "<group>"; };
 		718E9755196E8D8000638A86 /* PWPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPhotoEditViewController.h; sourceTree = "<group>"; };
 		718E9756196E8D8000638A86 /* PWPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPhotoEditViewController.m; sourceTree = "<group>"; };
+		718F271319AACCB100156D88 /* PWDateTimestamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWDateTimestamp.h; sourceTree = "<group>"; };
+		718F271419AACCB100156D88 /* PWDateTimestamp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWDateTimestamp.m; sourceTree = "<group>"; };
 		718FF6B8197D6A3300C3D3BF /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		7194EC7119A23B0F00FD90BB /* icon_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon_80.png; path = Images.xcassets/AppIcon.appiconset/icon_80.png; sourceTree = "<group>"; };
 		7195523419273138003EA9AF /* PWAlbumShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumShareViewController.h; sourceTree = "<group>"; };
@@ -1250,6 +1253,15 @@
 			name = PWPhotoEditViewController;
 			sourceTree = "<group>";
 		};
+		718F271219AACC8400156D88 /* PWDateTimestamp */ = {
+			isa = PBXGroup;
+			children = (
+				718F271319AACCB100156D88 /* PWDateTimestamp.h */,
+				718F271419AACCB100156D88 /* PWDateTimestamp.m */,
+			);
+			name = PWDateTimestamp;
+			sourceTree = "<group>";
+		};
 		7194EC7019A23AFE00FD90BB /* images */ = {
 			isa = PBXGroup;
 			children = (
@@ -1920,6 +1932,7 @@
 		71E8859519120BB9005A78E0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				718F271219AACC8400156D88 /* PWDateTimestamp */,
 				71BD235919779E1C0034CD3B /* ALAsset+methods */,
 				71BDE39D1998FA8100853E85 /* NSAttributedString+methods */,
 				715A31B5198FD5F6002A0A37 /* NSFileManager+methods */,
@@ -2241,6 +2254,7 @@
 				7133203E19225E9F00A27B3C /* PWAlbumEditViewController.m in Sources */,
 				71349CA9192CF338003CC2AA /* PLParallelNavigationTitleView.m in Sources */,
 				7133203A1921F98900A27B3C /* PWSelectItemFromArrayViewController.m in Sources */,
+				718F271519AACCB100156D88 /* PWDateTimestamp.m in Sources */,
 				71C0784B194ABBD70071702D /* PDTaskTableViewCell.m in Sources */,
 				71D52EE2197F49F2005CFF30 /* PDBasePhotoObject+methods.m in Sources */,
 				7195529B192C862D003EA9AF /* PLAlbumObject.m in Sources */,

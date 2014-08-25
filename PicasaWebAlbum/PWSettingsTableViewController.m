@@ -49,7 +49,7 @@
     self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
     
     UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
-    self.navigationItem.leftBarButtonItem = doneBarButtonItem;
+    self.navigationItem.rightBarButtonItem = doneBarButtonItem;
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
@@ -63,6 +63,7 @@
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
     
+    // TableView
     [self setUpWebAlbumSection];
     [self setUpCameraRollSection];
     [self setUpTaskManagerSection];
