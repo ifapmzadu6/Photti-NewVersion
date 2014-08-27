@@ -89,7 +89,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
-        cell.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        cell.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
     }
     cell.textLabel.text = nil;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:15.0f];
@@ -151,7 +151,7 @@
             [button setTitleColor:[PAColors getColor:PWColorsTypeTintWebColor] forState:UIControlStateHighlighted];
             [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             button.clipsToBounds = YES;
-            button.layer.borderColor = [PWColors getColor:PWColorsTypeTintWebColor].CGColor;
+            button.layer.borderColor = [PAColors getColor:PWColorsTypeTintWebColor].CGColor;
             button.layer.borderWidth = 1.0f;
             button.layer.cornerRadius = 5.0f;
             button.exclusiveTouch = YES;

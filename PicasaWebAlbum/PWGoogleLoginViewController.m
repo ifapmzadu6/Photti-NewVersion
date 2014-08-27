@@ -101,7 +101,7 @@
     [_loginButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintWebColor]] forState:UIControlStateNormal];
     [_loginButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _loginButton.clipsToBounds = YES;
-    _loginButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintWebColor].CGColor;
+    _loginButton.layer.borderColor = [PAColors getColor:PWColorsTypeTintWebColor].CGColor;
     _loginButton.layer.borderWidth = 1.0f;
     _loginButton.layer.cornerRadius = 5.0f;
     _loginButton.exclusiveTouch = YES;

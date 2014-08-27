@@ -95,7 +95,7 @@
     [_enableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateNormal];
     [_enableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _enableButton.clipsToBounds = YES;
-    _enableButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
+    _enableButton.layer.borderColor = [PAColors getColor:PWColorsTypeTintLocalColor].CGColor;
     _enableButton.layer.borderWidth = 1.0f;
     _enableButton.layer.cornerRadius = 5.0f;
     _enableButton.exclusiveTouch = YES;
@@ -114,7 +114,7 @@
     [_disableButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [_disableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateHighlighted];
     _disableButton.clipsToBounds = YES;
-    _disableButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
+    _disableButton.layer.borderColor = [PAColors getColor:PWColorsTypeTintLocalColor].CGColor;
     _disableButton.layer.borderWidth = 1.0f;
     _disableButton.layer.cornerRadius = 5.0f;
     _disableButton.exclusiveTouch = YES;

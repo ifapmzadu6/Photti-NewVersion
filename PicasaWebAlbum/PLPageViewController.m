@@ -158,7 +158,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [tabBarController setAdsHidden:YES animated:NO];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
-    navigationController.view.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    navigationController.view.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;

@@ -238,7 +238,7 @@
                 _videoBackgroundView.hidden = NO;
                 
                 NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
-                _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
+                _videoDurationLabel.text = [PADateFormatter arrangeDuration:durationString.doubleValue];
                 _videoDurationLabel.hidden = NO;
                 _videoIconView.hidden = NO;
             }
@@ -334,7 +334,7 @@
             _videoBackgroundView.hidden = NO;
             
             NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
-            _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
+            _videoDurationLabel.text = [PADateFormatter arrangeDuration:durationString.doubleValue];
             _videoDurationLabel.hidden = NO;
             _videoIconView.hidden = NO;
         }
@@ -360,7 +360,7 @@
             _videoBackgroundView.hidden = NO;
             
             NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
-            _videoDurationLabel.text = [PLDateFormatter arrangeDuration:durationString.doubleValue];
+            _videoDurationLabel.text = [PADateFormatter arrangeDuration:durationString.doubleValue];
             _videoDurationLabel.hidden = NO;
             _videoIconView.hidden = NO;
         }

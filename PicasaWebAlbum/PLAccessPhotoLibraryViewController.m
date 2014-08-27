@@ -94,7 +94,7 @@
     [_accessButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateNormal];
     [_accessButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _accessButton.clipsToBounds = YES;
-    _accessButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
+    _accessButton.layer.borderColor = [PAColors getColor:PWColorsTypeTintLocalColor].CGColor;
     _accessButton.layer.borderWidth = 1.0f;
     _accessButton.layer.cornerRadius = 5.0f;
     _accessButton.exclusiveTouch = YES;

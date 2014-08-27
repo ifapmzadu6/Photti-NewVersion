@@ -113,7 +113,7 @@
     [_uploadButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _uploadButton.clipsToBounds = YES;
     _uploadButton.layer.cornerRadius = 5.0f;
-    _uploadButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintUploadColor].CGColor;
+    _uploadButton.layer.borderColor = [PAColors getColor:PWColorsTypeTintUploadColor].CGColor;
     _uploadButton.layer.borderWidth = 1.0f;
     _uploadButton.exclusiveTouch = YES;
     [self.view addSubview:_uploadButton];

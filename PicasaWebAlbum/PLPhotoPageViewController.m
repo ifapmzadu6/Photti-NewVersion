@@ -287,7 +287,7 @@
             [sself.navigationController setNavigationBarHidden:NO animated:YES];
             [tabBarController setToolbarFadeout:NO animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
-                sself.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+                sself.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
             }];
             sself.navigationController.interactivePopGestureRecognizer.enabled = YES;
         }

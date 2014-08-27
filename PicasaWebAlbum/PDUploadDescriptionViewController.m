@@ -114,7 +114,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     [_unlimitedButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateSelected];
     [_unlimitedButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateHighlighted];
     _unlimitedButton.clipsToBounds = YES;
-    _unlimitedButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintUploadColor].CGColor;
+    _unlimitedButton.layer.borderColor = [PAColors getColor:PWColorsTypeTintUploadColor].CGColor;
     _unlimitedButton.layer.borderWidth = 1.0f;
     _unlimitedButton.layer.cornerRadius = 5.0f;
     _unlimitedButton.exclusiveTouch = YES;
@@ -172,7 +172,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     [_highResolutionButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateSelected];
     [_highResolutionButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateHighlighted];
     _highResolutionButton.clipsToBounds = YES;
-    _highResolutionButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintUploadColor].CGColor;
+    _highResolutionButton.layer.borderColor = [PAColors getColor:PWColorsTypeTintUploadColor].CGColor;
     _highResolutionButton.layer.borderWidth = 1.0f;
     _highResolutionButton.layer.cornerRadius = 5.0f;
     _highResolutionButton.exclusiveTouch = YES;

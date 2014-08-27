@@ -189,7 +189,7 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayFooterView:(UITableViewHeaderFooterView *)view forSection:(NSInteger)section {
     view.textLabel.font = [UIFont systemFontOfSize:13.0f];
-    view.textLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
+    view.textLabel.textColor = [PAColors getColor:PWColorsTypeTextLightColor];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

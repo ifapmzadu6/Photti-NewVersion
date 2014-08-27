@@ -45,7 +45,7 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
 + (void)getProductsWithProductIDs:(NSArray *)productIDs completion:(void (^)(NSArray *, NSError*))completion {
     [PAInAppPurchase sharedInstance].getProductsCompletionBlock = completion;
     SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithArray:productIDs]];
-    productsRequest.delegate = [PDInAppPurchase sharedInstance];
+    productsRequest.delegate = [PAInAppPurchase sharedInstance];
     [productsRequest start];
 }
 
@@ -83,7 +83,7 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
                 isPurchaced = YES;
                 for(SKPaymentTransaction *transaction in queue.transactions) {
                     NSString *key = transaction.payment.productIdentifier;
-                    NSString *password = [PDInAppPurchase hashKey:key];
+                    NSString *password = [PAInAppPurchase hashKey:key];
                     NSError *error = nil;
                     [SFHFKeychainUtils storeUsername:key andPassword:password forServiceName:kServiceName updateExisting:YES error:&error];
                 }
@@ -132,7 +132,7 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue {
     for(SKPaymentTransaction *transaction in queue.transactions) {
         NSString *key = transaction.payment.productIdentifier;
-        NSString *password = [PDInAppPurchase hashKey:key];
+        NSString *password = [PAInAppPurchase hashKey:key];
         NSError *error = nil;
         [SFHFKeychainUtils storeUsername:key andPassword:password forServiceName:kServiceName updateExisting:YES error:&error];
     }
