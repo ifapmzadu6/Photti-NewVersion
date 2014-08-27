@@ -8,22 +8,22 @@
 
 #import "PWAlbumPickerLocalAlbumListViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLAlbumViewCell.h"
-#import "PWAlbumCollectionViewFlowLayout.h"
-#import "PWSnowFlake.h"
-#import "PLDateFormatter.h"
+#import "PAAlbumCollectionViewFlowLayout.h"
+#import "PASnowFlake.h"
+#import "PADateFormatter.h"
 #import "PLCollectionFooterView.h"
 #import "PLModelObject.h"
 #import <BlocksKit+UIKit.h>
 #import "PWAlbumPickerController.h"
-#import "PWBaseNavigationController.h"
+#import "PABaseNavigationController.h"
 #import "PLNewAlbumEditViewController.h"
 
-@interface PWAlbumPickerLocalAlbumListViewController ()
+@interface PWAlbumPickerLocalAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
@@ -49,8 +49,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
-    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
     
     UIBarButtonItem *cancelBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     self.navigationItem.leftBarButtonItem = cancelBarButtonitem;
@@ -60,7 +60,7 @@
         view.exclusiveTouch = YES;
     }
     
-    PWAlbumCollectionViewFlowLayout *collectionViewLayout = [[PWAlbumCollectionViewFlowLayout alloc] init];
+    PAAlbumCollectionViewFlowLayout *collectionViewLayout = [[PAAlbumCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
@@ -68,7 +68,7 @@
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.clipsToBounds = NO;
-    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.exclusiveTouch = YES;
     _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 10.0f, 0.0f, 10.0f);
     [self.view addSubview:_collectionView];
@@ -127,8 +127,8 @@
 #pragma mark UITabBarItem
 - (void)updateTabBarItem {
     if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        self.tabBarItem.image = [PWIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-        self.tabBarItem.selectedImage = [PWIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        self.tabBarItem.image = [PAIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        self.tabBarItem.selectedImage = [PAIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
     }
     else {
         self.tabBarItem.image = [UIImage imageNamed:@"Picture"];
@@ -146,7 +146,7 @@
     viewController.saveButtonBlock = ^(NSString *name, NSNumber *timestamp, NSNumber *uploading_type){
         [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
-            album.id_str = [PWSnowFlake generateUniqueIDString];
+            album.id_str = [PASnowFlake generateUniqueIDString];
             album.name = name;
             album.tag_date = [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue/1000.0];
             album.timestamp = timestamp;
@@ -155,7 +155,7 @@
             album.tag_type = @(PLAlbumObjectTagTypeMyself);
         }];
     };
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
@@ -236,7 +236,7 @@
     if (!_noItemImageView) {
         _noItemImageView = [UIImageView new];
         _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.tintColor = [[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
         _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
     }

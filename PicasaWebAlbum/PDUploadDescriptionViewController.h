@@ -8,6 +8,8 @@
 
 @import UIKit;
 
-@interface PDUploadDescriptionViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PDUploadDescriptionViewController : PABaseViewController
 
 @end

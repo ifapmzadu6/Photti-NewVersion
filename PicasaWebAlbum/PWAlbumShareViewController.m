@@ -8,11 +8,12 @@
 
 #import "PWAlbumShareViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PWPicasaAPI.h"
+#import "PAIcons.h"
 #import <Reachability.h>
 
-@interface PWAlbumShareViewController ()
+@interface PWAlbumShareViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
 
@@ -46,7 +47,7 @@
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
     
@@ -56,8 +57,8 @@
         view.exclusiveTouch = YES;
     }
     
-    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PWColorsTypeTextColor]};
 }
 
 - (void)viewWillLayoutSubviews {
@@ -92,7 +93,7 @@
     }
     cell.textLabel.text = nil;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:15.0f];
-    cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+    cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
     cell.accessoryType = UITableViewCellAccessoryNone;
     cell.accessoryView = nil;
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
@@ -110,7 +111,7 @@
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }
         else {
-            cell.textLabel.textColor = [[PWColors getColor:PWColorsTypeTextColor] colorWithAlphaComponent:0.8f];
+            cell.textLabel.textColor = [[PAColors getColor:PWColorsTypeTextColor] colorWithAlphaComponent:0.8f];
         }
     }
     else {
@@ -127,11 +128,11 @@
             }
             if (!link) {
                 cell.textLabel.text = @"http://";
-                cell.textLabel.textColor = [[PWColors getColor:PWColorsTypeTextColor] colorWithAlphaComponent:0.5f];
+                cell.textLabel.textColor = [[PAColors getColor:PWColorsTypeTextColor] colorWithAlphaComponent:0.5f];
             }
             else {
                 cell.textLabel.text = link;
-                cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+                cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
             }
         }
         else {
@@ -145,9 +146,9 @@
             button.center = cell.contentView.center;
             button.titleLabel.font = [UIFont systemFontOfSize:15.0f];
             [button setTitle:NSLocalizedString(@"Share the link", nil) forState:UIControlStateNormal];
-            [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
-            [button setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintWebColor]] forState:UIControlStateNormal];
-            [button setTitleColor:[PWColors getColor:PWColorsTypeTintWebColor] forState:UIControlStateHighlighted];
+            [button setBackgroundImage:[PAIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
+            [button setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintWebColor]] forState:UIControlStateNormal];
+            [button setTitleColor:[PAColors getColor:PWColorsTypeTintWebColor] forState:UIControlStateHighlighted];
             [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             button.clipsToBounds = YES;
             button.layer.borderColor = [PWColors getColor:PWColorsTypeTintWebColor].CGColor;

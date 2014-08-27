@@ -8,8 +8,8 @@
 
 #import "PDTaskManagerViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PDModelObject.h"
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
@@ -23,7 +23,7 @@
 #import "PDTaskViewController.h"
 #import "PWSettingsViewController.h"
 
-@interface PDTaskManagerViewController ()
+@interface PDTaskManagerViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
 
@@ -52,7 +52,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBarButtonAction)];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
@@ -67,7 +67,7 @@
     [_tableView registerClass:[PDTaskTableViewCell class] forCellReuseIdentifier:@"Cell"];
     [_tableView registerClass:[PDTaskManagerViewControllerHeaderView class] forHeaderFooterViewReuseIdentifier:@"Header"];
     _tableView.rowHeight = 60.0f;
-    _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
     

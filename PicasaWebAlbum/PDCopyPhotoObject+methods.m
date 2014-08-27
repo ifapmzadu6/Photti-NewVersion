@@ -13,7 +13,7 @@
 #import "PWPicasaAPI.h"
 #import "PWCoreDataAPI.h"
 #import "PWModelObject.h"
-#import "PWSnowFlake.h"
+#import "PASnowFlake.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
@@ -214,7 +214,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
 + (NSString *)makeUniquePathInTmpDir {
     NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
     NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
-    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PWSnowFlake generateUniqueIDString]];
+    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PASnowFlake generateUniqueIDString]];
     return filePath;
 }
 

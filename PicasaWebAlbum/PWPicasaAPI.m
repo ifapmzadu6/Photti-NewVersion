@@ -13,7 +13,7 @@
 #import "PWPicasaParser.h"
 #import "XmlReader.h"
 #import "NSURLResponse+methods.h"
-#import "PWNetworkActivityIndicator.h"
+#import "PANetworkActivityIndicator.h"
 
 #define NtN(obj) ({ __typeof__ (obj) __obj = (obj); __obj == [NSNull null] ? nil : obj; })
 
@@ -29,9 +29,9 @@ static NSString * const PWXMLNode = @"text";
     }
     NSInteger apiIndex = index + 1;
     
-    [PWNetworkActivityIndicator increment];
+    [PANetworkActivityIndicator increment];
     [PWPicasaGETRequest getListOfAlbumsWithIndex:apiIndex completion:^(NSData *data, NSURLResponse *response, NSError *error) {
-        [PWNetworkActivityIndicator decrement];
+        [PANetworkActivityIndicator decrement];
         
         if (error) {
             completion ? completion(index, error) : 0;
@@ -110,10 +110,10 @@ static NSString * const PWXMLNode = @"text";
     }
     NSInteger apiIndex = index + 1;
     
-    [PWNetworkActivityIndicator increment];
+    [PANetworkActivityIndicator increment];
     
     [PWPicasaGETRequest getListOfPhotosInAlbumWithAlbumID:albumID index:apiIndex completion:^(NSData *data, NSURLResponse *response, NSError *error) {
-        [PWNetworkActivityIndicator decrement];
+        [PANetworkActivityIndicator decrement];
         
         if (error) {
             completion ? completion(index, error) : 0;
@@ -178,10 +178,10 @@ static NSString * const PWXMLNode = @"text";
 }
 
 + (void)postCreatingNewAlbumRequestWithTitle:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords completion:(void (^)(PWAlbumObject *album, NSError *error))completion {
-    [PWNetworkActivityIndicator increment];
+    [PANetworkActivityIndicator increment];
     
     void (^requestCompletion)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-        [PWNetworkActivityIndicator decrement];
+        [PANetworkActivityIndicator decrement];
         
         if (error) {
             completion ? completion(nil, [NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]) : 0;
@@ -218,10 +218,10 @@ static NSString * const PWXMLNode = @"text";
 
 + (void)putModifyingAlbumWithID:(NSString *)albumID title:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords completion:(void (^)(NSError *))completion {
     
-    [PWNetworkActivityIndicator increment];
+    [PANetworkActivityIndicator increment];
     
     void (^requestCompletion)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-        [PWNetworkActivityIndicator increment];
+        [PANetworkActivityIndicator increment];
         if (error) {
             completion ? completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]) : 0;
             return;
@@ -248,10 +248,10 @@ static NSString * const PWXMLNode = @"text";
 }
 
 + (void)deleteAlbum:(PWAlbumObject *)album completion:(void (^)(NSError *error))completion {
-    [PWNetworkActivityIndicator increment];
+    [PANetworkActivityIndicator increment];
     
     [PWPicasaPOSTRequest deleteAlbumWithID:album.id_str completion:^(NSData *data, NSURLResponse *response, NSError *error) {
-        [PWNetworkActivityIndicator decrement];
+        [PANetworkActivityIndicator decrement];
         
         if (error) {
             completion ? completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]) : 0;
@@ -268,11 +268,11 @@ static NSString * const PWXMLNode = @"text";
 
 
 + (void)deletePhoto:(PWPhotoObject *)photo completion:(void (^)(NSError *error))completion {
-    [PWNetworkActivityIndicator increment];
+    [PANetworkActivityIndicator increment];
     
     NSManagedObjectID *photoObjectID = photo.objectID;
     [PWPicasaPOSTRequest deletePhotoWithAlbumID:photo.albumid photoID:photo.id_str completion:^(NSData *data, NSURLResponse *response, NSError *error) {
-        [PWNetworkActivityIndicator decrement];
+        [PANetworkActivityIndicator decrement];
         
         if (error) {
             completion ? completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]) : 0;
@@ -286,6 +286,18 @@ static NSString * const PWXMLNode = @"text";
         [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
             PWPhotoObject *photoObject = (PWPhotoObject *)[context objectWithID:photoObjectID];
             [context deleteObject:photoObject];
+            
+            NSFetchRequest *request = [NSFetchRequest new];
+            request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photoObject.albumid];
+            request.fetchLimit = 1;
+            NSError *error = nil;
+            NSArray *objects = [context executeFetchRequest:request error:&error];
+            if (objects.count > 0) {
+                PWAlbumObject *album = objects.firstObject;
+                NSInteger numPhotos = album.gphoto.numphotos.integerValue;
+                album.gphoto.numphotos = @(numPhotos - 1).stringValue;
+            }
         }];
         
         completion ? completion(nil) : 0;
@@ -297,10 +309,10 @@ static NSString * const PWXMLNode = @"text";
 }
 
 + (void)authorizedURLRequest:(NSURL *)url completion:(void (^)(NSData *, NSURLResponse *, NSError *))completion {
-    [PWNetworkActivityIndicator increment];
+    [PANetworkActivityIndicator increment];
     
     [PWPicasaGETRequest authorizedGETRequestWithURL:url completion:^(NSData *data, NSURLResponse *response, NSError *error) {
-        [PWNetworkActivityIndicator decrement];
+        [PANetworkActivityIndicator decrement];
         
         completion ? completion(data, response, error) : 0;
     }];

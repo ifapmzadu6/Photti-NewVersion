@@ -9,9 +9,11 @@
 @import UIKit;
 @import CoreData;
 
+#import "PABaseViewController.h"
+
 @class PWAlbumObject;
 
-@interface PWPhotoListViewController : UIViewController
+@interface PWPhotoListViewController : PABaseViewController
 
 - (id)initWithAlbum:(PWAlbumObject *)album;
 

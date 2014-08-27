@@ -6,9 +6,9 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWIcons.h"
+#import "PAIcons.h"
 
-@implementation PWIcons
+@implementation PAIcons
 
 + (UIImage *)albumActionButtonIconWithColor:(UIColor *)color {
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(20.0f, 30.0f), NO, 0.0f);

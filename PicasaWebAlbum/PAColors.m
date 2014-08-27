@@ -6,15 +6,15 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWColors.h"
+#import "PAColors.h"
 
-@interface PWColors ()
+@interface PAColors ()
 
 @property NSMutableDictionary *colors;
 
 @end
 
-@implementation PWColors
+@implementation PAColors
 
 + (id)sharedManager {
     static dispatch_once_t once;
@@ -36,22 +36,22 @@
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	PWColorsTheme theme = (PWColorsTheme)[userDefaults integerForKey:@"PWColorsTheme"];
 	if (theme == PWColorsThemeDefault) {
-		[PWColors setDefaultColors];
+		[PAColors setDefaultColors];
 	}
 }
 
 + (UIColor *)getColor:(PWColorsType)type {
-    PWColors *sharedManager = [PWColors sharedManager];
+    PAColors *sharedManager = [PAColors sharedManager];
     return [sharedManager getColor:type];
 }
 
 + (void)setColor:(UIColor *)color type:(PWColorsType)type {
-    PWColors *sharedManager = [PWColors sharedManager];
+    PAColors *sharedManager = [PAColors sharedManager];
     [sharedManager setColor:color type:type];
 }
 
 + (void)setDefaultColors {
-    PWColors *sharedManager = [PWColors sharedManager];
+    PAColors *sharedManager = [PAColors sharedManager];
     [sharedManager setDefaultColors];
 }
 

@@ -8,7 +8,7 @@
 
 #import "PWOAuthManager.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 
 static NSString * const PWScope = @"https://picasaweb.google.com/data/";
 static NSString * const PWClientID = @"982107973738-pqihuiltucj69o5413n38hm52lj3ubm3.apps.googleusercontent.com";
@@ -167,8 +167,8 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         navigationController.view.backgroundColor = [UIColor whiteColor];
         navigationController.automaticallyAdjustsScrollViewInsets = NO;
         navigationController.edgesForExtendedLayout = UIRectEdgeAll;
-        navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
-        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
+        navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PWColorsTypeTextColor]};
         navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         
         if (completion) {

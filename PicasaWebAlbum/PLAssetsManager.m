@@ -10,8 +10,8 @@
 
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
-#import "PLDateFormatter.h"
-#import "PWSnowFlake.h"
+#import "PADateFormatter.h"
+#import "PASnowFlake.h"
 
 @interface PLAssetsManager ()
 
@@ -180,7 +180,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     *stop = YES;
                 }
                 else if ([date compare:endDate] == NSOrderedAscending) {
-                    NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:date];
+                    NSDate *adjustedDate = [PADateFormatter adjustZeroClock:date];
                     if (![newAlbumDates containsObject:adjustedDate]) {
                         [newAlbumDates addObject:adjustedDate];
                     }
@@ -334,7 +334,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                         NSArray *newPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
                         //NSLog(@"new = %lu", (unsigned long)newPhotos.count);
                         
-                        NSDate *todayAdjustedDate = [PLDateFormatter adjustZeroClock:[NSDate date]];
+                        NSDate *todayAdjustedDate = [PADateFormatter adjustZeroClock:[NSDate date]];
                         if (newPhotos.count > 0) {
                             //新規写真は振り分けをしなければならない
                             NSFetchRequest *request = [NSFetchRequest new];
@@ -343,7 +343,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                             error = nil;
                             NSMutableArray *autoCreatedAlbums = [context executeFetchRequest:request error:&error].mutableCopy;
                             for (PLPhotoObject *newPhoto in newPhotos) {
-                                NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:newPhoto.date];
+                                NSDate *adjustedDate = [PADateFormatter adjustZeroClock:newPhoto.date];
                                 BOOL isDetected = NO;
                                 for (PLAlbumObject *album in autoCreatedAlbums.reverseObjectEnumerator) {
                                     if ([album.tag_date isEqualToDate:adjustedDate]) {
@@ -371,7 +371,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     // 前日に撮った写真からアルバム作成
                     @autoreleasepool {
                         if (sself.autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
-                            NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:date];
+                            NSDate *adjustedDate = [PADateFormatter adjustZeroClock:date];
                             NSDate *yesterday = [adjustedDate dateByAddingTimeInterval: - 24.0f * 60.0f * 60.0f];
                             
                             NSFetchRequest *request = [NSFetchRequest new];
@@ -457,8 +457,8 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
 
 + (PLAlbumObject *)makeNewAutoCreateAlbumWithEnumurateDate:(NSDate *)enumurateDate adjustedDate:(NSDate *)adjustedDate context:(NSManagedObjectContext *)context {
     PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
-    album.id_str = [PWSnowFlake generateUniqueIDString];
-    album.name = [[PLDateFormatter formatter] stringFromDate:adjustedDate];
+    album.id_str = [PASnowFlake generateUniqueIDString];
+    album.name = [[PADateFormatter formatter] stringFromDate:adjustedDate];
     album.tag_date = adjustedDate;
     album.timestamp = @((long long)([adjustedDate timeIntervalSince1970]) * 1000);
     album.import = enumurateDate;

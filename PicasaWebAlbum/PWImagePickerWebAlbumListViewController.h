@@ -8,6 +8,8 @@
 
 @import UIKit;
 
-@interface PWImagePickerWebAlbumListViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PWImagePickerWebAlbumListViewController : PABaseViewController
 
 @end

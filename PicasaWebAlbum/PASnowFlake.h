@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@interface PWSnowFlake : NSObject
+@interface PASnowFlake : NSObject
 
 + (unsigned long long)generateUniqueID;
 + (NSString *)generateUniqueIDString;

@@ -8,7 +8,9 @@
 
 @import UIKit;
 
-@interface PLAutoCreateAlbumViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PLAutoCreateAlbumViewController : PABaseViewController
 
 @property (copy, nonatomic) void (^completion)();
 

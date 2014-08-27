@@ -8,7 +8,9 @@
 
 @import UIKit;
 
-@interface PWSelectItemFromArrayViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+#import "PABaseViewController.h"
+
+@interface PWSelectItemFromArrayViewController : PABaseViewController
 
 @property (copy, nonatomic) void (^doneBlock)(NSString *selectedItem);
 @property (copy, nonatomic) void (^changeValueBlock)(NSString *selectedItem);

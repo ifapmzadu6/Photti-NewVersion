@@ -8,6 +8,8 @@
 
 @import UIKit;
 
+#import "PABaseNavigationController.h"
+
 typedef enum _PWSettingsViewControllerInitType {
     PWSettingsViewControllerInitTypeDefault,
     PWSettingsViewControllerInitTypeLocal,
@@ -15,7 +17,7 @@ typedef enum _PWSettingsViewControllerInitType {
     PWSettingsViewControllerInitTypeTaskManager
 } PWSettingsViewControllerInitType;
 
-@interface PWSettingsViewController : UINavigationController
+@interface PWSettingsViewController : PABaseNavigationController
 
 - (id)initWithInitType:(PWSettingsViewControllerInitType)type;
 

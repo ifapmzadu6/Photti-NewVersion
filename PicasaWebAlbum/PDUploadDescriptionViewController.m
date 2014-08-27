@@ -8,8 +8,8 @@
 
 #import "PDUploadDescriptionViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PDTaskManager.h"
 #import "PWTabBarAdsController.h"
 
@@ -43,7 +43,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -53,10 +53,10 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"UploadLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height == 480)) {
-        _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.1f];
+        _iconImageView.tintColor = [[PAColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.1f];
     }
     else {
-        _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.667f];
+        _iconImageView.tintColor = [[PAColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.667f];
     }
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
@@ -69,7 +69,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     else {
         _uploadSettingLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _uploadSettingLabel.textColor = [PWColors getColor:PWColorsTypeTextLightSubColor];
+    _uploadSettingLabel.textColor = [PAColors getColor:PWColorsTypeTextLightSubColor];
     _uploadSettingLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_uploadSettingLabel];
     
@@ -81,7 +81,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     else {
         _unlimitedLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _unlimitedLabel.textColor = [PWColors getColor:PWColorsTypeTintUploadColor];
+    _unlimitedLabel.textColor = [PAColors getColor:PWColorsTypeTintUploadColor];
     _unlimitedLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_unlimitedLabel];
     
@@ -93,7 +93,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     else {
         _unlimitedDescriptionLabel.font = [UIFont systemFontOfSize:16.0f];
     }
-    _unlimitedDescriptionLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
+    _unlimitedDescriptionLabel.textColor = [PAColors getColor:PWColorsTypeTextLightColor];
     _unlimitedDescriptionLabel.textAlignment = NSTextAlignmentCenter;
     _unlimitedDescriptionLabel.numberOfLines = 0;
     [self.view addSubview:_unlimitedDescriptionLabel];
@@ -107,12 +107,12 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
         _unlimitedButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_unlimitedButton setTitle:NSLocalizedString(@"Resizing", nil) forState:UIControlStateNormal];
-    [_unlimitedButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
+    [_unlimitedButton setTitleColor:[PAColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
     [_unlimitedButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [_unlimitedButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
     [_unlimitedButton setBackgroundImage:nil forState:UIControlStateNormal];
-    [_unlimitedButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateSelected];
-    [_unlimitedButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateHighlighted];
+    [_unlimitedButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateSelected];
+    [_unlimitedButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateHighlighted];
     _unlimitedButton.clipsToBounds = YES;
     _unlimitedButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintUploadColor].CGColor;
     _unlimitedButton.layer.borderWidth = 1.0f;
@@ -129,7 +129,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
         _highResolutionLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     _highResolutionLabel.textAlignment = NSTextAlignmentCenter;
-    _highResolutionLabel.textColor = [PWColors getColor:PWColorsTypeTintUploadColor];
+    _highResolutionLabel.textColor = [PAColors getColor:PWColorsTypeTintUploadColor];
     [self.view addSubview:_highResolutionLabel];
     
     _highResolutionDescriptionLabel = [UITextView new];
@@ -152,7 +152,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     else {
         _highResolutionDescriptionLabel.font = [UIFont systemFontOfSize:16.0f];
     }
-    _highResolutionDescriptionLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
+    _highResolutionDescriptionLabel.textColor = [PAColors getColor:PWColorsTypeTextLightColor];
     _highResolutionDescriptionLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_highResolutionDescriptionLabel];
     
@@ -165,12 +165,12 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
         _highResolutionButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_highResolutionButton setTitle:NSLocalizedString(@"Original", nil) forState:UIControlStateNormal];
-    [_highResolutionButton setTitleColor:[PWColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
+    [_highResolutionButton setTitleColor:[PAColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
     [_highResolutionButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [_highResolutionButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
     [_highResolutionButton setBackgroundImage:nil forState:UIControlStateNormal];
-    [_highResolutionButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateSelected];
-    [_highResolutionButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateHighlighted];
+    [_highResolutionButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateSelected];
+    [_highResolutionButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintUploadColor]] forState:UIControlStateHighlighted];
     _highResolutionButton.clipsToBounds = YES;
     _highResolutionButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintUploadColor].CGColor;
     _highResolutionButton.layer.borderWidth = 1.0f;

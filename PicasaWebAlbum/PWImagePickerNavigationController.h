@@ -8,7 +8,9 @@
 
 @import UIKit;
 
-@interface PWImagePickerNavigationController : UINavigationController
+#import "PABaseNavigationController.h"
+
+@interface PWImagePickerNavigationController : PABaseNavigationController
 
 @property (strong, nonatomic) NSString *titleOnNavigationBar;
 

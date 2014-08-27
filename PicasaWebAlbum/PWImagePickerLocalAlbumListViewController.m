@@ -8,19 +8,19 @@
 
 #import "PWImagePickerLocalAlbumListViewController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLAlbumViewCell.h"
 #import "PLCollectionFooterView.h"
-#import "PWAlbumCollectionViewFlowLayout.h"
+#import "PAAlbumCollectionViewFlowLayout.h"
 #import "PWImagePickerController.h"
 #import <BlocksKit+UIKit.h>
 #import "PLModelObject.h"
 
 #import "PWImagePickerLocalPhotoListViewController.h"
 
-@interface PWImagePickerLocalAlbumListViewController ()
+@interface PWImagePickerLocalAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
@@ -43,7 +43,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    PWAlbumCollectionViewFlowLayout *collectionViewLayout = [[PWAlbumCollectionViewFlowLayout alloc] init];
+    PAAlbumCollectionViewFlowLayout *collectionViewLayout = [[PAAlbumCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
@@ -52,11 +52,11 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.scrollsToTop = NO;
     _collectionView.clipsToBounds = NO;
-    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     
     _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_indicatorView];
@@ -214,7 +214,7 @@
     if (!_noItemImageView) {
         _noItemImageView = [UIImageView new];
         _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.tintColor = [[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
         _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
     }

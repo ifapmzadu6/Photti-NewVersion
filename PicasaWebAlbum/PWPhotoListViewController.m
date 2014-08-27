@@ -9,10 +9,10 @@
 #import "PWPhotoListViewController.h"
 
 #import "PWPicasaAPI.h"
-#import "PWColors.h"
-#import "PWIcons.h"
-#import "PWString.h"
-#import "PWSnowFlake.h"
+#import "PAColors.h"
+#import "PAIcons.h"
+#import "PAString.h"
+#import "PASnowFlake.h"
 #import "PWRefreshControl.h"
 #import "PDTaskManager.h"
 #import <BlocksKit+UIKit.h>
@@ -21,11 +21,11 @@
 
 #import "PWPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
-#import "PWPhotoCollectionViewFlowLayout.h"
+#import "PAPhotoCollectionViewFlowLayout.h"
 #import "PWTabBarAdsController.h"
 #import "PWNavigationController.h"
 #import "PWPhotoPageViewController.h"
-#import "PWBaseNavigationController.h"
+#import "PABaseNavigationController.h"
 #import "PWAlbumEditViewController.h"
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
@@ -86,22 +86,22 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     [super viewDidLoad];
     
     PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
-    [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
+    [tabBarController setToolbarTintColor:[PAColors getColor:PWColorsTypeTintWebColor]];
     
-    PWPhotoCollectionViewFlowLayout *collectionViewLayout = [[PWPhotoCollectionViewFlowLayout alloc] init];
+    PAPhotoCollectionViewFlowLayout *collectionViewLayout = [[PAPhotoCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
     [_collectionView registerClass:[PWPhotoViewCell class] forCellWithReuseIdentifier:@"Cell"];
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
-    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
-    _refreshControl.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    _refreshControl.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
     [_collectionView addSubview:_refreshControl];
     
@@ -192,7 +192,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
-    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
+    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PAIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
     PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
@@ -496,7 +496,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         NSArray *photos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypePhoto)]];
         NSArray *videos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypeVideo)]];
         
-        NSString *albumCountString = [PWString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
+        NSString *albumCountString = [PAString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
         [footerView setText:albumCountString];
     }
     else {
@@ -575,7 +575,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, _trashBarButtonItem];
     PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
-    [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:PWColorsTypeTintWebColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
@@ -589,7 +589,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
-    [tabBarController setActionNavigationTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:PWColorsTypeTintWebColor]];
     [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
@@ -762,7 +762,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             sself.navigationItem.title = album.title;
         });
     };
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
@@ -777,7 +777,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             [_collectionView reloadItemsAtIndexPaths:_collectionView.indexPathsForVisibleItems];
         });
     };
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
@@ -869,7 +869,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete %@?", nil), [PWString photoAndVideoStringWithPhotoCount:countOfPhoto videoCount:countOfVideo]]];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete %@?", nil), [PAString photoAndVideoStringWithPhotoCount:countOfPhoto videoCount:countOfVideo]]];
         [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
             typeof(wself) sself = wself;
             if (!sself) return;
@@ -940,7 +940,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 + (NSString *)makeUniquePathInTmpDir {
     NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
     NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
-    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PWSnowFlake generateUniqueIDString]];
+    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PASnowFlake generateUniqueIDString]];
     
     return filePath;
 }
@@ -968,7 +968,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     if (!_noItemImageView) {
         _noItemImageView = [UIImageView new];
         _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.tintColor = [[PAColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.2f];
         _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
     }

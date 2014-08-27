@@ -8,14 +8,14 @@
 
 #import "PWImagePickerLocalAllPhotoViewController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 #import "PLPhotoViewCell.h"
 #import "PLPhotoViewHeaderView.h"
 #import "PLCollectionFooterView.h"
-#import "PWPhotoCollectionViewFlowLayout.h"
+#import "PAPhotoCollectionViewFlowLayout.h"
 #import "PWImagePickerController.h"
-#import "PWString.h"
-#import "PLDateFormatter.h"
+#import "PAString.h"
+#import "PADateFormatter.h"
 #import "PLAssetsManager.h"
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
@@ -44,7 +44,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    PWPhotoCollectionViewFlowLayout *collectionViewLayout = [[PWPhotoCollectionViewFlowLayout alloc] init];
+    PAPhotoCollectionViewFlowLayout *collectionViewLayout = [[PAPhotoCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
@@ -54,7 +54,7 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.scrollsToTop = NO;
     _collectionView.clipsToBounds = NO;
-    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.allowsMultipleSelection = YES;
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
@@ -154,7 +154,7 @@
         id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[indexPath.section];
         NSArray *filteredPhotoObjects = [sectionInfo.objects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypePhoto]];
         NSArray *filteredVideoObjects = [sectionInfo.objects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypeVideo]];
-        [headerView setDetail:[PWString photoAndVideoStringWithPhotoCount:filteredPhotoObjects.count videoCount:filteredVideoObjects.count]];
+        [headerView setDetail:[PAString photoAndVideoStringWithPhotoCount:filteredPhotoObjects.count videoCount:filteredVideoObjects.count]];
         __weak typeof(self) wself = self;
         [headerView setSelectButtonActionBlock:^{
         }];
@@ -304,7 +304,7 @@
     if (!_noItemImageView) {
         _noItemImageView = [UIImageView new];
         _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.tintColor = [[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
         _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
     }

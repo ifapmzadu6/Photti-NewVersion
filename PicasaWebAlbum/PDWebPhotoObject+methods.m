@@ -13,7 +13,7 @@
 #import "PWPicasaAPI.h"
 #import "PWCoreDataAPI.h"
 #import "PWModelObject.h"
-#import "PWSnowFlake.h"
+#import "PASnowFlake.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
@@ -272,7 +272,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 #pragma mark MakeData
 + (PLAlbumObject *)makeNewLocalAlbumWithWebAlbum:(PWAlbumObject *)webAlbumObject context:(NSManagedObjectContext *)context {
     PLAlbumObject *localAlbumObject = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
-    localAlbumObject.id_str = [PWSnowFlake generateUniqueIDString];
+    localAlbumObject.id_str = [PASnowFlake generateUniqueIDString];
     localAlbumObject.name = webAlbumObject.title;
     localAlbumObject.tag_date = [NSDate dateWithTimeIntervalSince1970:webAlbumObject.gphoto.timestamp.longLongValue / 1000];
     localAlbumObject.timestamp = @(webAlbumObject.gphoto.timestamp.longLongValue);

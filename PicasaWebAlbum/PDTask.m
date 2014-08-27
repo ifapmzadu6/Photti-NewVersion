@@ -14,7 +14,7 @@
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
-#import "PWSnowFlake.h"
+#import "PASnowFlake.h"
 #import "PWPicasaAPI.h"
 
 @interface PDTask ()

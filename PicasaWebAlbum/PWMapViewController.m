@@ -9,7 +9,7 @@
 @import MapKit;
 
 #import "PWMapViewController.h"
-#import "PWNetworkActivityIndicator.h"
+#import "PANetworkActivityIndicator.h"
 #import <BlocksKit+UIKit.h>
 
 static NSString * const kPWMapViewControllerAppleMapURL = @"http://maps.apple.com";
@@ -186,11 +186,11 @@ static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.c
 }
 
 - (void)mapViewWillStartLoadingMap:(MKMapView *)mapView {
-	[PWNetworkActivityIndicator increment];
+	[PANetworkActivityIndicator increment];
 }
 
 - (void)mapViewDidFinishLoadingMap:(MKMapView *)mapView {
-	[PWNetworkActivityIndicator decrement];
+	[PANetworkActivityIndicator decrement];
 }
 
 @end

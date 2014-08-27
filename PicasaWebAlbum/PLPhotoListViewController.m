@@ -8,18 +8,18 @@
 
 #import "PLPhotoListViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
-#import "PWString.h"
+#import "PAColors.h"
+#import "PAIcons.h"
+#import "PAString.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 #import "PLPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
-#import "PWPhotoCollectionViewFlowLayout.h"
+#import "PAPhotoCollectionViewFlowLayout.h"
 #import "PWTabBarAdsController.h"
 #import "PLPhotoPageViewController.h"
-#import "PWBaseNavigationController.h"
+#import "PABaseNavigationController.h"
 #import "PLAlbumEditViewController.h"
 #import <BlocksKit+UIKit.h>
 #import "PDTaskManager.h"
@@ -66,14 +66,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    PWPhotoCollectionViewFlowLayout *collectionViewLayout = [[PWPhotoCollectionViewFlowLayout alloc] init];
+    PAPhotoCollectionViewFlowLayout *collectionViewLayout = [[PAPhotoCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
     [_collectionView registerClass:[PLPhotoViewCell class] forCellWithReuseIdentifier:@"Cell"];
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         _collectionView.contentInset = UIEdgeInsetsMake(20.0f, 20.0f, 20.0f, 20.0f);
     }
@@ -96,14 +96,14 @@
     
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
-    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PWIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
+    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PAIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
     PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
-        [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
+        [tabBarController setToolbarTintColor:[PAColors getColor:PWColorsTypeTintLocalColor]];
         __weak typeof(self) wself = self;
         [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
             typeof(wself) sself = wself;
@@ -389,7 +389,7 @@
         NSArray *photos = [_album.photos.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypePhoto]];
         NSArray *videos = [_album.photos.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypeVideo]];
         
-        NSString *albumCountString = [PWString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
+        NSString *albumCountString = [PAString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
         [footerView setText:albumCountString];
     }
     else {
@@ -485,7 +485,7 @@
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, fixedBarButtonItem, _trashBarButtonItem];
     PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
-    [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:PWColorsTypeTintLocalColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
@@ -502,7 +502,7 @@
     [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
     [navigationItem setRightBarButtonItem:_selectAllBarButtonItem animated:NO];
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
-    [tabBarController setActionNavigationTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:PWColorsTypeTintLocalColor]];
     [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
@@ -624,7 +624,7 @@
             sself.navigationItem.title = name;
         });
     };
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
@@ -695,7 +695,7 @@
     if (!_noItemImageView) {
         _noItemImageView = [UIImageView new];
         _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.tintColor = [[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
         _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
     }

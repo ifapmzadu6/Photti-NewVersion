@@ -9,6 +9,8 @@
 @import UIKit;
 @import CoreData;
 
-@interface PWAlbumPickerWebAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+#import "PABaseViewController.h"
+
+@interface PWAlbumPickerWebAlbumListViewController : PABaseViewController
 
 @end

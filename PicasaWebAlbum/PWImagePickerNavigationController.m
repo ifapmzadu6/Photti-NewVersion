@@ -8,7 +8,7 @@
 
 #import "PWImagePickerNavigationController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 
 @interface PWImagePickerNavigationController ()
 
@@ -20,7 +20,7 @@
     [super viewDidLoad];
     
     self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor whiteColor]};
-    self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
+    self.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintUploadColor];
     self.navigationBar.barTintColor = [UIColor blackColor];
 }
 

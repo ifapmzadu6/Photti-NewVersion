@@ -8,9 +8,11 @@
 
 @import UIKit;
 
-#import "PWPicasaAPI.h"
+#import "PABaseViewController.h"
 
-@interface PWAlbumShareViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@class PWAlbumObject;
+
+@interface PWAlbumShareViewController : PABaseViewController
 
 @property (copy, nonatomic) void (^changedAlbumBlock)();
 

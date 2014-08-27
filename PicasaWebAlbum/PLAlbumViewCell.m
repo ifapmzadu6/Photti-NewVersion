@@ -8,9 +8,9 @@
 
 #import "PLAlbumViewCell.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
-#import "PLDateFormatter.h"
+#import "PAColors.h"
+#import "PAIcons.h"
+#import "PADateFormatter.h"
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
 #import "PLAssetsManager.h"
@@ -49,7 +49,7 @@
 }
 
 - (void)initializetion {
-    self.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
+    self.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundColor];
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.contentView addSubview:_activityIndicatorView];
@@ -57,12 +57,12 @@
     _imageView = [UIImageView new];
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
-    _imageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.4f];
+    _imageView.tintColor = [[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.4f];
     [self.contentView addSubview:_imageView];
     
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:14.5f];
-    _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+    _titleLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
     _titleLabel.numberOfLines = 2;
     [self.contentView addSubview:_titleLabel];
     
@@ -76,8 +76,8 @@
     _actionButton = [UIButton new];
     [_actionButton addTarget:self action:@selector(actionButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _actionButton.hitEdgeInsets = UIEdgeInsetsMake(-4.0f, -10.0f, -4.0f, 0.0f);
-    [_actionButton setImage:[PWIcons albumActionButtonIconWithColor:[PWColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateNormal];
-    [_actionButton setBackgroundImage:[PWIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.05f]] forState:UIControlStateHighlighted];
+    [_actionButton setImage:[PAIcons albumActionButtonIconWithColor:[PAColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateNormal];
+    [_actionButton setBackgroundImage:[PAIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.05f]] forState:UIControlStateHighlighted];
     [self.contentView addSubview:_actionButton];
     
     _overrayView = [UIView new];

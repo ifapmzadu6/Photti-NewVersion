@@ -8,9 +8,9 @@
 
 @import UIKit;
 
-#import "PWBaseNavigationController.h"
+#import "PABaseNavigationController.h"
 
-@interface PWSearchNavigationController : PWBaseNavigationController 
+@interface PWSearchNavigationController : PABaseNavigationController 
 
 - (void)openSearchBarWithCancelBlock:(void (^)())cancelBlock;
 - (void)closeSearchBarWithCompletion:(void (^)())completion;

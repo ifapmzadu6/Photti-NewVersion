@@ -10,12 +10,12 @@
 
 #import "PWPhotoViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PWPicasaAPI.h"
 #import "PWImageScrollView.h"
 #import "PWTabBarController.h"
-#import "PWNetworkActivityIndicator.h"
+#import "PANetworkActivityIndicator.h"
 #import <Reachability.h>
 #import <FLAnimatedImage.h>
 #import <SDImageCache.h>
@@ -86,11 +86,11 @@
         [_videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
             _videoButton.frame = CGRectMake(0.0f, 0.0f, 92.0f, 92.0f);
-            [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:92.0f] forState:UIControlStateNormal];
+            [_videoButton setImage:[PAIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:92.0f] forState:UIControlStateNormal];
         }
         else {
             _videoButton.frame = CGRectMake(0.0f, 0.0f, 170.0f, 170.0f);
-            [_videoButton setImage:[PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:170.0f] forState:UIControlStateNormal];
+            [_videoButton setImage:[PAIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:170.0f] forState:UIControlStateNormal];
         }
         _videoButton.exclusiveTouch = YES;
         [self.view addSubview:_videoButton];
@@ -220,7 +220,7 @@
     [_moviePlayerController.view addSubview:_moviePlayerPlaceholderView];
     
     UIImageView *videoButtonImageView = [UIImageView new];
-    videoButtonImageView.image = [PWIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:92.0f];
+    videoButtonImageView.image = [PAIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:92.0f];
     videoButtonImageView.frame = CGRectMake(0.0f, 0.0f, 92.0f, 92.0f);
     videoButtonImageView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
     videoButtonImageView.center = _moviePlayerPlaceholderView.center;
@@ -292,19 +292,19 @@
             return;
         }
         
-        [PWNetworkActivityIndicator increment];
+        [PANetworkActivityIndicator increment];
         
         [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
                 NSLog(@"%@", error);
-                [PWNetworkActivityIndicator decrement];
+                [PANetworkActivityIndicator decrement];
                 return;
             }
             typeof(wself) sself = wself;
             if (!sself) return;
             
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                [PWNetworkActivityIndicator decrement];
+                [PANetworkActivityIndicator decrement];
                 if (error) {
                     NSLog(@"%@", error);
                     return;
@@ -356,7 +356,7 @@
         return;
     }
     
-    [PWNetworkActivityIndicator increment];
+    [PANetworkActivityIndicator increment];
     NSURL *url = [NSURL URLWithString:urlString];
     __weak typeof(self) wself = self;
     [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
@@ -364,12 +364,12 @@
         if (!sself) return;
         if (error) {
             NSLog(@"%@", error);
-            [PWNetworkActivityIndicator decrement];
+            [PANetworkActivityIndicator decrement];
             return;
         }
         
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            [PWNetworkActivityIndicator decrement];
+            [PANetworkActivityIndicator decrement];
             if (error) {
                 return;
             }

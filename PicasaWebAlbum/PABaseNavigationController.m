@@ -6,21 +6,21 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWBaseNavigationController.h"
+#import "PABaseNavigationController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 
-@interface PWBaseNavigationController () <UINavigationControllerDelegate>
+@interface PABaseNavigationController () <UINavigationControllerDelegate>
 
 @end
 
-@implementation PWBaseNavigationController
+@implementation PABaseNavigationController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
-    self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
+    self.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+    self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PWColorsTypeTextColor]};
     
     self.delegate = self;
 }

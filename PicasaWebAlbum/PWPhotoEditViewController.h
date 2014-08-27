@@ -8,9 +8,11 @@
 
 @import UIKit;
 
+#import "PABaseViewController.h"
+
 @class PWPhotoObject;
 
-@interface PWPhotoEditViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface PWPhotoEditViewController : PABaseViewController
 
 - (id)initWithPhoto:(PWPhotoObject *)photo;
 

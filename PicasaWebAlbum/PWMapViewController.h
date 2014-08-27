@@ -8,7 +8,9 @@
 
 @import UIKit;
 
-@interface PWMapViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PWMapViewController : PABaseViewController
 
 - (id)initWithImage:(UIImage *)image latitude:(double)latitude longitude:(double)longitude;
 

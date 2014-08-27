@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@interface PLDateFormatter : NSObject
+@interface PADateFormatter : NSObject
 
 + (NSDateFormatter *)formatter;
 + (NSDateFormatter *)mmmddFormatter;

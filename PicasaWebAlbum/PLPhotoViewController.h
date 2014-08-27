@@ -8,9 +8,11 @@
 
 @import UIKit;
 
+#import "PABaseViewController.h"
+
 @class PLPhotoObject;
 
-@interface PLPhotoViewController : UIViewController
+@interface PLPhotoViewController : PABaseViewController
 
 - (id)initWithPhoto:(PLPhotoObject *)photo;
 

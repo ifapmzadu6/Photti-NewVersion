@@ -8,6 +8,8 @@
 
 @import UIKit;
 
-@interface PDNavigationController : UINavigationController
+#import "PABaseNavigationController.h"
+
+@interface PDNavigationController : PABaseNavigationController
 
 @end

@@ -8,7 +8,9 @@
 
 @import UIKit;
 
-@interface PLAccessPhotoLibraryViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PLAccessPhotoLibraryViewController : PABaseViewController
 
 @property (copy, nonatomic) void (^completion)();
 

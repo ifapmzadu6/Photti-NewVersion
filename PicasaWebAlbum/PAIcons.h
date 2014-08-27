@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@interface PWIcons : NSObject
+@interface PAIcons : NSObject
 
 + (UIImage *)imageWithColor:(UIColor *)color;
 + (UIImage *)imageWithImage:(UIImage *)image insets:(UIEdgeInsets)insets;

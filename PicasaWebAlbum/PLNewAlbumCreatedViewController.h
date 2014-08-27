@@ -9,7 +9,9 @@
 @import UIKit;
 @import CoreData;
 
-@interface PLNewAlbumCreatedViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PLNewAlbumCreatedViewController : PABaseViewController
 
 - (id)initWithEnumuratedDate:(NSDate *)date;
 

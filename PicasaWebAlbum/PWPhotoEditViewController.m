@@ -8,7 +8,7 @@
 
 #import "PWPhotoEditViewController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 #import "PWPicasaAPI.h"
 #import <SDImageCache.h>
 
@@ -58,7 +58,7 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
 } PWPhotoEditViewControllerDESCRIPTIONType;
 
 
-@interface PWPhotoEditViewController ()
+@interface PWPhotoEditViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) PWPhotoObject *photo;
 
@@ -90,7 +90,7 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_tableView];
 }
 
@@ -145,7 +145,7 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
         cell.textLabel.font = [UIFont systemFontOfSize:15.0f];
-        cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+        cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
         cell.detailTextLabel.font = [UIFont systemFontOfSize:15.0f];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }

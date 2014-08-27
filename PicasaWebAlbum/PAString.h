@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@interface PWString : NSObject
+@interface PAString : NSObject
 
 + (NSString *)itemNameFromPhotoCount:(NSUInteger)photoCount videoCount:(NSUInteger)videoCount;
 

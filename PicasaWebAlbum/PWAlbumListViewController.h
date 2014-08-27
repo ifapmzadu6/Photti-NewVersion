@@ -9,6 +9,8 @@
 @import UIKit;
 @import CoreData;
 
-@interface PWAlbumListViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PWAlbumListViewController : PABaseViewController
 
 @end

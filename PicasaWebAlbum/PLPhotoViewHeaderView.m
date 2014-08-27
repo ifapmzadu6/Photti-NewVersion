@@ -8,7 +8,7 @@
 
 #import "PLPhotoViewHeaderView.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 #import "UIButton+HitEdgeInsets.h"
 
 @interface PLPhotoViewHeaderView ()
@@ -41,24 +41,24 @@
 }
 
 - (void)initialization {
-    self.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
+    self.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundColor];
     
     _textLabel = [UILabel new];
     _textLabel.font = [UIFont systemFontOfSize:15.0f];
-    _textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+    _textLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
     [self addSubview:_textLabel];
     
     _detailLabel = [UILabel new];
     _detailLabel.font = [UIFont systemFontOfSize:13.0f];
-    _detailLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
+    _detailLabel.textColor = [PAColors getColor:PWColorsTypeTextLightColor];
     [self addSubview:_detailLabel];
     
     _selectButton = [UIButton new];
     [_selectButton addTarget:self action:@selector(selectButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _selectButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
     [_selectButton setTitle:NSLocalizedString(@"Select", nil) forState:UIControlStateNormal];
-    [_selectButton setTitleColor:[PWColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateNormal];
-    [_selectButton setTitleColor:[[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
+    [_selectButton setTitleColor:[PAColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateNormal];
+    [_selectButton setTitleColor:[[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
     _selectButton.hitEdgeInsets = UIEdgeInsetsMake(0.0f, -30.0f, 0.0f, 0.0f);
     _selectButton.exclusiveTouch = YES;
     [self addSubview:_selectButton];

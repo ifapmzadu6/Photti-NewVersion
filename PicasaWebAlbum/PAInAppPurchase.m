@@ -6,26 +6,26 @@
 //  Copyright (c) 2013年 Shin NAGATA. All rights reserved.
 //
 
-#import "PDInAppPurchase.h"
+#import "PAInAppPurchase.h"
 
 #import "SFHFKeychainUtils.h"
 
 static NSString * const kServiceName = @"com.photti.picasawebalbum";
 static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
 
-@interface PDInAppPurchase ()
+@interface PAInAppPurchase () <SKPaymentTransactionObserver, SKProductsRequestDelegate>
 
 @property (copy, nonatomic) void (^getProductsCompletionBlock)(NSArray *, NSError *);
 
 @end
 
-@implementation PDInAppPurchase
+@implementation PAInAppPurchase
 
-+ (PDInAppPurchase *)sharedInstance {
-    static PDInAppPurchase *sharedInstance = nil;
++ (PAInAppPurchase *)sharedInstance {
+    static PAInAppPurchase *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInstance = [PDInAppPurchase new];
+        sharedInstance = [PAInAppPurchase new];
     });
     return sharedInstance;
 }
@@ -43,7 +43,7 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
 }
 
 + (void)getProductsWithProductIDs:(NSArray *)productIDs completion:(void (^)(NSArray *, NSError*))completion {
-    [PDInAppPurchase sharedInstance].getProductsCompletionBlock = completion;
+    [PAInAppPurchase sharedInstance].getProductsCompletionBlock = completion;
     SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithArray:productIDs]];
     productsRequest.delegate = [PDInAppPurchase sharedInstance];
     [productsRequest start];
@@ -51,7 +51,7 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
 
 + (bool)isPurchasedWithProduct:(SKProduct *)product {
     NSString *key = product.productIdentifier;
-    return [PDInAppPurchase isPurchasedWithKey:key];
+    return [PAInAppPurchase isPurchasedWithKey:key];
 }
 
 + (bool)isPurchasedWithKey:(NSString *)key {
@@ -60,7 +60,7 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
     if(error || !password || password.length == 0) {
         return false;
     }
-    return ([password isEqualToString:[PDInAppPurchase hashKey:key]]);
+    return ([password isEqualToString:[PAInAppPurchase hashKey:key]]);
 }
 
 + (NSString *)hashKey:(NSString *)key {

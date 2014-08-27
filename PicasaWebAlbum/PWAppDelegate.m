@@ -21,10 +21,10 @@
 
 #import "PDTaskManager.h"
 #import "PLAssetsManager.h"
-#import "PLDateFormatter.h"
-#import "PDInAppPurchase.h"
+#import "PADateFormatter.h"
+#import "PAInAppPurchase.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 #import "PWPicasaAPI.h"
 
 @implementation PWAppDelegate
@@ -46,7 +46,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     // Crashlytics
-    [Crashlytics startWithAPIKey:@"e304869e1f84a6d87002a3e24fd4a640cfff713f"];
+    [Crashlytics startWithAPIKey:CLASHLYTICSID];
     
     // Appirater
     [Appirater setAppId:APPID];
@@ -57,9 +57,9 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     
     // Google Analytics
     [GAI sharedInstance].trackUncaughtExceptions = YES;
-    [GAI sharedInstance].dispatchInterval = 20;
-    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
-    [[GAI sharedInstance] trackerWithTrackingId:@"UA-53899497-2"];
+    [GAI sharedInstance].dispatchInterval = 30;
+//    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
+    [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
     [[[GAI sharedInstance] defaultTracker] setAllowIDFACollection:YES];
     
     
@@ -72,10 +72,10 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
         initialTabPageIndex = 0;
     }
     NSArray *viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
-    NSArray *colors = @[[PWColors getColor:PWColorsTypeTintLocalColor], [PWColors getColor:PWColorsTypeTintWebColor], [PWColors getColor:PWColorsTypeTintUploadColor]];
+    NSArray *colors = @[[PAColors getColor:PWColorsTypeTintLocalColor], [PAColors getColor:PWColorsTypeTintWebColor], [PAColors getColor:PWColorsTypeTintUploadColor]];
     
     PWTabBarAdsController *tabBarController = [[PWTabBarAdsController alloc] initWithIndex:initialTabPageIndex viewControllers:viewControllers colors:colors];
-    tabBarController.isRemoveAdsAddonPurchased = [PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
+    tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = tabBarController;
@@ -117,7 +117,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     [[PDTaskManager sharedManager] start];
     
     if ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
-        NSDate *adjustedDate = [PLDateFormatter adjustZeroClock:[NSDate date]];
+        NSDate *adjustedDate = [PADateFormatter adjustZeroClock:[NSDate date]];
         NSDate *beforeDate = [[NSUserDefaults standardUserDefaults] objectForKey:kPWAppDelegateBackgroundFetchDateKey];
         if (![adjustedDate isEqualToDate:beforeDate]) {
             [[NSUserDefaults standardUserDefaults] setObject:adjustedDate forKey:kPWAppDelegateBackgroundFetchDateKey];

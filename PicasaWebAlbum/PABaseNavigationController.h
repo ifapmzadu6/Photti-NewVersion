@@ -8,6 +8,6 @@
 
 @import UIKit;
 
-@interface PWBaseNavigationController : UINavigationController
+@interface PABaseNavigationController : UINavigationController
 
 @end

@@ -8,9 +8,11 @@
 
 @import UIKit;
 
+#import "PABaseViewController.h"
+
 @class PLAlbumObject;
 
-@interface PWImagePickerLocalPhotoListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface PWImagePickerLocalPhotoListViewController : PABaseViewController
 
 - (id)initWithAlbum:(PLAlbumObject *)album;
 

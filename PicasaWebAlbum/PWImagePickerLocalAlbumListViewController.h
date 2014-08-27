@@ -9,7 +9,9 @@
 @import UIKit;
 @import CoreData;
 
-@interface PWImagePickerLocalAlbumListViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
+#import "PABaseViewController.h"
+
+@interface PWImagePickerLocalAlbumListViewController : PABaseViewController
 
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 

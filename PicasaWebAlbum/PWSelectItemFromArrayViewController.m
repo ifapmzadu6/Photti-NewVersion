@@ -8,9 +8,9 @@
 
 #import "PWSelectItemFromArrayViewController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 
-@interface PWSelectItemFromArrayViewController ()
+@interface PWSelectItemFromArrayViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
 
@@ -37,7 +37,7 @@
     _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     _tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
@@ -82,7 +82,7 @@
         cell.textLabel.textColor = [UIColor colorWithWhite:0.7f alpha:1.0f];
     }
     else {
-        cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+        cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
     }
     
     return cell;

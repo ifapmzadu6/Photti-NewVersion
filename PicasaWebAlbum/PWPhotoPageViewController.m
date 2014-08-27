@@ -11,15 +11,15 @@
 
 #import "PWPhotoPageViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PWPicasaAPI.h"
 #import "PWPhotoViewController.h"
 #import "PWTabBarAdsController.h"
 #import <BlocksKit+UIKit.h>
 #import <Reachability.h>
 #import <SDImageCache.h>
-#import "PWBaseNavigationController.h"
+#import "PABaseNavigationController.h"
 #import "PWPhotoEditViewController.h"
 #import "PWMapViewController.h"
 #import "PWAlbumPickerController.h"
@@ -55,7 +55,7 @@
         self.delegate = self;
         self.dataSource = self;
         [self setViewControllers:@[[self makePhotoViewController:index placeholder:placeholder]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-        self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+        self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     }
     return self;
 }
@@ -67,9 +67,9 @@
     [self.view.subviews.firstObject setDelegate:(id)self];
     
     UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction)];
-    tagBarButtonItem.landscapeImagePhone = [PWIcons imageWithImage:[UIImage imageNamed:@"Tag"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    tagBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Tag"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
     UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction)];
-    pinBarButtonItem.landscapeImagePhone = [PWIcons imageWithImage:[UIImage imageNamed:@"PinIcon"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    pinBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"PinIcon"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
     self.navigationItem.rightBarButtonItems = @[pinBarButtonItem, tagBarButtonItem];
 }
 
@@ -335,7 +335,7 @@
 
 - (void)tagBarButtonAction {
     PWPhotoEditViewController *viewController = [[PWPhotoEditViewController alloc] initWithPhoto:_photos[_index]];
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -347,7 +347,7 @@
     NSString *longitude = strings.lastObject;
     UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:photo.tag_thumbnail_url];
     PWMapViewController *viewController = [[PWMapViewController alloc] initWithImage:image latitude:latitude.doubleValue longitude:longitude.doubleValue];
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self presentViewController:navigationController animated:YES completion:nil];
 }

@@ -10,11 +10,11 @@
 
 #import "PLPhotoViewCell.h"
 
-#import "PWIcons.h"
+#import "PAIcons.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
-#import "PLDateFormatter.h"
+#import "PADateFormatter.h"
 
 @interface PLPhotoViewCell ()
 
@@ -58,12 +58,12 @@
     [self.contentView addSubview:_imageView];
     
     _videoBackgroundView = [UIImageView new];
-    _videoBackgroundView.image = [PWIcons gradientVerticalFromColor:UIColor.clearColor toColor:UIColor.blackColor size:CGSizeMake(200.0f, 200.0f)];
+    _videoBackgroundView.image = [PAIcons gradientVerticalFromColor:UIColor.clearColor toColor:UIColor.blackColor size:CGSizeMake(200.0f, 200.0f)];
     _videoBackgroundView.hidden = YES;
     [self.contentView addSubview:_videoBackgroundView];
     
     _videoIconView = [UIImageView new];
-    _videoIconView.image = [PWIcons videoIconWithColor:[UIColor whiteColor] size:CGSizeMake(94.0f, 50.0f)];
+    _videoIconView.image = [PAIcons videoIconWithColor:[UIColor whiteColor] size:CGSizeMake(94.0f, 50.0f)];
     _videoIconView.contentMode = UIViewContentModeScaleAspectFit;
     _videoIconView.hidden = YES;
     [self.contentView addSubview:_videoIconView];
@@ -195,7 +195,7 @@
                 
                 if ([sself.photo.type isEqualToString:ALAssetTypeVideo]) {
                     _videoBackgroundView.hidden = NO;
-                    _videoDurationLabel.text = [PLDateFormatter arrangeDuration:_photo.duration.doubleValue];
+                    _videoDurationLabel.text = [PADateFormatter arrangeDuration:_photo.duration.doubleValue];
                     _videoDurationLabel.hidden = NO;
                     _videoIconView.hidden = NO;
                 }

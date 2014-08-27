@@ -12,20 +12,20 @@
 #import "PLAllPhotosViewController.h"
 #import "PLAlbumListViewController.h"
 #import "PLiCloudViewController.h"
-#import "PWBaseNavigationController.h"
+#import "PABaseNavigationController.h"
 #import "PLNewAlbumEditViewController.h"
 #import "PWTabBarAdsController.h"
 #import "PWSearchNavigationController.h"
 #import "PWSettingsViewController.h"
 #import "PWAlbumPickerController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PLCoreDataAPI.h"
 #import "PLAssetsManager.h"
 #import "PLModelObject.h"
-#import "PWSnowFlake.h"
-#import "PLDateFormatter.h"
+#import "PASnowFlake.h"
+#import "PADateFormatter.h"
 #import "PDTaskManager.h"
 #import <BlocksKit+UIKit.h>
 
@@ -59,7 +59,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor whiteColor];
-    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
     
     _myViewControllers = [self makeViewControllers];
     [self setViewControllers:@[_myViewControllers[1]]
@@ -174,7 +174,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     viewController.saveButtonBlock = ^(NSString *name, NSNumber *timestamp, NSNumber *uploading_type){
         [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
-            album.id_str = [PWSnowFlake generateUniqueIDString];
+            album.id_str = [PASnowFlake generateUniqueIDString];
             if (!name || [name isEqualToString:@""]) {
                 album.name = NSLocalizedString(@"New Album", nil);
             }
@@ -188,7 +188,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
             album.tag_type = @(PLAlbumObjectTagTypeMyself);
         }];
     };
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
@@ -394,7 +394,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[addBarButtonItem, searchBarButtonItem] animated:YES];
         UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
-        settingsBarButtonItem.landscapeImagePhone = [PWIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
+        settingsBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
         self.navigationItem.leftBarButtonItem = settingsBarButtonItem;
         [sself.navigationItem setLeftBarButtonItem:settingsBarButtonItem animated:YES];
         for (UIView *view in sself.navigationController.navigationBar.subviews) {
@@ -452,7 +452,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 //    UIBarButtonItem *selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     [tabBarController setActionToolbarItems:@[selectActionBarButtonItem, flexibleSpace, selectOrganizeBarButtonItem, flexibleSpace] animated:YES];
-    [tabBarController setActionToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:PWColorsTypeTintLocalColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
@@ -465,7 +465,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     navigationItem.leftBarButtonItem = selectCancelBarButtonItem;
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
-    [tabBarController setActionNavigationTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:PWColorsTypeTintLocalColor]];
     [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;

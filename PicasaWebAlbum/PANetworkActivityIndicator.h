@@ -8,11 +8,11 @@
 
 @import Foundation;
 
-@interface PWNetworkActivityIndicator : NSObject
+@interface PANetworkActivityIndicator : NSObject
 
 @property (nonatomic) NSUInteger numberOfConnection;
 
-+ (PWNetworkActivityIndicator *)sharedManager;
++ (PANetworkActivityIndicator *)sharedManager;
 
 + (void)increment;
 + (void)decrement;

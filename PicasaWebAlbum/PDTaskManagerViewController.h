@@ -9,6 +9,8 @@
 @import UIKit;
 @import CoreData;
 
-@interface PDTaskManagerViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
+#import "PABaseViewController.h"
+
+@interface PDTaskManagerViewController : PABaseViewController
 
 @end

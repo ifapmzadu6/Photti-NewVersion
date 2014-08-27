@@ -8,6 +8,6 @@
 
 @import UIKit;
 
-@interface PWPhotoCollectionViewFlowLayout : UICollectionViewFlowLayout
+@interface PAPhotoCollectionViewFlowLayout : UICollectionViewFlowLayout
 
 @end

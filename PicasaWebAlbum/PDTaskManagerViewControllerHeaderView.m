@@ -8,7 +8,7 @@
 
 #import "PDTaskManagerViewControllerHeaderView.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 
 @interface PDTaskManagerViewControllerHeaderView ()
 
@@ -38,7 +38,7 @@
 - (void)initialization {
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:13.0f];
-    _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
+    _titleLabel.textColor = [PAColors getColor:PWColorsTypeTextLightColor];
     [self addSubview:_titleLabel];
     
     _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];

@@ -9,7 +9,9 @@
 @import UIKit;
 @import CoreData;
 
-@interface PLAlbumListViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PLAlbumListViewController : PABaseViewController
 
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 

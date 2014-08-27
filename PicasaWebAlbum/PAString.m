@@ -6,9 +6,9 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWString.h"
+#import "PAString.h"
 
-@implementation PWString
+@implementation PAString
 
 + (NSString *)itemNameFromPhotoCount:(NSUInteger)photoCount videoCount:(NSUInteger)videoCount {
     if (photoCount > 0 && videoCount > 0) {

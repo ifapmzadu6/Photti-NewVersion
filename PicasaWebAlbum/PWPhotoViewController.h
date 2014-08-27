@@ -8,9 +8,11 @@
 
 @import UIKit;
 
+#import "PABaseViewController.h"
+
 @class PWPhotoObject;
 
-@interface PWPhotoViewController : UIViewController
+@interface PWPhotoViewController : PABaseViewController
 
 - (id)initWithPhoto:(PWPhotoObject *)photo placeholder:(id)placeholder cache:(NSCache *)cache;
 

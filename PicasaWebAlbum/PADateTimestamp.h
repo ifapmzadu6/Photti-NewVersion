@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@interface PWDateTimestamp : NSObject
+@interface PADateTimestamp : NSObject
 
 + (NSString *)timestampForDate:(NSDate *)date;
 + (NSNumber *)timestampByNumberForDate:(NSDate *)date;

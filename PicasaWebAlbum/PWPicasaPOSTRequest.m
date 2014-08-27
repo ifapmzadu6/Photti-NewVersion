@@ -70,7 +70,6 @@ static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/e
     }];
 }
 
-
 + (void)deletePhotoWithAlbumID:(NSString *)albumID photoID:(NSString *)photoID completion:(void (^)(NSData *, NSURLResponse *, NSError *))completion {
     [PWOAuthManager getAuthorizeHTTPHeaderFields:^(NSDictionary *headerFields, NSError *error) {
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/albumid/%@/photoid/%@", PWDeletePhotoURL, albumID, photoID]];

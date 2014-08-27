@@ -8,16 +8,16 @@
 
 #import "PWAlbumListViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PWPicasaAPI.h"
 #import "PWAlbumViewCell.h"
 #import "PWRefreshControl.h"
 #import "PLCollectionFooterView.h"
-#import "PWAlbumCollectionViewFlowLayout.h"
+#import "PAAlbumCollectionViewFlowLayout.h"
 #import <BlocksKit+UIKit.h>
 #import <Reachability.h>
-#import "PWSnowFlake.h"
+#import "PASnowFlake.h"
 #import <SDImageCache.h>
 
 #import "PDTaskManager.h"
@@ -28,7 +28,7 @@
 #import "PWPhotoListViewController.h"
 #import "PWSearchNavigationController.h"
 #import "PWTabBarAdsController.h"
-#import "PWBaseNavigationController.h"
+#import "PABaseNavigationController.h"
 #import "PWAlbumEditViewController.h"
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
@@ -67,10 +67,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
-    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
     
-    PWAlbumCollectionViewFlowLayout *collectionViewLayout = [[PWAlbumCollectionViewFlowLayout alloc] init];
+    PAAlbumCollectionViewFlowLayout *collectionViewLayout = [[PAAlbumCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
@@ -78,14 +78,14 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 10.0f, 0.0f, 10.0f);
-    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
-    _refreshControl.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+    _refreshControl.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -95,7 +95,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
     self.navigationItem.rightBarButtonItems = @[addBarButtonItem, searchBarButtonItem];
     UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
-    settingsBarButtonItem.landscapeImagePhone = [PWIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
+    settingsBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
     self.navigationItem.leftBarButtonItem = settingsBarButtonItem;
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
@@ -292,7 +292,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         
         [sself loadDataWithStartIndex:0];
     };
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
@@ -408,7 +408,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         
         [sself loadDataWithStartIndex:0];
     };
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
@@ -423,7 +423,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
         });
     };
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
@@ -518,7 +518,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     if (!_noItemImageView) {
         _noItemImageView = [UIImageView new];
         _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.tintColor = [[PAColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.2f];
         _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
     }

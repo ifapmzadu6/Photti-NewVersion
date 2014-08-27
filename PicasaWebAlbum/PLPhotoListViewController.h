@@ -9,9 +9,11 @@
 @import UIKit;
 @import CoreData;
 
+#import "PABaseViewController.h"
+
 @class PLAlbumObject;
 
-@interface PLPhotoListViewController : UIViewController
+@interface PLPhotoListViewController : PABaseViewController
 
 @property (strong, nonatomic, readonly) PLAlbumObject *album;
 

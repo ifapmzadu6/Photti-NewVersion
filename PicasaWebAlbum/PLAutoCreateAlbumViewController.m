@@ -8,8 +8,8 @@
 
 #import "PLAutoCreateAlbumViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PLAssetsManager.h"
 
 #import "PWSettingsViewController.h"
@@ -38,7 +38,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -48,10 +48,10 @@
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PictureLargeDay"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height == 480)) {
-        _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.1f];
+        _iconImageView.tintColor = [[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.1f];
     }
     else {
-        _iconImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.667f];
+        _iconImageView.tintColor = [[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.667f];
     }
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
@@ -64,7 +64,7 @@
     else {
         _titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _titleLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
+    _titleLabel.textColor = [PAColors getColor:PWColorsTypeTextLightColor];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_titleLabel];
     
@@ -76,7 +76,7 @@
     else {
         _descriptionLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _descriptionLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
+    _descriptionLabel.textColor = [PAColors getColor:PWColorsTypeTextLightColor];
     _descriptionLabel.textAlignment = NSTextAlignmentCenter;
     _descriptionLabel.numberOfLines = 0;
     [self.view addSubview:_descriptionLabel];
@@ -90,10 +90,10 @@
         _enableButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_enableButton setTitle:NSLocalizedString(@"Enable", nil) forState:UIControlStateNormal];
-    [_enableButton setTitleColor:[PWColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateHighlighted];
+    [_enableButton setTitleColor:[PAColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateHighlighted];
     [_enableButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_enableButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateNormal];
-    [_enableButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
+    [_enableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateNormal];
+    [_enableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _enableButton.clipsToBounds = YES;
     _enableButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
     _enableButton.layer.borderWidth = 1.0f;
@@ -110,9 +110,9 @@
         _disableButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_disableButton setTitle:NSLocalizedString(@"Disable", nil) forState:UIControlStateNormal];
-    [_disableButton setTitleColor:[PWColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateNormal];
+    [_disableButton setTitleColor:[PAColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateNormal];
     [_disableButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-    [_disableButton setBackgroundImage:[PWIcons imageWithColor:[PWColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateHighlighted];
+    [_disableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateHighlighted];
     _disableButton.clipsToBounds = YES;
     _disableButton.layer.borderColor = [PWColors getColor:PWColorsTypeTintLocalColor].CGColor;
     _disableButton.layer.borderWidth = 1.0f;

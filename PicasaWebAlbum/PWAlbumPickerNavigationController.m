@@ -8,7 +8,7 @@
 
 #import "PWAlbumPickerNavigationController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 
 @interface PWAlbumPickerNavigationController ()
 

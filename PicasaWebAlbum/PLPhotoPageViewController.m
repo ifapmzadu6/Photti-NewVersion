@@ -10,13 +10,13 @@
 
 #import "PLPhotoPageViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PWTabBarAdsController.h"
 #import "PLPhotoViewController.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
-#import "PWBaseNavigationController.h"
+#import "PABaseNavigationController.h"
 #import "PWMapViewController.h"
 #import "PLPhotoEditViewController.h"
 #import "PWAlbumPickerController.h"
@@ -48,7 +48,7 @@
                        direction:UIPageViewControllerNavigationDirectionForward
                         animated:NO
                       completion:nil];
-        self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+        self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     }
     return self;
 }
@@ -57,9 +57,9 @@
     [super viewDidLoad];
     
     UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction)];
-    tagBarButtonItem.landscapeImagePhone = [PWIcons imageWithImage:[UIImage imageNamed:@"Tag"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    tagBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Tag"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
     UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction)];
-    pinBarButtonItem.landscapeImagePhone = [PWIcons imageWithImage:[UIImage imageNamed:@"PinIcon"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    pinBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"PinIcon"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
     self.navigationItem.rightBarButtonItems = @[pinBarButtonItem, tagBarButtonItem];
 }
 
@@ -78,7 +78,7 @@
     }
     PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
-    [tabBarController setToolbarTintColor:[PWColors getColor:PWColorsTypeTintLocalColor]];
+    [tabBarController setToolbarTintColor:[PAColors getColor:PWColorsTypeTintLocalColor]];
     if ([tabBarController isTabBarHidden]) {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
         if ([tabBarController isToolbarHideen]) {
@@ -196,8 +196,8 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             PLPhotoEditViewController *viewController = [[PLPhotoEditViewController alloc] initWithPhoto:photo metadata:metadata];
-            PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
-            navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+            PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
+            navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
             navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             [sself presentViewController:navigationController animated:YES completion:nil];
         });
@@ -217,8 +217,8 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             PWMapViewController *viewController = [[PWMapViewController alloc] initWithImage:image latitude:photo.latitude.doubleValue longitude:photo.longitude.doubleValue];
-            PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
-            navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+            PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
+            navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
             navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             [sself presentViewController:navigationController animated:YES completion:nil];
         });

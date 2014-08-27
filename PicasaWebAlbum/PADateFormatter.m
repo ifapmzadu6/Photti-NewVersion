@@ -6,13 +6,13 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PLDateFormatter.h"
+#import "PADateFormatter.h"
 
-@interface PLDateFormatter ()
+@interface PADateFormatter ()
 
 @end
 
-@implementation PLDateFormatter
+@implementation PADateFormatter
 
 + (NSDateFormatter *)formatter {
     static dispatch_once_t instance;

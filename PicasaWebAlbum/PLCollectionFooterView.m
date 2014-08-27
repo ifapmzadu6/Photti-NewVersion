@@ -8,7 +8,7 @@
 
 #import "PLCollectionFooterView.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 
 @interface PLCollectionFooterView ()
 
@@ -38,7 +38,7 @@
 - (void)initialization {
     _textLabel = [UILabel new];
     _textLabel.font = [UIFont systemFontOfSize:14.0f];
-    _textLabel.textColor = [PWColors getColor:PWColorsTypeTextLightColor];
+    _textLabel.textColor = [PAColors getColor:PWColorsTypeTextLightColor];
     _textLabel.textAlignment = NSTextAlignmentCenter;
     _textLabel.adjustsFontSizeToFitWidth = YES;
     _textLabel.minimumScaleFactor = 0.5f;

@@ -8,9 +8,11 @@
 
 @import UIKit;
 
+#import "PABaseViewController.h"
+
 @class PWDatePickerView;
 
-@interface PLAlbumEditViewController : UIViewController
+@interface PLAlbumEditViewController : PABaseViewController
 
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UITextField *nameTextField;

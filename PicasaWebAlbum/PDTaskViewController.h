@@ -9,9 +9,11 @@
 @import UIKit;
 @import CoreData;
 
+#import "PABaseViewController.h"
+
 @class PDTaskObject;
 
-@interface PDTaskViewController : UIViewController
+@interface PDTaskViewController : PABaseViewController
 
 - (id)initWithTask:(PDTaskObject *)taskObject;
 

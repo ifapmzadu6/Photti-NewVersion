@@ -8,7 +8,9 @@
 
 @import UIKit;
 
-@interface PLAllPhotosViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate>
+#import "PABaseViewController.h"
+
+@interface PLAllPhotosViewController : PABaseViewController
 
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 @property (copy, nonatomic) void (^headerViewDidTapBlock)(BOOL isSelectMode);

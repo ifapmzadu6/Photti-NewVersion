@@ -9,8 +9,8 @@
 #import "PWNavigationController.h"
 
 #import "PWAppDelegate.h"
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PWOAuthManager.h"
 
 #import "PWAlbumListViewController.h"
@@ -32,8 +32,8 @@
         self.title = NSLocalizedString(@"Web Album", nil);
         UIImage *tabBarImage = [UIImage imageNamed:@"Picasa"];
         UIImage *tabBarImageSelected = [UIImage imageNamed:@"PicasaSelected"];
-        _tabBarImageLandscape = [PWIcons imageWithImage:tabBarImage insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-        _tabBarImageLandspaceSelected = [PWIcons imageWithImage:tabBarImageSelected insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        _tabBarImageLandscape = [PAIcons imageWithImage:tabBarImage insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        _tabBarImageLandspaceSelected = [PAIcons imageWithImage:tabBarImageSelected insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:tabBarImage selectedImage:tabBarImageSelected];
         
         if ([PWOAuthManager isLogined]) {

@@ -8,13 +8,13 @@
 
 #import "PLNavigationController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PLAssetsManager.h"
 
 #import "PWTabBarAdsController.h"
 #import "PLPageViewController.h"
-#import "PWBaseNavigationController.h"
+#import "PABaseNavigationController.h"
 #import "PLAccessPhotoLibraryViewController.h"
 #import "PLAutoCreateAlbumViewController.h"
 #import "PLNewAlbumCreatedViewController.h"
@@ -34,8 +34,8 @@
         NSString *title = NSLocalizedString(@"Camera Roll", nil);
         UIImage *tabBarImage = [UIImage imageNamed:@"Picture"];
         UIImage *tabBarImageSelected = [UIImage imageNamed:@"PictureSelected"];
-        _tabBarImageLandscape = [PWIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-        _tabBarImageLandspaceSelected = [PWIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        _tabBarImageLandscape = [PAIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        _tabBarImageLandspaceSelected = [PAIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:tabBarImage selectedImage:tabBarImageSelected];
         
         if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
@@ -80,7 +80,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    self.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -138,7 +138,7 @@
 
 - (void)modalNewAlbumCreatedViewControllerAnimated:(BOOL)animated enumuratedDate:(NSDate *)enumuratedDate {
     PLNewAlbumCreatedViewController *viewController = [[PLNewAlbumCreatedViewController alloc] initWithEnumuratedDate:enumuratedDate];
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     [self.tabBarController presentViewController:navigationController animated:animated completion:nil];
 }
 

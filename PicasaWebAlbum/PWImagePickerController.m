@@ -8,7 +8,7 @@
 
 #import "PWImagePickerController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
@@ -65,15 +65,15 @@
         
         if (_localNavigationcontroller && _webAlbumViewController) {
             self.viewControllers = @[_localNavigationcontroller, _webNavigationController];
-            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
         }
         else if (_localNavigationcontroller) {
             self.viewControllers = @[_localNavigationcontroller];
-            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
         }
         else if (_webAlbumViewController) {
             self.viewControllers = @[_webNavigationController];
-            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
         }
         
         _selectedPhotoIDs = @[];
@@ -86,7 +86,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     self.tabBar.barTintColor = [UIColor blackColor];
     
     _toolbar = [[UIToolbar alloc] init];
@@ -169,10 +169,10 @@
     [viewController viewDidAppear:NO];
     
     if (viewController == _webNavigationController) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
     }
     else if (viewController == _localNavigationcontroller) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+        self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
     }    
 }
 

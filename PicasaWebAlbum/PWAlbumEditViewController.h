@@ -8,11 +8,13 @@
 
 @import UIKit;
 
-#import "PWPicasaAPI.h"
+#import "PABaseViewController.h"
+
+@class PWAlbumObject;
 
 @class PWDatePickerView;
 
-@interface PWAlbumEditViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface PWAlbumEditViewController : PABaseViewController
 
 - (id)initWithAlbum:(PWAlbumObject *)album;
 

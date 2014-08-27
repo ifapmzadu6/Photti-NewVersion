@@ -16,7 +16,7 @@
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
-#import "PWSnowFlake.h"
+#import "PASnowFlake.h"
 #import "PDModelObject.h"
 #import "PWPicasaAPI.h"
 #import "PWPicasaParser.h"
@@ -68,44 +68,49 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
             completion ? completion(error) : 0;
         }
         else if ([type isEqualToString:ALAssetTypeVideo]) {
-            NSString *tmpFilePath = [PDLocalPhotoObject makeUniquePathInTmpDir];
-            AVAsset *urlAsset = [AVURLAsset URLAssetWithURL:asset.defaultRepresentation.url options:nil];
-            AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:urlAsset presetName:AVAssetExportPreset640x480];
-            exportSession.outputFileType = AVFileTypeMPEG4;
-            exportSession.shouldOptimizeForNetworkUse = YES;
-            exportSession.outputURL = [NSURL fileURLWithPath:tmpFilePath];
-            __weak typeof(exportSession) wExportSession = exportSession;
-            [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                typeof(wExportSession) sExportSession = wExportSession;
-                if (!sExportSession) return;
-                
-                if (sExportSession.status != AVAssetExportSessionStatusCompleted){
-                    if (completion) {
-                        completion(sExportSession.error);
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
+                NSString *tmpFilePath = [PDLocalPhotoObject makeUniquePathInTmpDir];
+                AVAsset *urlAsset = [AVURLAsset URLAssetWithURL:asset.defaultRepresentation.url options:nil];
+                AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:urlAsset presetName:AVAssetExportPreset640x480];
+                exportSession.outputFileType = AVFileTypeMPEG4;
+                exportSession.shouldOptimizeForNetworkUse = YES;
+                exportSession.outputURL = [NSURL fileURLWithPath:tmpFilePath];
+                __weak typeof(exportSession) wExportSession = exportSession;
+                [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                    typeof(wExportSession) sExportSession = wExportSession;
+                    if (!sExportSession) return;
+                    
+                    if (sExportSession.status != AVAssetExportSessionStatusCompleted){
+                        if (completion) {
+                            completion(sExportSession.error);
+                        }
+                        return;
                     }
-                    return;
-                }
-                
-                NSData *body = [PDLocalPhotoObject makeBodyFromFilePath:tmpFilePath title:title];
-                if (!body) {
-                    if (completion) {
-                        completion([NSError errorWithDomain:@"PDLocalPhotoObject" code:0 userInfo:nil]);
+                    
+                    NSData *body = [PDLocalPhotoObject makeBodyFromFilePath:tmpFilePath title:title];
+                    if (!body) {
+                        if (completion) {
+                            completion([NSError errorWithDomain:@"PDLocalPhotoObject" code:0 userInfo:nil]);
+                        }
+                        return;
                     }
-                    return;
-                }
-                
-                NSError *error = nil;
-                if (![body writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
+                    
+                    NSError *error = nil;
+                    if (![body writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
+                        if (completion) {
+                            completion(error);
+                        }
+                        return;
+                    }
+                    [[NSFileManager defaultManager] removeItemAtPath:tmpFilePath error:&error];
                     if (completion) {
                         completion(error);
                     }
-                    return;
-                }
-                [[NSFileManager defaultManager] removeItemAtPath:tmpFilePath error:&error];
-                if (completion) {
-                    completion(error);
-                }
-            }];
+                }];
+            }
+            else {
+                
+            }
         }
     } failureBlock:^(NSError *error) {
         if (completion) {
@@ -305,7 +310,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
 + (NSString *)makeUniquePathInTmpDir {
     NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
     NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
-    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PWSnowFlake generateUniqueIDString]];
+    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PASnowFlake generateUniqueIDString]];
     return [filePath stringByStandardizingPath];
 }
 

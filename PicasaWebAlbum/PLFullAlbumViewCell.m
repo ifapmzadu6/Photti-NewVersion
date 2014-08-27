@@ -8,8 +8,8 @@
 
 #import "PLFullAlbumViewCell.h"
 
-#import "PWColors.h"
-#import "PWString.h"
+#import "PAColors.h"
+#import "PAString.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
 
@@ -75,7 +75,7 @@
     else {
         _titleTextField.font = [UIFont systemFontOfSize:18.0f];
     }
-    _titleTextField.textColor = [PWColors getColor:PWColorsTypeTextColor];
+    _titleTextField.textColor = [PAColors getColor:PWColorsTypeTextColor];
     _titleTextField.textAlignment = NSTextAlignmentCenter;
     _titleTextField.returnKeyType = UIReturnKeyDone;
     _titleTextField.delegate = self;
@@ -88,7 +88,7 @@
     else {
         _numberLabel.font = [UIFont systemFontOfSize:15.0f];
     }
-    _numberLabel.textColor = [PWColors getColor:PWColorsTypeTextDarkColor];
+    _numberLabel.textColor = [PAColors getColor:PWColorsTypeTextDarkColor];
     _numberLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:_numberLabel];
 }
@@ -117,7 +117,7 @@
     
     NSOrderedSet *photos = [_album.photos filteredOrderedSetUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypePhoto]];
     NSOrderedSet *videos = [_album.photos filteredOrderedSetUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypeVideo]];
-    _numberLabel.text = [PWString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
+    _numberLabel.text = [PAString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
     
     _imageView.image = nil;
     _backImageView.image = nil;

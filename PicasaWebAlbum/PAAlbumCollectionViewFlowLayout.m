@@ -6,9 +6,9 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWAlbumCollectionViewFlowLayout.h"
+#import "PAAlbumCollectionViewFlowLayout.h"
 
-@implementation PWAlbumCollectionViewFlowLayout
+@implementation PAAlbumCollectionViewFlowLayout
 
 - (CGSize)itemSize {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {

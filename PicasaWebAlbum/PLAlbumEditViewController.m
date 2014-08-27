@@ -8,8 +8,8 @@
 
 #import "PLAlbumEditViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PLModelObject.h"
 #import <BlocksKit+UIKit.h>
 #import "PWDatePickerView.h"
@@ -40,7 +40,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
     
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
@@ -54,7 +54,7 @@
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
@@ -110,7 +110,7 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
         cell.textLabel.font = [UIFont boldSystemFontOfSize:15.0f];
-        cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+        cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
         cell.detailTextLabel.font = [UIFont boldSystemFontOfSize:15.0f];
     }
     cell.accessoryView = nil;

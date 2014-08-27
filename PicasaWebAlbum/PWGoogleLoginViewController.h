@@ -8,7 +8,9 @@
 
 @import UIKit;
 
-@interface PWGoogleLoginViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PWGoogleLoginViewController : PABaseViewController
 
 @property (copy, nonatomic) void (^completion)();
 @property (copy, nonatomic) void (^skipAction)();

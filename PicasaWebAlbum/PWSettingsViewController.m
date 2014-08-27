@@ -8,7 +8,7 @@
 
 #import "PWSettingsViewController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 
 #import "PWSettingsTableViewController.h"
 
@@ -36,18 +36,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
-    
-    self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
-    
     if (_type == PWSettingsViewControllerInitTypeWeb) {
-        self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        self.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
     }
     else if (_type == PWSettingsViewControllerInitTypeLocal) {
-        self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+        self.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
     }
     else if (_type == PWSettingsViewControllerInitTypeTaskManager) {
-        self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
+        self.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintUploadColor];
     }
 }
 

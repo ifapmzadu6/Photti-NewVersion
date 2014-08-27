@@ -8,16 +8,16 @@
 
 #import "PLAlbumListViewController.h"
 
-#import "PWColors.h"
-#import "PWSnowFlake.h"
-#import "PLDateFormatter.h"
+#import "PAColors.h"
+#import "PASnowFlake.h"
+#import "PADateFormatter.h"
 #import "PLAlbumViewCell.h"
 #import "PLAssetsManager.h"
 #import "PWTabBarAdsController.h"
 #import "PLCollectionFooterView.h"
-#import "PWAlbumCollectionViewFlowLayout.h"
+#import "PAAlbumCollectionViewFlowLayout.h"
 #import "PLPhotoListViewController.h"
-#import "PWBaseNavigationController.h"
+#import "PABaseNavigationController.h"
 #import "PLAlbumEditViewController.h"
 #import <BlocksKit+UIKit.h>
 #import "PLModelObject.h"
@@ -50,7 +50,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    PWAlbumCollectionViewFlowLayout *collectionViewLayout = [[PWAlbumCollectionViewFlowLayout alloc] init];
+    PAAlbumCollectionViewFlowLayout *collectionViewLayout = [[PAAlbumCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
@@ -59,11 +59,11 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.scrollsToTop = NO;
     _collectionView.clipsToBounds = NO;
-    _collectionView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     
     NSManagedObjectContext *context = [PLCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
@@ -255,7 +255,7 @@
             albumObject.tag_uploading_type = uploading_type;
         }];
     };
-    PWBaseNavigationController *navigationController = [[PWBaseNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
@@ -318,7 +318,7 @@
     if (!_noItemImageView) {
         _noItemImageView = [UIImageView new];
         _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _noItemImageView.tintColor = [[PWColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.tintColor = [[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
         _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
     }

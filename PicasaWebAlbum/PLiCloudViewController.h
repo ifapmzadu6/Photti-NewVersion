@@ -8,7 +8,9 @@
 
 @import UIKit;
 
-@interface PLiCloudViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PLiCloudViewController : PABaseViewController
 
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 @property (copy, nonatomic) void (^headerViewDidTapBlock)(BOOL isSelectMode);

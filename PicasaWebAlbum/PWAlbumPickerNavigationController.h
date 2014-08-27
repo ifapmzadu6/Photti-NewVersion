@@ -8,6 +8,8 @@
 
 @import UIKit;
 
-@interface PWAlbumPickerNavigationController : UINavigationController
+#import "PABaseNavigationController.h"
+
+@interface PWAlbumPickerNavigationController : PABaseNavigationController
 
 @end

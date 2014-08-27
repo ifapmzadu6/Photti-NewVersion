@@ -9,7 +9,7 @@
 #import "PLPhotoObject.h"
 #import "PLAlbumObject.h"
 
-#import "PLDateFormatter.h"
+#import "PADateFormatter.h"
 
 @implementation PLPhotoObject
 
@@ -55,7 +55,7 @@
 }
 
 - (NSString *)tag_adjusted_date {
-    return [[PLDateFormatter formatter] stringFromDate:[PLDateFormatter adjustZeroClock:self.date]];
+    return [[PADateFormatter formatter] stringFromDate:[PADateFormatter adjustZeroClock:self.date]];
 }
 
 @end

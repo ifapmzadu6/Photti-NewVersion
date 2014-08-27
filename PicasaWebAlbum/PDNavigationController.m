@@ -8,11 +8,11 @@
 
 #import "PDNavigationController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
-#import "PDInAppPurchase.h"
+#import "PAInAppPurchase.h"
 #import <BlocksKit+UIKit.h>
 
 #import "PWTabBarAdsController.h"
@@ -35,8 +35,8 @@
         self.title = NSLocalizedString(@"Tasks", @"l");
         UIImage *tabBarImage = [UIImage imageNamed:@"Upload"];
         UIImage *tabBarImageSelected = [UIImage imageNamed:@"UploadSelect"];
-        _tabBarImageLandscape = [PWIcons imageWithImage:tabBarImage insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-        _tabBarImageLandspaceSelected = [PWIcons imageWithImage:tabBarImageSelected insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        _tabBarImageLandscape = [PAIcons imageWithImage:tabBarImage insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        _tabBarImageLandspaceSelected = [PAIcons imageWithImage:tabBarImageSelected insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:tabBarImage selectedImage:tabBarImageSelected];
         
         [self checkTaskIsNone];
@@ -52,9 +52,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     
-    self.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintUploadColor];
+    self.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintUploadColor];
 }
 
 - (void)didReceiveMemoryWarning {

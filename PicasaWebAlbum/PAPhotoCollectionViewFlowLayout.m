@@ -6,9 +6,9 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWPhotoCollectionViewFlowLayout.h"
+#import "PAPhotoCollectionViewFlowLayout.h"
 
-@implementation PWPhotoCollectionViewFlowLayout
+@implementation PAPhotoCollectionViewFlowLayout
 
 - (CGSize)itemSize {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {

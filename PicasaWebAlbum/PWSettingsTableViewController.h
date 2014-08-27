@@ -8,6 +8,8 @@
 
 @import UIKit;
 
-@interface PWSettingsTableViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PWSettingsTableViewController : PABaseViewController
 
 @end

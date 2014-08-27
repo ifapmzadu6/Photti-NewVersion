@@ -11,13 +11,13 @@
 #import "PWSettingsTableViewController.h"
 
 #import <BlocksKit+UIKit.h>
-#import "PWColors.h"
-#import "PWIcons.h"
+#import "PAColors.h"
+#import "PAIcons.h"
 #import "PWPicasaAPI.h"
 #import "PLAssetsManager.h"
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
-#import "PDInAppPurchase.h"
+#import "PAInAppPurchase.h"
 #import "PWTabBarAdsController.h"
 #import "KKStaticTableView.h"
 #import "PWSettingHTMLViewController.h"
@@ -46,7 +46,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     
     UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
     self.navigationItem.rightBarButtonItem = doneBarButtonItem;
@@ -56,7 +56,7 @@
     
     _tableView = [[KKStaticTableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.cellTextFont = [UIFont systemFontOfSize:15.0f];
-    _tableView.cellTextColor = [PWColors getColor:PWColorsTypeTextColor];
+    _tableView.cellTextColor = [PAColors getColor:PWColorsTypeTextColor];
     _tableView.cellDetailTextFontTypeValue1 = [UIFont systemFontOfSize:15.0f];
     _tableView.cellDetailTextFontTypeSubTitle = [UIFont systemFontOfSize:13.0f];
     _tableView.cellDetailTextColor = [UIColor colorWithWhite:0.5f alpha:1.0f];
@@ -195,12 +195,12 @@
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = NSLocalizedString(@"Delete all tasks", nil);
-        cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextDarkColor];
+        cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextDarkColor];
         cell.detailTextLabel.text = nil;
         UIButton *button = [sself roundedButtonWithTitle:NSLocalizedString(@"Delete", nil) tintColor:tintColor action:@selector(deleteAllTasksButtonAction)];
         button.layer.borderWidth = 0.0f;
         [button setTitleColor:tintColor forState:UIControlStateNormal];
-        [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateNormal];
+        [button setBackgroundImage:[PAIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateNormal];
         cell.accessoryView = button;
     } cellHeight:CGFLOAT_MIN didSelect:nil];
 }
@@ -225,7 +225,7 @@
         button.alpha = 0.5f;
         cell.accessoryView = button;
         
-        [PDInAppPurchase getProductsWithProductIDs:@[kPDRemoveAdsPuroductID] completion:^(NSArray *products, NSError *error) {
+        [PAInAppPurchase getProductsWithProductIDs:@[kPDRemoveAdsPuroductID] completion:^(NSArray *products, NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (error) {
@@ -243,7 +243,7 @@
                     NSString *price = [numberFormatter stringFromNumber:product.price];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         cell.detailTextLabel.text = price;
-                        if (![PDInAppPurchase isPurchasedWithProduct:product]) {
+                        if (![PAInAppPurchase isPurchasedWithProduct:product]) {
                             button.enabled = YES;
                             button.alpha = 1.0f;
                         }
@@ -251,7 +251,7 @@
                             UILabel *label = [UILabel new];
                             label.font = [UIFont systemFontOfSize:13.0f];
                             label.text = [NSLocalizedString(@"Purchased", nil) stringByAppendingString:@"   "];
-                            label.textColor = [PWColors getColor:PWColorsTypeTextDarkColor];
+                            label.textColor = [PAColors getColor:PWColorsTypeTextDarkColor];
                             [label sizeToFit];
                             cell.accessoryView = label;
                         }
@@ -269,11 +269,11 @@
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = NSLocalizedString(@"Restore In-App Purchase", nil);
-        cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextDarkColor];
+        cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextDarkColor];
         UIButton *button = [sself roundedButtonWithTitle:NSLocalizedString(@"Restore", nil) tintColor:tintColor action:@selector(restoreButtonAction:)];
         button.layer.borderWidth = 0.0f;
         [button setTitleColor:tintColor forState:UIControlStateNormal];
-        [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateNormal];
+        [button setBackgroundImage:[PAIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateNormal];
         cell.accessoryView = button;
     } cellHeight:CGFLOAT_MIN didSelect:nil];
 }
@@ -291,7 +291,7 @@
     [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeSubTitle cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
         cell.imageView.image = [UIImage imageNamed:@"Icon_60"];
         cell.textLabel.text = @"Photti";
-        NSString *version =[[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleVersion"];
+        NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey];
         cell.detailTextLabel.text = [NSString stringWithFormat:@"version %@", version];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     } cellHeight:70.0f didSelect:nil];
@@ -472,7 +472,7 @@
         if (!_product) {
             return;
         }
-        BOOL isPurchased = [PDInAppPurchase isPurchasedWithProduct:_product];
+        BOOL isPurchased = [PAInAppPurchase isPurchasedWithProduct:_product];
         if (!isPurchased) {
             SKPayment *payment = [SKPayment paymentWithProduct:_product];
             [[SKPaymentQueue defaultQueue] addPayment:payment];
@@ -513,8 +513,8 @@
     [button setTitle:title forState:UIControlStateNormal];
     [button setTitleColor:tintColor forState:UIControlStateHighlighted];
     [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [button setBackgroundImage:[PWIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
-    [button setBackgroundImage:[PWIcons imageWithColor:tintColor] forState:UIControlStateNormal];
+    [button setBackgroundImage:[PAIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
+    [button setBackgroundImage:[PAIcons imageWithColor:tintColor] forState:UIControlStateNormal];
     button.clipsToBounds = YES;
     button.layer.cornerRadius = 5.0f;
     button.layer.borderColor = tintColor.CGColor;
@@ -525,7 +525,7 @@
 }
 
 - (void)setInAppPurchaseBlocks {
-    PDInAppPurchase *inAppPurchase = [PDInAppPurchase sharedInstance];
+    PAInAppPurchase *inAppPurchase = [PAInAppPurchase sharedInstance];
     __weak typeof(self) wself = self;
     [inAppPurchase setPaymentQueuePurchaced:^(NSArray *transactions, bool success) {
         typeof(wself) sself = wself;
@@ -535,7 +535,7 @@
         }
         
         PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
-        tabBarController.isRemoveAdsAddonPurchased = [PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
+        tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
@@ -551,7 +551,7 @@
         }
         
         PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
-        tabBarController.isRemoveAdsAddonPurchased = [PDInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
+        tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;

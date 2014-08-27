@@ -26,7 +26,7 @@ typedef enum _PWColorsType {
 	PWColorsTypeTextLightSubColor,
 } PWColorsType;
 
-@interface PWColors : NSObject
+@interface PAColors : NSObject
 
 + (void)loadThemeColors;
 + (UIColor *)getColor:(PWColorsType)type;

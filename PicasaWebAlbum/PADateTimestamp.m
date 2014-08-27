@@ -6,18 +6,18 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWDateTimestamp.h"
+#import "PADateTimestamp.h"
 
 static const long long kPWDateTimestampMillisecond = 1000;
 
-@implementation PWDateTimestamp
+@implementation PADateTimestamp
 
 + (NSString *)timestampForDate:(NSDate *)date {
     if (!date) {
         return nil;
     }
     
-    NSNumber *timestamp = [PWDateTimestamp timestampByNumberForDate:date];
+    NSNumber *timestamp = [PADateTimestamp timestampByNumberForDate:date];
     if (timestamp) {
         return timestamp.stringValue;
     }

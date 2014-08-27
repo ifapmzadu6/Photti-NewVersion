@@ -8,7 +8,9 @@
 
 @import UIKit;
 
-@interface PWImagePickerLocaliCloudViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PWImagePickerLocaliCloudViewController : PABaseViewController
 
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 

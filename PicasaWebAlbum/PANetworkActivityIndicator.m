@@ -6,11 +6,11 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWNetworkActivityIndicator.h"
+#import "PANetworkActivityIndicator.h"
 
-@implementation PWNetworkActivityIndicator
+@implementation PANetworkActivityIndicator
 
-+ (PWNetworkActivityIndicator *)sharedManager {
++ (PANetworkActivityIndicator *)sharedManager {
     static dispatch_once_t once;
     static id instance;
     dispatch_once(&once, ^{
@@ -35,15 +35,15 @@
 }
 
 + (void)increment {
-    [PWNetworkActivityIndicator sharedManager].numberOfConnection++;
+    [PANetworkActivityIndicator sharedManager].numberOfConnection++;
 }
 
 + (void)decrement {
-    [PWNetworkActivityIndicator sharedManager].numberOfConnection--;
+    [PANetworkActivityIndicator sharedManager].numberOfConnection--;
 }
 
 + (NSUInteger)numberOfConnection {
-    return [[PWNetworkActivityIndicator sharedManager] numberOfConnection];
+    return [[PANetworkActivityIndicator sharedManager] numberOfConnection];
 }
 
 @end

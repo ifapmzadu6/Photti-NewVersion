@@ -8,7 +8,7 @@
 
 #import "PWAlbumPickerController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 
 #import "PLAssetsManager.h"
 #import "PWOAuthManager.h"
@@ -50,15 +50,15 @@
         if (_localNavigationController && _webNavigationController) {
             self.viewControllers = @[_localNavigationController, _webNavigationController];
             self.selectedIndex = 1;
-            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
         }
         else if (_localNavigationController) {
             self.viewControllers = @[_localNavigationController];
-            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
         }
         else if (_webNavigationController) {
             self.viewControllers = @[_webNavigationController];
-            self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
         }
         
     }
@@ -68,7 +68,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundDarkColor];
+    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundDarkColor];
     self.tabBar.barTintColor = [UIColor blackColor];
     
     _toolbar = [[UIToolbar alloc] init];
@@ -136,10 +136,10 @@
     [viewController viewDidAppear:NO];
     
     if (viewController == _localNavigationController) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintLocalColor];
+        self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
     }
     else if (viewController == _webNavigationController) {
-        self.tabBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
+        self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
     }
 }
 

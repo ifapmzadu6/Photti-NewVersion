@@ -14,9 +14,9 @@
  */
 
 
-#import "PWSnowFlake.h"
+#import "PASnowFlake.h"
 
-@implementation PWSnowFlake
+@implementation PASnowFlake
 
 + (unsigned long long)generateUniqueID {
     unsigned long long timestamp = (unsigned long long)([[NSDate date] timeIntervalSince1970] * 1000);
@@ -47,7 +47,7 @@
 }
 
 + (NSString *)generateUniqueIDString {
-    unsigned long long uniqueID = [PWSnowFlake generateUniqueID];
+    unsigned long long uniqueID = [PASnowFlake generateUniqueID];
     return [NSString stringWithFormat:@"%llu", uniqueID];
 }
 

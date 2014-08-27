@@ -8,6 +8,6 @@
 
 @import UIKit;
 
-@interface PWAlbumCollectionViewFlowLayout : UICollectionViewFlowLayout
+@interface PAAlbumCollectionViewFlowLayout : UICollectionViewFlowLayout
 
 @end

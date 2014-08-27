@@ -6,7 +6,9 @@
 //  Copyright (c) 2013年 IRIE JUNYA. All rights reserved.
 //
 
-@interface PWSettingHTMLViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PWSettingHTMLViewController : PABaseViewController
 
 @property (strong, nonatomic) NSString *fileName;
 

@@ -9,9 +9,9 @@
 #import "PWPhotoViewCell.h"
 
 #import "PWPicasaAPI.h"
-#import "PWColors.h"
-#import "PWIcons.h"
-#import "PLDateFormatter.h"
+#import "PAColors.h"
+#import "PAIcons.h"
+#import "PADateFormatter.h"
 #import <Reachability.h>
 #import <SDImageCache.h>
 #import "SDWebImageDecoder.h"
@@ -57,7 +57,7 @@
 
 - (void)initialization {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundColor];
+        self.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundColor];
     }
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -74,12 +74,12 @@
     [self.contentView insertSubview:_animatedImageView belowSubview:_imageView];
     
     _videoBackgroundView = [UIImageView new];
-    _videoBackgroundView.image = [PWIcons gradientVerticalFromColor:UIColor.clearColor toColor:UIColor.blackColor size:CGSizeMake(200.0f, 200.0f)];
+    _videoBackgroundView.image = [PAIcons gradientVerticalFromColor:UIColor.clearColor toColor:UIColor.blackColor size:CGSizeMake(200.0f, 200.0f)];
     _videoBackgroundView.hidden = YES;
     [self.contentView addSubview:_videoBackgroundView];
     
     _videoIconView = [UIImageView new];
-    _videoIconView.image = [PWIcons videoIconWithColor:[UIColor whiteColor] size:CGSizeMake(94.0f, 50.0f)];
+    _videoIconView.image = [PAIcons videoIconWithColor:[UIColor whiteColor] size:CGSizeMake(94.0f, 50.0f)];
     _videoIconView.contentMode = UIViewContentModeScaleAspectFit;
     _videoIconView.hidden = YES;
     [self.contentView addSubview:_videoIconView];

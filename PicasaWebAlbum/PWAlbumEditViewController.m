@@ -8,7 +8,8 @@
 
 #import "PWAlbumEditViewController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
+#import "PWPicasaAPI.h"
 #import "PWDatePickerView.h"
 #import <BlocksKit+UIKit.h>
 #import <Reachability.h>
@@ -23,7 +24,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     PWAlbumEditViewControllerCellAccessRowShare
 } PWAlbumEditViewControllerCellAccessRow;
 
-@interface PWAlbumEditViewController ()
+@interface PWAlbumEditViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) PWAlbumObject *album;
 
@@ -49,7 +50,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
@@ -63,10 +64,10 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
         view.exclusiveTouch = YES;
     }
     
-    self.navigationController.navigationBar.tintColor = [PWColors getColor:PWColorsTypeTintWebColor];
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PWColors getColor:PWColorsTypeTextColor]};
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PWColorsTypeTextColor]};
     
-    [[UITextField appearance] setTintColor:[PWColors getColor:PWColorsTypeTintWebColor]];
+    [[UITextField appearance] setTintColor:[PAColors getColor:PWColorsTypeTintWebColor]];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -111,7 +112,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
         cell.textLabel.font = [UIFont boldSystemFontOfSize:15.0f];
-        cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+        cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
         cell.detailTextLabel.font = [UIFont boldSystemFontOfSize:15.0f];
     }
     cell.accessoryView = nil;

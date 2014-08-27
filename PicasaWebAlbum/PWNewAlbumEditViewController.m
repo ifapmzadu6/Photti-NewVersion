@@ -8,7 +8,7 @@
 
 #import "PWNewAlbumEditViewController.h"
 
-#import "PWColors.h"
+#import "PAColors.h"
 #import "PWDatePickerView.h"
 #import "PWPicasaAPI.h"
 #import <BlocksKit+UIKit.h>

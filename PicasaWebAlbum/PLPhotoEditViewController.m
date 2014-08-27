@@ -8,9 +8,9 @@
 
 #import "PLPhotoEditViewController.h"
 
-#import "PWColors.h"
-#import "PWIcons.h"
-#import "PLDateFormatter.h"
+#import "PAColors.h"
+#import "PAIcons.h"
+#import "PADateFormatter.h"
 #import "PLModelObject.h"
 
 #define NtN(obj) ({ __typeof__ (obj) __obj = (obj); __obj == [NSNull null] ? nil : obj; })
@@ -122,7 +122,7 @@ typedef enum _PLPhotoEditViewControllerGPSType {
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [PWColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
     [self.view addSubview:_tableView];
 }
 
@@ -175,7 +175,7 @@ typedef enum _PLPhotoEditViewControllerGPSType {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
         cell.textLabel.font = [UIFont systemFontOfSize:15.0f];
-        cell.textLabel.textColor = [PWColors getColor:PWColorsTypeTextColor];
+        cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
         cell.detailTextLabel.font = [UIFont systemFontOfSize:15.0f];
     }
     cell.textLabel.alpha = 1.0f;
@@ -193,7 +193,7 @@ typedef enum _PLPhotoEditViewControllerGPSType {
                 break;
             case PLPhotoEditViewControllerDescriptionTypeDATE:
                 cell.textLabel.text = NSLocalizedString(@"Date", nil);
-                cell.detailTextLabel.text = [[PLDateFormatter formatter] stringFromDate:_photo.date];
+                cell.detailTextLabel.text = [[PADateFormatter formatter] stringFromDate:_photo.date];
                 break;
             case PLPhotoEditViewControllerDescriptionTypeDURATION:
                 cell.textLabel.text = NSLocalizedString(@"Duration", nil);

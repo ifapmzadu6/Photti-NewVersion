@@ -8,9 +8,11 @@
 
 @import UIKit;
 
+#import "PABaseViewController.h"
+
 @class PWAlbumObject;
 
-@interface PWImagePickerWebPhotoListViewController : UIViewController
+@interface PWImagePickerWebPhotoListViewController : PABaseViewController
 
 - (id)initWithAlbum:(PWAlbumObject *)album;
 

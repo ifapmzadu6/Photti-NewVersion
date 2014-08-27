@@ -10,7 +10,7 @@
 
 #import "PDModelObject.h"
 #import "PDCoreDataAPI.h"
-#import "PDInAppPurchase.h"
+#import "PAInAppPurchase.h"
 
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
@@ -19,7 +19,7 @@
 #import "PWPicasaAPI.h"
 #import "PWModelObject.h"
 #import "PWCoreDataAPI.h"
-#import "PWSnowFlake.h"
+#import "PASnowFlake.h"
 #import "NSURLResponse+methods.h"
 
 static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
@@ -380,10 +380,12 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     if (!taskObject) {
         _isOperating = NO;
         
-        if (_backgroundComplecationHandler) {
-            _backgroundComplecationHandler();
-            _backgroundComplecationHandler = nil;
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_backgroundComplecationHandler) {
+                _backgroundComplecationHandler();
+                _backgroundComplecationHandler = nil;
+            }
+        });
         
         return;
     }
@@ -408,6 +410,22 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     
     PDBasePhotoObject *photoObject = photos.firstObject;
     NSManagedObjectID *photoObjectID = photoObject.objectID;
+    if ((![photoObject isKindOfClass:PDLocalCopyPhotoObject.class] && !PWOAuthManager.isLogined) ||
+        (![photoObject isKindOfClass:PDCopyPhotoObject.class] && ALAssetsLibrary.authorizationStatus != ALAuthorizationStatusAuthorized)) {
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PDTaskObject *tmpTaskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
+            PDBasePhotoObject *tmpPhotoObject = (PDBasePhotoObject *)[context objectWithID:photoObjectID];
+            if (tmpTaskObject) {
+                [tmpTaskObject removePhotosObject:tmpPhotoObject];
+            }
+            if (tmpPhotoObject) {
+                [context deleteObject:tmpPhotoObject];
+            }
+        }];
+        
+        [self taskIsDoneAndStartNext:[PDTaskManager getFirstTaskObject]];
+    }
+    
     if (photoObject.is_done.boolValue) {
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
             PDTaskObject *tmpTaskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
@@ -517,7 +535,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 + (NSString *)makeUniquePathInTmpDir {
     NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
     NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
-    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PWSnowFlake generateUniqueIDString]];
+    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PASnowFlake generateUniqueIDString]];
     return filePath;
 }
 
