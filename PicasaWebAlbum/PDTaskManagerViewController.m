@@ -19,7 +19,7 @@
 
 #import "PDTaskTableViewCell.h"
 #import "PDTaskManagerViewControllerHeaderView.h"
-#import "PWTabBarController.h"
+#import "PATabBarController.h"
 #import "PDTaskViewController.h"
 #import "PWSettingsViewController.h"
 
@@ -91,7 +91,7 @@
     
     CGRect rect = self.view.bounds;
     
-    PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
+    PATabBarController *tabBarViewController = (PATabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
     _tableView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom + 50.0f, 0.0f);
     _tableView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);

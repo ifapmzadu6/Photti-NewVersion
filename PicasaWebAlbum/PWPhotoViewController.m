@@ -14,7 +14,7 @@
 #import "PAIcons.h"
 #import "PWPicasaAPI.h"
 #import "PWImageScrollView.h"
-#import "PWTabBarController.h"
+#import "PATabBarController.h"
 #import "PANetworkActivityIndicator.h"
 #import <Reachability.h>
 #import <FLAnimatedImage.h>

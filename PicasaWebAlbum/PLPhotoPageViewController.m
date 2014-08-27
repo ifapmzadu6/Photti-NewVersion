@@ -12,7 +12,7 @@
 
 #import "PAColors.h"
 #import "PAIcons.h"
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 #import "PLPhotoViewController.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
@@ -76,7 +76,7 @@
     if (_isEnableDeletePhotoButton) {
         toolbarItems = [toolbarItems arrayByAddingObject:trashButtonItem];
     }
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setToolbarTintColor:[PAColors getColor:PWColorsTypeTintLocalColor]];
     if ([tabBarController isTabBarHidden]) {
@@ -92,7 +92,7 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+            PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
             [tabBarController setTabBarHidden:YES animated:YES completion:nil];
         }];
     }
@@ -102,7 +102,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
 }
 
@@ -281,7 +281,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         if ([tabBarController isToolbarHideen]) {
             [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
             [sself.navigationController setNavigationBarHidden:NO animated:YES];

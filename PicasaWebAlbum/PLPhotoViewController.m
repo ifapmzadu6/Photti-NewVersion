@@ -16,7 +16,7 @@
 #import "PLAssetsManager.h"
 #import <SDImageCache.h>
 #import "PWImageScrollView.h"
-#import "PWTabBarController.h"
+#import "PATabBarController.h"
 
 @interface PLPhotoViewController ()
 

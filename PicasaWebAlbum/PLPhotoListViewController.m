@@ -17,7 +17,7 @@
 #import "PLPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PAPhotoCollectionViewFlowLayout.h"
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 #import "PLPhotoPageViewController.h"
 #import "PABaseNavigationController.h"
 #import "PLAlbumEditViewController.h"
@@ -99,7 +99,7 @@
     UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PAIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
@@ -108,7 +108,7 @@
         [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+            PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
             [tabBarController setTabBarHidden:YES animated:NO completion:nil];
         }];
     }
@@ -121,7 +121,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
 }
 
@@ -140,7 +140,7 @@
         indexPath = indexPaths[indexPaths.count / 2];
     }
     
-    PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
+    PATabBarController *tabBarViewController = (PATabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
@@ -483,7 +483,7 @@
     fixedBarButtonItem.width = 32.0f;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, fixedBarButtonItem, _trashBarButtonItem];
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
     [tabBarController setActionToolbarTintColor:[PAColors getColor:PWColorsTypeTintLocalColor]];
     __weak typeof(self) wself = self;
@@ -491,7 +491,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];
     
@@ -533,7 +533,7 @@
         [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarHidden:NO animated:NO completion:nil];
     [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
     

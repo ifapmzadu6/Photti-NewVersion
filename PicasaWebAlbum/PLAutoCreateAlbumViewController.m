@@ -13,7 +13,7 @@
 #import "PLAssetsManager.h"
 
 #import "PWSettingsViewController.h"
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 
 @interface PLAutoCreateAlbumViewController ()
 
@@ -122,7 +122,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setAdsHidden:YES animated:NO];
 }
 

@@ -6,11 +6,11 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWTabBarController.h"
+#import "PATabBarController.h"
 
 static NSString * const kPWTabBarAdsControllerAdUnitID = @"ca-app-pub-9347360948699796/7365185266";
 
-@interface PWTabBarAdsController : PWTabBarController
+@interface PATabBarAdsController : PATabBarController
 
 @property (nonatomic) BOOL isRemoveAdsAddonPurchased;
 @property (nonatomic, readonly) BOOL isAdsHidden;

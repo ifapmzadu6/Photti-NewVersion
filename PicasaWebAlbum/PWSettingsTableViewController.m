@@ -18,7 +18,7 @@
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
 #import "PAInAppPurchase.h"
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 #import "KKStaticTableView.h"
 #import "PWSettingHTMLViewController.h"
 #import "PWSelectItemFromArrayViewController.h"
@@ -534,7 +534,7 @@
             return;
         }
         
-        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -550,7 +550,7 @@
             return;
         }
         
-        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -563,11 +563,11 @@
 
 #pragma mark OtherAppAction
 - (void)openVideoCastiTunesStore {
-    [self openItunesStoreWithAppID:@888164735];
+    [self openItunesStoreWithAppID:@(SMARTVIDEOCASTAPPID.longLongValue)];
 }
 
 - (void)openPixittiiTunesStore {
-    [self openItunesStoreWithAppID:@717068044];
+    [self openItunesStoreWithAppID:@(PIXITTIAPPID.longLongValue)];
 }
 
 @end

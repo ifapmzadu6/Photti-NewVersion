@@ -15,7 +15,7 @@
 #import "PAIcons.h"
 #import "PWPicasaAPI.h"
 #import "PWPhotoViewController.h"
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 #import <BlocksKit+UIKit.h>
 #import <Reachability.h>
 #import <SDImageCache.h>
@@ -78,7 +78,7 @@
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
     UIBarButtonItem *organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction:)];
@@ -91,7 +91,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
 }
 
@@ -104,7 +104,7 @@
 }
 
 - (void)viewDidLayoutSubviews {
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
     self.navigationController.navigationBar.userInteractionEnabled = YES;
 }
@@ -385,13 +385,13 @@
 
 #pragma mark UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     self.navigationController.navigationBar.userInteractionEnabled = NO;
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
     self.navigationController.navigationBar.userInteractionEnabled = YES;
 }
@@ -425,7 +425,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         if ([tabBarController isToolbarHideen]) {
             [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
             [sself.navigationController setNavigationBarHidden:NO animated:YES];

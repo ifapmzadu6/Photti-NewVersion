@@ -12,7 +12,7 @@
 #import "PAIcons.h"
 #import "PLAssetsManager.h"
 
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 #import "PLPageViewController.h"
 #import "PABaseNavigationController.h"
 #import "PLAccessPhotoLibraryViewController.h"
@@ -100,7 +100,7 @@
 
 #pragma mark UITabBarItem
 - (void)updateTabBarItem {
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     if (tabBarController.isPhone) {
         if (tabBarController.isLandscape) {
             self.tabBarItem.image = _tabBarImageLandscape;

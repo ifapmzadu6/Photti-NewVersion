@@ -15,7 +15,7 @@
 
 #import "PWAlbumListViewController.h"
 #import "PWGoogleLoginViewController.h"
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 
 @interface PWNavigationController () <UINavigationBarDelegate>
 
@@ -67,7 +67,7 @@
 
 #pragma mark UITabBarItem
 - (void)updateTabBarItem {
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     if (tabBarController.isPhone) {
         if (tabBarController.isLandscape) {
             self.tabBarItem.image = _tabBarImageLandscape;
@@ -108,7 +108,7 @@
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 
-                PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+                PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
                 [tabBarController setSelectedIndex:0];
             });
         };

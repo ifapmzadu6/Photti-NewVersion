@@ -10,7 +10,7 @@
 
 static const CGFloat animationDuration = 0.25f;
 
-@interface PWTabBarController : UITabBarController
+@interface PATabBarController : UITabBarController
 
 @property (nonatomic, readonly) BOOL isTabBarHidden;
 @property (nonatomic, readonly) BOOL isToolbarHideen;

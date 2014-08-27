@@ -20,7 +20,7 @@
 #import "PWPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PAPhotoCollectionViewFlowLayout.h"
-#import "PWTabBarController.h"
+#import "PATabBarController.h"
 #import "PWNavigationController.h"
 #import "PWAlbumEditViewController.h"
 #import "PWNewAlbumEditViewController.h"

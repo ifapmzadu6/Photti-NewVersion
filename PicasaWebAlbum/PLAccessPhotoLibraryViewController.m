@@ -13,7 +13,7 @@
 #import "PLAssetsManager.h"
 
 #import "PWSettingsViewController.h"
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 
 @interface PLAccessPhotoLibraryViewController ()
 
@@ -106,7 +106,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setAdsHidden:YES animated:NO];
     
     [self setDescriptionLabelText];

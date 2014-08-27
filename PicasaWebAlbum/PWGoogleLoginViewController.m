@@ -16,7 +16,7 @@
 #import "PLAssetsManager.h"
 
 #import "PWSettingsViewController.h"
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 
 @interface PWGoogleLoginViewController ()
 
@@ -127,14 +127,14 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setAdsHidden:YES animated:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setAdsHidden:YES animated:NO];
 }
 

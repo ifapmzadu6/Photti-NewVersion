@@ -13,7 +13,7 @@
 #import "PADateFormatter.h"
 #import "PLAlbumViewCell.h"
 #import "PLAssetsManager.h"
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 #import "PLCollectionFooterView.h"
 #import "PAAlbumCollectionViewFlowLayout.h"
 #import "PLPhotoListViewController.h"
@@ -91,7 +91,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setAdsHidden:NO animated:NO];
     
     for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
@@ -126,7 +126,7 @@
         indexPath = indexPaths[indexPaths.count / 2];
     }
     
-    PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
+    PATabBarController *tabBarViewController = (PATabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
     _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 10.0f, viewInsets.bottom, 10.0f);
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);

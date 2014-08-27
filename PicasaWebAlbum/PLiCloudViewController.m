@@ -13,7 +13,7 @@
 #import "PLPhotoViewHeaderView.h"
 #import "PLCollectionFooterView.h"
 #import "PAPhotoCollectionViewFlowLayout.h"
-#import "PWTabBarController.h"
+#import "PATabBarController.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
 #import "PADateFormatter.h"
@@ -114,7 +114,7 @@
         indexPath = indexPaths[indexPaths.count / 2];
     }
     
-    PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
+    PATabBarController *tabBarViewController = (PATabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);

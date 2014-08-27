@@ -6,9 +6,9 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWTabBarController.h"
+#import "PATabBarController.h"
 
-@interface PWTabBarController () <UITabBarControllerDelegate, UINavigationBarDelegate>
+@interface PATabBarController () <UITabBarControllerDelegate, UINavigationBarDelegate>
 
 @property (strong, nonatomic) UIToolbar *toolbar;
 @property (strong, nonatomic) UIToolbar *actionToolbar;
@@ -30,7 +30,7 @@
 
 @end
 
-@implementation PWTabBarController
+@implementation PATabBarController
 
 - (id)initWithIndex:(NSUInteger)index viewControllers:(NSArray *)viewControllers colors:(NSArray *)colors {
     self = [super init];

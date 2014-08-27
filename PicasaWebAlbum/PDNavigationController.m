@@ -15,7 +15,7 @@
 #import "PAInAppPurchase.h"
 #import <BlocksKit+UIKit.h>
 
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 
 #import "PDTaskManagerViewController.h"
 #import "PDUploadDescriptionViewController.h"
@@ -63,7 +63,7 @@
 
 #pragma mark UITabBarItem
 - (void)updateTabBarItem {
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     if (tabBarController.isPhone) {
         if (tabBarController.isLandscape) {
             self.tabBarItem.image = _tabBarImageLandscape;

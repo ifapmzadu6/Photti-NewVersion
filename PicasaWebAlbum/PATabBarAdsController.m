@@ -6,17 +6,17 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 
 #import "GADBannerView.h"
 
-@interface PWTabBarAdsController ()
+@interface PATabBarAdsController ()
 
 @property (strong, nonatomic) GADBannerView *bannerView;
 
 @end
 
-@implementation PWTabBarAdsController
+@implementation PATabBarAdsController
 
 - (id)initWithIndex:(NSUInteger)index viewControllers:(NSArray *)viewControllers colors:(NSArray *)colors isRemoveAdsAddonPurchased:(BOOL)isRemoveAdsAddonPurchased {
     self = [super initWithIndex:index viewControllers:viewControllers colors:colors];
@@ -37,7 +37,11 @@
         
         [self disableBannerBounce:_bannerView];
         
-        [_bannerView loadRequest:[GADRequest request]];
+        GADRequest *request = [GADRequest request];
+#ifdef DEBUG
+        request.testDevices = @[ @"df48ebadba052c20f86a3ede43821c96"];
+#endif
+        [_bannerView loadRequest:request];
     }
 }
 

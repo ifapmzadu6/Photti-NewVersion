@@ -11,7 +11,7 @@
 #import "PWNavigationController.h"
 #import "PLNavigationController.h"
 #import "PDNavigationController.h"
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 
 #import <Crashlytics/Crashlytics.h>
 #import <SDImageCache.h>
@@ -58,7 +58,9 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     // Google Analytics
     [GAI sharedInstance].trackUncaughtExceptions = YES;
     [GAI sharedInstance].dispatchInterval = 30;
+#ifdef DEBUG
     [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
+#endif
     [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
     [[[GAI sharedInstance] defaultTracker] setAllowIDFACollection:YES];
     
@@ -74,7 +76,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     NSArray *viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
     NSArray *colors = @[[PAColors getColor:PWColorsTypeTintLocalColor], [PAColors getColor:PWColorsTypeTintWebColor], [PAColors getColor:PWColorsTypeTintUploadColor]];
     
-    PWTabBarAdsController *tabBarController = [[PWTabBarAdsController alloc] initWithIndex:initialTabPageIndex viewControllers:viewControllers colors:colors];
+    PATabBarAdsController *tabBarController = [[PATabBarAdsController alloc] initWithIndex:initialTabPageIndex viewControllers:viewControllers colors:colors];
     tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];

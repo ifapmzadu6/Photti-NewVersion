@@ -22,7 +22,7 @@
 #import "PWPhotoViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PAPhotoCollectionViewFlowLayout.h"
-#import "PWTabBarAdsController.h"
+#import "PATabBarAdsController.h"
 #import "PWNavigationController.h"
 #import "PWPhotoPageViewController.h"
 #import "PABaseNavigationController.h"
@@ -85,7 +85,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarTintColor:[PAColors getColor:PWColorsTypeTintWebColor]];
     
     PAPhotoCollectionViewFlowLayout *collectionViewLayout = [[PAPhotoCollectionViewFlowLayout alloc] init];
@@ -149,7 +149,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         indexPath = indexPaths[indexPaths.count / 2];
     }
     
-    PWTabBarController *tabBarViewController = (PWTabBarController *)self.tabBarController;
+    PATabBarController *tabBarViewController = (PATabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
@@ -195,7 +195,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PAIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
@@ -203,7 +203,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+            PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
             [tabBarController setTabBarHidden:YES animated:NO completion:nil];
         }];
     }
@@ -216,7 +216,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
     
     [_collectionView reloadData];
@@ -573,7 +573,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     _organizeBarButtonItem.enabled = NO;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, _trashBarButtonItem];
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
     [tabBarController setActionToolbarTintColor:[PAColors getColor:PWColorsTypeTintWebColor]];
     __weak typeof(self) wself = self;
@@ -581,7 +581,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)sself.tabBarController;
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];
     
@@ -619,7 +619,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
     
-    PWTabBarAdsController *tabBarController = (PWTabBarAdsController *)self.tabBarController;
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarHidden:NO animated:NO completion:nil];
     [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
     
