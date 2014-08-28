@@ -2515,6 +2515,7 @@
 					"${PODS_ROOT}/Headers/**",
 				);
 				INFOPLIST_FILE = "PicasaWebAlbum/PicasaWebAlbum-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/GoogleMobileAdsSdkiOS",
@@ -2549,6 +2550,7 @@
 					"${PODS_ROOT}/Headers/**",
 				);
 				INFOPLIST_FILE = "PicasaWebAlbum/PicasaWebAlbum-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/GoogleMobileAdsSdkiOS",
