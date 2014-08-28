@@ -26,6 +26,7 @@
 #import "PLModelObject.h"
 #import "PASnowFlake.h"
 #import "PADateFormatter.h"
+#import "PADateTimestamp.h"
 #import "PDTaskManager.h"
 #import <BlocksKit+UIKit.h>
 
@@ -170,7 +171,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 }
 
 - (void)addBarButtonAction {
-    PLNewAlbumEditViewController *viewController = [[PLNewAlbumEditViewController alloc] initWithTitle:nil timestamp:@((long long)[[NSDate date] timeIntervalSince1970]*1000) uploading_type:nil];
+    PLNewAlbumEditViewController *viewController = [[PLNewAlbumEditViewController alloc] initWithTitle:nil timestamp:[PADateTimestamp timestampByNumberForDate:[NSDate date]] uploading_type:nil];
     viewController.saveButtonBlock = ^(NSString *name, NSNumber *timestamp, NSNumber *uploading_type){
         [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
@@ -181,7 +182,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
             else {
                 album.name = name;
             }
-            album.tag_date = [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue/1000.0];
+            album.tag_date = [PADateTimestamp dateForTimestamp:timestamp.stringValue];
             album.timestamp = timestamp;
             album.import = [NSDate date];
             album.update = [NSDate date];

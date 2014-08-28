@@ -18,6 +18,7 @@
 #import <Appirater.h>
 
 #import "GAI.h"
+#import "GAIDictionaryBuilder.h"
 
 #import "PDTaskManager.h"
 #import "PLAssetsManager.h"
@@ -63,7 +64,6 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 #endif
     [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
     [[[GAI sharedInstance] defaultTracker] setAllowIDFACollection:YES];
-    
     
     PLNavigationController *localNavigationController = [PLNavigationController new];
     PWNavigationController *webNavigationViewController = [PWNavigationController new];
@@ -118,6 +118,11 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     [[PDTaskManager sharedManager] start];
     
+    // Google Analytics
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"PWAppDelegate" action:@"Background Fetch" label:@"default" value:@(0)] build]];
+    
+    __block BOOL isFinish = NO;
     if ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
         NSDate *adjustedDate = [PADateFormatter adjustZeroClock:[NSDate date]];
         NSDate *beforeDate = [[NSUserDefaults standardUserDefaults] objectForKey:kPWAppDelegateBackgroundFetchDateKey];
@@ -128,7 +133,12 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
             [[PLAssetsManager sharedManager] checkNewAlbumBetweenStartDate:beforeDate endDate:adjustedDate completion:^(NSArray *newAlbumDates, NSError *error) {
                 if (error) {
                     NSLog(@"%@", error);
-                    completionHandler(UIBackgroundFetchResultNoData);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (!isFinish) {
+                            completionHandler(UIBackgroundFetchResultNoData);
+                            isFinish = YES;
+                        }
+                    });
                     return;
                 }
                 
@@ -145,12 +155,22 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
                     notification.soundName = UILocalNotificationDefaultSoundName;
                     [[UIApplication sharedApplication] scheduleLocalNotification:notification];
                 }
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!isFinish) {
+                        completionHandler(UIBackgroundFetchResultNewData);
+                        isFinish = YES;
+                    }
+                });
             }];
         }
     }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(24 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        completionHandler(UIBackgroundFetchResultNoData);
+        if (!isFinish) {
+            completionHandler(UIBackgroundFetchResultNoData);
+            isFinish = YES;
+        }
     });
 }
 

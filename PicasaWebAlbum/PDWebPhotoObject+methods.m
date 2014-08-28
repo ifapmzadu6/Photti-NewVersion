@@ -17,6 +17,7 @@
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
+#import "PADateTimestamp.h"
 
 static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWebPhotoObjectMethods";
 
@@ -36,7 +37,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         NSArray *photos = [context executeFetchRequest:request error:&error];
         if (photos.count > 0) {
             photoObject = photos.firstObject;
-            tag_type = photoObject.tag_type.integerValue;
+            tag_type = (PWPhotoManagedObjectType)photoObject.tag_type.integerValue;
             contents = photoObject.media.content.array;
         }
     }];
@@ -274,7 +275,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     PLAlbumObject *localAlbumObject = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
     localAlbumObject.id_str = [PASnowFlake generateUniqueIDString];
     localAlbumObject.name = webAlbumObject.title;
-    localAlbumObject.tag_date = [NSDate dateWithTimeIntervalSince1970:webAlbumObject.gphoto.timestamp.longLongValue / 1000];
+    localAlbumObject.tag_date = [PADateTimestamp dateForTimestamp:webAlbumObject.gphoto.timestamp];
     localAlbumObject.timestamp = @(webAlbumObject.gphoto.timestamp.longLongValue);
     NSDate *enumurateDate = [NSDate date];
     localAlbumObject.import = enumurateDate;
@@ -290,7 +291,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     photo.height = @(dimensions.height);
     photo.filename = filename;
     photo.type = type;
-    photo.timestamp = @((long long)([date timeIntervalSince1970]) * 1000);
+    photo.timestamp = [PADateTimestamp timestampByNumberForDate:date];
     photo.date = date;
     photo.duration = duration;
     photo.latitude = @(location.coordinate.latitude);

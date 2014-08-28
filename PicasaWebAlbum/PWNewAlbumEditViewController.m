@@ -10,6 +10,7 @@
 
 #import "PAColors.h"
 #import "PWDatePickerView.h"
+#import "PADateTimestamp.h"
 #import "PWPicasaAPI.h"
 #import <BlocksKit+UIKit.h>
 #import <Reachability.h>
@@ -27,7 +28,7 @@
     
     self.title = NSLocalizedString(@"New Album", nil);
     
-    self.timestamp = [NSString stringWithFormat:@"%lld", (long long)([[NSDate date] timeIntervalSince1970])*1000];
+    self.timestamp = [PADateTimestamp timestampForDate:[NSDate date]];
     
     UIBarButtonItem *createBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Save", nil) style:UIBarButtonItemStylePlain target:self action:@selector(createBarButtonAction)];
     [createBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];

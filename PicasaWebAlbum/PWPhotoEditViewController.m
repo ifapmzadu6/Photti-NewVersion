@@ -10,6 +10,8 @@
 
 #import "PAColors.h"
 #import "PWPicasaAPI.h"
+#import "PADateTimestamp.h"
+#import "PADateFormatter.h"
 #import <SDImageCache.h>
 
 typedef enum _PWPhotoEditViewControllerSectionType {
@@ -259,10 +261,12 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
                 cell.textLabel.text = @"Title";
                 cell.detailTextLabel.text = _photo.media.title;
                 break;
-            case PWPhotoEditViewControllerDESCRIPTIONTypeTIMESTAMP:
+            case PWPhotoEditViewControllerDESCRIPTIONTypeTIMESTAMP: {
                 cell.textLabel.text = @"Timestamp";
-                cell.detailTextLabel.text = _photo.gphoto.timestamp;
+                NSDate *date = [PADateTimestamp dateForTimestamp:_photo.gphoto.timestamp];
+                cell.detailTextLabel.text = [[PADateFormatter fullStringFormatter] stringFromDate:date];
                 break;
+            }
             case PWPhotoEditViewControllerDESCRIPTIONTypeSIZE:
                 cell.textLabel.text = @"Size";
                 cell.detailTextLabel.text = _photo.gphoto.size.stringValue;

@@ -13,6 +13,7 @@
 #import "PLModelObject.h"
 #import <BlocksKit+UIKit.h>
 #import "PWDatePickerView.h"
+#import "PADateTimestamp.h"
 
 @interface PLAlbumEditViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -132,7 +133,7 @@
             cell.textLabel.text = NSLocalizedString(@"Date", nil);
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             dateFormatter.dateStyle = NSDateFormatterLongStyle;
-            NSDate *date = [NSDate dateWithTimeIntervalSince1970:_timestamp.longLongValue / 1000];
+            NSDate *date = [PADateTimestamp dateForTimestamp:_timestamp.stringValue];
             cell.detailTextLabel.text = [dateFormatter stringFromDate:date];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
@@ -210,7 +211,7 @@
     _backgroundView.userInteractionEnabled = YES;
     [self.navigationController.view addSubview:_backgroundView];
     
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:_timestamp.longLongValue / 1000];
+    NSDate *date = [PADateTimestamp dateForTimestamp:_timestamp.stringValue];
     _datePickerView = [[PWDatePickerView alloc] initWithDate:date];
     _datePickerView.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
     CGRect rect = self.view.bounds;
@@ -224,7 +225,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        sself.timestamp = @((long long)[date timeIntervalSince1970] * 1000);
+        sself.timestamp = [PADateTimestamp timestampByNumberForDate:date];
         [sself.tableView reloadRowsAtIndexPaths:sself.tableView.indexPathsForSelectedRows withRowAnimation:UITableViewRowAnimationAutomatic];
         
         [sself disableDatePicker];

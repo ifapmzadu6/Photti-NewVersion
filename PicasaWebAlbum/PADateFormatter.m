@@ -18,7 +18,7 @@
     static dispatch_once_t instance;
     static NSDateFormatter *dateFormatter;
     dispatch_once(&instance, ^{
-        dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter = [NSDateFormatter new];
 		dateFormatter.dateFormat = [NSDateFormatter dateFormatFromTemplate:@"yyyyMMMd" options:0 locale:[NSLocale currentLocale]];
     });
     return dateFormatter;
@@ -28,10 +28,22 @@
     static dispatch_once_t once;
     static NSDateFormatter *mmmddFormatter;
     dispatch_once(&once, ^{
-        mmmddFormatter = [[NSDateFormatter alloc] init];
+        mmmddFormatter = [NSDateFormatter new];
 		mmmddFormatter.dateFormat = [NSDateFormatter dateFormatFromTemplate:@"MMMd" options:0 locale:[NSLocale currentLocale]];
     });
     return mmmddFormatter;
+}
+
++ (NSDateFormatter *)fullStringFormatter {
+    static dispatch_once_t onceToken;
+    static NSDateFormatter *fullStringFormatter;
+    dispatch_once(&onceToken, ^{
+        fullStringFormatter = [NSDateFormatter new];
+        fullStringFormatter.dateStyle = NSDateFormatterLongStyle;
+        fullStringFormatter.timeStyle = NSDateFormatterMediumStyle;
+        fullStringFormatter.locale = [NSLocale currentLocale];
+    });
+    return fullStringFormatter;
 }
 
 + (NSCalendar *)calendar {

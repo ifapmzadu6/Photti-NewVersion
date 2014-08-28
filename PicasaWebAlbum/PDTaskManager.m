@@ -22,6 +22,9 @@
 #import "PASnowFlake.h"
 #import "NSURLResponse+methods.h"
 
+#import "GAI.h"
+#import "GAIDictionaryBuilder.h"
+
 static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 
@@ -96,6 +99,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     }
     if (![self checkOKAddTask]) return;
     
+    // Google Analytics
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"PDTaskManager" action:@"addTasks" label:@"FromWebAlbum_ToLocalAlbum" value:@(fromWebAlbum.gphoto.numphotos.intValue)] build]];
+    
     __weak typeof(self) wself = self;
     [PDTaskObjectFactoryMethods makeTaskFromWebAlbum:fromWebAlbum toLocalAlbum:toLocalAlbum completion:^(NSManagedObjectID *taskObjectID, NSError *error) {
         typeof(wself) sself = wself;
@@ -127,6 +134,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
         return;
     }
     if (![self checkOKAddTask]) return;
+    
+    // Google Analytics
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"PDTaskManager" action:@"addTasks" label:@"FromLocalAlbum_ToWebAlbum" value:@(fromLocalAlbum.photos.count)] build]];
     
     __weak typeof(self) wself = self;
     [PDTaskObjectFactoryMethods makeTaskFromLocalAlbum:fromLocalAlbum toWebAlbum:toWebAlbum completion:^(NSManagedObjectID *taskObjectID, NSError *error) {
@@ -160,6 +171,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     }
     if (![self checkOKAddTask]) return;
     
+    // Google Analytics
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"PDTaskManager" action:@"addTasks" label:@"FromPhotos_ToWebAlbum" value:@(photos.count)] build]];
+    
     __weak typeof(self) wself = self;
     [PDTaskObjectFactoryMethods makeTaskFromPhotos:photos toWebAlbum:toWebAlbum completion:^(NSManagedObjectID *taskObjectID, NSError *error) {
         typeof(wself) sself = wself;
@@ -191,6 +206,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
         return;
     }
     if (![self checkOKAddTask]) return;
+    
+    // Google Analytics
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"PDTaskManager" action:@"addTasks" label:@"FromPhotos_ToLocalAlbum" value:@(photos.count)] build]];
     
     __weak typeof(self) wself = self;
     [PDTaskObjectFactoryMethods makeTaskFromPhotos:photos toLocalAlbum:toLocalAlbum completion:^(NSManagedObjectID *taskObjectID, NSError *error) {

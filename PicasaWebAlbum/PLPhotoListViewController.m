@@ -11,6 +11,7 @@
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PAString.h"
+#import "PADateTimestamp.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
@@ -612,7 +613,7 @@
         [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumID];
             albumObject.name = name;
-            albumObject.tag_date = [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue / 1000];
+            albumObject.tag_date = [PADateTimestamp dateForTimestamp:timestamp.stringValue];
             if (![albumObject.timestamp isEqualToNumber:timestamp]) {
                 albumObject.timestamp = timestamp;
                 albumObject.edited = @(YES);

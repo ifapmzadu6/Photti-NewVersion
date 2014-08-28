@@ -12,6 +12,7 @@
 
 + (NSDateFormatter *)formatter;
 + (NSDateFormatter *)mmmddFormatter;
++ (NSDateFormatter *)fullStringFormatter;
 + (NSDate *)adjustZeroClock:(NSDate *)date;
 + (NSDate *)adjustZeroYear:(NSDate *)date;
 + (NSString *)arrangeDuration:(double)duration;

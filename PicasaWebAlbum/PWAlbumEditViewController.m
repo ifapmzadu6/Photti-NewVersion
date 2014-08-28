@@ -11,6 +11,7 @@
 #import "PAColors.h"
 #import "PWPicasaAPI.h"
 #import "PWDatePickerView.h"
+#import "PADateTimestamp.h"
 #import <BlocksKit+UIKit.h>
 #import <Reachability.h>
 
@@ -138,7 +139,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
             cell.textLabel.text = NSLocalizedString(@"Date", nil);
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             dateFormatter.dateStyle = NSDateFormatterLongStyle;
-            NSDate *date = [NSDate dateWithTimeIntervalSince1970:_timestamp.longLongValue / 1000];
+            NSDate *date = [PADateTimestamp dateForTimestamp:_timestamp];
             cell.detailTextLabel.text = [dateFormatter stringFromDate:date];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
@@ -195,7 +196,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     _backgroundView.userInteractionEnabled = YES;
     [self.navigationController.view addSubview:_backgroundView];
     
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:_timestamp.longLongValue / 1000];
+    NSDate *date = [PADateTimestamp dateForTimestamp:_timestamp];
     _datePickerView = [[PWDatePickerView alloc] initWithDate:date];
     _datePickerView.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
     CGRect rect = self.view.bounds;
@@ -209,7 +210,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        sself.timestamp = [NSString stringWithFormat:@"%lld", (long long)[date timeIntervalSince1970] * 1000];
+        sself.timestamp = [PADateTimestamp timestampForDate:date];
         [sself.tableView reloadRowsAtIndexPaths:sself.tableView.indexPathsForSelectedRows withRowAnimation:UITableViewRowAnimationAutomatic];
         
         [sself disableDatePicker];

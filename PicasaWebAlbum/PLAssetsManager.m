@@ -11,6 +11,7 @@
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 #import "PADateFormatter.h"
+#import "PADateTimestamp.h"
 #import "PASnowFlake.h"
 
 @interface PLAssetsManager ()
@@ -301,7 +302,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                 }];
             }
             else {
-                //写真を全て読み込んだ後の処理だと思うわけよ
+                //写真を全て読み込んだ後の処理
                 [context performBlockAndWait:^{
                     typeof(wself) sself = wself;
                     if (!sself || !sself.isLibraryUpDated) {
@@ -371,19 +372,23 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                     // 前日に撮った写真からアルバム作成
                     @autoreleasepool {
                         if (sself.autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
-                            NSDate *adjustedDate = [PADateFormatter adjustZeroClock:date];
+                            NSDate *adjustedDate = [PADateFormatter adjustZeroClock:[NSDate date]];
+                            NSInteger seconds = -[tz secondsFromGMTForDate:adjustedDate];
+                            NSDate *adjustedTodayDate = [NSDate dateWithTimeInterval:seconds sinceDate:date];
                             NSDate *yesterday = [adjustedDate dateByAddingTimeInterval: - 24.0f * 60.0f * 60.0f];
+                            seconds = -[tz secondsFromGMTForDate:yesterday];
+                            NSDate *adjustedYesterDay = [NSDate dateWithTimeInterval:seconds sinceDate:date];
                             
                             NSFetchRequest *request = [NSFetchRequest new];
                             request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-                            request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO) AND (tag_date = %@)", @(PLAlbumObjectTagTypeAutomatically), yesterday];
+                            request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO) AND (tag_date = %@)", @(PLAlbumObjectTagTypeAutomatically), adjustedYesterDay];
                             NSError *error = nil;
                             NSArray *yesterdayAlbums = [context executeFetchRequest:request error:&error];
                             if (yesterdayAlbums.count == 0) {
                                 //今回の読み込みで追加された新規写真
                                 NSFetchRequest *newPhotoRequest = [[NSFetchRequest alloc] init];
                                 newPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                                newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (date > %@) AND (date < %@)", @(ALAssetsGroupPhotoStream), yesterday, adjustedDate];
+                                newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (date >= %@) AND (date < %@)", @(ALAssetsGroupPhotoStream), adjustedYesterDay, adjustedTodayDate];
                                 newPhotoRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
                                 NSError *error = nil;
                                 NSArray *yesterdayPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
@@ -442,7 +447,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
     photo.height = @(dimensions.height);
     photo.filename = filename;
     photo.type = type;
-    photo.timestamp = @((long long)([date timeIntervalSince1970]) * 1000);
+    photo.timestamp = [PADateTimestamp timestampByNumberForDate:date];
     photo.date = date;
     photo.duration = duration;
     photo.latitude = @(location.coordinate.latitude);
@@ -460,7 +465,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
     album.id_str = [PASnowFlake generateUniqueIDString];
     album.name = [[PADateFormatter formatter] stringFromDate:adjustedDate];
     album.tag_date = adjustedDate;
-    album.timestamp = @((long long)([adjustedDate timeIntervalSince1970]) * 1000);
+    album.timestamp = [PADateTimestamp timestampByNumberForDate:adjustedDate];
     album.import = enumurateDate;
     album.update = enumurateDate;
     album.tag_type = @(PLAlbumObjectTagTypeAutomatically);

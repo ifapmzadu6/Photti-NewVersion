@@ -193,7 +193,7 @@ typedef enum _PLPhotoEditViewControllerGPSType {
                 break;
             case PLPhotoEditViewControllerDescriptionTypeDATE:
                 cell.textLabel.text = NSLocalizedString(@"Date", nil);
-                cell.detailTextLabel.text = [[PADateFormatter formatter] stringFromDate:_photo.date];
+                cell.detailTextLabel.text = [[PADateFormatter fullStringFormatter] stringFromDate:_photo.date];
                 break;
             case PLPhotoEditViewControllerDescriptionTypeDURATION:
                 cell.textLabel.text = NSLocalizedString(@"Duration", nil);
