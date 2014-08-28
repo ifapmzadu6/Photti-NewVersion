@@ -57,7 +57,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     [[[NSURLSession sharedSession] configuration] setURLCache:nil];
     
     // Google Analytics
-//    [GAI sharedInstance].trackUncaughtExceptions = YES;
+    [GAI sharedInstance].trackUncaughtExceptions = YES;
     [GAI sharedInstance].dispatchInterval = 30;
 #ifdef DEBUG
     [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
