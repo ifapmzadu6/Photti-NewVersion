@@ -245,13 +245,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                         album = tmpalbums.firstObject;
                     }
                     else {
-                        album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
-                        album.name = name;
-                        album.type = albumType;
-                        album.id_str = id_str;
-                        album.url = albumUrl.absoluteString;
-                        album.import = enumurateDate;
-                        album.tag_type = tag_type;
+                        album = [PLAssetsManager makeNewAlbumWithName:name type:albumType id_str:id_str url:albumUrl enumurateDate:enumurateDate tag_type:tag_type context:context];
                     }
                     album.update = enumurateDate;
                 }];
@@ -310,111 +304,22 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                         return;
                     }
                     
-                    @autoreleasepool {
-                        //前回の読み込みから消えた写真
-                        NSFetchRequest *outdatedPhotoRequest = [[NSFetchRequest alloc] init];
-                        outdatedPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                        outdatedPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"update != %@", enumurateDate];
-                        NSError *error = nil;
-                        NSArray *outdatedPhotos = [context executeFetchRequest:outdatedPhotoRequest error:&error];
-                        for (PLPhotoObject *photo in outdatedPhotos) {
-                            [context deleteObject:photo];
-                        }
-                        outdatedPhotos = nil;
-                        //NSLog(@"removed = %lu", (unsigned long)outdatedPhotos.count);
-                    }
+                    //前回の読み込みから消えた写真を削除
+                    [PLAssetsManager deleteNoneAssetPhotoWithContext:context enumurateDate:enumurateDate];
                     
+                    //今回の読み込みで追加された新規写真からアルバム作成
                     NSInteger newAutoCreatAlbumCount = 0;
                     if (sself.autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
-                        //今回の読み込みで追加された新規写真
-                        NSFetchRequest *newPhotoRequest = [[NSFetchRequest alloc] init];
-                        newPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                        newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (import = %@)", @(ALAssetsGroupPhotoStream), enumurateDate];
-                        newPhotoRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
-                        NSError *error = nil;
-                        NSArray *newPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
-                        //NSLog(@"new = %lu", (unsigned long)newPhotos.count);
-                        
-                        NSDate *todayAdjustedDate = [PADateFormatter adjustZeroClock:[NSDate date]];
-                        if (newPhotos.count > 0) {
-                            //新規写真は振り分けをしなければならない
-                            NSFetchRequest *request = [NSFetchRequest new];
-                            request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-                            request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(PLAlbumObjectTagTypeAutomatically)];
-                            error = nil;
-                            NSMutableArray *autoCreatedAlbums = [context executeFetchRequest:request error:&error].mutableCopy;
-                            for (PLPhotoObject *newPhoto in newPhotos) {
-                                NSDate *adjustedDate = [PADateFormatter adjustZeroClock:newPhoto.date];
-                                BOOL isDetected = NO;
-                                for (PLAlbumObject *album in autoCreatedAlbums.reverseObjectEnumerator) {
-                                    if ([album.tag_date isEqualToDate:adjustedDate]) {
-                                        [album addPhotosObject:newPhoto];
-                                        isDetected = YES;
-                                        break;
-                                    }
-                                }
-                                if (!isDetected) {
-                                    //今日のやつはアルバムを作らない
-                                    if (![adjustedDate isEqualToDate:todayAdjustedDate]) {
-                                        //自動作成版アルバムを作る
-                                        PLAlbumObject *album = [PLAssetsManager makeNewAutoCreateAlbumWithEnumurateDate:enumurateDate adjustedDate:adjustedDate context:context];
-                                        
-                                        [album addPhotosObject:newPhoto];
-                                        
-                                        [autoCreatedAlbums addObject:album];
-                                        newAutoCreatAlbumCount++;
-                                    }
-                                }
-                            }
-                        }
+                        newAutoCreatAlbumCount = [PLAssetsManager makeNewAlbumsFromNewPhotosWithContext:context enumurateDate:enumurateDate];
                     }
-                    
+
                     // 前日に撮った写真からアルバム作成
-                    @autoreleasepool {
-                        if (sself.autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
-                            NSDate *adjustedDate = [PADateFormatter adjustZeroClock:[NSDate date]];
-                            NSInteger seconds = -[tz secondsFromGMTForDate:adjustedDate];
-                            NSDate *adjustedTodayDate = [NSDate dateWithTimeInterval:seconds sinceDate:date];
-                            NSDate *yesterday = [adjustedDate dateByAddingTimeInterval: - 24.0f * 60.0f * 60.0f];
-                            seconds = -[tz secondsFromGMTForDate:yesterday];
-                            NSDate *adjustedYesterDay = [NSDate dateWithTimeInterval:seconds sinceDate:date];
-                            
-                            NSFetchRequest *request = [NSFetchRequest new];
-                            request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-                            request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO) AND (tag_date = %@)", @(PLAlbumObjectTagTypeAutomatically), adjustedYesterDay];
-                            NSError *error = nil;
-                            NSArray *yesterdayAlbums = [context executeFetchRequest:request error:&error];
-                            if (yesterdayAlbums.count == 0) {
-                                //今回の読み込みで追加された新規写真
-                                NSFetchRequest *newPhotoRequest = [[NSFetchRequest alloc] init];
-                                newPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                                newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (date >= %@) AND (date < %@)", @(ALAssetsGroupPhotoStream), adjustedYesterDay, adjustedTodayDate];
-                                newPhotoRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
-                                NSError *error = nil;
-                                NSArray *yesterdayPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
-                                if (yesterdayPhotos.count > 0) {
-                                    PLAlbumObject *album = [PLAssetsManager makeNewAutoCreateAlbumWithEnumurateDate:enumurateDate adjustedDate:yesterday context:context];
-                                    for (PLPhotoObject *photo in yesterdayPhotos) {
-                                        [album addPhotosObject:photo];
-                                    }
-                                }
-                            }
-                        }
+                    if (sself.autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
+                        [PLAssetsManager makeYesterdayAlbumWithContext:context enumurateDate:enumurateDate];
                     }
                     
                     // 自動作成されたアルバムで写真枚数が0になったものを削除
-                    @autoreleasepool {
-                        NSFetchRequest *request = [NSFetchRequest new];
-                        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-                        request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(PLAlbumObjectTagTypeAutomatically)];
-                        NSError *error = nil;
-                        NSArray *autoCreatedAlbums = [context executeFetchRequest:request error:&error];
-                        for (PLAlbumObject *album in autoCreatedAlbums) {
-                            if (album.photos.count == 0) {
-                                [context deleteObject:album];
-                            }
-                        }
-                    }
+                    [PLAssetsManager deleteAutoCreateAlbumsNoPhotosWithContext:context];
                     
                     NSError *error = nil;
                     if (![context save:&error]) {
@@ -456,8 +361,18 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
     photo.import = enumurateDate;
     photo.tag_albumtype = albumType;
     photo.id_str = url.query;
-    
     return photo;
+}
+
++ (PLAlbumObject *)makeNewAlbumWithName:(NSString *)name type:(NSNumber *)type id_str:(NSString *)id_str url:(NSURL *)url enumurateDate:(NSDate *)enumurateDate tag_type:(NSNumber *)tag_type context:(NSManagedObjectContext *)context {
+    PLAlbumObject *album = [NSEntityDescription insertNewObjectForEntityForName:kPLAlbumObjectName inManagedObjectContext:context];
+    album.name = name;
+    album.type = type;
+    album.id_str = id_str;
+    album.url = url.absoluteString;
+    album.import = enumurateDate;
+    album.tag_type = tag_type;
+    return album;
 }
 
 + (PLAlbumObject *)makeNewAutoCreateAlbumWithEnumurateDate:(NSDate *)enumurateDate adjustedDate:(NSDate *)adjustedDate context:(NSManagedObjectContext *)context {
@@ -469,8 +384,106 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
     album.import = enumurateDate;
     album.update = enumurateDate;
     album.tag_type = @(PLAlbumObjectTagTypeAutomatically);
-    
     return album;
+}
+
++ (void)deleteNoneAssetPhotoWithContext:(NSManagedObjectContext *)context enumurateDate:(NSDate *)enumurateDate {
+    NSFetchRequest *outdatedPhotoRequest = [NSFetchRequest new];
+    outdatedPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+    outdatedPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"update != %@", enumurateDate];
+    NSError *error = nil;
+    NSArray *outdatedPhotos = [context executeFetchRequest:outdatedPhotoRequest error:&error];
+    for (PLPhotoObject *photo in outdatedPhotos) {
+        [context deleteObject:photo];
+    }
+    outdatedPhotos = nil;
+    //NSLog(@"removed = %lu", (unsigned long)outdatedPhotos.count);
+}
+
++ (NSUInteger)makeNewAlbumsFromNewPhotosWithContext:(NSManagedObjectContext *)context enumurateDate:(NSDate *)enumurateDate {
+    NSInteger newAutoCreatAlbumCount = 0;
+    
+    NSFetchRequest *newPhotoRequest = [NSFetchRequest new];
+    newPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+    newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (import = %@)", @(ALAssetsGroupPhotoStream), enumurateDate];
+    newPhotoRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
+    NSError *error = nil;
+    NSArray *newPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
+    //NSLog(@"new = %lu", (unsigned long)newPhotos.count);
+    
+    NSDate *todayAdjustedDate = [PADateFormatter adjustZeroClock:[NSDate date]];
+    if (newPhotos.count > 0) {
+        //新規写真は振り分けをしなければならない
+        NSFetchRequest *request = [NSFetchRequest new];
+        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+        request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(PLAlbumObjectTagTypeAutomatically)];
+        error = nil;
+        NSMutableArray *autoCreatedAlbums = [context executeFetchRequest:request error:&error].mutableCopy;
+        for (PLPhotoObject *newPhoto in newPhotos) {
+            NSDate *adjustedDate = [PADateFormatter adjustZeroClock:newPhoto.date];
+            BOOL isDetected = NO;
+            for (PLAlbumObject *album in autoCreatedAlbums.reverseObjectEnumerator) {
+                if ([album.tag_date isEqualToDate:adjustedDate]) {
+                    [album addPhotosObject:newPhoto];
+                    isDetected = YES;
+                    break;
+                }
+            }
+            if (!isDetected) {
+                //今日のやつはアルバムを作らない
+                if (![adjustedDate isEqualToDate:todayAdjustedDate]) {
+                    //自動作成版アルバムを作る
+                    PLAlbumObject *album = [PLAssetsManager makeNewAutoCreateAlbumWithEnumurateDate:enumurateDate adjustedDate:adjustedDate context:context];
+                    
+                    [album addPhotosObject:newPhoto];
+                    
+                    [autoCreatedAlbums addObject:album];
+                    newAutoCreatAlbumCount++;
+                }
+            }
+        }
+    }
+    
+    return newAutoCreatAlbumCount;
+}
+
++ (void)makeYesterdayAlbumWithContext:(NSManagedObjectContext *)context enumurateDate:(NSDate *)enumurateDate {
+    NSDate *adjustedDate = [PADateFormatter adjustZeroClock:[NSDate date]];
+    NSDate *adjustedYesterday = [adjustedDate dateByAddingTimeInterval: - 24.0f * 60.0f * 60.0f];
+    
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+    request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO) AND (tag_date = %@)", @(PLAlbumObjectTagTypeAutomatically), adjustedYesterday];
+    NSError *error = nil;
+    NSArray *yesterdayAlbums = [context executeFetchRequest:request error:&error];
+    if (yesterdayAlbums.count == 0) {
+        //今回の読み込みで追加された新規写真
+        NSFetchRequest *newPhotoRequest = [NSFetchRequest new];
+        newPhotoRequest.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+        newPhotoRequest.predicate = [NSPredicate predicateWithFormat:@"(tag_albumtype != %@) AND (date >= %@) AND (date < %@)", @(ALAssetsGroupPhotoStream), adjustedYesterday, adjustedDate];
+        newPhotoRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]];
+        NSError *error = nil;
+        NSArray *yesterdayPhotos = [context executeFetchRequest:newPhotoRequest error:&error];
+        if (yesterdayPhotos.count > 0) {
+            PLAlbumObject *album = [PLAssetsManager makeNewAutoCreateAlbumWithEnumurateDate:enumurateDate adjustedDate:adjustedYesterday context:context];
+            for (PLPhotoObject *photo in yesterdayPhotos) {
+                [album addPhotosObject:photo];
+            }
+        }
+    }
+}
+
++ (void)deleteAutoCreateAlbumsNoPhotosWithContext:(NSManagedObjectContext *)context {
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
+    request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(PLAlbumObjectTagTypeAutomatically)];
+    NSError *error = nil;
+    NSArray *autoCreatedAlbums = [context executeFetchRequest:request error:&error];
+    for (PLAlbumObject *album in autoCreatedAlbums) {
+        if (album.photos.count == 0) {
+            [context deleteObject:album];
+        }
+    }
 }
 
 @end
