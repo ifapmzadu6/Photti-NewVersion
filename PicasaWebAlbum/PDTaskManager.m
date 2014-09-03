@@ -22,8 +22,8 @@
 #import "PASnowFlake.h"
 #import "NSURLResponse+methods.h"
 
-#import "GAI.h"
-#import "GAIDictionaryBuilder.h"
+#import <GAI.h>
+#import <GAIDictionaryBuilder.h>
 
 static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";

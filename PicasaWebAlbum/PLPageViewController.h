@@ -8,6 +8,6 @@
 
 @import UIKit;
 
-@interface PLPageViewController : UIPageViewController <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate>
+@interface PLPageViewController : UIPageViewController
 
 @end

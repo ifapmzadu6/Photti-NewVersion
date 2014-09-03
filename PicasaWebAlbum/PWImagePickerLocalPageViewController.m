@@ -65,7 +65,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     }
     
     //ScrollViewDelegate
-    [self.view.subviews.firstObject setDelegate:self];
+    [self.view.subviews.firstObject setDelegate:(id)self];
     
     _titleView = [[PLParallelNavigationTitleView alloc] init];
     _titleView.frame = CGRectMake(0.0f, 0.0f, 200.0f, 44.0f);

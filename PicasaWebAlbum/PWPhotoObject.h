@@ -26,7 +26,7 @@
 @property (nonatomic, retain) NSNumber * sortIndex;
 @property (nonatomic, retain) NSString * summary;
 @property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSString * updated;
+@property (nonatomic, retain) NSString * updated_str;
 @property (nonatomic, retain) NSString * tag_originalimage_url;
 @property (nonatomic, retain) NSString * tag_screenimage_url;
 @property (nonatomic, retain) NSString * tag_thumbnail_url;

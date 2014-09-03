@@ -27,6 +27,8 @@ PODS:
   - GData/XMLNode (1.12.0):
     - gtm-oauth2
     - GTMHTTPFetcher
+  - Google-Mobile-Ads-SDK (6.11.1)
+  - GoogleAnalytics-iOS-SDK (3.0.9)
   - gtm-oauth2 (0.1.0):
     - GTMHTTPFetcher
   - GTMHTTPFetcher (0.1.0)
@@ -42,6 +44,8 @@ DEPENDENCIES:
   - BlocksKit
   - FLAnimatedImage
   - GData
+  - Google-Mobile-Ads-SDK
+  - GoogleAnalytics-iOS-SDK
   - LXReorderableCollectionViewFlowLayout
   - Reachability
   - SDWebImage
@@ -52,6 +56,8 @@ SPEC CHECKSUMS:
   BlocksKit: 4439e7f30a9f90743462ca63545a15c1f4304cef
   FLAnimatedImage: a91333b191d57ecf7f86b85bf93145a7f63dafe5
   GData: 99d19dd8ee328ce77d12d504ddf9b0e0a6e3bc0d
+  Google-Mobile-Ads-SDK: 657fcbf9436363d0f925cf905d176fb1cb10df85
+  GoogleAnalytics-iOS-SDK: d9e198b1f955259a72886769be7377cdfcdb2250
   gtm-oauth2: 64f2d404a50676ab63b5437a02a7567da8f8b7fa
   GTMHTTPFetcher: 0f02d5a5803dd08736462981064de6a7f59cf9bd
   LXReorderableCollectionViewFlowLayout: b4e25543263e27d4c147109ae5ead01cc9119f23

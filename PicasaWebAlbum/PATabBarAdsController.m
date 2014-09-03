@@ -8,7 +8,7 @@
 
 #import "PATabBarAdsController.h"
 
-#import "GADBannerView.h"
+#import <GADBannerView.h>
 
 @interface PATabBarAdsController ()
 

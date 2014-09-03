@@ -49,7 +49,7 @@
     }
     KKStaticTableViewSectionItem *newSection = [[KKStaticTableViewSectionItem alloc] init];
     newSection.title = sectionTitle;
-    newSection.description = description;
+    newSection.detail = description;
     [_sections addObject:newSection];
     
     return newSection;
@@ -167,7 +167,7 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     KKStaticTableViewSectionItem *staticSection = _sections[section];
-    return staticSection.description;
+    return staticSection.detail;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

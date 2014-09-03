@@ -79,7 +79,7 @@ static NSString * const PWXMLNode = @"text";
     PWAlbumObject *album = nil;
     if (tmpExistingAlbums.count > 0) {
         PWAlbumObject *existingAlbum = tmpExistingAlbums.firstObject;
-        if ([updated isEqualToString:existingAlbum.updated]) {
+        if ([updated isEqualToString:existingAlbum.updated_str]) {
             return existingAlbum;
         }
         else {
@@ -208,7 +208,7 @@ static NSString * const PWXMLNode = @"text";
     NSArray *tmpExistingPhotos = [existingPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
     if (tmpExistingPhotos.count > 0) {
         PWPhotoObject *existingPhoto = tmpExistingPhotos.firstObject;
-        if ([updated isEqualToString:existingPhoto.updated]) {
+        if ([updated isEqualToString:existingPhoto.updated_str]) {
             return existingPhoto;
         }
         else {
@@ -283,7 +283,7 @@ static NSString * const PWXMLNode = @"text";
     if (title && ![title isEqualToString:photo.title]) {
         photo.title = title;
     }
-    photo.updated = updated;
+    photo.updated_str = updated;
     photo.gphoto = [PWPicasaParser gphotoFromJson:json context:context];
     
     if (photo.gphoto) {

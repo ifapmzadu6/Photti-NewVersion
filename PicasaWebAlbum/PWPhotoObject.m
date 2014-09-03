@@ -28,7 +28,7 @@
 @dynamic sortIndex;
 @dynamic summary;
 @dynamic title;
-@dynamic updated;
+@dynamic updated_str;
 @dynamic tag_originalimage_url;
 @dynamic tag_screenimage_url;
 @dynamic tag_thumbnail_url;

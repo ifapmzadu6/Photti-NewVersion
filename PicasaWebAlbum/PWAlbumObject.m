@@ -26,7 +26,7 @@
 @dynamic summary;
 @dynamic title;
 @dynamic type;
-@dynamic updated;
+@dynamic updated_str;
 @dynamic userid;
 @dynamic tag_thumbnail_url;
 @dynamic tag_updated;

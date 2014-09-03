@@ -25,7 +25,7 @@
 @property (nonatomic, retain) NSString * summary;
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSString * type;
-@property (nonatomic, retain) NSString * updated;
+@property (nonatomic, retain) NSString * updated_str;
 @property (nonatomic, retain) NSString * userid;
 @property (nonatomic, retain) NSString * tag_thumbnail_url;
 @property (nonatomic, retain) NSDate * tag_updated;

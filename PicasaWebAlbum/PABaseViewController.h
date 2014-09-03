@@ -8,7 +8,7 @@
 
 @import UIKit;
 
-#import "GAITrackedViewController.h"
+#import <GAITrackedViewController.h>
 
 @interface PABaseViewController : GAITrackedViewController
 

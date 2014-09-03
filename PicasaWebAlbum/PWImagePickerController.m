@@ -147,7 +147,9 @@
         NSMutableArray *photos = @[].mutableCopy;
         for (NSString *id_str in _selectedPhotoIDs) {
             id photo = [self getPhotoByID:id_str];
-            [photos addObject:photo];
+            if (photo) {
+                [photos addObject:photo];
+            }
         }
         
         if (_completion) {

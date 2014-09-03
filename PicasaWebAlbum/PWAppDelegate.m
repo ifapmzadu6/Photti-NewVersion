@@ -16,9 +16,8 @@
 #import <Crashlytics/Crashlytics.h>
 #import <SDImageCache.h>
 #import <Appirater.h>
-
-#import "GAI.h"
-#import "GAIDictionaryBuilder.h"
+#import <GAI.h>
+#import <GAIDictionaryBuilder.h>
 
 #import "PDTaskManager.h"
 #import "PLAssetsManager.h"

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13E28" minimumToolsVersion="Xcode 4.5" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6220.17" systemVersion="13E28" minimumToolsVersion="Xcode 4.5" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="PWAlbumManagedObject" representedClassName="PWAlbumObject" syncable="YES">
         <attribute name="author_name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="author_url" optional="YES" attributeType="String" syncable="YES"/>
@@ -131,13 +131,13 @@
         <relationship name="media" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PWMediaManagedObject" inverseName="photo" inverseEntity="PWMediaManagedObject" syncable="YES"/>
     </entity>
     <elements>
-        <element name="PWAlbumManagedObject" positionX="-63" positionY="-18" width="128" height="330"/>
-        <element name="PWGPhotoManagedObject" positionX="-36" positionY="54" width="128" height="630"/>
-        <element name="PWLinkManagedObject" positionX="0" positionY="171" width="128" height="118"/>
-        <element name="PWMediaContentManagedObject" positionX="-45" positionY="36" width="128" height="133"/>
-        <element name="PWMediaManagedObject" positionX="-36" positionY="81" width="128" height="165"/>
-        <element name="PWMediaThumbnailManagedObject" positionX="-27" positionY="72" width="128" height="103"/>
-        <element name="PWPhotoExitManagedObject" positionX="18" positionY="180" width="128" height="208"/>
-        <element name="PWPhotoManagedObject" positionX="-54" positionY="45" width="128" height="375"/>
+        <element name="PWAlbumManagedObject" positionX="0" positionY="0" width="128" height="330"/>
+        <element name="PWGPhotoManagedObject" positionX="0" positionY="0" width="128" height="630"/>
+        <element name="PWLinkManagedObject" positionX="0" positionY="0" width="128" height="120"/>
+        <element name="PWMediaContentManagedObject" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="PWMediaManagedObject" positionX="0" positionY="0" width="128" height="165"/>
+        <element name="PWMediaThumbnailManagedObject" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="PWPhotoExitManagedObject" positionX="0" positionY="0" width="128" height="210"/>
+        <element name="PWPhotoManagedObject" positionX="0" positionY="0" width="128" height="375"/>
     </elements>
 </model>

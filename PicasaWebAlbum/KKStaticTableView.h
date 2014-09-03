@@ -61,7 +61,7 @@ typedef enum _KKStaticTableViewCellType {
 @interface KKStaticTableViewSectionItem : NSObject
 
 @property (strong, nonatomic) NSString *title;
-@property (strong, nonatomic) NSString *description;
+@property (strong, nonatomic) NSString *detail;
 @property (strong, nonatomic) NSMutableArray *cells;
 
 @end

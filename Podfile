@@ -1,4 +1,4 @@
-platform :ios, '7.1.1'
+platform :ios, '7.0'
 
 # ignore all warnings from all pods
 inhibit_all_warnings!
@@ -11,5 +11,7 @@ pod 'SFHFKeychainUtils', :inhibit_warnings => true
 pod 'Reachability', :inhibit_warnings => true
 pod 'Appirater', :inhibit_warnings => true
 pod 'FLAnimatedImage', :inhibit_warnings => true
+pod 'GoogleAnalytics-iOS-SDK', :inhibit_warnings => true
+pod 'Google-Mobile-Ads-SDK', :inhibit_warnings => true
 
 

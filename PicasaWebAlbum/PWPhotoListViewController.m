@@ -698,7 +698,9 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 
 #pragma mark NSFetchedResultsControllerDelegate
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    dispatch_async(dispatch_get_main_queue(), ^{        
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _collectionView.userInteractionEnabled = NO;
+        
         [_collectionView reloadData];
         
         [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
@@ -718,6 +720,8 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             _trashBarButtonItem.enabled = NO;
             _organizeBarButtonItem.enabled = NO;
         }
+        
+        _collectionView.userInteractionEnabled = YES;
     });
 }
 
