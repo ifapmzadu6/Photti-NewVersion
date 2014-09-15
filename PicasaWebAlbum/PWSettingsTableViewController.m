@@ -11,6 +11,7 @@
 #import "PWSettingsTableViewController.h"
 
 #import <BlocksKit+UIKit.h>
+#import <KKStaticTableView.h>
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PWPicasaAPI.h"
@@ -19,7 +20,6 @@
 #import "PDCoreDataAPI.h"
 #import "PAInAppPurchase.h"
 #import "PATabBarAdsController.h"
-#import "KKStaticTableView.h"
 #import "PWSettingHTMLViewController.h"
 #import "PWSelectItemFromArrayViewController.h"
 

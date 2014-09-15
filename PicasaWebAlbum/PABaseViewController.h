@@ -12,4 +12,7 @@
 
 @interface PABaseViewController : GAITrackedViewController
 
+@property (nonatomic, readonly) BOOL isPhone;
+@property (nonatomic, readonly) BOOL isLandscape;
+
 @end

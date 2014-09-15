@@ -8,24 +8,27 @@
 
 #import "PWAppDelegate.h"
 
-#import "PWNavigationController.h"
-#import "PLNavigationController.h"
-#import "PDNavigationController.h"
-#import "PATabBarAdsController.h"
-
 #import <Crashlytics/Crashlytics.h>
 #import <SDImageCache.h>
 #import <Appirater.h>
 #import <GAI.h>
 #import <GAIDictionaryBuilder.h>
 
+#import "PAColors.h"
+#import "PWPicasaAPI.h"
 #import "PDTaskManager.h"
 #import "PLAssetsManager.h"
 #import "PADateFormatter.h"
 #import "PAInAppPurchase.h"
+#import "PWCoreDataAPI.h"
+#import "PLCoreDataAPI.h"
+#import "PDCoreDataAPI.h"
 
-#import "PAColors.h"
-#import "PWPicasaAPI.h"
+#import "PWNavigationController.h"
+#import "PLNavigationController.h"
+#import "PDNavigationController.h"
+#import "PATabBarAdsController.h"
+#import "PAMigrationViewController.h"
 
 @implementation PWAppDelegate
 
@@ -64,6 +67,31 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
     [[[GAI sharedInstance] defaultTracker] setAllowIDFACollection:YES];
     
+    UIViewController *rootViewController = nil;
+    if ([PWCoreDataAPI shouldPerformCoreDataMigration]) {
+        rootViewController = [self migrationViewController];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [PWCoreDataAPI readContext];
+            [PLCoreDataAPI readContext];
+            [PDCoreDataAPI readContext];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.window.rootViewController = [self tabBarController];
+            });
+        });
+    }
+    else {
+        rootViewController = [self tabBarController];
+    }
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = rootViewController;
+    [self.window makeKeyAndVisible];
+    
+    return YES;
+}
+
+- (UIViewController *)tabBarController {
     PLNavigationController *localNavigationController = [PLNavigationController new];
     PWNavigationController *webNavigationViewController = [PWNavigationController new];
     PDNavigationController *taskNavigationController = [PDNavigationController new];
@@ -78,11 +106,14 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     PATabBarAdsController *tabBarController = [[PATabBarAdsController alloc] initWithIndex:initialTabPageIndex viewControllers:viewControllers colors:colors];
     tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
     
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = tabBarController;
-    [self.window makeKeyAndVisible];
+    return tabBarController;
+}
+
+- (UIViewController *)migrationViewController {
+    PAMigrationViewController *viewController = [PAMigrationViewController new];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     
-    return YES;
+    return navigationController;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

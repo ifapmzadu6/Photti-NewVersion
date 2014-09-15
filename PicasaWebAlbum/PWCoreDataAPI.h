@@ -11,6 +11,8 @@
 
 @interface PWCoreDataAPI : NSObject
 
++ (BOOL)shouldPerformCoreDataMigration;
+
 + (NSManagedObjectContext *)readContext;
 + (NSManagedObjectContext *)writeContext;
 + (void)writeContextFinish:(NSManagedObjectContext *)context;

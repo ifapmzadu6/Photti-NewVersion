@@ -20,6 +20,7 @@
     dispatch_once(&instance, ^{
         dateFormatter = [NSDateFormatter new];
 		dateFormatter.dateFormat = [NSDateFormatter dateFormatFromTemplate:@"yyyyMMMd" options:0 locale:[NSLocale currentLocale]];
+        dateFormatter.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     });
     return dateFormatter;
 }
@@ -30,6 +31,7 @@
     dispatch_once(&once, ^{
         mmmddFormatter = [NSDateFormatter new];
 		mmmddFormatter.dateFormat = [NSDateFormatter dateFormatFromTemplate:@"MMMd" options:0 locale:[NSLocale currentLocale]];
+        mmmddFormatter.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     });
     return mmmddFormatter;
 }
@@ -42,6 +44,7 @@
         fullStringFormatter.dateStyle = NSDateFormatterLongStyle;
         fullStringFormatter.timeStyle = NSDateFormatterMediumStyle;
         fullStringFormatter.locale = [NSLocale currentLocale];
+        fullStringFormatter.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     });
     return fullStringFormatter;
 }

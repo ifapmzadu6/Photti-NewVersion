@@ -21,19 +21,22 @@
     return instance;
 }
 
++ (NSManagedObjectModel *)managedObjectModel {
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PWModel" withExtension:@"momd"];
+    NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    return managedObjectModel;
+}
+
 + (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
     static NSPersistentStoreCoordinator *persistentStoreCoordinator;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PWModel" withExtension:@"momd"];
-        NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-        
-        NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"PWModel.sqlite"];
+        NSManagedObjectModel *managedObjectModel = [self managedObjectModel];
+        NSURL *storeURL = [self storeURL];
         
         NSPersistentStoreCoordinator *tmpPersistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
         
-        NSDictionary *options = @{NSInferMappingModelAutomaticallyOption:@YES,
-                                  NSMigratePersistentStoresAutomaticallyOption:@YES};
+        NSDictionary *options = @{NSInferMappingModelAutomaticallyOption:@YES, NSMigratePersistentStoresAutomaticallyOption:@YES};
         NSError *error = nil;
         if (![tmpPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:&error]) {
             
@@ -46,10 +49,24 @@
     return persistentStoreCoordinator;
 }
 
++ (NSURL *)storeURL {
+    return [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"PWModel.sqlite"];
+}
+
 + (NSURL *)applicationDocumentsDirectory {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
++ (BOOL)shouldPerformCoreDataMigration {
+    NSError *error = nil;
+    NSDictionary *sourceMetaData = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:NSSQLiteStoreType URL:[self storeURL] error:&error];
+    
+    NSManagedObjectModel *managedObjectModel = [self managedObjectModel];
+    BOOL isCompatible = [managedObjectModel isConfiguration:nil compatibleWithStoreMetadata:sourceMetaData];
+    return !isCompatible;
+}
+
+#pragma mark Class Methods
 + (NSManagedObjectContext *)writeContext {
     NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     context.parentContext = [self readContext];

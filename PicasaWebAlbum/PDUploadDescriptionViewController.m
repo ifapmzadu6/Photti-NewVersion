@@ -143,9 +143,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     NSRange linkRange = [string rangeOfString:@"Google Storage"];
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:string];
     [attributedString addAttribute:NSLinkAttributeName value:kPDGoogleDriveURL range:linkRange];
-    
     _highResolutionDescriptionLabel.attributedText = attributedString;
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _highResolutionDescriptionLabel.font = [UIFont systemFontOfSize:14.0f];
     }

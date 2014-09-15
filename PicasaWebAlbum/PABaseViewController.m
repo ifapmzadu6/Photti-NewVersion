@@ -10,6 +10,8 @@
 
 @interface PABaseViewController ()
 
+@property (nonatomic, readwrite) BOOL isPhone;
+
 @end
 
 @implementation PABaseViewController
@@ -17,6 +19,7 @@
 - (id)init {
     self = [super init];
     if (self) {
+        _isPhone = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? YES : NO;
     }
     return self;
 }
@@ -33,6 +36,11 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+#pragma mark methods
+- (BOOL)isLandscape {
+    return UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
 }
 
 @end
