@@ -232,7 +232,7 @@
                             });
                             if (error) return;
                             
-//                            NSData *data = [NSData dataWithContentsOfURL:location];
+                            //                            NSData *data = [NSData dataWithContentsOfURL:location];
                             AVAsset *asset = [AVAsset assetWithURL:location];
                             if (!asset) return;
                             
@@ -272,7 +272,9 @@
             if (isWebAlbum) {
                 [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
                     if (error) {
+#ifdef DEBUG
                         NSLog(@"%@", error);
+#endif
                         return;
                     }
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -283,7 +285,9 @@
             else {
                 [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toLocalAlbum:album completion:^(NSError *error) {
                     if (error) {
+#ifdef DEBUG
                         NSLog(@"%@", error);
+#endif
                         return;
                     }
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -318,7 +322,9 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [alertView dismissWithClickedButtonIndex:0 animated:YES];
                 });
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
                 return;
             }
             

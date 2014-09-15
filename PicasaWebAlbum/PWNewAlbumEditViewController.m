@@ -91,31 +91,33 @@
     
     __weak typeof(self) wself = self;
     [PWPicasaAPI postCreatingNewAlbumRequestWithTitle:albumTitle
-                                     summary:nil
-                                    location:nil
-                                      access:kPWPicasaAPIGphotoAccessProtected
-                                   timestamp:self.timestamp
-                                    keywords:nil
-                                  completion:^(PWAlbumObject *album, NSError *error) {
-                                      if (error) {
-                                          NSLog(@"%@", error);
-                                          dispatch_async(dispatch_get_main_queue(), ^{
-                                              [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                                          });
-                                          return;
-                                      }
-                                      
-                                      dispatch_async(dispatch_get_main_queue(), ^{
-                                          [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                                          
-                                          typeof(wself) sself = wself;
-                                          if (!sself) return;
-                                          [sself dismissViewControllerAnimated:YES completion:nil];
-                                          if (sself.successBlock) {
-                                              sself.successBlock();
-                                          }
-                                      });
-                                  }];
+                                              summary:nil
+                                             location:nil
+                                               access:kPWPicasaAPIGphotoAccessProtected
+                                            timestamp:self.timestamp
+                                             keywords:nil
+                                           completion:^(PWAlbumObject *album, NSError *error) {
+                                               if (error) {
+#ifdef DEBUG
+                                                   NSLog(@"%@", error);
+#endif
+                                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                                       [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                                                   });
+                                                   return;
+                                               }
+                                               
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                   [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                                                   
+                                                   typeof(wself) sself = wself;
+                                                   if (!sself) return;
+                                                   [sself dismissViewControllerAnimated:YES completion:nil];
+                                                   if (sself.successBlock) {
+                                                       sself.successBlock();
+                                                   }
+                                               });
+                                           }];
 }
 
 @end

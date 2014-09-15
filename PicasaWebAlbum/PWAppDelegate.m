@@ -117,26 +117,26 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-//    NSLog(@"%s", __func__);
+    //    NSLog(@"%s", __func__);
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-//    NSLog(@"%s", __func__);
+    //    NSLog(@"%s", __func__);
     
     [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:kPWAppDelegateBackgroundFetchDateKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-//    NSLog(@"%s", __func__);
+    //    NSLog(@"%s", __func__);
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-//    NSLog(@"%s", __func__);
+    //    NSLog(@"%s", __func__);
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-//    NSLog(@"%s", __func__);
+    //    NSLog(@"%s", __func__);
 }
 
 #pragma mark Local Notification
@@ -162,7 +162,9 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
             
             [[PLAssetsManager sharedManager] checkNewAlbumBetweenStartDate:beforeDate endDate:adjustedDate completion:^(NSArray *newAlbumDates, NSError *error) {
                 if (error) {
+#ifdef DEBUG
                     NSLog(@"%@", error);
+#endif
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (!isFinish) {
                             completionHandler(UIBackgroundFetchResultNoData);
@@ -206,7 +208,9 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 
 #pragma mark Background Transfer
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler {
+#ifdef DEBUG
     NSLog(@"%s", __func__);
+#endif
     
     PDTaskManager *sharedManager = [PDTaskManager sharedManager];
     sharedManager.backgroundComplecationHandler = completionHandler;

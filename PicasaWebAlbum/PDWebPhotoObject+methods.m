@@ -125,14 +125,18 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     
     void (^completionBlock)(NSURL *, NSError *) = ^(NSURL *assetURL, NSError *error){
         if (error || !assetURL) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             [PLCoreDataAPI writeContextFinish:plContext];
             return;
         }
         
         [[PLAssetsManager sharedLibrary] assetForURL:assetURL resultBlock:^(ALAsset *asset) {
             if (!asset) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
                 [PLCoreDataAPI writeContextFinish:plContext];
                 return;
             }
@@ -140,7 +144,9 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
             if (localAlbumObjectTagType == PLAlbumObjectTagTypeImported) {
                 [[PLAssetsManager sharedLibrary] groupForURL:[NSURL URLWithString:localAlbumObjectURL] resultBlock:^(ALAssetsGroup *group) {
                     if (!group) {
+#ifdef DEBUG
                         NSLog(@"%@", error);
+#endif
                         [PLCoreDataAPI writeContextFinish:plContext];
                         return;
                     }
@@ -218,7 +224,9 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         NSURL *newLocation = [location URLByAppendingPathExtension:@"mp4"];
         NSError *error = nil;
         if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:newLocation error:&error]) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
         }
         if ([[PLAssetsManager sharedLibrary] videoAtPathIsCompatibleWithSavedPhotosAlbum:newLocation]) {
             [[PLAssetsManager sharedLibrary] writeVideoAtPathToSavedPhotosAlbum:newLocation completionBlock:completionBlock];

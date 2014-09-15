@@ -35,7 +35,9 @@
         NSError *error = nil;
         if (![tmpPersistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
             
+#ifdef DEBUG
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+#endif
             abort();
         }
         

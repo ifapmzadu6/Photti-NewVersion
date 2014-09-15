@@ -77,7 +77,9 @@
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor {
     [super setBackgroundColor:backgroundColor];
+#ifdef DEBUG
     NSLog(@"Warning: setting background color on a UIRefreshControl is causing unexpected behavior");
+#endif
 }
 
 @end

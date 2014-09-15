@@ -263,21 +263,21 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (_photoHash != hash) return;
         SDImageCache *sharedImageCache = [SDImageCache sharedImageCache];
-            if (isGifImage) {
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[sharedImageCache defaultCachePathForKey:urlString]]) {
-                    NSData *data = [self diskImageDataBySearchingAllPathsForKey:urlString];
-                    FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
-                    [self setAnimatedImage:animatedImage hash:hash];
-                    return;
-                }
+        if (isGifImage) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[sharedImageCache defaultCachePathForKey:urlString]]) {
+                NSData *data = [self diskImageDataBySearchingAllPathsForKey:urlString];
+                FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
+                [self setAnimatedImage:animatedImage hash:hash];
+                return;
             }
-            else {
-                if ([sharedImageCache diskImageExistsWithKey:urlString]) {
-                    UIImage *diskCachedImage = [sharedImageCache imageFromDiskCacheForKey:urlString];
-                    [self setImage:[UIImage decodedImageWithImage:diskCachedImage] hash:hash];
-                    return;
-                }
+        }
+        else {
+            if ([sharedImageCache diskImageExistsWithKey:urlString]) {
+                UIImage *diskCachedImage = [sharedImageCache imageFromDiskCacheForKey:urlString];
+                [self setImage:[UIImage decodedImageWithImage:diskCachedImage] hash:hash];
+                return;
             }
+        }
         
         if (![Reachability reachabilityForInternetConnection].isReachable) {
             return;
@@ -285,7 +285,9 @@
         
         [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
                 return;
             }
             typeof(wself) sself = wself;

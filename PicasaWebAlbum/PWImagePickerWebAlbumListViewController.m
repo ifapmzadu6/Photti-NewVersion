@@ -75,7 +75,7 @@
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
-        
+    
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
@@ -84,7 +84,9 @@
     _fetchedResultsController.delegate = self;
     NSError *error = nil;
     if (![_fetchedResultsController performFetch:&error]) {
+#ifdef DEBUG
         NSLog(@"%@", error);
+#endif
         return;
     }
     
@@ -254,7 +256,9 @@
         sself.isRequesting = NO;
         
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             if (error.code == 401) {
                 [sself openLoginViewController];
             }

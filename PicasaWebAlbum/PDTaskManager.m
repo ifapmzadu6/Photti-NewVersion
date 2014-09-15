@@ -108,7 +108,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
         typeof(wself) sself = wself;
         if (!sself) return;
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             return;
         }
         [PDTaskManager getCountOfTasksWithCompletion:^(NSUInteger count, NSError *error) {
@@ -144,7 +146,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
         typeof(wself) sself = wself;
         if (!sself) return;
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             return;
         }
         [PDTaskManager getCountOfTasksWithCompletion:^(NSUInteger count, NSError *error) {
@@ -180,7 +184,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
         typeof(wself) sself = wself;
         if (!sself) return;
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             return;
         }
         [PDTaskManager getCountOfTasksWithCompletion:^(NSUInteger count, NSError *error) {
@@ -216,7 +222,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
         typeof(wself) sself = wself;
         if (!sself) return;
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             return;
         }
         [PDTaskManager getCountOfTasksWithCompletion:^(NSUInteger count, NSError *error) {
@@ -316,11 +324,15 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 
 #pragma mark NSURLSessionDelegate
 - (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error {
+#ifdef DEBUG
     NSLog(@"%s", __func__);
+#endif
 }
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
+#ifdef DEBUG
     NSLog(@"%s", __func__);
+#endif
 }
 
 #pragma mark NSURLSessionTaskDelegate
@@ -329,10 +341,14 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+#ifdef DEBUG
     NSLog(@"%s", __func__);
+#endif
     
     if (error || !task.response.isSuccess) {
+#ifdef DEBUG
         NSLog(@"%@", error);
+#endif
         return;
     }
     
@@ -342,7 +358,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
         
         PDBasePhotoObject *photoObject = [PDTaskManager getFirstTaskObject].photos.firstObject;
         if (![photoObject.session_task_identifier isEqualToNumber:@(task.taskIdentifier)]) {
+#ifdef DEBUG
             NSLog(@"[ERROR] DB not match session task!");
+#endif
             return;
         }
         
@@ -353,7 +371,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (error) {
+#ifdef DEBUG
                     NSLog(@"%@", error);
+#endif
                     return;
                 }
                 
@@ -463,7 +483,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
         if (![photoObject isKindOfClass:[PDLocalCopyPhotoObject class]]) {
             [photoObject makeSessionTaskWithSession:_backgroundSession completion:^(NSURLSessionTask *task, NSError *error) {
                 if (error) {
+#ifdef DEBUG
                     NSLog(@"%@", error);
+#endif
                 }
                 else {
                     [task resume];
@@ -487,7 +509,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     
     NSError *error = nil;
     if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:fileURL error:&error]) {
+#ifdef DEBUG
         NSLog(@"%@", error);
+#endif
         return;
     }
     

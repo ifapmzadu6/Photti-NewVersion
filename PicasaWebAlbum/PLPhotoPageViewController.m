@@ -144,7 +144,9 @@
             if (isWebAlbum) {
                 [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
                     if (error) {
+#ifdef DEBUG
                         NSLog(@"%@", error);
+#endif
                         return;
                     }
                     dispatch_async(dispatch_get_main_queue(), ^{

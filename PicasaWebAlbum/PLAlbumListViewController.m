@@ -75,7 +75,9 @@
     _fetchedResultsController.delegate = self;
     NSError *error = nil;
     if (![_fetchedResultsController performFetch:&error]) {
+#ifdef DEBUG
         NSLog(@"%@", error);
+#endif
         abort();
         return;
     }
@@ -276,7 +278,9 @@
                 });
             }
         } failureBlock:^(NSError *error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
         }];
     }
 }
@@ -284,7 +288,9 @@
 - (void)uploadActionSheetAction:(PLAlbumObject *)album {
     [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             return;
         }
         dispatch_async(dispatch_get_main_queue(), ^{

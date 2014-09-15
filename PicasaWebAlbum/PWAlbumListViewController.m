@@ -109,7 +109,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     _fetchedResultsController.delegate = self;
     NSError *error = nil;
     if (![_fetchedResultsController performFetch:&error]) {
+#ifdef DEBUG
         NSLog(@"%@", error);
+#endif
         return;
     }
     
@@ -119,7 +121,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     
     [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
     
-    [self loadDataWithStartIndex:0];    
+    [self loadDataWithStartIndex:0];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -324,7 +326,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             sself.isRequesting = NO;
             
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
                 if (error.code == 401) {
                     [sself openLoginViewController];
                 }
@@ -449,13 +453,17 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             [alertView dismissWithClickedButtonIndex:0 animated:YES];
         });
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             return;
         }
         
         [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
                 return;
             }
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -491,7 +499,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             typeof(wself) sself = wself;
             if (!sself) return;
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{

@@ -75,10 +75,14 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
     for (SKPaymentTransaction *transaction in transactions) {
         switch (transaction.transactionState) {
             case SKPaymentTransactionStatePurchasing:// 何らかのOKを押す前の処理
+#ifdef DEBUG
                 NSLog(@"SKPaymentTransactionStatePurchasing");
+#endif
                 break;
             case SKPaymentTransactionStatePurchased:// success : 決済手続き完了処理
+#ifdef DEBUG
                 NSLog(@"SKPaymentTransactionStatePurchased");
+#endif
                 isFinished = YES;
                 isPurchaced = YES;
                 for(SKPaymentTransaction *transaction in queue.transactions) {
@@ -90,18 +94,24 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
                 [queue finishTransaction:transaction];
                 break;
             case SKPaymentTransactionStateFailed://  途中でキャンセルした時orエラー
+#ifdef DEBUG
                 NSLog(@"SKPaymentTransactionStateFailed");
+#endif
                 NSLog(@"%@", transaction.error);
                 isFinished = YES;
                 [queue finishTransaction:transaction];
                 break;
             case SKPaymentTransactionStateRestored:
+#ifdef DEBUG
                 NSLog(@"SKPaymentTransactionStateRestored");
+#endif
                 isFinished = YES;
                 [queue finishTransaction:transaction];
                 break;
             default:
+#ifdef DEBUG
                 NSLog(@"default");
+#endif
                 break;
         }
     }
@@ -141,14 +151,18 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
         _paymentQueueRestored(queue.transactions, true);
     }
     
+#ifdef DEBUG
     NSLog(@"paymentQueueRestoreCompletedTransactionsFinished");
+#endif
 }
 
 #pragma mark SKProductsRequestDelegate
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
+#ifdef DEBUG
     for (NSString *identifier in response.invalidProductIdentifiers) {
         NSLog(@"invalid product identifier: %@", identifier);
     }
+#endif
     
     if (response.products.count == 0) {
         if (_getProductsCompletionBlock) {

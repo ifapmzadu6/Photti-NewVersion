@@ -71,7 +71,9 @@
     _fetchedResultsController.delegate = self;
     NSError *error = nil;
     if (![_fetchedResultsController performFetch:&error]) {
+#ifdef DEBUG
         NSLog(@"%@", error);
+#endif
         abort();
         return;
     }
@@ -192,7 +194,7 @@
 }
 
 #pragma mark NSFetchedResultsControllerDelegate
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {    
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
         

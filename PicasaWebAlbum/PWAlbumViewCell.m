@@ -202,7 +202,9 @@
         
         [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
                 return;
             }
             

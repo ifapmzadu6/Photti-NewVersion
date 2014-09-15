@@ -103,7 +103,9 @@
 }
 
 - (void)dealloc {
+#ifdef DEBUG
     NSLog(@"%s", __func__);
+#endif
     
     NSManagedObjectContext *plcontext = [PLCoreDataAPI readContext];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:plcontext];

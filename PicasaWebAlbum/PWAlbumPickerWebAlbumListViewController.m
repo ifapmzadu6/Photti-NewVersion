@@ -79,7 +79,7 @@
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_activityIndicatorView];
-        
+    
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
@@ -88,7 +88,9 @@
     _fetchedResultsController.delegate = self;
     NSError *error = nil;
     if (![_fetchedResultsController performFetch:&error]) {
+#ifdef DEBUG
         NSLog(@"%@", error);
+#endif
         return;
     }
     
@@ -220,7 +222,7 @@
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];    
+    PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
     PWAlbumPickerController *tabBarController = (PWAlbumPickerController *)self.tabBarController;
     [tabBarController doneBarButtonActionWithSelectedAlbum:album isWebAlbum:YES];
 }
@@ -259,7 +261,9 @@
         sself.isRequesting = NO;
         
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             if (error.code == 401) {
                 [sself openLoginViewController];
             }

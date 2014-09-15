@@ -190,7 +190,9 @@
         
         [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toLocalAlbum:sself.album completion:^(NSError *error) {
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
             }
             
             if (!isOnlyLocal) {
@@ -308,7 +310,9 @@
             if (isWebAlbum) {
                 [[PDTaskManager sharedManager] addTaskPhotos:selectLocalPhotos toWebAlbum:album completion:^(NSError *error) {
                     if (error) {
+#ifdef DEBUG
                         NSLog(@"%@", error);
+#endif
                         return;
                     }
                     completion();
@@ -644,7 +648,9 @@
                 });
             }
         } failureBlock:^(NSError *error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
         }];
     }
 }
@@ -652,7 +658,9 @@
 - (void)uploadActionSheetAction:(PLAlbumObject *)album {
     [[PDTaskManager sharedManager] addTaskFromLocalAlbum:album toWebAlbum:nil completion:^(NSError *error) {
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             return;
         }
         dispatch_async(dispatch_get_main_queue(), ^{

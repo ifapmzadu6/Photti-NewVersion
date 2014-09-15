@@ -63,7 +63,9 @@
         CFRelease(dest);
     }
     if (error) {
+#ifdef DEBUG
         NSLog(@"error:%@", error);
+#endif
         free(buff);
     }
     return resizedData;

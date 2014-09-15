@@ -229,7 +229,9 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
                 return;
             }
             

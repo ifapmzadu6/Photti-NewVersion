@@ -243,7 +243,9 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         
         [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:sself.album completion:^(NSError *error) {
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -425,7 +427,9 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                 
                 [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:webAlbum completion:^(NSError *error) {
                     if (error) {
+#ifdef DEBUG
                         NSLog(@"%@", error);
+#endif
                     }
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
@@ -436,7 +440,9 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                 PLAlbumObject *localAlbum = (PLAlbumObject *)album;
                 [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toLocalAlbum:localAlbum completion:^(NSError *error) {
                     if (error) {
+#ifdef DEBUG
                         NSLog(@"%@", error);
+#endif
                     }
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
@@ -512,7 +518,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 }
 
 #pragma mark UICollectionViewDelegate
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {    
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_isSelectMode) {
         _selectActionBarButton.enabled = YES;
         _trashBarButtonItem.enabled = YES;
@@ -596,10 +602,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         
         sself.navigationController.navigationBar.alpha = 0.0f;
     }];
-	if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
-		self.navigationController.interactivePopGestureRecognizer.enabled = NO;
-	}
-        
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
+    
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
@@ -626,9 +632,9 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     self.navigationController.navigationBar.alpha = 1.0f;
     [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
     
-	if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
-		self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-	}
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    }
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
@@ -655,7 +661,9 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             sself.isRequesting = NO;
             
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
                 if (error.code == 401) {
                     [sself openLoginViewController];
                 }
@@ -806,13 +814,17 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             [alertView dismissWithClickedButtonIndex:0 animated:YES];
         });
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             return;
         }
         
         [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
                 return;
             }
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -848,7 +860,9 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             typeof(wself) sself = wself;
             if (!sself) return;
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -894,7 +908,9 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                     typeof(wself) sself = wself;
                     if (!sself) return;
                     if (error) {
+#ifdef DEBUG
                         NSLog(@"%@", error);
+#endif
                         maxCount--;
                         return;
                     }

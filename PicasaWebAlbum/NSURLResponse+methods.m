@@ -49,8 +49,10 @@
         return NO;
     }
     
+#ifdef DEBUG
     NSLog(@"%ld", (long)statusCode);
     NSLog(@"%@", [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
+#endif
     
     return YES;
 }

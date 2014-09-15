@@ -179,7 +179,9 @@
     __weak typeof(self) wself = self;
     [[PLAssetsManager sharedManager] testAccessPhotoLibraryWithCompletion:^(NSError *error) {
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
         }
         typeof(wself) sself = wself;
         if (!sself) return;

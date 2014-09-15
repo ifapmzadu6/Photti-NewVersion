@@ -127,14 +127,18 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
     if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
         NSError *error = nil;
         if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:filePathURL error:&error]) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
         }
     }
     else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
         NSData *body = [PDCopyPhotoObject makeBodyFromFilePath:location.absoluteString title:photoObject.title];
         NSError *error = nil;
         if (![body writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
         }
     }
     [NSFileManager cancelProtect:filePath];

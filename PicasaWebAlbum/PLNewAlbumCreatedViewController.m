@@ -303,7 +303,9 @@
             }];
             
             [[PDTaskManager sharedManager] addTaskFromLocalAlbum:albumObject toWebAlbum:nil completion:^(NSError *error) {
+#ifdef DEBUG
                 NSLog(@"アルバムアップロード設定OK");
+#endif
             }];
         }];
     }];
@@ -501,7 +503,9 @@
 
 - (void)applyAllItems:(NSMutableArray *)albums {
     if (albums.count == 0) {
+#ifdef DEBUG
         NSLog(@"アルバムアップロードすべて設定OK");
+#endif
         return;
     }
     

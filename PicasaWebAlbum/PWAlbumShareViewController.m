@@ -221,7 +221,9 @@
                                       typeof(wself) sself = wself;
                                       if (!sself) return;
                                       if (error) {
+#ifdef DEBUG
                                           NSLog(@"%@", error);
+#endif
                                           dispatch_async(dispatch_get_main_queue(), ^{
                                               [alertView dismissWithClickedButtonIndex:0 animated:YES];
                                               

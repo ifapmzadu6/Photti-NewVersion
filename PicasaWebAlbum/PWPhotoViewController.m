@@ -113,7 +113,7 @@
     _imageScrollView.handleSingleTapBlock = nil;
 }
 
-- (void)dealloc {    
+- (void)dealloc {
     NSURLSessionDataTask *task = _task;
     if (task) {
         [task cancel];
@@ -175,7 +175,7 @@
 - (void)moviePlaybackDidFinish:(NSNotification *)notification {
     NSDictionary *userInfo = notification.userInfo;
     NSUInteger reason = [[userInfo objectForKey:@"MPMoviePlayerPlaybackDidFinishReasonUserInfoKey"] intValue];
-	if (reason == MPMovieFinishReasonUserExited || reason == MPMovieFinishReasonPlaybackEnded) {
+    if (reason == MPMovieFinishReasonUserExited || reason == MPMovieFinishReasonPlaybackEnded) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackDidFinishNotification object:_moviePlayerController];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackStateDidChangeNotification object:_moviePlayerController];
         
@@ -183,12 +183,12 @@
             [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
         }
         
-		[UIView animateWithDuration:0.3f animations:^{
-			_moviePlayerController.view.alpha = 0.0f;
-		} completion:^(BOOL finished) {
-			[_moviePlayerController.view removeFromSuperview];
-			_moviePlayerController = nil;
-		}];
+        [UIView animateWithDuration:0.3f animations:^{
+            _moviePlayerController.view.alpha = 0.0f;
+        } completion:^(BOOL finished) {
+            [_moviePlayerController.view removeFromSuperview];
+            _moviePlayerController = nil;
+        }];
     }
 }
 
@@ -296,7 +296,9 @@
         
         [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
             if (error) {
+#ifdef DEBUG
                 NSLog(@"%@", error);
+#endif
                 [PANetworkActivityIndicator decrement];
                 return;
             }
@@ -306,7 +308,9 @@
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                 [PANetworkActivityIndicator decrement];
                 if (error) {
+#ifdef DEBUG
                     NSLog(@"%@", error);
+#endif
                     return;
                 }
                 typeof(wself) sself = wself;
@@ -363,7 +367,9 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
             [PANetworkActivityIndicator decrement];
             return;
         }

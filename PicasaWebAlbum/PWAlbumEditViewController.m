@@ -292,7 +292,9 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
                                 keywords:_album.media.keywords
                               completion:^(NSError *error) {
                                   if (error) {
+#ifdef DEBUG
                                       NSLog(@"%@", error);
+#endif
                                       dispatch_async(dispatch_get_main_queue(), ^{
                                           [alertView dismissWithClickedButtonIndex:0 animated:YES];
                                       });

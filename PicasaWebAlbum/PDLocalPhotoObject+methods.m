@@ -236,7 +236,9 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
 
 - (void)finishMakeNewAlbumSessionWithResponse:(NSURLResponse *)response data:(NSData *)data {
     if (!response.isSuccess) {
+#ifdef DEBUG
         NSLog(@"%@", response);
+#endif
         return;
     }
     
@@ -245,8 +247,10 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     
     id entries = NtN(json[@"entry"]);
     if (!entries) {
+#ifdef DEBUG
         NSLog(@"Parser Error");
         NSLog(@"%s", __func__);
+#endif
         return;
     };
     
