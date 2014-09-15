@@ -61,7 +61,7 @@
     [self.contentView addSubview:_imageView];
     
     _titleLabel = [UILabel new];
-    _titleLabel.font = [UIFont systemFontOfSize:14.5f];
+    _titleLabel.font = [UIFont systemFontOfSize:14.0f];
     _titleLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
     _titleLabel.numberOfLines = 2;
     [self.contentView addSubview:_titleLabel];
