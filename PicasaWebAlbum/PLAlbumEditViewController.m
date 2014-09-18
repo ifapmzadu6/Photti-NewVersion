@@ -11,11 +11,10 @@
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PLModelObject.h"
-#import <BlocksKit+UIKit.h>
 #import "PWDatePickerView.h"
 #import "PADateTimestamp.h"
 
-@interface PLAlbumEditViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface PLAlbumEditViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 
 @end
 
@@ -97,9 +96,6 @@
         case 0:
             numberOfRows = 2;
             break;
-        case 1:
-            numberOfRows = 1;
-            break;
         default:
             break;
     }
@@ -139,27 +135,6 @@
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
     }
-    else if (indexPath.section == 1) {
-        if (indexPath.row == 0) {
-            cell.textLabel.text = NSLocalizedString(@"Auto Uploading", nil);
-            
-            UISwitch *autoUploadingSwitch = [[UISwitch alloc] init];
-            autoUploadingSwitch.on = (_uploading_type.integerValue == PLAlbumObjectTagUploadingTypeYES);
-            __weak typeof(self) wself = self;
-            [autoUploadingSwitch bk_addEventHandler:^(UISwitch * sender) {
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                
-                if (sender.on) {
-                    _uploading_type = @(PLAlbumObjectTagUploadingTypeYES);
-                }
-                else {
-                    _uploading_type = @(PLAlbumObjectTagUploadingTypeNO);
-                }
-            } forControlEvents:UIControlEventValueChanged];
-            cell.accessoryView = autoUploadingSwitch;
-        }
-    }
     
     return cell;
 }
@@ -180,15 +155,11 @@
     }
     
     UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.bounds.size.width - textSize.width - 60.0f, 20.0f)];
+    textField.delegate = self;
     textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     textField.font = [UIFont systemFontOfSize:15.0f];
     textField.text = _name;
     textField.returnKeyType = UIReturnKeyDone;
-    [textField setBk_shouldReturnBlock:^BOOL(UITextField *textField) {
-        [textField resignFirstResponder];
-        
-        return YES;
-    }];
     textField.exclusiveTouch = YES;
     
     _nameTextField = textField;
@@ -196,6 +167,14 @@
     return textField;
 }
 
+#pragma mark UITextFieldDelegate
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    
+    return YES;
+}
+
+#pragma mark Methods
 - (void)enableDatePicker {
     UITextField *textField = _nameTextField;
     if (textField) {

@@ -9,9 +9,7 @@
 
 #import "PLNewAlbumEditViewController.h"
 
-#import <BlocksKit+UIKit.h>
-
-@interface PLNewAlbumEditViewController ()
+@interface PLNewAlbumEditViewController () <UITextFieldDelegate>
 
 @end
 
@@ -40,21 +38,24 @@
     }
     
     UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.bounds.size.width - textSize.width - 60.0f, 20.0f)];
+    textField.delegate = self;
     textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     textField.font = [UIFont systemFontOfSize:15.0f];
     textField.text = self.name;
     textField.placeholder = NSLocalizedString(@"New Album", nil);
     textField.returnKeyType = UIReturnKeyDone;
-    [textField setBk_shouldReturnBlock:^BOOL(UITextField *textField) {
-        [textField resignFirstResponder];
-        
-        return YES;
-    }];
     textField.exclusiveTouch = YES;
     
     self.nameTextField = textField;
     
     return textField;
+}
+
+#pragma mark UITextFieldDelegate
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    
+    return YES;
 }
 
 @end

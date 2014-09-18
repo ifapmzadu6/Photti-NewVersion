@@ -10,7 +10,6 @@
 
 #import "PWMapViewController.h"
 #import "PANetworkActivityIndicator.h"
-#import <BlocksKit+UIKit.h>
 
 static NSString * const kPWMapViewControllerAppleMapURL = @"http://maps.apple.com";
 static NSString * const kPWMapViewControllerGMapURLSheme = @"comgooglemaps://";
@@ -24,7 +23,7 @@ static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.c
 
 
 
-@interface PWMapViewController () <MKMapViewDelegate>
+@interface PWMapViewController () <MKMapViewDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) MKMapView *mapView;
 
@@ -123,27 +122,13 @@ static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.c
 }
 
 - (void)actionBarButtonAction:(id)sender {
-    NSString *param = [NSString stringWithFormat:@"q=%lf,%lf", _coordinate.latitude, _coordinate.longitude];
-    
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Open in Maps", nil) handler:^{
-        NSString *url = [NSString stringWithFormat:@"%@/?%@", kPWMapViewControllerAppleMapURL, param];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
-    }];
-    
+    UIActionSheet *actionSheet = nil;
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:kPWMapViewControllerGMapURLSheme]]) {
-        [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Open in Google Maps", nil) handler:^{
-            NSString *urlScheme = [NSString stringWithFormat:@"%@?%@", kPWMapViewControllerGMapURLSheme, param];
-            if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlScheme]]) {
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlScheme]];
-            }
-            else {
-                NSString *url = [NSString stringWithFormat:@"%@?%@", kPWMapViewControllerGMapHTTPURL, param];
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
-            }
-        }];
+        actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open in Maps", nil), NSLocalizedString(@"Open in Google Maps", nil), nil];
     }
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    else {
+        actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open in Maps", nil), nil];
+    }
     [actionSheet showInView:self.view];
 }
 
@@ -191,6 +176,28 @@ static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.c
 
 - (void)mapViewDidFinishLoadingMap:(MKMapView *)mapView {
 	[PANetworkActivityIndicator decrement];
+}
+
+#pragma mark UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+    
+    NSString *param = [NSString stringWithFormat:@"q=%lf,%lf", _coordinate.latitude, _coordinate.longitude];
+    
+    if ([buttonTitle isEqualToString:NSLocalizedString(@"Open in Maps", nil)]) {
+        NSString *url = [NSString stringWithFormat:@"%@/?%@", kPWMapViewControllerAppleMapURL, param];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+    }
+    else if ([buttonTitle isEqualToString:NSLocalizedString(@"Open in Google Maps", nil)]) {
+        NSString *urlScheme = [NSString stringWithFormat:@"%@?%@", kPWMapViewControllerGMapURLSheme, param];
+        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlScheme]]) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlScheme]];
+        }
+        else {
+            NSString *url = [NSString stringWithFormat:@"%@?%@", kPWMapViewControllerGMapHTTPURL, param];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+        }
+    }
 }
 
 @end

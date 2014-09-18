@@ -16,7 +16,6 @@
 #import "PWPicasaAPI.h"
 #import "PWPhotoViewController.h"
 #import "PATabBarAdsController.h"
-#import <BlocksKit+UIKit.h>
 #import <Reachability.h>
 #import <SDImageCache.h>
 #import "PABaseNavigationController.h"
@@ -25,7 +24,7 @@
 #import "PWAlbumPickerController.h"
 #import "PDTaskManager.h"
 
-@interface PWPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate>
+@interface PWPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
 @property (strong, nonatomic) NSArray *photos;
 
@@ -134,22 +133,14 @@
                 return;
             }
             
-            UIAlertView *alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil];
-            __weak typeof(self) wself = self;
-            [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                
-                NSURLSessionDataTask *task = sself.sessionDataTask;
-                if (task) {
-                    [task cancel];
-                }
-            }];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
+            alertView.tag = 2001;
             UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
             indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
             [indicator startAnimating];
             [alertView setValue:indicator forKey:@"accessoryView"];
             [alertView show];
+            __weak typeof(self) wself = self;
             [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
                 typeof(wself) sself = wself;
                 if (!sself) {
@@ -181,7 +172,10 @@
         }
     }
     else if (photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Choose a video quality to share", nil)];
+        UIActionSheet *actionSheet = [UIActionSheet new];
+        actionSheet.delegate = self;
+        actionSheet.tag = 1001;
+        actionSheet.title = NSLocalizedString(@"Choose a video quality to share", nil);
         for (PWPhotoMediaContentObject *content in photo.media.content.reversedOrderedSet) {
             if ([content.type isEqualToString:@"video/mpeg4"]) {
                 NSString *title = nil;
@@ -191,151 +185,23 @@
                 else {
                     title = [NSString stringWithFormat:@"%@P", content.height];
                 }
-                
-                NSString *urlString = content.url;
-                
-                __weak typeof(self) wself = self;
-                [actionSheet bk_addButtonWithTitle:title handler:^{
-                    __block UIAlertView *alertView = nil;
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        typeof(wself) sself = wself;
-                        if (!sself) return;
-                        alertView = [[UIAlertView alloc] bk_initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil];
-                        [alertView bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{
-                            typeof(wself) sself = wself;
-                            if (!sself) return;
-                            
-                            NSURLSessionDataTask *task = sself.sessionDataTask;
-                            if (task) {
-                                [task cancel];
-                            }
-                        }];
-                        UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                        indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
-                        [indicator startAnimating];
-                        [alertView setValue:indicator forKey:@"accessoryView"];
-                        [alertView show];
-                    });
-                    
-                    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
-                        typeof(wself) sself = wself;
-                        if (!sself) {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [alertView dismissWithClickedButtonIndex:NSIntegerMax animated:YES];
-                            });
-                            return;
-                        };
-                        
-                        NSURLSessionDataTask *task = (NSURLSessionDataTask *)[[NSURLSession sharedSession] downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [alertView dismissWithClickedButtonIndex:NSIntegerMax animated:YES];
-                            });
-                            if (error) return;
-                            
-                            //                            NSData *data = [NSData dataWithContentsOfURL:location];
-                            AVAsset *asset = [AVAsset assetWithURL:location];
-                            if (!asset) return;
-                            
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                typeof(wself) sself = wself;
-                                if (!sself) return;
-                                
-                                UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[asset] applicationActivities:nil];
-                                [sself presentViewController:activityViewController animated:YES completion:nil];
-                            });
-                        }];
-                        [task resume];
-                        sself.sessionDataTask = task;
-                    }];
-                }];
+                [actionSheet addButtonWithTitle:title];
             }
         }
-        [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"Cancel", nil)];
         [actionSheet showFromBarButtonItem:sender animated:YES];
     }
 }
 
 - (void)organizeBarButtonAction:(id)sender {
-    __weak typeof(self) wself = self;
-    
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Copy", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        PWPhotoObject *photo = sself.photos[sself.index];
-        
-        PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            if (isWebAlbum) {
-                [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
-                    if (error) {
-#ifdef DEBUG
-                        NSLog(@"%@", error);
-#endif
-                        return;
-                    }
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                    });
-                }];
-            }
-            else {
-                [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toLocalAlbum:album completion:^(NSError *error) {
-                    if (error) {
-#ifdef DEBUG
-                        NSLog(@"%@", error);
-#endif
-                        return;
-                    }
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                    });
-                }];
-            }
-        }];
-        albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
-        [sself.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
-    }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Copy", nil), nil];
+    actionSheet.tag = 1002;
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
 - (void)trashBarButtonAction:(id)sender {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Are you sure you want to delete?", nil)];
-    __weak typeof(self) wself = self;
-    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        PWPhotoObject *photo = sself.photos[sself.index];
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-        UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        indicator.center = CGPointMake((sself.view.bounds.size.width / 2) - 20, (sself.view.bounds.size.height / 2) - 130);
-        [indicator startAnimating];
-        [alertView setValue:indicator forKey:@"accessoryView"];
-        [alertView show];
-        [PWPicasaAPI deletePhoto:photo completion:^(NSError *error) {
-            if (error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                });
-#ifdef DEBUG
-                NSLog(@"%@", error);
-#endif
-                return;
-            }
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                
-                [sself.navigationController popViewControllerAnimated:YES];
-            });
-        }];
-    }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"Are you sure you want to delete?", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:nil];
+    actionSheet.tag = 1003;
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
@@ -374,6 +240,71 @@
     else {
         [self.navigationController popViewControllerAnimated:YES];
     }
+}
+
+- (void)copyPhoto {
+    PWPhotoObject *photo = _photos[_index];
+    __weak typeof(self) wself = self;
+    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        if (isWebAlbum) {
+            [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
+                if (error) {
+#ifdef DEBUG
+                    NSLog(@"%@", error);
+#endif
+                    return;
+                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                });
+            }];
+        }
+        else {
+            [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toLocalAlbum:album completion:^(NSError *error) {
+                if (error) {
+#ifdef DEBUG
+                    NSLog(@"%@", error);
+#endif
+                    return;
+                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                });
+            }];
+        }
+    }];
+    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
+}
+
+- (void)deletePhoto {
+    PWPhotoObject *photo = _photos[_index];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
+    [indicator startAnimating];
+    [alertView setValue:indicator forKey:@"accessoryView"];
+    [alertView show];
+    __weak typeof(self) wself = self;
+    [PWPicasaAPI deletePhoto:photo completion:^(NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (error) {
+                [alertView dismissWithClickedButtonIndex:0 animated:YES];
+#ifdef DEBUG
+                NSLog(@"%@", error);
+#endif
+                return;
+            }
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+            
+            [sself.navigationController popViewControllerAnimated:YES];
+        });
+    }];
 }
 
 #pragma mark UIPageViewControllerDataSource
@@ -453,6 +384,113 @@
     };
     
     return viewController;
+}
+
+#pragma mark UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+    
+    if (actionSheet.tag == 1001) {
+        if (![buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+            PWPhotoObject *photo = _photos[_index];
+            for (PWPhotoMediaContentObject *content in photo.media.content.reversedOrderedSet) {
+                if ([content.type isEqualToString:@"video/mpeg4"]) {
+                    NSString *title = nil;
+                    if (content.width.integerValue < content.height.integerValue) {
+                        title = [NSString stringWithFormat:@"%@P", content.width];
+                    }
+                    else {
+                        title = [NSString stringWithFormat:@"%@P", content.height];
+                    }
+                    
+                    if ([buttonTitle isEqualToString:title]) {
+                        NSString *urlString = content.url;
+                        
+                        [self actionWithURLString:urlString];
+                    }
+                }
+            }
+        }
+        else {
+        }
+    }
+    else if (actionSheet.tag == 1002) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Copy", nil)]) {
+            [self copyPhoto];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+        }
+    }
+    else if (actionSheet.tag == 1003) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
+            [self deletePhoto];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+        }
+    }
+}
+
+- (void)actionWithURLString:(NSString *)urlString {
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
+    alertView.tag = 2002;
+    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
+    [indicator startAnimating];
+    [alertView setValue:indicator forKey:@"accessoryView"];
+    [alertView show];
+    
+    __weak typeof(self) wself = self;
+    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+        typeof(wself) sself = wself;
+        if (!sself) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [alertView dismissWithClickedButtonIndex:NSIntegerMax animated:YES];
+            });
+            return;
+        };
+        
+        NSURLSessionDataTask *task = (NSURLSessionDataTask *)[[NSURLSession sharedSession] downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [alertView dismissWithClickedButtonIndex:NSIntegerMax animated:YES];
+            });
+            if (error) return;
+            
+            AVAsset *asset = [AVAsset assetWithURL:location];
+            if (!asset) return;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[asset] applicationActivities:nil];
+                [sself presentViewController:activityViewController animated:YES completion:nil];
+            });
+        }];
+        [task resume];
+        sself.sessionDataTask = task;
+    }];
+}
+
+#pragma mark UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
+    
+    if (alertView.tag == 2001) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+            NSURLSessionDataTask *task = _sessionDataTask;
+            if (task) {
+                [task cancel];
+            }
+        }
+    }
+    else if (alertView.tag == 2002) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+            NSURLSessionDataTask *task = _sessionDataTask;
+            if (task) {
+                [task cancel];
+            }
+        }
+    }
 }
 
 @end

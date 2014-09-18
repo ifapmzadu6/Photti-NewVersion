@@ -62,7 +62,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     [GAI sharedInstance].trackUncaughtExceptions = YES;
     [GAI sharedInstance].dispatchInterval = 30;
 #ifdef DEBUG
-    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
+//    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
 #endif
     [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
     [[[GAI sharedInstance] defaultTracker] setAllowIDFACollection:YES];

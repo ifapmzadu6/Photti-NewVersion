@@ -22,9 +22,8 @@
 #import "PWAlbumPickerController.h"
 #import "PLCoreDataAPI.h"
 #import "PDTaskManager.h"
-#import <BlocksKit+UIKit.h>
 
-@interface PLPhotoPageViewController ()
+@interface PLPhotoPageViewController () <UIActionSheetDelegate>
 
 @property (strong, nonatomic) NSArray *photos;
 @property (nonatomic) NSUInteger index;
@@ -129,43 +128,41 @@
 }
 
 - (void)organizeBarButtonAction:(id)sender {
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Copy", nil), nil];
+    actionSheet.tag = 1001;
+    [actionSheet showFromBarButtonItem:sender animated:YES];
+}
+
+- (void)copyPhoto {
+    PLPhotoObject *photo = _photos[_index];
     __weak typeof(self) wself = self;
-    
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Copy", nil) handler:^{
+    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        PLPhotoObject *photo = sself.photos[sself.index];
-        PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            if (isWebAlbum) {
-                [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
-                    if (error) {
+        if (isWebAlbum) {
+            [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
+                if (error) {
 #ifdef DEBUG
-                        NSLog(@"%@", error);
+                    NSLog(@"%@", error);
 #endif
-                        return;
-                    }
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                    });
-                }];
-            }
-            else {
-                [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-                    PLAlbumObject *albumObject = (PLAlbumObject *)album;
-                    [albumObject addPhotosObject:photo];
-                }];
-            }
-        }];
-        albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
-        [sself.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
+                    return;
+                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                });
+            }];
+        }
+        else {
+            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                PLAlbumObject *albumObject = (PLAlbumObject *)album;
+                [albumObject addPhotosObject:photo];
+            }];
+        }
     }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-    [actionSheet showFromBarButtonItem:sender animated:YES];
+    
+    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
 }
 
 - (void)tagBarButtonAction {
@@ -229,17 +226,8 @@
 }
 
 - (void)trashBarButtonAction:(id)sender {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Are you sure you want to delete?", nil)];
-    __weak typeof(self) wself = self;
-    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Remove", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        if (sself.deletePhotoButtonBlock) {
-            sself.deletePhotoButtonBlock(sself.index);
-        }
-    }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"Are you sure you want to delete?", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Remove", nil) otherButtonTitles:nil];
+    actionSheet.tag = 1002;
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
@@ -305,6 +293,28 @@
     };
     
     return viewController;
+}
+
+#pragma mark UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+    
+    if (actionSheet.tag == 1001) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Copy", nil)]) {
+            [self copyPhoto];
+        }
+        else if (NSLocalizedString(@"Cancel", nil)) {
+        }
+    }
+    else if (actionSheet.tag == 1002) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Remove", nil)]) {
+            if (_deletePhotoButtonBlock) {
+                _deletePhotoButtonBlock(_index);
+            }
+        }
+        else if (NSLocalizedString(@"Cancel", nil)) {
+        }
+    }
 }
 
 @end

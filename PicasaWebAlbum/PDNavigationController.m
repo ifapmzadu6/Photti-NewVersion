@@ -13,7 +13,6 @@
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
 #import "PAInAppPurchase.h"
-#import <BlocksKit+UIKit.h>
 
 #import "PATabBarAdsController.h"
 

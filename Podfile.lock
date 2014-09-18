@@ -1,20 +1,5 @@
 PODS:
   - Appirater (2.0.3)
-  - BlocksKit (2.2.5):
-    - BlocksKit/All
-  - BlocksKit/All (2.2.5):
-    - BlocksKit/Core
-    - BlocksKit/DynamicDelegate
-    - BlocksKit/MessageUI
-    - BlocksKit/UIKit
-  - BlocksKit/Core (2.2.5)
-  - BlocksKit/DynamicDelegate (2.2.5)
-  - BlocksKit/MessageUI (2.2.5):
-    - BlocksKit/Core
-    - BlocksKit/DynamicDelegate
-  - BlocksKit/UIKit (2.2.5):
-    - BlocksKit/Core
-    - BlocksKit/DynamicDelegate
   - FLAnimatedImage (1.0.1)
   - GData (1.12.0):
     - GData/Core
@@ -32,8 +17,6 @@ PODS:
   - gtm-oauth2 (0.1.0):
     - GTMHTTPFetcher
   - GTMHTTPFetcher (0.1.0)
-  - Harpy (2.6.0):
-    - UIDevice-SupportedDevices
   - KKStaticTableView (0.0.1)
   - LXReorderableCollectionViewFlowLayout (0.1.1)
   - Reachability (3.1.1)
@@ -41,16 +24,13 @@ PODS:
     - SDWebImage/Core
   - SDWebImage/Core (3.7.1)
   - SFHFKeychainUtils (0.0.1)
-  - UIDevice-SupportedDevices (1.0.1)
 
 DEPENDENCIES:
   - Appirater
-  - BlocksKit
   - FLAnimatedImage
   - GData
   - Google-Mobile-Ads-SDK
   - GoogleAnalytics-iOS-SDK
-  - Harpy
   - KKStaticTableView (from `git@github.com:ifapmzadu6/KKStaticTableView.git`)
   - LXReorderableCollectionViewFlowLayout
   - Reachability
@@ -63,19 +43,16 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Appirater: 793f3723354b1b155f7ddc87fc6017bea889ce50
-  BlocksKit: 4439e7f30a9f90743462ca63545a15c1f4304cef
   FLAnimatedImage: a91333b191d57ecf7f86b85bf93145a7f63dafe5
   GData: 99d19dd8ee328ce77d12d504ddf9b0e0a6e3bc0d
   Google-Mobile-Ads-SDK: 657fcbf9436363d0f925cf905d176fb1cb10df85
   GoogleAnalytics-iOS-SDK: d9e198b1f955259a72886769be7377cdfcdb2250
   gtm-oauth2: 64f2d404a50676ab63b5437a02a7567da8f8b7fa
   GTMHTTPFetcher: 0f02d5a5803dd08736462981064de6a7f59cf9bd
-  Harpy: a466a4a18c5f6ae651aa291ea5aed3ea6443e09f
   KKStaticTableView: 558f0f70846fe16c71b60f0c4f309cd3b31308d0
   LXReorderableCollectionViewFlowLayout: b4e25543263e27d4c147109ae5ead01cc9119f23
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
   SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
   SFHFKeychainUtils: 6fdda05a86d035db406c7662ec1054814b68f0fd
-  UIDevice-SupportedDevices: 6b3dc841285444aeb41ab812bf20b7a205ba091a
 
 COCOAPODS: 0.33.1

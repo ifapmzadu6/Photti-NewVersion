@@ -22,14 +22,13 @@
 #import "PLPhotoPageViewController.h"
 #import "PABaseNavigationController.h"
 #import "PLAlbumEditViewController.h"
-#import <BlocksKit+UIKit.h>
 #import "PDTaskManager.h"
 #import "PWImagePickerController.h"
 #import "PWAlbumPickerController.h"
 #import "PWModelObject.h"
 #import "PDTaskManager.h"
 
-@interface PLPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PLPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UIImageView *noItemImageView;
@@ -41,6 +40,8 @@
 
 @property (nonatomic) BOOL isSelectMode;
 @property (strong, nonatomic) NSMutableArray *selectedPhotoIDs;
+@property (strong, nonatomic) id actionSheetItem;
+@property (strong, nonatomic) id actionSheetSender;
 
 @end
 
@@ -278,91 +279,91 @@
 }
 
 - (void)organizeBarButtonAction:(id)sender {
-    __weak typeof(self) wself = self;
-    
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Copy", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            NSMutableArray *selectLocalPhotos = @[].mutableCopy;
-            for (NSIndexPath *indexPath in sself.collectionView.indexPathsForSelectedItems) {
-                PLPhotoObject *photoObject = sself.album.photos[indexPath.row];
-                [selectLocalPhotos addObject:photoObject];
-            }
-            
-            void (^completion)() = ^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    typeof(wself) sself = wself;
-                    if (!sself) return;
-                    [sself disableSelectMode];
-                    
-                    if (isWebAlbum) {
-                        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                    }
-                });
-            };
-            
-            if (isWebAlbum) {
-                [[PDTaskManager sharedManager] addTaskPhotos:selectLocalPhotos toWebAlbum:album completion:^(NSError *error) {
-                    if (error) {
-#ifdef DEBUG
-                        NSLog(@"%@", error);
-#endif
-                        return;
-                    }
-                    completion();
-                }];
-            }
-            else {
-                [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-                    PLAlbumObject *albumObject = (PLAlbumObject *)album;
-                    for (PLPhotoObject *photoObject in selectLocalPhotos) {
-                        [albumObject addPhotosObject:photoObject];
-                    }
-                    completion();
-                }];
-            }
-        }];
-        albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
-        [sself.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
-    }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Copy", nil), nil];
+    actionSheet.tag = 1001;
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
-- (void)trashBarButtonAction:(id)sender {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Are you sure you want to remove these items? These items will be removed from this album, but will remain in your Photo Library.", nil)];
-    NSManagedObjectID *albumID = _album.objectID;
+- (void)copyPhoto {
     __weak typeof(self) wself = self;
-    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Remove", nil) handler:^{
-        [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-            request.fetchLimit = 1;
-            for (NSString *id_str in sself.selectedPhotoIDs) {
-                request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-                NSArray *objects = [context executeFetchRequest:request error:nil];
-                PLPhotoObject *photoObject = nil;
-                if (objects.count > 0) {
-                    photoObject = objects.firstObject;
-                }
-                if (!photoObject) return;
+    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        NSMutableArray *selectLocalPhotos = @[].mutableCopy;
+        for (NSIndexPath *indexPath in sself.collectionView.indexPathsForSelectedItems) {
+            PLPhotoObject *photoObject = sself.album.photos[indexPath.row];
+            [selectLocalPhotos addObject:photoObject];
+        }
+        
+        void (^completion)() = ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                [sself disableSelectMode];
                 
-                PLAlbumObject *album = (PLAlbumObject *)[context objectWithID:albumID];
-                [album removePhotosObject:photoObject];
-            }
-        }];
+                if (isWebAlbum) {
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                }
+            });
+        };
+        
+        if (isWebAlbum) {
+            [[PDTaskManager sharedManager] addTaskPhotos:selectLocalPhotos toWebAlbum:album completion:^(NSError *error) {
+                if (error) {
+#ifdef DEBUG
+                    NSLog(@"%@", error);
+#endif
+                    return;
+                }
+                completion();
+            }];
+        }
+        else {
+            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                PLAlbumObject *albumObject = (PLAlbumObject *)album;
+                for (PLPhotoObject *photoObject in selectLocalPhotos) {
+                    [albumObject addPhotosObject:photoObject];
+                }
+                completion();
+            }];
+        }
     }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
+}
+
+- (void)trashBarButtonAction:(id)sender {
+    NSString *title = NSLocalizedString(@"Are you sure you want to remove these items? These items will be removed from this album, but will remain in your Photo Library.", nil);
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Remove", nil) otherButtonTitles:nil];
+    actionSheet.tag = 1002;
     [actionSheet showFromBarButtonItem:sender animated:YES];
+}
+
+- (void)removeAlbum {
+    __weak typeof(self) wself = self;
+    NSManagedObjectID *albumID = _album.objectID;
+    [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        NSFetchRequest *request = [NSFetchRequest new];
+        request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+        request.fetchLimit = 1;
+        for (NSString *id_str in sself.selectedPhotoIDs) {
+            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+            NSArray *objects = [context executeFetchRequest:request error:nil];
+            PLPhotoObject *photoObject = nil;
+            if (objects.count > 0) {
+                photoObject = objects.firstObject;
+            }
+            if (!photoObject) return;
+            
+            PLAlbumObject *album = (PLAlbumObject *)[context objectWithID:albumID];
+            [album removePhotosObject:photoObject];
+        }
+    }];
 }
 
 #pragma mark UICollectionViewDataSource
@@ -578,31 +579,62 @@
     });
 }
 
-#pragma mark UIAlertView
+#pragma mark UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+    
+    if (actionSheet.tag == 1001) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Copy", nil)]) {
+            [self copyPhoto];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+        }
+    }
+    else if (actionSheet.tag == 1002) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Remove", nil)]) {
+            [self removeAlbum];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+        }
+    }
+    else if (actionSheet.tag == 1003) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Edit", nil)]) {
+            [self editActionSheetAction:_actionSheetItem];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Share", nil)]) {
+            [self shareActionSheetAction:_actionSheetItem];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Upload", nil)]) {
+            [self uploadActionSheetAction:_actionSheetItem];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
+            [self deleteActionSheetAction:_actionSheetItem sender:_actionSheetSender];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+        }
+    }
+    else if (actionSheet.tag == 1004) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
+            NSManagedObjectID *albumID = ((PLAlbumObject *)_actionSheetItem).objectID;
+            [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumID];
+                [context deleteObject:albumObject];
+            }];
+            
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+        }
+    }
+}
+
+#pragma mark UIActionSheet
 - (void)showAlbumActionSheet:(PLAlbumObject *)album sender:(id)sender {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.name];
-    __weak typeof(self) wself = self;
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Edit", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [sself editActionSheetAction:album];
-    }];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [sself shareActionSheetAction:album];
-    }];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Upload", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [sself uploadActionSheetAction:album];
-    }];
-    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [sself deleteActionSheetAction:album sender:sender];
-    }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
+    _actionSheetItem = album;
+    _actionSheetSender = sender;
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:album.name delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:NSLocalizedString(@"Edit", nil), NSLocalizedString(@"Share", nil), NSLocalizedString(@"Upload", nil), nil];
+    actionSheet.tag = 1003;
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
@@ -670,27 +702,15 @@
 }
 
 - (void)deleteActionSheetAction:(PLAlbumObject *)album sender:(id)sender {
-    UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.name]];
-    __weak typeof(self) wself = self;
-    NSManagedObjectID *albumID = album.objectID;
-    [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumID];
-            [context deleteObject:albumObject];
-        }];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.navigationController popViewControllerAnimated:YES];
-        });
-    }];
-    [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
-    [deleteActionSheet showFromBarButtonItem:sender animated:YES];
+    _actionSheetItem = album;
+    
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.name];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:sender cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:nil];
+    actionSheet.tag = 1004;
+    [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
-#pragma NoItem
+#pragma mark NoItem
 - (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
     if (numberOfItem == 0) {
         [self showNoItem];

@@ -28,9 +28,8 @@
 #import "PADateFormatter.h"
 #import "PADateTimestamp.h"
 #import "PDTaskManager.h"
-#import <BlocksKit+UIKit.h>
 
-@interface PLPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate>
+@interface PLPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) NSArray *myViewControllers;
 @property (strong, nonatomic) PLParallelNavigationTitleView *titleView;
@@ -259,63 +258,13 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 }
 
 - (void)selectOrganizeBarButtonAction:(id)sender {
-    __weak typeof(self) wself = self;
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:nil];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Copy", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        PLAllPhotosViewController *viewController = (PLAllPhotosViewController *)sself.viewControllers.firstObject;
-        NSArray *selectedPhotos = viewController.selectedPhotos;
-        
-        PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            void (^completion)() = ^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    typeof(wself) sself = wself;
-                    if (!sself) return;
-                    
-                    [sself disableSelectMode:sself.myViewControllers[sself.index]];
-                    
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                });
-            };
-            
-            if (isWebAlbum) {
-                [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:album completion:^(NSError *error) {
-                    if (error) {
-#ifdef DEBUG
-                        NSLog(@"%@", error);
-#endif
-                        return;
-                    }
-                    completion();
-                }];
-            }
-            else {
-                [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-                    PLAlbumObject *albumObject = (PLAlbumObject *)album;
-                    
-                    for (PLPhotoObject *photoObject in selectedPhotos) {
-                        [albumObject addPhotosObject:photoObject];
-                    }
-                    
-                    completion();
-                }];
-            }
-        }];
-        albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
-        [sself.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
-    }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Copy", nil), nil];
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
-- (void)selectTrashBarButtonAction {
-    
-}
+//- (void)selectTrashBarButtonAction {
+//    
+//}
 
 #pragma mark UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -503,6 +452,62 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+}
+
+#pragma mark UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    if (buttonIndex != actionSheet.cancelButtonIndex) {
+        [self copyPhotos];
+    }
+}
+
+
+- (void)copyPhotos {
+    __weak typeof(self) wself = self;
+    
+    PLAllPhotosViewController *viewController = (PLAllPhotosViewController *)self.viewControllers.firstObject;
+    NSArray *selectedPhotos = viewController.selectedPhotos;
+    
+    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        void (^completion)() = ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                [sself disableSelectMode:sself.myViewControllers[sself.index]];
+                
+                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+            });
+        };
+        
+        if (isWebAlbum) {
+            [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:album completion:^(NSError *error) {
+                if (error) {
+#ifdef DEBUG
+                    NSLog(@"%@", error);
+#endif
+                    return;
+                }
+                completion();
+            }];
+        }
+        else {
+            [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                PLAlbumObject *albumObject = (PLAlbumObject *)album;
+                
+                for (PLPhotoObject *photoObject in selectedPhotos) {
+                    [albumObject addPhotosObject:photoObject];
+                }
+                
+                completion();
+            }];
+        }
+    }];
+    albumPickerController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+    [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
 }
 
 @end

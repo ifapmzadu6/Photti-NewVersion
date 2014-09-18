@@ -102,7 +102,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
             [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
             [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
         }
-        [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)fileAttributes[NSFileSize]] forHTTPHeaderField:@"Content-Length"];
+        [request addValue:[NSString stringWithFormat:@"%lu", [fileAttributes[NSFileSize] unsignedLongValue]] forHTTPHeaderField:@"Content-Length"];
         NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
         NSURLSessionTask *sessionTask = nil;
         if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {

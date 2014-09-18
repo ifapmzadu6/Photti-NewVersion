@@ -60,7 +60,6 @@
 		713746D1193DD6C40097470A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8856719115DBE005A78E0 /* Security.framework */; };
 		7137A84E19AD8F8400C715CB /* PABaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7137A84D19AD8F8400C715CB /* PABaseViewController.m */; };
 		71388286193E13E8009AFB1F /* PDCoreDataAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 71388285193E13E8009AFB1F /* PDCoreDataAPI.m */; };
-		71388289193E30AC009AFB1F /* PDTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 71388288193E30AC009AFB1F /* PDTask.m */; };
 		713A16DA19551985004117F0 /* PDTaskViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 713A16D919551985004117F0 /* PDTaskViewController.m */; };
 		714318D8193DF6F70066A1F8 /* PDTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 714318D7193DF6F70066A1F8 /* PDTaskManager.m */; };
 		714318DC193E04300066A1F8 /* PDTaskManagerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 714318DB193E04300066A1F8 /* PDTaskManagerViewController.m */; };
@@ -279,8 +278,6 @@
 		7137A84D19AD8F8400C715CB /* PABaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PABaseViewController.m; sourceTree = "<group>"; };
 		71388284193E13E8009AFB1F /* PDCoreDataAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDCoreDataAPI.h; sourceTree = "<group>"; };
 		71388285193E13E8009AFB1F /* PDCoreDataAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDCoreDataAPI.m; sourceTree = "<group>"; };
-		71388287193E30AC009AFB1F /* PDTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTask.h; sourceTree = "<group>"; };
-		71388288193E30AC009AFB1F /* PDTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTask.m; sourceTree = "<group>"; };
 		7138828A193E31A2009AFB1F /* PDModelObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PDModelObject.h; sourceTree = "<group>"; };
 		713A16D819551985004117F0 /* PDTaskViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskViewController.h; sourceTree = "<group>"; };
 		713A16D919551985004117F0 /* PDTaskViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskViewController.m; sourceTree = "<group>"; };
@@ -1011,15 +1008,6 @@
 				714318D7193DF6F70066A1F8 /* PDTaskManager.m */,
 			);
 			name = PDTaskManager;
-			sourceTree = "<group>";
-		};
-		714318D9193DF7070066A1F8 /* PDTask */ = {
-			isa = PBXGroup;
-			children = (
-				71388287193E30AC009AFB1F /* PDTask.h */,
-				71388288193E30AC009AFB1F /* PDTask.m */,
-			);
-			name = PDTask;
 			sourceTree = "<group>";
 		};
 		714F53B9196ECEAD00FB8992 /* PWMapViewController */ = {
@@ -1848,13 +1836,14 @@
 				71388283193E13BD009AFB1F /* PDCoreDataAPI */,
 				7177479C1936F572005179B6 /* PDModelObject */,
 				71BD233D197683C80034CD3B /* PDModelObject+methods */,
-				714318D9193DF7070066A1F8 /* PDTask */,
 				714318C5193DF6DB0066A1F8 /* PDTaskManager */,
 				712E03AD191F613C0035D9E0 /* PLAssetsLibrary */,
 				7195525219290DFB003EA9AF /* PLCoreDataAPI */,
 				7195523B1928FAF8003EA9AF /* PLModelObject */,
 				710461A11917759E00DF369D /* PWCoreDataAPI */,
 				71E885A31912158D005A78E0 /* PWPicasaAPI */,
+				71958C4F191B4BC500CFC15F /* UIImage+ImageEffects */,
+				71958C36191B494A00CFC15F /* UIView+ScreenCapture */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1880,8 +1869,6 @@
 				71CD06101930EDC200BECF6B /* PWSearchTableViewLocalAlbumCell */,
 				71CD060C1930E65D00BECF6B /* PWSearchTableViewWebAlbumCell */,
 				71958C53191B8A6800CFC15F /* UIButton+HitEdgeInsets */,
-				71958C4F191B4BC500CFC15F /* UIImage+ImageEffects */,
-				71958C36191B494A00CFC15F /* UIView+ScreenCapture */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -2238,7 +2225,6 @@
 				710461A01917759900DF369D /* PWCoreDataAPI.m in Sources */,
 				71649BF1195907A400009C1F /* PAInAppPurchase.m in Sources */,
 				711AF6231993ACFA00640D2D /* PAPhotoCollectionViewFlowLayout.m in Sources */,
-				71388289193E30AC009AFB1F /* PDTask.m in Sources */,
 				711AF61F1993AA7100640D2D /* PAAlbumCollectionViewFlowLayout.m in Sources */,
 				71BA33871978292600CD0011 /* PDTaskObject.m in Sources */,
 				711FE8F91961C62A00AF296B /* PLNewAlbumCreatedViewController.m in Sources */,

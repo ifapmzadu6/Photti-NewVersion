@@ -8,7 +8,6 @@
 
 @import Foundation;
 
-#import "PDTask.h"
 #import "PDModelObject.h"
 
 @class PLAlbumObject, PWAlbumObject;

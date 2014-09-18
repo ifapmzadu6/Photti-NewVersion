@@ -33,6 +33,12 @@
     NSIndexSet *statusCode3xxRedirectin = [NSIndexSet indexSetWithIndexesInRange:kNSURLSessionTaskStatusCode3xx];
     NSIndexSet *statusCode4xxClientError = [NSIndexSet indexSetWithIndexesInRange:kNSURLSessionTaskStatusCode4xx];
     NSIndexSet *statusCode5xxServerError = [NSIndexSet indexSetWithIndexesInRange:kNSURLSessionTaskStatusCode5xx];
+    
+//#ifdef DEBUG
+//    NSLog(@"%ld", (long)statusCode);
+//    NSLog(@"%@", [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
+//#endif
+    
     if ([statusCode1xxInformational containsIndex:statusCode]) {
         return NO;
     }
@@ -48,11 +54,6 @@
     else if ([statusCode5xxServerError containsIndex:statusCode]) {
         return NO;
     }
-    
-#ifdef DEBUG
-    NSLog(@"%ld", (long)statusCode);
-    NSLog(@"%@", [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
-#endif
     
     return YES;
 }

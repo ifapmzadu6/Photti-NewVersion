@@ -10,7 +10,6 @@
 
 #import "PWSettingsTableViewController.h"
 
-#import <BlocksKit+UIKit.h>
 #import <KKStaticTableView.h>
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -23,7 +22,7 @@
 #import "PWSettingHTMLViewController.h"
 #import "PWSelectItemFromArrayViewController.h"
 
-@interface PWSettingsTableViewController () <SKStoreProductViewControllerDelegate>
+@interface PWSettingsTableViewController () <SKStoreProductViewControllerDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) KKStaticTableView *tableView;
 
@@ -391,15 +390,8 @@
 - (void)loginoutButtonAction {
     __weak typeof(self) wself = self;
     if ([PWOAuthManager isLogined]) {
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Are you sure you want to logout?", nil)];
-        [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Logout", nil) handler:^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [PWOAuthManager logout];
-            [sself.tableView reloadData];
-        }];
-        [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"Are you sure you want to logout?", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Logout", nil) otherButtonTitles:nil];
+        actionSheet.tag = 1001;
         [actionSheet showInView:self.view];
     }
     else {
@@ -450,19 +442,8 @@
 }
 
 - (void)deleteAllTasksButtonAction {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:NSLocalizedString(@"Are you sure you want to delete all tasks?", nil)];
-    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
-        [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-            NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:@"PDTaskObject" inManagedObjectContext:context];
-            NSError *error = nil;
-            NSArray *tasks = [context executeFetchRequest:request error:&error];
-            for (PDTaskObject *task in tasks) {
-                [context deleteObject:task];
-            }
-        }];
-    }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"Are you sure you want to delete all tasks?", nil) delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:nil];
+    actionSheet.tag = 1002;
     [actionSheet showInView:self.view];
 }
 
@@ -570,6 +551,35 @@
 
 - (void)openPixittiiTunesStore {
     [self openItunesStoreWithAppID:@(PIXITTIAPPID.longLongValue)];
+}
+
+#pragma mark UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+    
+    if (actionSheet.tag == 1001) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Logout", nil)]) {
+            [PWOAuthManager logout];
+            [_tableView reloadData];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+        }
+    }
+    else if (actionSheet.tag == 1002) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
+            [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                NSFetchRequest *request = [NSFetchRequest new];
+                request.entity = [NSEntityDescription entityForName:@"PDTaskObject" inManagedObjectContext:context];
+                NSError *error = nil;
+                NSArray *tasks = [context executeFetchRequest:request error:&error];
+                for (PDTaskObject *task in tasks) {
+                    [context deleteObject:task];
+                }
+            }];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+        }
+    }
 }
 
 @end

@@ -12,7 +12,6 @@
 #import "PWPicasaAPI.h"
 #import "PWDatePickerView.h"
 #import "PADateTimestamp.h"
-#import <BlocksKit+UIKit.h>
 #import <Reachability.h>
 
 typedef enum _PWAlbumEditViewControllerCellRow {
@@ -25,7 +24,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     PWAlbumEditViewControllerCellAccessRowShare
 } PWAlbumEditViewControllerCellAccessRow;
 
-@interface PWAlbumEditViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface PWAlbumEditViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 
 @property (strong, nonatomic) PWAlbumObject *album;
 
@@ -165,15 +164,11 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     }
     
     UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.bounds.size.width - textSize.width - 60.0f, 20.0f)];
+    textField.delegate = self;
     textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     textField.font = [UIFont systemFontOfSize:15.0f];
     textField.text = _album.title;
     textField.returnKeyType = UIReturnKeyDone;
-    [textField setBk_shouldReturnBlock:^BOOL(UITextField *textField) {
-        [textField resignFirstResponder];
-        
-        return YES;
-    }];
     textField.exclusiveTouch = YES;
     
     _textField = textField;
@@ -181,6 +176,14 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     return textField;
 }
 
+#pragma mark UITextField
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    
+    return YES;
+}
+
+#pragma mark Methods
 - (void)enableDatePicker {
     UITextField *textField = _textField;
     if (textField) {

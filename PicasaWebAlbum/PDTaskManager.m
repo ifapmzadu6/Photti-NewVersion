@@ -52,7 +52,13 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 - (id)init {
     self = [super init];
     if (self) {
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfiguration:kPDTaskManagerBackgroundSessionIdentifier];
+        NSURLSessionConfiguration *config = nil;
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] > 8.0f) {
+            config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kPDTaskManagerBackgroundSessionIdentifier];
+        }
+        else {
+            config = [NSURLSessionConfiguration backgroundSessionConfiguration:kPDTaskManagerBackgroundSessionIdentifier];
+        }
         _backgroundSession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
         
         NSManagedObjectContext *context = [PDCoreDataAPI readContext];

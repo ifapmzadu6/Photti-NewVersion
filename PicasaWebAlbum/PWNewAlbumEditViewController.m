@@ -12,12 +12,11 @@
 #import "PWDatePickerView.h"
 #import "PADateTimestamp.h"
 #import "PWPicasaAPI.h"
-#import <BlocksKit+UIKit.h>
 #import <Reachability.h>
 
 #import "PWSelectItemFromArrayViewController.h"
 
-@interface PWNewAlbumEditViewController ()
+@interface PWNewAlbumEditViewController () <UITextFieldDelegate>
 
 @end
 
@@ -45,19 +44,22 @@
 #pragma mark UITableViewCellOption
 - (UITextField *)makeTextField:(CGSize)textSize {
     UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.bounds.size.width - textSize.width - 60.0f, 20.0f)];
+    textField.delegate = self;
     textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     textField.font = [UIFont systemFontOfSize:15.0f];
     textField.placeholder = NSLocalizedString(@"New Album", nil);
     textField.returnKeyType = UIReturnKeyDone;
-    [textField setBk_shouldReturnBlock:^BOOL(UITextField *textField) {
-        [textField resignFirstResponder];
-        
-        return YES;
-    }];
     
     self.textField = textField;
     
     return textField;
+}
+
+#pragma mark UITextFieldDelegate
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    
+    return YES;
 }
 
 #pragma mark UIBarButtonItem

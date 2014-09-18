@@ -15,7 +15,6 @@
 #import "PLCollectionFooterView.h"
 #import "PAAlbumCollectionViewFlowLayout.h"
 #import "PWImagePickerController.h"
-#import <BlocksKit+UIKit.h>
 #import "PLModelObject.h"
 
 #import "PWImagePickerLocalPhotoListViewController.h"
@@ -202,7 +201,7 @@
     });
 }
 
-#pragma NoItem
+#pragma mark NoItem
 - (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
     if (numberOfItem == 0) {
         [self showNoItem];

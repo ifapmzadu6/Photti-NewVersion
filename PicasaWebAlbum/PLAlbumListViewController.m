@@ -20,7 +20,6 @@
 #import "PLPhotoListViewController.h"
 #import "PABaseNavigationController.h"
 #import "PLAlbumEditViewController.h"
-#import <BlocksKit+UIKit.h>
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
 
@@ -28,13 +27,15 @@
 
 #import "PWPicasaAPI.h"
 
-@interface PLAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PLAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 @property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+
+@property (strong, nonatomic) PLAlbumObject *actionSheetItem;
 
 @end
 
@@ -216,31 +217,43 @@
     });
 }
 
+#pragma mark UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+    
+    if (actionSheet.tag == 1001) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Edit", nil)]) {
+            [self editActionSheetAciton:self.actionSheetItem];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Share", nil)]) {
+            [self shareActionSheetAction:self.actionSheetItem];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Upload", nil)]) {
+            [self uploadActionSheetAction:self.actionSheetItem];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
+            [self deleteActionSheetAction:self.actionSheetItem];
+        }
+        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
+        }
+    }
+    else if (actionSheet.tag == 1002) {
+        if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
+            NSManagedObjectID *albumID = self.actionSheetItem.objectID;
+            [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumID];
+                [context deleteObject:albumObject];
+            }];
+        }
+    }
+}
+
 #pragma mark UIAlertView
 - (void)showAlbumActionSheet:(PLAlbumObject *)album {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] bk_initWithTitle:album.name];
-    __weak typeof(self) wself = self;
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Edit", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [sself editActionSheetAciton:album];
-    }];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Share", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [sself shareActionSheetAction:album];
-    }];
-    [actionSheet bk_addButtonWithTitle:NSLocalizedString(@"Upload", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [sself uploadActionSheetAction:album];
-    }];
-    [actionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [sself deleteActionSheetAction:album];
-    }];
-    [actionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:nil];
+    _actionSheetItem = album;
+    
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:album.name delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:NSLocalizedString(@"Edit", nil), NSLocalizedString(@"Share", nil), NSLocalizedString(@"Upload", nil), nil];
+    actionSheet.tag = 1001;
     [actionSheet showFromTabBar:self.tabBarController.tabBar];
 }
 
@@ -300,19 +313,15 @@
 }
 
 - (void)deleteActionSheetAction:(PLAlbumObject *)album {
-    UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] bk_initWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.name]];
-    NSManagedObjectID *albumID = album.objectID;
-    [deleteActionSheet bk_setDestructiveButtonWithTitle:NSLocalizedString(@"Delete", nil) handler:^{
-        [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumID];
-            [context deleteObject:albumObject];
-        }];
-    }];
-    [deleteActionSheet bk_setCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) handler:^{}];
+    _actionSheetItem = album;
+    
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.name];
+    UIActionSheet *deleteActionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:nil];
+    deleteActionSheet.tag = 1002;
     [deleteActionSheet showFromTabBar:self.tabBarController.tabBar];
 }
 
-#pragma NoItem
+#pragma mark NoItem
 - (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
     if (numberOfItem == 0) {
         [self showNoItem];
