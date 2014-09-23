@@ -14,7 +14,6 @@
 #import "PWCoreDataAPI.h"
 #import "PWModelObject.h"
 #import "PASnowFlake.h"
-#import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 #import "NSFileManager+methods.h"

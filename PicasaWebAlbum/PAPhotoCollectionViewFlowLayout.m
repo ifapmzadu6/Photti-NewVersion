@@ -12,17 +12,17 @@
 
 - (CGSize)itemSize {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if ((int)[[UIScreen mainScreen] bounds].size.height > 480) {
-            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            if ((int)[[UIScreen mainScreen] bounds].size.width > 480) {
                 return CGSizeMake(112.0f, 112.0f);
             }
             else {
-                return CGSizeMake(106.0f, 106.0f);
+                return CGSizeMake(118.5f, 118.5f);
             }
         }
         else {
-            if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                return CGSizeMake(118.5f, 118.5f);
+            if ((int)[[UIScreen mainScreen] bounds].size.height > 480) {
+                return CGSizeMake(106.0f, 106.0f);
             }
             else {
                 return CGSizeMake(106.0f, 106.0f);

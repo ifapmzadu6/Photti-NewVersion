@@ -20,7 +20,7 @@
     [super viewDidLoad];
     
     self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor whiteColor]};
-    self.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintUploadColor];
+    self.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintUploadColor];
     self.navigationBar.barTintColor = [UIColor blackColor];
 }
 

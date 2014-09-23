@@ -61,11 +61,11 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.scrollsToTop = NO;
     _collectionView.clipsToBounds = NO;
-    _collectionView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
-    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     
     NSManagedObjectContext *context = [PLCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
@@ -335,7 +335,7 @@
     if (!_noItemImageView) {
         _noItemImageView = [UIImageView new];
         _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _noItemImageView.tintColor = [[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.tintColor = [[PAColors getColor:PAColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
         _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
     }

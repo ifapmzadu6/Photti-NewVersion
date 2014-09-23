@@ -1,5 +1,5 @@
 PODS:
-  - Appirater (2.0.3)
+  - Appirater (2.0.4)
   - FLAnimatedImage (1.0.1)
   - GData (1.12.0):
     - GData/Core
@@ -12,7 +12,7 @@ PODS:
   - GData/XMLNode (1.12.0):
     - gtm-oauth2
     - GTMHTTPFetcher
-  - Google-Mobile-Ads-SDK (6.11.1)
+  - Google-Mobile-Ads-SDK (6.12.0)
   - GoogleAnalytics-iOS-SDK (3.0.9)
   - gtm-oauth2 (0.1.0):
     - GTMHTTPFetcher
@@ -42,10 +42,10 @@ EXTERNAL SOURCES:
     :git: git@github.com:ifapmzadu6/KKStaticTableView.git
 
 SPEC CHECKSUMS:
-  Appirater: 793f3723354b1b155f7ddc87fc6017bea889ce50
+  Appirater: cbdb7f305562cfde585300bfff86da01ae559deb
   FLAnimatedImage: a91333b191d57ecf7f86b85bf93145a7f63dafe5
   GData: 99d19dd8ee328ce77d12d504ddf9b0e0a6e3bc0d
-  Google-Mobile-Ads-SDK: 657fcbf9436363d0f925cf905d176fb1cb10df85
+  Google-Mobile-Ads-SDK: b1b5cfd1b604a8412faa5536586b13a4b640f344
   GoogleAnalytics-iOS-SDK: d9e198b1f955259a72886769be7377cdfcdb2250
   gtm-oauth2: 64f2d404a50676ab63b5437a02a7567da8f8b7fa
   GTMHTTPFetcher: 0f02d5a5803dd08736462981064de6a7f59cf9bd

@@ -1,5 +1,5 @@
 //
-//  PWColors.h
+//  PAColors.h
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/05/06.
@@ -8,29 +8,30 @@
 
 @import Foundation;
 
-typedef enum _PWColorsTheme {
-	PWColorsThemeDefault,
-	PWColorsThemeNight
-} PWColorsTheme;
+typedef enum _PAColorsTheme {
+	PAColorsThemeDefault,
+	PAColorsThemeNight
+} PAColorsTheme;
 
-typedef enum _PWColorsType {
-	PWColorsTypeTintWebColor,
-	PWColorsTypeTintLocalColor,
-    PWColorsTypeTintUploadColor,
-	PWColorsTypeBackgroundColor,
-	PWColorsTypeBackgroundLightColor,
-	PWColorsTypeBackgroundDarkColor,
-	PWColorsTypeTextColor,
-	PWColorsTypeTextDarkColor,
-	PWColorsTypeTextLightColor,
-	PWColorsTypeTextLightSubColor,
-} PWColorsType;
+typedef enum _PAColorsType {
+	PAColorsTypeTintWebColor,
+	PAColorsTypeTintLocalColor,
+    PAColorsTypeTintUploadColor,
+    PAColorsTypeTintDefaultColor,
+	PAColorsTypeBackgroundColor,
+	PAColorsTypeBackgroundLightColor,
+	PAColorsTypeBackgroundDarkColor,
+	PAColorsTypeTextColor,
+	PAColorsTypeTextDarkColor,
+	PAColorsTypeTextLightColor,
+	PAColorsTypeTextLightSubColor,
+} PAColorsType;
 
 @interface PAColors : NSObject
 
 + (void)loadThemeColors;
-+ (UIColor *)getColor:(PWColorsType)type;
-+ (void)setColor:(UIColor *)color type:(PWColorsType)type;
++ (UIColor *)getColor:(PAColorsType)type;
++ (void)setColor:(UIColor *)color type:(PAColorsType)type;
 + (void)setDefaultColors;
 
 @end

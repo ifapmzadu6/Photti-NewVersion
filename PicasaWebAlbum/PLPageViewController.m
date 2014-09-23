@@ -59,7 +59,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor whiteColor];
-    self.navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
     
     _myViewControllers = [self makeViewControllers];
     [self setViewControllers:@[_myViewControllers[1]]
@@ -158,7 +158,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [tabBarController setAdsHidden:YES animated:NO];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
-    navigationController.view.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+    navigationController.view.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;
@@ -404,7 +404,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 //    UIBarButtonItem *selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     [tabBarController setActionToolbarItems:@[selectActionBarButtonItem, flexibleSpace, selectOrganizeBarButtonItem, flexibleSpace] animated:YES];
-    [tabBarController setActionToolbarTintColor:[PAColors getColor:PWColorsTypeTintLocalColor]];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
@@ -417,7 +417,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     navigationItem.leftBarButtonItem = selectCancelBarButtonItem;
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
-    [tabBarController setActionNavigationTintColor:[PAColors getColor:PWColorsTypeTintLocalColor]];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
     [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;

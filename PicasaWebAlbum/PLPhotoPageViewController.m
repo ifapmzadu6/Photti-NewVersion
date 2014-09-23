@@ -47,7 +47,7 @@
                        direction:UIPageViewControllerNavigationDirectionForward
                         animated:NO
                       completion:nil];
-        self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+        self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     }
     return self;
 }
@@ -77,7 +77,7 @@
     }
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
-    [tabBarController setToolbarTintColor:[PAColors getColor:PWColorsTypeTintLocalColor]];
+    [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
     if ([tabBarController isTabBarHidden]) {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
         if ([tabBarController isToolbarHideen]) {
@@ -196,7 +196,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             PLPhotoEditViewController *viewController = [[PLPhotoEditViewController alloc] initWithPhoto:photo metadata:metadata];
             PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-            navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+            navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
             navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             [sself presentViewController:navigationController animated:YES completion:nil];
         });
@@ -217,7 +217,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             PWMapViewController *viewController = [[PWMapViewController alloc] initWithImage:image latitude:photo.latitude.doubleValue longitude:photo.longitude.doubleValue];
             PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-            navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+            navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
             navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             [sself presentViewController:navigationController animated:YES completion:nil];
         });
@@ -277,7 +277,7 @@
             [sself.navigationController setNavigationBarHidden:NO animated:YES];
             [tabBarController setToolbarFadeout:NO animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
-                sself.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+                sself.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
             }];
             sself.navigationController.interactivePopGestureRecognizer.enabled = YES;
         }

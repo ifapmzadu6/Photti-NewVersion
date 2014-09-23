@@ -32,10 +32,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     
     _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    _indicatorView.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+    _indicatorView.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     [self.view addSubview:_indicatorView];
     [_indicatorView startAnimating];
     
@@ -46,7 +46,7 @@
     else {
         _textLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _textLabel.textColor = [PAColors getColor:PWColorsTypeTextDarkColor];
+    _textLabel.textColor = [PAColors getColor:PAColorsTypeTextDarkColor];
     _textLabel.textAlignment = NSTextAlignmentCenter;
     _textLabel.numberOfLines = 0;
     [self.view addSubview:_textLabel];
@@ -59,7 +59,7 @@
     else {
         _detailTextLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _detailTextLabel.textColor = [PAColors getColor:PWColorsTypeTextDarkColor];
+    _detailTextLabel.textColor = [PAColors getColor:PAColorsTypeTextDarkColor];
     _detailTextLabel.textAlignment = NSTextAlignmentCenter;
     _detailTextLabel.numberOfLines = 0;
     [self.view addSubview:_detailTextLabel];

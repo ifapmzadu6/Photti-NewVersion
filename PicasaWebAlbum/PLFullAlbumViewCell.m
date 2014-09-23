@@ -75,7 +75,7 @@
     else {
         _titleTextField.font = [UIFont systemFontOfSize:18.0f];
     }
-    _titleTextField.textColor = [PAColors getColor:PWColorsTypeTextColor];
+    _titleTextField.textColor = [PAColors getColor:PAColorsTypeTextColor];
     _titleTextField.textAlignment = NSTextAlignmentCenter;
     _titleTextField.returnKeyType = UIReturnKeyDone;
     _titleTextField.delegate = self;
@@ -88,7 +88,7 @@
     else {
         _numberLabel.font = [UIFont systemFontOfSize:15.0f];
     }
-    _numberLabel.textColor = [PAColors getColor:PWColorsTypeTextDarkColor];
+    _numberLabel.textColor = [PAColors getColor:PAColorsTypeTextDarkColor];
     _numberLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:_numberLabel];
 }

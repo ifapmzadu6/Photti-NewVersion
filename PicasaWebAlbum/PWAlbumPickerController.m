@@ -50,15 +50,15 @@
         if (_localNavigationController && _webNavigationController) {
             self.viewControllers = @[_localNavigationController, _webNavigationController];
             self.selectedIndex = 1;
-            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
         }
         else if (_localNavigationController) {
             self.viewControllers = @[_localNavigationController];
-            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
         }
         else if (_webNavigationController) {
             self.viewControllers = @[_webNavigationController];
-            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
         }
         
     }
@@ -68,7 +68,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundDarkColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundDarkColor];
     self.tabBar.barTintColor = [UIColor blackColor];
     
     _toolbar = [[UIToolbar alloc] init];
@@ -136,10 +136,10 @@
     [viewController viewDidAppear:NO];
     
     if (viewController == _localNavigationController) {
-        self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+        self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
     }
     else if (viewController == _webNavigationController) {
-        self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+        self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     }
 }
 

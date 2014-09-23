@@ -45,7 +45,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     
     UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
     self.navigationItem.rightBarButtonItem = doneBarButtonItem;
@@ -55,7 +55,7 @@
     
     _tableView = [[KKStaticTableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.cellTextFont = [UIFont systemFontOfSize:15.0f];
-    _tableView.cellTextColor = [PAColors getColor:PWColorsTypeTextColor];
+    _tableView.cellTextColor = [PAColors getColor:PAColorsTypeTextColor];
     _tableView.cellDetailTextFontTypeValue1 = [UIFont systemFontOfSize:15.0f];
     _tableView.cellDetailTextFontTypeSubTitle = [UIFont systemFontOfSize:13.0f];
     _tableView.cellDetailTextColor = [UIColor colorWithWhite:0.5f alpha:1.0f];
@@ -194,7 +194,7 @@
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = NSLocalizedString(@"Delete all tasks", nil);
-        cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextDarkColor];
+        cell.textLabel.textColor = [PAColors getColor:PAColorsTypeTextDarkColor];
         cell.detailTextLabel.text = nil;
         UIButton *button = [sself roundedButtonWithTitle:NSLocalizedString(@"Delete", nil) tintColor:tintColor action:@selector(deleteAllTasksButtonAction)];
         button.layer.borderWidth = 0.0f;
@@ -252,7 +252,7 @@
                             UILabel *label = [UILabel new];
                             label.font = [UIFont systemFontOfSize:13.0f];
                             label.text = [NSLocalizedString(@"Purchased", nil) stringByAppendingString:@"   "];
-                            label.textColor = [PAColors getColor:PWColorsTypeTextDarkColor];
+                            label.textColor = [PAColors getColor:PAColorsTypeTextDarkColor];
                             [label sizeToFit];
                             cell.accessoryView = label;
                         }
@@ -270,7 +270,7 @@
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = NSLocalizedString(@"Restore In-App Purchase", nil);
-        cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextDarkColor];
+        cell.textLabel.textColor = [PAColors getColor:PAColorsTypeTextDarkColor];
         UIButton *button = [sself roundedButtonWithTitle:NSLocalizedString(@"Restore", nil) tintColor:tintColor action:@selector(restoreButtonAction:)];
         button.layer.borderWidth = 0.0f;
         [button setTitleColor:tintColor forState:UIControlStateNormal];

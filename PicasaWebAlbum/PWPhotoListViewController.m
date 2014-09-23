@@ -86,7 +86,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     [super viewDidLoad];
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
-    [tabBarController setToolbarTintColor:[PAColors getColor:PWColorsTypeTintWebColor]];
+    [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
     
     PAPhotoCollectionViewFlowLayout *collectionViewLayout = [[PAPhotoCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
@@ -94,14 +94,14 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     _collectionView.delegate = self;
     [_collectionView registerClass:[PWPhotoViewCell class] forCellWithReuseIdentifier:@"Cell"];
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
-    _collectionView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
-    _refreshControl.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+    _refreshControl.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
     [_collectionView addSubview:_refreshControl];
     
@@ -582,7 +582,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, _trashBarButtonItem];
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
-    [tabBarController setActionToolbarTintColor:[PAColors getColor:PWColorsTypeTintWebColor]];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
@@ -596,7 +596,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
-    [tabBarController setActionNavigationTintColor:[PAColors getColor:PWColorsTypeTintWebColor]];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
     [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
@@ -1014,7 +1014,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     if (!_noItemImageView) {
         _noItemImageView = [UIImageView new];
         _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _noItemImageView.tintColor = [[PAColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.tintColor = [[PAColors getColor:PAColorsTypeTintWebColor] colorWithAlphaComponent:0.2f];
         _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
     }

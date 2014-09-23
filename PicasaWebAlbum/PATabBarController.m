@@ -174,6 +174,10 @@
     if (_isPhone) {
         if(_isLandscape) {
             height = 32.0f;
+            
+            if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0f) {
+                height -= 20.0f;
+            }
         }
     }
     return height + 20.0f;

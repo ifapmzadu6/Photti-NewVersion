@@ -58,7 +58,7 @@
         
         _titleLabel = [UILabel new];
         _titleLabel.font = [UIFont systemFontOfSize:15.0f];
-        _titleLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
+        _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
         [self.contentView addSubview:_titleLabel];
         
         _taskTypeLabel = [UILabel new];
@@ -92,7 +92,7 @@
         
         _subTitleLabel = [UILabel new];
         _subTitleLabel.font = [UIFont systemFontOfSize:15.0f];
-        _subTitleLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
+        _subTitleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
         _subTitleLabel.minimumScaleFactor = 0.75f;
         _subTitleLabel.adjustsFontSizeToFitWidth = YES;
         _subTitleLabel.numberOfLines = 2;
@@ -128,7 +128,7 @@
         
         CGFloat arrowSize = ceilf(CGRectGetHeight(rect) / 4.0f);
         _subArrowIcon.frame = CGRectMake(CGRectGetWidth(rect) / 2.0f - 10.0f, CGRectGetHeight(rect) / 2.0f - arrowSize / 2.0f, arrowSize, arrowSize);
-        _subArrowIcon.image = [[PAIcons arrowIconWithColor:[PAColors getColor:PWColorsTypeTintWebColor] size:CGSizeMake(arrowSize, arrowSize)] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        _subArrowIcon.image = [[PAIcons arrowIconWithColor:[PAColors getColor:PAColorsTypeTintWebColor] size:CGSizeMake(arrowSize, arrowSize)] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         
         _subDestiantionThumbnailImageView.frame = CGRectMake(CGRectGetMaxX(_subArrowIcon.frame) + 6.0f, 15.0f, rect.size.height - 30.0f, rect.size.height - 30.0f);
         
@@ -170,7 +170,7 @@
         NSString *id_str = taskObject.from_album_id_str;
         
         _taskTypeLabel.text = NSLocalizedString(@"Download", nil);
-        _taskTypeLabel.textColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+        _taskTypeLabel.textColor = [PAColors getColor:PAColorsTypeTintLocalColor];
         _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.photos.count];
         
         [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
@@ -195,11 +195,11 @@
         NSString *destination_album_id_str = taskObject.to_album_id_str;
         
         _taskTypeLabel.text = NSLocalizedString(@"Download", nil);
-        _taskTypeLabel.textColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+        _taskTypeLabel.textColor = [PAColors getColor:PAColorsTypeTintLocalColor];
         _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.photos.count];
         _titleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%d items", nil), taskObject.photos.count];
         _subArrowIcon.hidden = NO;
-        _subArrowIcon.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+        _subArrowIcon.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
         
         [taskObject.photos enumerateObjectsUsingBlock:^(PDWebPhotoObject *obj, NSUInteger idx, BOOL *stop) {
             typeof(wself) sself = wself;
@@ -327,7 +327,7 @@
         NSString *id_str = taskObject.from_album_id_str;
         
         _taskTypeLabel.text = NSLocalizedString(@"Upload", nil);
-        _taskTypeLabel.textColor = [PAColors getColor:PWColorsTypeTintWebColor];
+        _taskTypeLabel.textColor = [PAColors getColor:PAColorsTypeTintWebColor];
         _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.photos.count];
         
         [PLCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
@@ -367,11 +367,11 @@
         NSString *destination_album_id_str = taskObject.to_album_id_str;
         
         _taskTypeLabel.text = NSLocalizedString(@"Upload", nil);
-        _taskTypeLabel.textColor = [PAColors getColor:PWColorsTypeTintWebColor];
+        _taskTypeLabel.textColor = [PAColors getColor:PAColorsTypeTintWebColor];
         _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.photos.count];
         _titleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%d items", nil), taskObject.photos.count];
         _subArrowIcon.hidden = NO;
-        _subArrowIcon.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+        _subArrowIcon.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
         
         [taskObject.photos enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             typeof(wself) sself = wself;
@@ -627,16 +627,16 @@
         _countLabel.textColor = [UIColor whiteColor];
         
         if (_taskObject.type.integerValue == PDTaskObjectTypeWebAlbumToLocalAlbum) {
-            _countLabel.badgeBackgroundColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+            _countLabel.badgeBackgroundColor = [PAColors getColor:PAColorsTypeTintLocalColor];
         }
         else if (_taskObject.type.integerValue == PDTaskObjectTypePhotosToLocalAlbum) {
-            _countLabel.badgeBackgroundColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+            _countLabel.badgeBackgroundColor = [PAColors getColor:PAColorsTypeTintLocalColor];
         }
         else if (_taskObject.type.integerValue == PDTaskObjectTypeLocalAlbumToWebAlbum) {
-            _countLabel.badgeBackgroundColor = [PAColors getColor:PWColorsTypeTintWebColor];
+            _countLabel.badgeBackgroundColor = [PAColors getColor:PAColorsTypeTintWebColor];
         }
         else if (_taskObject.type.integerValue == PDTaskObjectTypePhotosToWebAlbum) {
-            _countLabel.badgeBackgroundColor = [PAColors getColor:PWColorsTypeTintWebColor];
+            _countLabel.badgeBackgroundColor = [PAColors getColor:PAColorsTypeTintWebColor];
         }
     }
     else {
@@ -644,20 +644,20 @@
         _countLabel.badgeBackgroundColor = [UIColor whiteColor];
         
         if (_taskObject.type.integerValue == PDTaskObjectTypeWebAlbumToLocalAlbum) {
-            _countLabel.badgeBorderColor = [PAColors getColor:PWColorsTypeTintLocalColor];
-            _countLabel.textColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+            _countLabel.badgeBorderColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+            _countLabel.textColor = [PAColors getColor:PAColorsTypeTintLocalColor];
         }
         else if (_taskObject.type.integerValue == PDTaskObjectTypePhotosToLocalAlbum) {
-            _countLabel.badgeBorderColor = [PAColors getColor:PWColorsTypeTintLocalColor];
-            _countLabel.textColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+            _countLabel.badgeBorderColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+            _countLabel.textColor = [PAColors getColor:PAColorsTypeTintLocalColor];
         }
         else if (_taskObject.type.integerValue == PDTaskObjectTypeLocalAlbumToWebAlbum) {
-            _countLabel.badgeBorderColor = [PAColors getColor:PWColorsTypeTintWebColor];
-            _countLabel.textColor = [PAColors getColor:PWColorsTypeTintWebColor];
+            _countLabel.badgeBorderColor = [PAColors getColor:PAColorsTypeTintWebColor];
+            _countLabel.textColor = [PAColors getColor:PAColorsTypeTintWebColor];
         }
         else if (_taskObject.type.integerValue == PDTaskObjectTypePhotosToWebAlbum) {
-            _countLabel.badgeBorderColor = [PAColors getColor:PWColorsTypeTintWebColor];
-            _countLabel.textColor = [PAColors getColor:PWColorsTypeTintWebColor];
+            _countLabel.badgeBorderColor = [PAColors getColor:PAColorsTypeTintWebColor];
+            _countLabel.textColor = [PAColors getColor:PAColorsTypeTintWebColor];
         }
     }
 }

@@ -54,7 +54,7 @@
         self.delegate = self;
         self.dataSource = self;
         [self setViewControllers:@[[self makePhotoViewController:index placeholder:placeholder]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-        self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+        self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     }
     return self;
 }
@@ -368,7 +368,7 @@
             [sself.navigationController setNavigationBarHidden:NO animated:YES];
             [tabBarController setToolbarFadeout:NO animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
-                sself.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+                sself.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
             }];
             sself.navigationController.interactivePopGestureRecognizer.enabled = YES;
         }

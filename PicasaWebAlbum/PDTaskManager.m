@@ -53,7 +53,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     self = [super init];
     if (self) {
         NSURLSessionConfiguration *config = nil;
-        if ([[[UIDevice currentDevice] systemVersion] floatValue] > 8.0f) {
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0f) {
             config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kPDTaskManagerBackgroundSessionIdentifier];
         }
         else {

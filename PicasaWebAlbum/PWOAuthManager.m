@@ -167,8 +167,8 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
         navigationController.view.backgroundColor = [UIColor whiteColor];
         navigationController.automaticallyAdjustsScrollViewInsets = NO;
         navigationController.edgesForExtendedLayout = UIRectEdgeAll;
-        navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
-        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PWColorsTypeTextColor]};
+        navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PAColorsTypeTextColor]};
         navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         
         if (completion) {

@@ -65,15 +65,15 @@
         
         if (_localNavigationcontroller && _webAlbumViewController) {
             self.viewControllers = @[_localNavigationcontroller, _webNavigationController];
-            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
         }
         else if (_localNavigationcontroller) {
             self.viewControllers = @[_localNavigationcontroller];
-            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
         }
         else if (_webAlbumViewController) {
             self.viewControllers = @[_webNavigationController];
-            self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
         }
         
         _selectedPhotoIDs = @[];
@@ -86,7 +86,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     self.tabBar.barTintColor = [UIColor blackColor];
     
     _toolbar = [[UIToolbar alloc] init];
@@ -171,10 +171,10 @@
     [viewController viewDidAppear:NO];
     
     if (viewController == _webNavigationController) {
-        self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+        self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     }
     else if (viewController == _localNavigationcontroller) {
-        self.tabBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+        self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
     }    
 }
 

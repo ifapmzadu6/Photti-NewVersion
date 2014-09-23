@@ -57,7 +57,7 @@
 
 - (void)initialization {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundColor];
+        self.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     }
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];

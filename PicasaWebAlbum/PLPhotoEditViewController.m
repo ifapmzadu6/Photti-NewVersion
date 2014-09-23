@@ -122,7 +122,7 @@ typedef enum _PLPhotoEditViewControllerGPSType {
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     [self.view addSubview:_tableView];
 }
 
@@ -175,7 +175,7 @@ typedef enum _PLPhotoEditViewControllerGPSType {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
         cell.textLabel.font = [UIFont systemFontOfSize:15.0f];
-        cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
+        cell.textLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
         cell.detailTextLabel.font = [UIFont systemFontOfSize:15.0f];
     }
     cell.textLabel.alpha = 1.0f;

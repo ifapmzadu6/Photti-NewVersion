@@ -37,7 +37,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -47,10 +47,10 @@
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PictureLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height == 480)) {
-        _iconImageView.tintColor = [[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.1f];
+        _iconImageView.tintColor = [[PAColors getColor:PAColorsTypeTintLocalColor] colorWithAlphaComponent:0.1f];
     }
     else {
-        _iconImageView.tintColor = [[PAColors getColor:PWColorsTypeTintLocalColor] colorWithAlphaComponent:0.667f];
+        _iconImageView.tintColor = [[PAColors getColor:PAColorsTypeTintLocalColor] colorWithAlphaComponent:0.667f];
     }
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
@@ -63,7 +63,7 @@
     else {
         _titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _titleLabel.textColor = [PAColors getColor:PWColorsTypeTextLightColor];
+    _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_titleLabel];
     
@@ -75,7 +75,7 @@
     else {
         _descriptionLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _descriptionLabel.textColor = [PAColors getColor:PWColorsTypeTextLightColor];
+    _descriptionLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
     _descriptionLabel.textAlignment = NSTextAlignmentCenter;
     _descriptionLabel.numberOfLines = 0;
     [self.view addSubview:_descriptionLabel];
@@ -89,12 +89,12 @@
         _accessButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_accessButton setTitle:NSLocalizedString(@"Access", nil) forState:UIControlStateNormal];
-    [_accessButton setTitleColor:[PAColors getColor:PWColorsTypeTintLocalColor] forState:UIControlStateHighlighted];
+    [_accessButton setTitleColor:[PAColors getColor:PAColorsTypeTintLocalColor] forState:UIControlStateHighlighted];
     [_accessButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_accessButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeTintLocalColor]] forState:UIControlStateNormal];
-    [_accessButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PWColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
+    [_accessButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PAColorsTypeTintLocalColor]] forState:UIControlStateNormal];
+    [_accessButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PAColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _accessButton.clipsToBounds = YES;
-    _accessButton.layer.borderColor = [PAColors getColor:PWColorsTypeTintLocalColor].CGColor;
+    _accessButton.layer.borderColor = [PAColors getColor:PAColorsTypeTintLocalColor].CGColor;
     _accessButton.layer.borderWidth = 1.0f;
     _accessButton.layer.cornerRadius = 5.0f;
     _accessButton.exclusiveTouch = YES;

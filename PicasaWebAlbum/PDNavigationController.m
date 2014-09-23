@@ -51,9 +51,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     
-    self.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintUploadColor];
+    self.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintUploadColor];
 }
 
 - (void)didReceiveMemoryWarning {

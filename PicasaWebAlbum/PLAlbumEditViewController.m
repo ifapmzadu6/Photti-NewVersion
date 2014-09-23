@@ -40,7 +40,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationController.navigationBar.tintColor = [PAColors getColor:PWColorsTypeTintLocalColor];
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
     
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
@@ -54,7 +54,7 @@
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
@@ -107,7 +107,7 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
         cell.textLabel.font = [UIFont boldSystemFontOfSize:15.0f];
-        cell.textLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
+        cell.textLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
         cell.detailTextLabel.font = [UIFont boldSystemFontOfSize:15.0f];
     }
     cell.accessoryView = nil;
@@ -192,7 +192,7 @@
     
     NSDate *date = [PADateTimestamp dateForTimestamp:_timestamp.stringValue];
     _datePickerView = [[PWDatePickerView alloc] initWithDate:date];
-    _datePickerView.tintColor = [PAColors getColor:PWColorsTypeTintWebColor];
+    _datePickerView.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     CGRect rect = self.view.bounds;
     CGFloat dHeight = 216.0f + 44.0f;
     if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {

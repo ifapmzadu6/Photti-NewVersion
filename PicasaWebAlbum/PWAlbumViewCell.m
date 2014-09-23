@@ -52,7 +52,7 @@
 }
 
 - (void)initialization {
-    self.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundColor];
+    self.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.contentView addSubview:_activityIndicatorView];
@@ -60,12 +60,12 @@
     _imageView = [UIImageView new];
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
-    _imageView.tintColor = [[PAColors getColor:PWColorsTypeTintWebColor] colorWithAlphaComponent:0.4f];
+    _imageView.tintColor = [[PAColors getColor:PAColorsTypeTintWebColor] colorWithAlphaComponent:0.4f];
     [self.contentView addSubview:_imageView];
     
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:14.0f];
-    _titleLabel.textColor = [PAColors getColor:PWColorsTypeTextColor];
+    _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
     _titleLabel.numberOfLines = 2;
     [self.contentView addSubview:_titleLabel];
     
@@ -79,7 +79,7 @@
     _actionButton = [UIButton new];
     [_actionButton addTarget:self action:@selector(actionButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _actionButton.hitEdgeInsets = UIEdgeInsetsMake(-4.0f, -10.0f, -4.0f, 0.0f);
-    [_actionButton setImage:[PAIcons albumActionButtonIconWithColor:[PAColors getColor:PWColorsTypeTintWebColor]] forState:UIControlStateNormal];
+    [_actionButton setImage:[PAIcons albumActionButtonIconWithColor:[PAColors getColor:PAColorsTypeTintWebColor]] forState:UIControlStateNormal];
     [_actionButton setBackgroundImage:[PAIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.05f]] forState:UIControlStateHighlighted];
     [self.contentView addSubview:_actionButton];
     

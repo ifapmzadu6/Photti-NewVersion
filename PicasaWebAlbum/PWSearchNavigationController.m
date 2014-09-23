@@ -140,7 +140,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     [super viewDidLoad];
     
     _searchBarBackgroundView = [UIView new];
-    _searchBarBackgroundView.backgroundColor = [PAColors getColor:PWColorsTypeBackgroundLightColor];
+    _searchBarBackgroundView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     _searchBarBackgroundView.alpha = 0.0f;
     _searchBarBackgroundView.exclusiveTouch = YES;
     [self.view addSubview:_searchBarBackgroundView];
@@ -157,8 +157,8 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     [_cancelButton addTarget:self action:@selector(cancelButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _cancelButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     [_cancelButton setTitle:NSLocalizedString(@"Cancel", nil) forState:UIControlStateNormal];
-    [_cancelButton setTitleColor:[PAColors getColor:PWColorsTypeTintUploadColor] forState:UIControlStateNormal];
-    [_cancelButton setTitleColor:[[PAColors getColor:PWColorsTypeTintUploadColor] colorWithAlphaComponent:0.2f]  forState:UIControlStateHighlighted];
+    [_cancelButton setTitleColor:[PAColors getColor:PAColorsTypeTintUploadColor] forState:UIControlStateNormal];
+    [_cancelButton setTitleColor:[[PAColors getColor:PAColorsTypeTintUploadColor] colorWithAlphaComponent:0.2f]  forState:UIControlStateHighlighted];
     _cancelButton.exclusiveTouch = YES;
     [_searchBarBackgroundView addSubview:_cancelButton];
     
