@@ -1,32 +1,32 @@
 //
-//  PHAlbumDataSource.m
+//  PHMomentDataSource.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/09/23.
+//  Created by Keisuke Karijuku on 2014/09/24.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PHAlbumListDataSource.h"
-
-#import "PHAlbumViewCell.h"
+#import "PHMomentListDataSource.h"
 
 @import Photos;
 
-@interface PHAlbumListDataSource () <PHPhotoLibraryChangeObserver>
+#import "PHMomentViewCell.h"
+
+@interface PHMomentListDataSource () <PHPhotoLibraryChangeObserver>
 
 @property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PHFetchResult *fetchResult;
 
 @end
 
-@implementation PHAlbumListDataSource
+@implementation PHMomentListDataSource
 
 - (instancetype)init {
     self = [super init];
     if (self) {
         [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
         
-        _fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:0];
+        _fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeMoment subtype:PHAssetCollectionSubtypeAny options:0];
     }
     return self;
 }
@@ -37,7 +37,7 @@
 
 #pragma mark Methods
 - (void)prepareForUse:(UICollectionView *)collectionView {
-    [collectionView registerClass:[PHAlbumViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PHAlbumViewCell class])];
+    [collectionView registerClass:[PHMomentViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PHMomentViewCell class])];
     
     _collectionView = collectionView;
 }
@@ -57,32 +57,26 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    PHAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PHAlbumViewCell class]) forIndexPath:indexPath];
-    
-    cell.firstImageView.image = nil;
-    cell.secondImageView.image = nil;
-    cell.thirdImageView.image = nil;
+    PHMomentViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PHMomentViewCell class]) forIndexPath:indexPath];
     
     PHAssetCollection *collection = _fetchResult[indexPath.row];
-    PHFetchResult *assetsResult = [PHAsset fetchKeyAssetsInAssetCollection:collection options:nil];
-    if (assetsResult.count >= 1) {
-        [[PHImageManager defaultManager] requestImageForAsset:assetsResult[0] targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:[PHImageRequestOptions new] resultHandler:^(UIImage *result, NSDictionary *info) {
-            cell.firstImageView.image = result;
-        }];
-    }
-    if (assetsResult.count >= 2) {
-        [[PHImageManager defaultManager] requestImageForAsset:assetsResult[1] targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:[PHImageRequestOptions new] resultHandler:^(UIImage *result, NSDictionary *info) {
-            cell.secondImageView.image = result;
-        }];
-    }
-    if (assetsResult.count >= 3) {
-        [[PHImageManager defaultManager] requestImageForAsset:assetsResult[2] targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:[PHImageRequestOptions new] resultHandler:^(UIImage *result, NSDictionary *info) {
-            cell.thirdImageView.image = result;
-        }];
+    PHFetchResult *assetsResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+    
+    cell.numberOfImageView = assetsResult.count;
+    for (int i=0; i<cell.numberOfImageView; i++) {
+        UIImageView *imageView = cell.imageViews[i];
+        imageView.image = nil;
+        PHAsset *asset = assetsResult[i];
+        if (asset.mediaType == PHAssetMediaTypeImage) {
+            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:[PHImageRequestOptions new] resultHandler:^(UIImage *result, NSDictionary *info) {
+                imageView.image = result;
+            }];
+        }
     }
     
     cell.titleLabel.text = collection.localizedTitle;
     cell.detailLabel.text = [NSString stringWithFormat:@"%ld個の項目", (long)collection.estimatedAssetCount];
+    
     return cell;
 }
 

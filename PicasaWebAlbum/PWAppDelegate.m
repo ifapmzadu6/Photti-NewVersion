@@ -10,7 +10,7 @@
 
 #import <Crashlytics/Crashlytics.h>
 #import <SDImageCache.h>
-#import <Appirater.h>
+#import <UAAppReviewManager.h>
 #import <GAI.h>
 #import <GAIDictionaryBuilder.h>
 
@@ -54,9 +54,9 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     // Crashlytics
     [Crashlytics startWithAPIKey:CLASHLYTICSID];
     
-    // Appirater
-    [Appirater setAppId:APPID];
-    [Appirater appLaunched:YES];
+    // UAAppReviewManager
+    [UAAppReviewManager setAppID:APPID];
+    [UAAppReviewManager showPromptIfNecessary];
     
     // NSURLSession
     [[[NSURLSession sharedSession] configuration] setURLCache:nil];
@@ -75,8 +75,6 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
         rootViewController = [self migrationViewController];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             [PWCoreDataAPI readContext];
-            [PLCoreDataAPI readContext];
-            [PDCoreDataAPI readContext];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.window.rootViewController = [self tabBarController];

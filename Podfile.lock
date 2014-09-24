@@ -1,5 +1,4 @@
 PODS:
-  - Appirater (2.0.4)
   - FLAnimatedImage (1.0.1)
   - GData (1.12.0):
     - GData/Core
@@ -24,9 +23,9 @@ PODS:
     - SDWebImage/Core
   - SDWebImage/Core (3.7.1)
   - SFHFKeychainUtils (0.0.1)
+  - UAAppReviewManager (0.2.6)
 
 DEPENDENCIES:
-  - Appirater
   - FLAnimatedImage
   - GData
   - Google-Mobile-Ads-SDK
@@ -36,13 +35,13 @@ DEPENDENCIES:
   - Reachability
   - SDWebImage
   - SFHFKeychainUtils
+  - UAAppReviewManager
 
 EXTERNAL SOURCES:
   KKStaticTableView:
     :git: git@github.com:ifapmzadu6/KKStaticTableView.git
 
 SPEC CHECKSUMS:
-  Appirater: cbdb7f305562cfde585300bfff86da01ae559deb
   FLAnimatedImage: a91333b191d57ecf7f86b85bf93145a7f63dafe5
   GData: 99d19dd8ee328ce77d12d504ddf9b0e0a6e3bc0d
   Google-Mobile-Ads-SDK: b1b5cfd1b604a8412faa5536586b13a4b640f344
@@ -54,5 +53,6 @@ SPEC CHECKSUMS:
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
   SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
   SFHFKeychainUtils: 6fdda05a86d035db406c7662ec1054814b68f0fd
+  UAAppReviewManager: f23428de9c9cd242c2ffd899e218ba3620bd0683
 
 COCOAPODS: 0.33.1

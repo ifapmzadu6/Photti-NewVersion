@@ -120,7 +120,6 @@
 - (void)disableBannerBounce:(GADBannerView *)bannerView{
     for (UIWebView *webView in bannerView.subviews) {
         if ([webView isKindOfClass:[UIWebView class]]) {
-            
             webView.scrollView.bounces = NO;
         }
     }

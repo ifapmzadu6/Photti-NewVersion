@@ -43,13 +43,13 @@
 - (void)initialization {
     _thirdImageView = [UIImageView new];
     _thirdImageView.contentMode = UIViewContentModeScaleAspectFill;
-    _thirdImageView.alpha = 0.333;
+//    _thirdImageView.alpha = 0.333;
     _thirdImageView.clipsToBounds = YES;
     [self.contentView addSubview:_thirdImageView];
     
     _secondImageView = [UIImageView new];
     _secondImageView.contentMode = UIViewContentModeScaleAspectFill;
-    _secondImageView.alpha = 0.667f;
+//    _secondImageView.alpha = 0.667f;
     _secondImageView.clipsToBounds = YES;
     [self.contentView addSubview:_secondImageView];
     
@@ -71,12 +71,19 @@
     // TODO : remove
     _titleLabel.text = @"トルコ旅行";
     _detailLabel.text = @"51枚の写真";
+    
+    _firstImageView.layer.borderWidth = 1.0f;
+    _firstImageView.layer.borderColor = [UIColor whiteColor].CGColor;
+    _secondImageView.layer.borderWidth = 1.0f;
+    _secondImageView.layer.borderColor = [UIColor whiteColor].CGColor;
+    _thirdImageView.layer.borderWidth = 1.0f;
+    _thirdImageView.layer.borderColor = [UIColor whiteColor].CGColor;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    CGRect rect = self.bounds;
+    CGRect rect = self.contentView.bounds;
     CGFloat delta = 5.0f;
     CGFloat imageSize = CGRectGetWidth(rect)-delta*2.0f;
     

@@ -6,19 +6,19 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PHCollectionViewCell.h"
+#import "PHMomentViewCell.h"
 
 #import "PAColors.h"
 
-static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 9;
+static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
 
-@interface PHCollectionViewCell ()
+@interface PHMomentViewCell ()
 
 @property (strong, nonatomic) UIView *imageViewBackgroundView;
 
 @end
 
-@implementation PHCollectionViewCell
+@implementation PHMomentViewCell
 
 - (instancetype)init {
     self = [super init];
@@ -46,7 +46,7 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 9;
 
 - (void)initialization {
     _imageViewBackgroundView = [UIView new];
-    _imageViewBackgroundView.backgroundColor = [UIColor blackColor];
+    _imageViewBackgroundView.backgroundColor = [PAColors getColor:PAColorsTypeTextColor];
     [self.contentView addSubview:_imageViewBackgroundView];
     
     NSMutableArray *imageViews = @[].mutableCopy;
@@ -78,29 +78,31 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 9;
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    CGRect rect = self.bounds;
+    CGRect rect = self.contentView.bounds;
     NSUInteger numberOfRowAndCol = sqrtf(_numberOfImageView);
-    CGFloat imageSize = ceilf((CGRectGetWidth(rect)-2)/numberOfRowAndCol*2.0f+0.5f)/2.0f;
-    
-    for (int i=0; i<numberOfRowAndCol; i++) {
-        for (int j=0; j<numberOfRowAndCol; j++) {
-            if (i*numberOfRowAndCol+j < _numberOfImageView) {
-                UIImageView *imageView = _imageViews[i*numberOfRowAndCol+j];
-                imageView.frame = CGRectMake(imageSize*i +1.0f, imageSize*j +1.0f, imageSize, imageSize);
-                imageView.hidden = NO;
+    if (numberOfRowAndCol > 0) {
+        CGFloat imageSize = ceilf((CGRectGetWidth(rect)-2)/numberOfRowAndCol*2.0f+0.5f)/2.0f;
+        
+        for (int i=0; i<numberOfRowAndCol; i++) {
+            for (int j=0; j<numberOfRowAndCol; j++) {
+                if (i*numberOfRowAndCol+j < _numberOfImageView) {
+                    UIImageView *imageView = _imageViews[i*numberOfRowAndCol+j];
+                    imageView.frame = CGRectMake(imageSize*i +1.0f, imageSize*j +1.0f, imageSize, imageSize);
+                    imageView.hidden = NO;
+                }
             }
         }
+        
+        _imageViewBackgroundView.frame = CGRectMake(0.5f, 0.5f, imageSize*numberOfRowAndCol+1.0f, imageSize*numberOfRowAndCol+1.0f);
     }
-    
-    _imageViewBackgroundView.frame = CGRectMake(0.5f, 0.5f, imageSize*numberOfRowAndCol+1.0f, imageSize*numberOfRowAndCol+1.0f);
     
     _titleLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 26.0f, CGRectGetWidth(rect), 14.0f);
     _detailLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 12.0f, CGRectGetWidth(rect), 12.0f);
 }
 
 - (void)setNumberOfImageView:(NSUInteger)numberOfImageView {
-    if (numberOfImageView > 9) {
-        numberOfImageView = 9;
+    if (numberOfImageView > kPHCollectionViewCellMaxNumberOfImageViews) {
+        numberOfImageView = kPHCollectionViewCellMaxNumberOfImageViews;
     }
     _numberOfImageView = numberOfImageView;
     

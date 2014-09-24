@@ -8,7 +8,7 @@
 
 @import UIKit;
 
-@interface PHCollectionViewCell : UICollectionViewCell
+@interface PHMomentViewCell : UICollectionViewCell
 
 @property (strong, nonatomic, readonly) NSArray *imageViews;
 @property (nonatomic) NSUInteger numberOfImageView;

@@ -1,14 +1,14 @@
 //
-//  PHAlbumDataSource.h
+//  PHPanoramaListDataSource.h
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/09/23.
+//  Created by Keisuke Karijuku on 2014/09/25.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-@import Foundation;
+#import <Foundation/Foundation.h>
 
-@interface PHAlbumListDataSource : NSObject <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface PHPanoramaListDataSource : NSObject <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic) CGSize cellSize;
 @property (nonatomic) CGFloat minimumInteritemSpacing;

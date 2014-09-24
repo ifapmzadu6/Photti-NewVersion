@@ -11,7 +11,7 @@
 #import "PAColors.h"
 #import "PHHorizontalScrollView.h"
 #import "PHAlbumViewCell.h"
-#import "PHCollectionViewCell.h"
+#import "PHMomentViewCell.h"
 
 @interface PHCategoryViewCell ()
 
@@ -68,7 +68,7 @@
     
     _horizontalScrollView = [PHHorizontalScrollView new];
     [_horizontalScrollView.collectionView registerClass:[PHAlbumViewCell class] forCellWithReuseIdentifier:@"PHAlbumViewCell"];
-    [_horizontalScrollView.collectionView registerClass:[PHCollectionViewCell class] forCellWithReuseIdentifier:@"PHCollectionViewCell"];
+    [_horizontalScrollView.collectionView registerClass:[PHMomentViewCell class] forCellWithReuseIdentifier:@"PHCollectionViewCell"];
     _horizontalScrollView.collectionView.contentInset = UIEdgeInsetsMake(0.0f, 15.0f, 0.0f, 15.0f);
     [self.contentView addSubview:_horizontalScrollView];
 }

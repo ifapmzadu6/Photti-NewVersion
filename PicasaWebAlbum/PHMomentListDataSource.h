@@ -1,14 +1,14 @@
 //
-//  PHAlbumDataSource.h
+//  PHMomentDataSource.h
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/09/23.
+//  Created by Keisuke Karijuku on 2014/09/24.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
 @import Foundation;
 
-@interface PHAlbumListDataSource : NSObject <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface PHMomentListDataSource : NSObject <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic) CGSize cellSize;
 @property (nonatomic) CGFloat minimumInteritemSpacing;

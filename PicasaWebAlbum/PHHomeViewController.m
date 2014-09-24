@@ -8,8 +8,11 @@
 
 #import "PHHomeViewController.h"
 
+@import Photos;
+
 #import "PAColors.h"
 #import "PAIcons.h"
+#import "PAString.h"
 #import "PATabBarAdsController.h"
 #import "PWSettingsViewController.h"
 #import "PWSearchNavigationController.h"
@@ -19,14 +22,15 @@
 #import "PAGradientView.h"
 #import "PHHorizontalScrollView.h"
 
-#import "PHAlbumViewCell.h"
-#import "PHCollectionViewCell.h"
-
 #import "PHAlbumListDataSource.h"
+#import "PHMomentListDataSource.h"
+#import "PHPanoramaListDataSource.h"
+#import "PHVideoListDataSource.h"
+
 
 typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     kPHHomeViewControllerCell_Album,
-    kPHHomeViewControllerCell_Collection,
+    kPHHomeViewControllerCell_Moment,
     kPHHomeViewControllerCell_Video,
     kPHHomeViewControllerCell_Panorama,
     kPHHomeViewControllerCell_Timelapse,
@@ -43,6 +47,9 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 @property (strong, nonatomic) UIImageView *todayImageView;
 
 @property (strong, nonatomic) PHAlbumListDataSource *albumListDataSource;
+@property (strong, nonatomic) PHMomentListDataSource *momentListDataSource;
+@property (strong, nonatomic) PHPanoramaListDataSource *panoramaListDataSource;
+@property (strong, nonatomic) PHVideoListDataSource *videoListDataSource;
 
 @end
 
@@ -62,8 +69,31 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         self.edgesForExtendedLayout = UIRectEdgeAll;
         
         _albumListDataSource = [PHAlbumListDataSource new];
+        _albumListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
+        _albumListDataSource.minimumLineSpacing = 15.0f;
+        
+        _momentListDataSource = [PHMomentListDataSource new];
+        _momentListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
+        _momentListDataSource.minimumLineSpacing = 15.0f;
+        
+        _panoramaListDataSource = [PHPanoramaListDataSource new];
+        _panoramaListDataSource.cellSize = CGSizeMake(270.0f, 100.0f);
+        _panoramaListDataSource.minimumLineSpacing = 15.0f;
+        
+        _videoListDataSource = [PHVideoListDataSource new];
+        _videoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+        _videoListDataSource.minimumLineSpacing = 15.0f;
+        
+        [self test];
     }
     return self;
+}
+
+- (void)test {
+    PHFetchResult *result = [PHAsset fetchAssetsWithOptions:0];
+    PHAsset *firstAsset = result.firstObject;
+    [[PHImageManager defaultManager] requestImageForAsset:firstAsset targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:[PHImageRequestOptions new] resultHandler:^(UIImage *result, NSDictionary *info) {
+    }];
 }
 
 - (void)viewDidLoad {
@@ -168,15 +198,37 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         PHCategoryViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CategoryCell" forIndexPath:indexPath];
-        cell.dataSource = self;
-        cell.delegate = self;
+        if (indexPath.row == kPHHomeViewControllerCell_Album) {
+            [_albumListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            cell.dataSource = _albumListDataSource;
+            cell.delegate = _albumListDataSource;
+        }
+        else if (indexPath.row == kPHHomeViewControllerCell_Moment) {
+            [_momentListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            cell.dataSource = _momentListDataSource;
+            cell.delegate = _momentListDataSource;
+        }
+        else if (indexPath.row == kPHHomeViewControllerCell_Panorama) {
+            [_panoramaListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            cell.dataSource = _panoramaListDataSource;
+            cell.delegate = _panoramaListDataSource;
+        }
+        else if (indexPath.row == kPHHomeViewControllerCell_Video) {
+            [_videoListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            cell.dataSource = _videoListDataSource;
+            cell.delegate = _videoListDataSource;
+        }
+        else {
+            cell.dataSource = self;
+            cell.delegate = self;
+        }
         cell.horizontalScrollView.collectionView.tag = indexPath.row;
         
         if (indexPath.row == kPHHomeViewControllerCell_Album) {
             cell.titleLabel.text = @"アルバム";
         }
-        else if (indexPath.row == kPHHomeViewControllerCell_Collection) {
-            cell.titleLabel.text = @"コレクション";
+        else if (indexPath.row == kPHHomeViewControllerCell_Moment) {
+            cell.titleLabel.text = @"モーメント";
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Video) {
             cell.titleLabel.text = @"ビデオ";
@@ -232,7 +284,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         if (indexPath.row == kPHHomeViewControllerCell_Album) {
             return 200.0f;
         }
-        else if (indexPath.row == kPHHomeViewControllerCell_Collection) {
+        else if (indexPath.row == kPHHomeViewControllerCell_Moment) {
             return 200.0f;
         }
         return 170.0f;
@@ -252,32 +304,11 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     return 1;
 }
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {    
     return 18;
 }
 
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (collectionView.tag == kPHHomeViewControllerCell_Album) {
-        PHAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"PHAlbumViewCell" forIndexPath:indexPath];
-        NSString *firstImageName = [NSString stringWithFormat:@"img_%ld", random()%17 + 1];
-        cell.firstImageView.image = [UIImage imageNamed:firstImageName];
-        NSString *secondImageName = [NSString stringWithFormat:@"img_%ld", random()%17 + 1];
-        cell.secondImageView.image = [UIImage imageNamed:secondImageName];
-        NSString *thirdImageName = [NSString stringWithFormat:@"img_%ld", random()%17 + 1];
-        cell.thirdImageView.image = [UIImage imageNamed:thirdImageName];
-        return cell;
-    }
-    else if (collectionView.tag == kPHHomeViewControllerCell_Collection) {
-        PHCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"PHCollectionViewCell" forIndexPath:indexPath];
-        cell.numberOfImageView = random()%12 + 4;
-        for (int i=0; i<cell.numberOfImageView; i++) {
-            NSString *imageName = [NSString stringWithFormat:@"img_%ld", random()%17 + 1];
-            UIImageView *imageView = cell.imageViews[i];
-            imageView.image = [UIImage imageNamed:imageName];
-        }
-        return cell;
-    }
-    
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {    
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
     for (UIView *view in cell.contentView.subviews) {
@@ -300,15 +331,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 
 #pragma mark UICollectionViewFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (collectionView.tag == kPHHomeViewControllerCell_Album) {
-        return CGSizeMake(100.0f, 134.0f);
-    }
-    else if (collectionView.tag == kPHHomeViewControllerCell_Collection) {
-        return CGSizeMake(100.0f, 134.0f);
-    }
-    else if (collectionView.tag == kPHHomeViewControllerCell_Panorama) {
-        return CGSizeMake(290.0f, 100.0f);
-    }
     return CGSizeMake(100.0f, 100.0f);
 }
 
