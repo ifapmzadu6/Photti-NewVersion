@@ -17,7 +17,7 @@
     PHAssetCollection *collection = collectionResult.firstObject;
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
     
-    PHPhotoListDataSource *dataSource = [[PHPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult];
+    PHPhotoListDataSource *dataSource = [[PHPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
     return dataSource;
 }
 
@@ -26,7 +26,7 @@
     PHAssetCollection *collection = collectionResult.firstObject;
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
     
-    PHPhotoListDataSource *dataSource = [[PHPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult];
+    PHPhotoListDataSource *dataSource = [[PHPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
     return dataSource;
 }
 
@@ -35,7 +35,7 @@
     PHAssetCollection *collection = collectionResult.firstObject;
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
     
-    PHPhotoListDataSource *dataSource = [[PHPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult];
+    PHPhotoListDataSource *dataSource = [[PHPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
     return dataSource;
 }
 
@@ -53,7 +53,7 @@
     PHAssetCollection *collection = collectionResult.firstObject;
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
     
-    PHPhotoListDataSource *dataSource = [[PHPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult];
+    PHPhotoListDataSource *dataSource = [[PHPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
     return dataSource;
 }
 

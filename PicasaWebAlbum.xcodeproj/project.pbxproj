@@ -88,6 +88,7 @@
 		715EF2CC19B153880071A363 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 715A3172198E0243002A0A37 /* StoreKit.framework */; };
 		716243331952090300168825 /* PLPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 716243321952090300168825 /* PLPhotoObject.m */; };
 		71649BF1195907A400009C1F /* PAInAppPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 71649BF0195907A400009C1F /* PAInAppPurchase.m */; };
+		7165407E19D47A9300960F70 /* PHPhotoListInVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165407D19D47A9300960F70 /* PHPhotoListInVideoViewController.m */; };
 		71737EBA19A3193100CBE68A /* PANetworkActivityIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 71737EB919A3193100CBE68A /* PANetworkActivityIndicator.m */; };
 		717456E6196AB4F5003D2436 /* XmlReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 717456E5196AB4F5003D2436 /* XmlReader.m */; };
 		7177479F1936F5A8005179B6 /* PDModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7177479D1936F5A8005179B6 /* PDModel.xcdatamodeld */; };
@@ -361,6 +362,8 @@
 		716243321952090300168825 /* PLPhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoObject.m; sourceTree = "<group>"; };
 		71649BEF195907A400009C1F /* PAInAppPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAInAppPurchase.h; sourceTree = "<group>"; };
 		71649BF0195907A400009C1F /* PAInAppPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAInAppPurchase.m; sourceTree = "<group>"; };
+		7165407C19D47A9300960F70 /* PHPhotoListInVideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHPhotoListInVideoViewController.h; sourceTree = "<group>"; };
+		7165407D19D47A9300960F70 /* PHPhotoListInVideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHPhotoListInVideoViewController.m; sourceTree = "<group>"; };
 		71737EB819A3193100CBE68A /* PANetworkActivityIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PANetworkActivityIndicator.h; sourceTree = "<group>"; };
 		71737EB919A3193100CBE68A /* PANetworkActivityIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PANetworkActivityIndicator.m; sourceTree = "<group>"; };
 		717456E4196AB4F5003D2436 /* XmlReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlReader.h; sourceTree = "<group>"; };
@@ -1256,6 +1259,15 @@
 			name = PAInAppPurchase;
 			sourceTree = "<group>";
 		};
+		7165407B19D47A7700960F70 /* PHPhotoListInVideoViewController */ = {
+			isa = PBXGroup;
+			children = (
+				7165407C19D47A9300960F70 /* PHPhotoListInVideoViewController.h */,
+				7165407D19D47A9300960F70 /* PHPhotoListInVideoViewController.m */,
+			);
+			name = PHPhotoListInVideoViewController;
+			sourceTree = "<group>";
+		};
 		71737EB719A318F800CBE68A /* PANetworkActivityIndicator */ = {
 			isa = PBXGroup;
 			children = (
@@ -2142,6 +2154,7 @@
 				71C54F4119CD233900BCD9CF /* PHNavigationController */,
 				711C19A619D3DBD200FE3536 /* PHPhotoListInAlbumViewController */,
 				7117544919D450CF00710C2E /* PHPhotoListInPanoramaViewController */,
+				7165407B19D47A7700960F70 /* PHPhotoListInVideoViewController */,
 				71F056D119D3F4D00072C2F7 /* PHPhotoPageViewController */,
 				71F056D519D3F5B30072C2F7 /* PHPhotoViewController */,
 				719CFE561959A53F008B4308 /* PLAccessPhotoLibraryViewController */,
@@ -2475,6 +2488,7 @@
 				71CD06171931799D00BECF6B /* PASnowFlake.m in Sources */,
 				7118F89519335B790016697E /* PWImagePickerLocaliCloudViewController.m in Sources */,
 				719D92541918D84700B75D8B /* PWAlbumViewCell.m in Sources */,
+				7165407E19D47A9300960F70 /* PHPhotoListInVideoViewController.m in Sources */,
 				71958C5C191B933500CFC15F /* PWPhotoViewController.m in Sources */,
 				71109BD1196FBC3700EEDAAE /* PLPhotoEditViewController.m in Sources */,
 				71C54F4019CD232500BCD9CF /* PHHomeViewController.m in Sources */,

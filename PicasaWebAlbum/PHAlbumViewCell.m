@@ -78,7 +78,7 @@
     [super layoutSubviews];
     
     CGRect rect = self.contentView.bounds;
-    CGFloat delta = 5.0f;
+    CGFloat delta = 4.0f;
     CGFloat imageSize = CGRectGetWidth(rect)-delta*2.0f;
     
     _firstImageView.frame = CGRectMake(0.0f, delta*2.0f, imageSize, imageSize);

@@ -1,21 +1,22 @@
 //
-//  PHPhotoListInPanoramaViewController.m
+//  PHPhotoListInVideoViewController.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/09/25.
+//  Created by Keisuke Karijuku on 2014/09/26.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PHPhotoListInPanoramaViewController.h"
+#import "PHPhotoListInVideoViewController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PHPhotoDataSourceFactoryMethod.h"
 #import "PHPhotoListDataSource.h"
+#import "PAPhotoCollectionViewFlowLayout.h"
 #import "PATabBarAdsController.h"
 #import "PHPhotoPageViewController.h"
 
-@interface PHPhotoListInPanoramaViewController ()
+@interface PHPhotoListInVideoViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
@@ -25,18 +26,15 @@
 
 @end
 
-@implementation PHPhotoListInPanoramaViewController
+@implementation PHPhotoListInVideoViewController
 
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"Panorama", nil);
+        self.title = NSLocalizedString(@"Video", nil);
         
-        _dataSouce = [PHPhotoDataSourceFactoryMethod makePanoramaListDataSource];
-        CGRect rect = [UIScreen mainScreen].bounds;
-        _dataSouce.cellSize = CGSizeMake(CGRectGetWidth(rect), 70.0f);
-        _dataSouce.landscapeCellSize = CGSizeMake(CGRectGetHeight(rect), 70.0f);
-        _dataSouce.minimumLineSpacing = 5.0f;
+        _dataSouce = [PHPhotoDataSourceFactoryMethod makeVideoListDataSource];
+        _dataSouce.flowLayout = [PAPhotoCollectionViewFlowLayout new];
         __weak typeof(self) wself = self;
         _dataSouce.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
             typeof(wself) sself = wself;

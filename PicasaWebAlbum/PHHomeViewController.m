@@ -29,6 +29,7 @@
 #import "PHAlbumViewController.h"
 #import "PHPhotoListInAlbumViewController.h"
 #import "PHPhotoListInPanoramaViewController.h"
+#import "PHPhotoListInVideoViewController.h"
 #import "PHPhotoPageViewController.h"
 
 
@@ -108,6 +109,13 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _videoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
         _videoListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
         _videoListDataSource.minimumLineSpacing = 15.0f;
+        _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection index:index];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        };
         
         _favoriteListDataSource = [PHPhotoDataSourceFactoryMethod makeFavoriteListDataSource];
         _favoriteListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
@@ -290,6 +298,12 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             cell.dataSource = _videoListDataSource;
             cell.delegate = _videoListDataSource;
             cell.titleLabel.text = @"ビデオ";
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PHPhotoListInVideoViewController *viewController = [PHPhotoListInVideoViewController new];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Favorite) {
             [_favoriteListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
