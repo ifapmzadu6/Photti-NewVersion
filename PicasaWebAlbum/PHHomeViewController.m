@@ -22,10 +22,12 @@
 #import "PAGradientView.h"
 #import "PHHorizontalScrollView.h"
 
+#import "PHPhotoDataSourceFactoryMethod.h"
 #import "PHAlbumListDataSource.h"
 #import "PHMomentListDataSource.h"
-#import "PHPanoramaListDataSource.h"
-#import "PHVideoListDataSource.h"
+
+#import "PHAlbumViewController.h"
+#import "PHPhotoListInAlbumViewController.h"
 
 
 typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
@@ -34,13 +36,13 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     kPHHomeViewControllerCell_Video,
     kPHHomeViewControllerCell_Panorama,
     kPHHomeViewControllerCell_Timelapse,
-    kPHHomeViewControllerCell_Screenshot,
+    kPHHomeViewControllerCell_Favorite,
     kPHHomeViewControllerCell_iCloud,
     kPHHomeViewControllerCell_AllPhotos,
     kPHHomeViewControllerCell_Count
 };
 
-@interface PHHomeViewController () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface PHHomeViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
 
@@ -48,8 +50,12 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 
 @property (strong, nonatomic) PHAlbumListDataSource *albumListDataSource;
 @property (strong, nonatomic) PHMomentListDataSource *momentListDataSource;
-@property (strong, nonatomic) PHPanoramaListDataSource *panoramaListDataSource;
-@property (strong, nonatomic) PHVideoListDataSource *videoListDataSource;
+@property (strong, nonatomic) PHPhotoListDataSource *panoramaListDataSource;
+@property (strong, nonatomic) PHPhotoListDataSource *videoListDataSource;
+@property (strong, nonatomic) PHPhotoListDataSource *favoriteListDataSource;
+@property (strong, nonatomic) PHPhotoListDataSource *timelapseListDataSource;
+@property (strong, nonatomic) PHPhotoListDataSource *cloudListDataSource;
+@property (strong, nonatomic) PHPhotoListDataSource *allPhotoListDataSource;
 
 @end
 
@@ -71,29 +77,50 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _albumListDataSource = [PHAlbumListDataSource new];
         _albumListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
         _albumListDataSource.minimumLineSpacing = 15.0f;
+        __weak typeof(self) wself = self;
+        _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            PHPhotoListInAlbumViewController *viewController = [[PHPhotoListInAlbumViewController alloc] initWithAssetCollection:assetCollection];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        };
         
         _momentListDataSource = [PHMomentListDataSource new];
         _momentListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
         _momentListDataSource.minimumLineSpacing = 15.0f;
         
-        _panoramaListDataSource = [PHPanoramaListDataSource new];
+        _panoramaListDataSource = [PHPhotoDataSourceFactoryMethod makePanoramaListDataSource];
         _panoramaListDataSource.cellSize = CGSizeMake(270.0f, 100.0f);
+        _panoramaListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
         _panoramaListDataSource.minimumLineSpacing = 15.0f;
         
-        _videoListDataSource = [PHVideoListDataSource new];
+        _videoListDataSource = [PHPhotoDataSourceFactoryMethod makeVideoListDataSource];
         _videoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+        _videoListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
         _videoListDataSource.minimumLineSpacing = 15.0f;
         
-        [self test];
+        _favoriteListDataSource = [PHPhotoDataSourceFactoryMethod makeFavoriteListDataSource];
+        _favoriteListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+        _favoriteListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
+        _favoriteListDataSource.minimumLineSpacing = 15.0f;
+        
+        _timelapseListDataSource = [PHPhotoDataSourceFactoryMethod makeTimelapseListDataSource];
+        _timelapseListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+        _timelapseListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
+        _timelapseListDataSource.minimumLineSpacing = 15.0f;
+        
+        _cloudListDataSource = [PHPhotoDataSourceFactoryMethod makeCloudListDataSource];
+        _cloudListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+        _cloudListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
+        _cloudListDataSource.minimumLineSpacing = 15.0f;
+        
+        _allPhotoListDataSource = [PHPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
+        _allPhotoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+        _allPhotoListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
+        _allPhotoListDataSource.minimumLineSpacing = 15.0f;
     }
     return self;
-}
-
-- (void)test {
-    PHFetchResult *result = [PHAsset fetchAssetsWithOptions:0];
-    PHAsset *firstAsset = result.firstObject;
-    [[PHImageManager defaultManager] requestImageForAsset:firstAsset targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:[PHImageRequestOptions new] resultHandler:^(UIImage *result, NSDictionary *info) {
-    }];
 }
 
 - (void)viewDidLoad {
@@ -115,8 +142,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     _tableView.dataSource = self;
     _tableView.delegate = self;
     [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
-    [_tableView registerClass:[PACenterTextTableViewCell class] forCellReuseIdentifier:@"CenterCell"];
-    [_tableView registerClass:[PHCategoryViewCell class] forCellReuseIdentifier:@"CategoryCell"];
+    [_tableView registerClass:[PACenterTextTableViewCell class] forCellReuseIdentifier:NSStringFromClass([PACenterTextTableViewCell class])];
+    [_tableView registerClass:[PHCategoryViewCell class] forCellReuseIdentifier:NSStringFromClass([PHCategoryViewCell class])];
     _tableView.alwaysBounceVertical = YES;
     _tableView.exclusiveTouch = YES;
     _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
@@ -142,6 +169,25 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     _tableView.tableFooterView = footerView;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+        
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:NO];
+    [tabBarController setTabBarHidden:NO animated:NO completion:nil];
+    [UIView animateWithDuration:0.3f animations:^{
+        [tabBarController setToolbarHidden:YES animated:NO completion:nil];
+    }];
+    [tabBarController setAdsHidden:NO animated:NO];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:YES];
+}
+
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
@@ -164,7 +210,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     [tabBarController setAdsHidden:YES animated:NO];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
-    navigationController.view.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    navigationController.view.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;
@@ -177,7 +223,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 }
 
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeWeb];
+    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
@@ -197,62 +243,68 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
-        PHCategoryViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CategoryCell" forIndexPath:indexPath];
+        PHCategoryViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([PHCategoryViewCell class]) forIndexPath:indexPath];
+        
+        __weak typeof(self) wself = self;
         if (indexPath.row == kPHHomeViewControllerCell_Album) {
             [_albumListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _albumListDataSource;
             cell.delegate = _albumListDataSource;
+            cell.titleLabel.text = @"アルバム";
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PHAlbumViewController *viewController = [PHAlbumViewController new];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Moment) {
             [_momentListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _momentListDataSource;
             cell.delegate = _momentListDataSource;
+            cell.titleLabel.text = @"モーメント";
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Panorama) {
             [_panoramaListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _panoramaListDataSource;
             cell.delegate = _panoramaListDataSource;
+            cell.titleLabel.text = @"パノラマ";
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Video) {
             [_videoListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _videoListDataSource;
             cell.delegate = _videoListDataSource;
-        }
-        else {
-            cell.dataSource = self;
-            cell.delegate = self;
-        }
-        cell.horizontalScrollView.collectionView.tag = indexPath.row;
-        
-        if (indexPath.row == kPHHomeViewControllerCell_Album) {
-            cell.titleLabel.text = @"アルバム";
-        }
-        else if (indexPath.row == kPHHomeViewControllerCell_Moment) {
-            cell.titleLabel.text = @"モーメント";
-        }
-        else if (indexPath.row == kPHHomeViewControllerCell_Video) {
             cell.titleLabel.text = @"ビデオ";
         }
+        else if (indexPath.row == kPHHomeViewControllerCell_Favorite) {
+            [_favoriteListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            cell.dataSource = _favoriteListDataSource;
+            cell.delegate = _favoriteListDataSource;
+            cell.titleLabel.text = @"お気に入り";
+        }
         else if (indexPath.row == kPHHomeViewControllerCell_Timelapse) {
+            [_timelapseListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            cell.dataSource = _timelapseListDataSource;
+            cell.delegate = _timelapseListDataSource;
             cell.titleLabel.text = @"タイムラプス";
         }
-        else if (indexPath.row == kPHHomeViewControllerCell_Panorama) {
-            cell.titleLabel.text = @"パノラマ";
-        }
-        else if (indexPath.row == kPHHomeViewControllerCell_Screenshot) {
-            cell.titleLabel.text = @"スクリーンショット";
+        else if (indexPath.row == kPHHomeViewControllerCell_iCloud) {
+            [_cloudListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            cell.dataSource = _cloudListDataSource;
+            cell.delegate = _cloudListDataSource;
+            cell.titleLabel.text = @"iCloud上の写真";
         }
         else if (indexPath.row == kPHHomeViewControllerCell_AllPhotos) {
+            [_allPhotoListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            cell.dataSource = _allPhotoListDataSource;
+            cell.delegate = _allPhotoListDataSource;
             cell.titleLabel.text = @"すべての写真とビデオ";
-        }
-        else if (indexPath.row == kPHHomeViewControllerCell_iCloud) {
-            cell.titleLabel.text = @"iCloud上の写真";
         }
         
         return cell;
     }
     else {
-        PACenterTextTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CenterCell" forIndexPath:indexPath];
+        PACenterTextTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([PACenterTextTableViewCell class]) forIndexPath:indexPath];
         cell.textLabel.font = [UIFont systemFontOfSize:15.0f];
         cell.centerTextLabel.font = [UIFont systemFontOfSize:15.0f];
         cell.textLabel.text = nil;
@@ -298,50 +350,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
-
-#pragma mark UICollectionViewDataSource
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {    
-    return 18;
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {    
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-    
-    for (UIView *view in cell.contentView.subviews) {
-        [view removeFromSuperview];
-    }
-    
-    srand((unsigned)time(NULL));
-    UIImageView *imageView = [UIImageView new];
-    imageView.frame = cell.contentView.bounds;
-    NSString *imageName = [NSString stringWithFormat:@"img_%ld", random()%17 + 1];
-    imageView.image = [UIImage imageNamed:imageName];
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
-    imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    imageView.backgroundColor = [UIColor colorWithWhite:0.7f alpha:1.0f];
-    imageView.clipsToBounds = YES;
-    [cell.contentView addSubview:imageView];
-    
-    return cell;
-}
-
-#pragma mark UICollectionViewFlowLayout
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(100.0f, 100.0f);
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 0.0f;
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 15.0f;
-}
-
 
 #pragma mark MakeBannerView
 - (UIView *)makeTodayBannerView {

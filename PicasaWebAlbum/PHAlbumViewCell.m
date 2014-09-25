@@ -43,19 +43,20 @@
 - (void)initialization {
     _thirdImageView = [UIImageView new];
     _thirdImageView.contentMode = UIViewContentModeScaleAspectFill;
-//    _thirdImageView.alpha = 0.333;
     _thirdImageView.clipsToBounds = YES;
+    _thirdImageView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     [self.contentView addSubview:_thirdImageView];
     
     _secondImageView = [UIImageView new];
     _secondImageView.contentMode = UIViewContentModeScaleAspectFill;
-//    _secondImageView.alpha = 0.667f;
     _secondImageView.clipsToBounds = YES;
+    _secondImageView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     [self.contentView addSubview:_secondImageView];
     
     _firstImageView = [UIImageView new];
     _firstImageView.contentMode = UIViewContentModeScaleAspectFill;
     _firstImageView.clipsToBounds = YES;
+    _firstImageView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     [self.contentView addSubview:_firstImageView];
     
     _titleLabel = [UILabel new];
@@ -67,17 +68,10 @@
     _detailLabel.font = [UIFont systemFontOfSize:10.0f];
     _detailLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
     [self.contentView addSubview:_detailLabel];
-    
-    // TODO : remove
-    _titleLabel.text = @"トルコ旅行";
-    _detailLabel.text = @"51枚の写真";
-    
+        
     _firstImageView.layer.borderWidth = 1.0f;
-    _firstImageView.layer.borderColor = [UIColor whiteColor].CGColor;
     _secondImageView.layer.borderWidth = 1.0f;
-    _secondImageView.layer.borderColor = [UIColor whiteColor].CGColor;
     _thirdImageView.layer.borderWidth = 1.0f;
-    _thirdImageView.layer.borderColor = [UIColor whiteColor].CGColor;
 }
 
 - (void)layoutSubviews {
@@ -95,6 +89,12 @@
     _detailLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 12.0f, CGRectGetWidth(rect), 12.0f);
 }
 
-
+- (void)setBackgroundColor:(UIColor *)backgroundColor {
+    [super setBackgroundColor:backgroundColor];
+    
+    _firstImageView.layer.borderColor = self.backgroundColor.CGColor;
+    _secondImageView.layer.borderColor = self.backgroundColor.CGColor;
+    _thirdImageView.layer.borderColor = self.backgroundColor.CGColor;
+}
 
 @end

@@ -150,7 +150,7 @@
     else {
         _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 20.0f, 20.0f, viewInsets.bottom + 20.0f, 20.0f);
     }
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+    _collectionView.scrollIndicatorInsets = viewInsets;
     _collectionView.frame = rect;
     UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
     [collectionViewLayout invalidateLayout];

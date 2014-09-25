@@ -12,6 +12,8 @@
 
 @interface PHCategoryViewCell : UITableViewCell
 
+@property (copy, nonatomic) void (^moreButtonActionBlock)();
+
 @property (strong, nonatomic, readonly) UILabel *titleLabel;
 @property (strong, nonatomic, readonly) UIButton *moreButton;
 @property (strong, nonatomic, readonly) PHHorizontalScrollView *horizontalScrollView;

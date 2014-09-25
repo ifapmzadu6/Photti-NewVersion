@@ -111,6 +111,10 @@
     
     _isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
     
+    if (_isPhone) {
+        [UIApplication sharedApplication].statusBarHidden = _isLandscape ? YES : NO;
+    }
+    
     CGRect rect = self.view.bounds;
     CGFloat tHeight = self.tabBarHeight;
     CGFloat nHeight = self.navigationBarHeight;
@@ -170,17 +174,20 @@
 }
 
 - (CGFloat)navigationBarHeight {
+    CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    
+    UINavigationController *navigationController = self.childViewControllers.firstObject;
+    if ([navigationController isKindOfClass:[UINavigationController class]]) {
+        return navigationController.navigationBar.bounds.size.height + statusBarHeight;
+    }
+    
     CGFloat height = 44.0f;
     if (_isPhone) {
         if(_isLandscape) {
             height = 32.0f;
-            
-            if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0f) {
-                height -= 20.0f;
-            }
         }
     }
-    return height + 20.0f;
+    return height + statusBarHeight;
 }
 
 - (UIEdgeInsets)viewInsets {
@@ -204,6 +211,13 @@
     [super setSelectedIndex:selectedIndex];
     
     self.tabBar.tintColor = _colors[selectedIndex];
+}
+
+#pragma mark StatusBar
+- (void)setIsStatusBarHidden:(BOOL)isStatusBarHidden animated:(BOOL)animated {
+    _isStatusBarHidden = isStatusBarHidden;
+    
+    [[UIApplication sharedApplication] setStatusBarHidden:isStatusBarHidden withAnimation:UIStatusBarAnimationFade];
 }
 
 #pragma mark TabBarHidden

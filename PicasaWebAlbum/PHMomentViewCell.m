@@ -69,10 +69,6 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
     _detailLabel.font = [UIFont systemFontOfSize:10.0f];
     _detailLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
     [self.contentView addSubview:_detailLabel];
-    
-    // TODO : remove
-    _titleLabel.text = @"トルコ旅行";
-    _detailLabel.text = @"51枚の写真";
 }
 
 - (void)layoutSubviews {

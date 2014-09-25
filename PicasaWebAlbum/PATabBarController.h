@@ -12,6 +12,7 @@ static const CGFloat animationDuration = 0.25f;
 
 @interface PATabBarController : UITabBarController
 
+@property (nonatomic, readonly) BOOL isStatusBarHidden;
 @property (nonatomic, readonly) BOOL isTabBarHidden;
 @property (nonatomic, readonly) BOOL isToolbarHideen;
 @property (nonatomic, readonly) BOOL isActionToolbarHidden;
@@ -23,6 +24,9 @@ static const CGFloat animationDuration = 0.25f;
 @property (nonatomic, readonly) BOOL isLandscape;
 
 - (id)initWithIndex:(NSUInteger)index viewControllers:(NSArray *)viewControllers colors:(NSArray *)colors;
+
+- (void)setIsStatusBarHidden:(BOOL)isStatusBarHidden animated:(BOOL)animated;
+
 - (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;
 
 - (void)setToolbarHidden:(BOOL)hidden animated:(BOOL)animated completion:(void (^)(BOOL finished))completion;

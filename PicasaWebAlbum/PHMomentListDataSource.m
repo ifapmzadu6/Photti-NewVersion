@@ -32,7 +32,7 @@
 }
 
 - (void)dealloc {
-    [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+    [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
 }
 
 #pragma mark Methods
@@ -68,7 +68,7 @@
         imageView.image = nil;
         PHAsset *asset = assetsResult[i];
         if (asset.mediaType == PHAssetMediaTypeImage) {
-            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:[PHImageRequestOptions new] resultHandler:^(UIImage *result, NSDictionary *info) {
+            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
                 imageView.image = result;
             }];
         }

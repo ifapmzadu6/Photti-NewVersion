@@ -1,20 +1,18 @@
 //
-//  PHVideoViewCell.m
+//  PHPhotoViewCell.m
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/09/25.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PHVideoViewCell.h"
+#import "PHPhotoViewCell.h"
 
-#import "PAIcons.h"
-
-@interface PHVideoViewCell ()
+@interface PHPhotoViewCell ()
 
 @end
 
-@implementation PHVideoViewCell
+@implementation PHPhotoViewCell
 
 - (instancetype)init {
     self = [super init];
@@ -45,22 +43,12 @@
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
     _imageView.clipsToBounds = YES;
     [self.contentView addSubview:_imageView];
-    
-    _videoIconImageView = [UIImageView new];
-    _videoIconImageView.contentMode = UIViewContentModeScaleAspectFit;
-    _videoIconImageView.clipsToBounds = YES;
-    _videoIconImageView.frame = CGRectMake(0.0f, 0.0f, 30.0f, 30.0f);
-    _videoIconImageView.image = [PAIcons videoButtonIconWithColor:[UIColor colorWithWhite:1.0f alpha:1.0f] size:100.0f];
-    [self.contentView addSubview:_videoIconImageView];
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    CGRect rect = self.contentView.bounds;
-    
-    _imageView.frame = rect;
-    _videoIconImageView.center = self.contentView.center;
+    _imageView.frame = self.contentView.bounds;
 }
 
 @end

@@ -1,46 +1,43 @@
 //
-//  PHPanoramaListDataSource.m
+//  PHAllPhotoListDataSource.m
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/09/25.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PHPanoramaListDataSource.h"
+#import "PHPhotoListDataSource.h"
 
-#import "PHPanoramaViewCell.h"
+#import "PHPhotoViewCell.h"
 
 @import Photos;
 
-
-@interface PHPanoramaListDataSource () <PHPhotoLibraryChangeObserver>
+@interface PHPhotoListDataSource () <PHPhotoLibraryChangeObserver>
 
 @property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PHFetchResult *fetchResult;
 
 @end
 
-@implementation PHPanoramaListDataSource
+@implementation PHPhotoListDataSource
 
-- (instancetype)init {
+- (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult {
     self = [super init];
     if (self) {
         [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
         
-        PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumPanoramas options:0];
-        PHAssetCollection *collection = collectionResult.firstObject;
-        _fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+        _fetchResult = fetchResult;
     }
     return self;
 }
 
 - (void)dealloc {
-    [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+    [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
 }
 
 #pragma mark Methods
 - (void)prepareForUse:(UICollectionView *)collectionView {
-    [collectionView registerClass:[PHPanoramaViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PHPanoramaViewCell class])];
+    [collectionView registerClass:[PHPhotoViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PHPhotoViewCell class])];
     
     _collectionView = collectionView;
 }
@@ -60,9 +57,16 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    PHPanoramaViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PHPanoramaViewCell class]) forIndexPath:indexPath];
+    PHPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PHPhotoViewCell class]) forIndexPath:indexPath];
     
-    [[PHImageManager defaultManager] requestImageForAsset:_fetchResult[indexPath.row] targetSize:_cellSize contentMode:PHImageContentModeAspectFill options:[PHImageRequestOptions new] resultHandler:^(UIImage *result, NSDictionary *info) {
+    CGSize targetSize = CGSizeZero;
+    if (_flowLayout) {
+        targetSize = _flowLayout.itemSize;
+    }
+    else {
+        targetSize = _cellSize;
+    }
+    [[PHImageManager defaultManager] requestImageForAsset:_fetchResult[indexPath.row] targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
         cell.imageView.image = result;
     }];
     
@@ -71,15 +75,40 @@
 
 #pragma mark UICollectionViewFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return _cellSize;
+    if (_flowLayout) {
+        return _flowLayout.itemSize;
+    }
+    
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        return _landscapeCellSize;
+    }
+    else {
+        return _cellSize;
+    }
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    if (_flowLayout) {
+        return _flowLayout.minimumInteritemSpacing;
+    }
+    
     return _minimumInteritemSpacing;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    if (_flowLayout) {
+        return _flowLayout.minimumLineSpacing;
+    }
+    
     return _minimumLineSpacing;
+}
+
+#pragma mark UICollectionViewDelegate
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    PHAsset *asset = _fetchResult[indexPath.row];
+    if (_didSelectAssetBlock) {
+        _didSelectAssetBlock(asset, indexPath.row);
+    }
 }
 
 @end

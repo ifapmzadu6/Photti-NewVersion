@@ -51,11 +51,11 @@ NSString * const kXMLReaderTextNodeKey = @"text";
 }
 
 - (NSDictionary *)objectWithData:(NSData *)data {
-    dictionaryStack = [[NSMutableArray alloc] init];
-    textInProgress = [[NSMutableString alloc] init];
+    dictionaryStack = @[].mutableCopy;
+    textInProgress = @"".mutableCopy;
     
     // Initialize the stack with a fresh dictionary
-    [dictionaryStack addObject:[NSMutableDictionary dictionary]];
+    [dictionaryStack addObject:@{}.mutableCopy];
     
     // Parse the XML
     NSXMLParser *parser = [[NSXMLParser alloc] initWithData:data];
@@ -79,7 +79,7 @@ NSString * const kXMLReaderTextNodeKey = @"text";
     NSMutableDictionary *parentDict = [dictionaryStack lastObject];
     
     // Create the child dictionary for the new element, and initilaize it with the attributes
-    NSMutableDictionary *childDict = [NSMutableDictionary dictionary];
+    NSMutableDictionary *childDict = @{}.mutableCopy;
     [childDict addEntriesFromDictionary:attributeDict];
     
     // If there's already an item for this key, it means we need to create an array
@@ -92,7 +92,7 @@ NSString * const kXMLReaderTextNodeKey = @"text";
         }
         else {
             // Create an array if it doesn't exist
-            array = [NSMutableArray array];
+            array = @[].mutableCopy;
             [array addObject:existingValue];
             
             // Replace the child dictionary with an array of children dictionaries
@@ -120,7 +120,7 @@ NSString * const kXMLReaderTextNodeKey = @"text";
         [dictInProgress setObject:textInProgress forKey:kXMLReaderTextNodeKey];
         
         // Reset the text
-        textInProgress = [[NSMutableString alloc] init];
+        textInProgress = @"".mutableCopy;
     }
     
     // Pop the current dict
@@ -133,8 +133,6 @@ NSString * const kXMLReaderTextNodeKey = @"text";
 }
 
 - (void)parser:(NSXMLParser *)parser parseErrorOccurred:(NSError *)parseError {
-    // Set the error pointer to the parser's error object
-    *errorPointer = parseError;
 }
 
 @end

@@ -32,7 +32,7 @@
 }
 
 - (void)dealloc {
-    [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+    [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
 }
 
 #pragma mark Methods
@@ -59,6 +59,12 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PHAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PHAlbumViewCell class]) forIndexPath:indexPath];
     
+    if (_cellBackgroundColor) {
+        cell.backgroundColor = _cellBackgroundColor;
+    }
+    else {
+        cell.backgroundColor = [UIColor whiteColor];
+    }
     cell.firstImageView.image = nil;
     cell.secondImageView.image = nil;
     cell.thirdImageView.image = nil;
@@ -76,7 +82,7 @@
         }];
     }
     if (assetsResult.count >= 3) {
-        [[PHImageManager defaultManager] requestImageForAsset:assetsResult[2] targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:[PHImageRequestOptions new] resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHImageManager defaultManager] requestImageForAsset:assetsResult[2] targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
             cell.thirdImageView.image = result;
         }];
     }
@@ -97,6 +103,14 @@
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return _minimumLineSpacing;
+}
+
+#pragma mark UICollectionViewDelegate
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    PHAssetCollection *collection = _fetchResult[indexPath.row];
+    if (_didSelectCollectionBlock) {
+        _didSelectCollectionBlock(collection);
+    }
 }
 
 @end

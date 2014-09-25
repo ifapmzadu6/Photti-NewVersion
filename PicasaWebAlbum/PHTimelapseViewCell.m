@@ -1,18 +1,14 @@
 //
-//  PHPanoramaViewCell.m
+//  PHTimelapseViewCell.m
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/09/25.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PHPanoramaViewCell.h"
+#import "PHTimelapseViewCell.h"
 
-@interface PHPanoramaViewCell ()
-
-@end
-
-@implementation PHPanoramaViewCell
+@implementation PHTimelapseViewCell
 
 - (instancetype)init {
     self = [super init];

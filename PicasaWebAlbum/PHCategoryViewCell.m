@@ -55,12 +55,12 @@
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     _titleLabel = [UILabel new];
-    _titleLabel.text = @"アルバム";
     _titleLabel.font = [UIFont systemFontOfSize:16.0f];
     _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
     [self.contentView addSubview:_titleLabel];
     
     _moreButton = [UIButton new];
+    [_moreButton addTarget:self action:@selector(moreButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _moreButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
     [_moreButton setTitle:@"全て見る>" forState:UIControlStateNormal];
     [_moreButton setTitleColor:[PAColors getColor:PAColorsTypeTextLightSubColor] forState:UIControlStateNormal];
@@ -101,6 +101,12 @@
     _delegate = delegate;
     
     _horizontalScrollView.delegate = delegate;
+}
+
+- (void)moreButtonAction {
+    if (_moreButtonActionBlock) {
+        _moreButtonActionBlock();
+    }
 }
 
 @end
