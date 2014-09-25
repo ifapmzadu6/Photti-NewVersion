@@ -15,18 +15,26 @@
 @interface PHPhotoListDataSource () <PHPhotoLibraryChangeObserver>
 
 @property (weak, nonatomic) UICollectionView *collectionView;
-@property (strong, nonatomic) PHFetchResult *fetchResult;
 
 @end
 
 @implementation PHPhotoListDataSource
 
 - (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult {
+    self = [self initWithFetchResultOfPhoto:fetchResult assetCollection:nil];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult assetCollection:(PHAssetCollection *)assetCollection {
     self = [super init];
     if (self) {
         [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
         
         _fetchResult = fetchResult;
+        _assetCollection = assetCollection;
     }
     return self;
 }

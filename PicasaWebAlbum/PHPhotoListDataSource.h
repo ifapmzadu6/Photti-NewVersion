@@ -13,6 +13,9 @@
 
 @property (copy, nonatomic) void (^didSelectAssetBlock)(PHAsset *asset, NSUInteger index);
 
+@property (strong, nonatomic, readonly) PHAssetCollection *assetCollection;
+@property (strong, nonatomic, readonly) PHFetchResult *fetchResult;
+
 @property (strong, nonatomic) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic) CGSize cellSize;
 @property (nonatomic) CGSize landscapeCellSize;
@@ -20,6 +23,7 @@
 @property (nonatomic) CGFloat minimumLineSpacing;
 
 - (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult;
+- (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult assetCollection:(PHAssetCollection *)assetCollection;
 
 - (void)prepareForUse:(UICollectionView *)collectionView;
 

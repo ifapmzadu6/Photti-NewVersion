@@ -53,6 +53,7 @@
     _collectionView.scrollsToTop = NO;
     _collectionView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _collectionView.backgroundColor = [UIColor clearColor];
+    _collectionView.decelerationRate = UIScrollViewDecelerationRateFast;
     [self addSubview:_collectionView];
 }
 

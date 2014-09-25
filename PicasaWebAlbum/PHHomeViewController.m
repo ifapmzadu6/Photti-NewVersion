@@ -28,6 +28,8 @@
 
 #import "PHAlbumViewController.h"
 #import "PHPhotoListInAlbumViewController.h"
+#import "PHPhotoListInPanoramaViewController.h"
+#import "PHPhotoPageViewController.h"
 
 
 typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
@@ -94,6 +96,13 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _panoramaListDataSource.cellSize = CGSizeMake(270.0f, 100.0f);
         _panoramaListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
         _panoramaListDataSource.minimumLineSpacing = 15.0f;
+        _panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection index:index];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        };
         
         _videoListDataSource = [PHPhotoDataSourceFactoryMethod makeVideoListDataSource];
         _videoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
@@ -269,6 +278,12 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             cell.dataSource = _panoramaListDataSource;
             cell.delegate = _panoramaListDataSource;
             cell.titleLabel.text = @"パノラマ";
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PHPhotoListInPanoramaViewController *viewController = [PHPhotoListInPanoramaViewController new];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Video) {
             [_videoListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
