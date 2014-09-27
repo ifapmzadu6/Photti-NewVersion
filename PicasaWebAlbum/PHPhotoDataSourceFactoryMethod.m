@@ -13,7 +13,7 @@
 @implementation PHPhotoDataSourceFactoryMethod
 
 + (PHPhotoListDataSource *)makeCloudListDataSource {
-    PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumCloudShared options:0];
+    PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumBursts options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
     
@@ -31,7 +31,7 @@
 }
 
 + (PHPhotoListDataSource *)makeTimelapseListDataSource {
-    PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumPanoramas options:0];
+    PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumTimelapses options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
     
@@ -69,7 +69,7 @@
 + (PHPhotoListDataSource *)makePhotoInAlbumListDataSourceWithCollection:(PHAssetCollection *)collection {
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
     
-    PHPhotoListDataSource *dataSource = [[PHPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult];
+    PHPhotoListDataSource *dataSource = [[PHPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
     return dataSource;
 }
 

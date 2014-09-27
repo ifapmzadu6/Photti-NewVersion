@@ -12,5 +12,6 @@
 @interface PHPhotoPageViewController : UIPageViewController
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection index:(NSUInteger)index;
+- (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index;
 
 @end

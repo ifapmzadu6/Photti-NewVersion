@@ -12,6 +12,8 @@
 
 @interface PHAlbumViewCell ()
 
+@property (nonatomic) CGRect rect;
+
 @end
 
 @implementation PHAlbumViewCell
@@ -78,6 +80,9 @@
     [super layoutSubviews];
     
     CGRect rect = self.contentView.bounds;
+    if (CGRectEqualToRect(_rect, rect)) {
+        return;
+    }
     CGFloat delta = 4.0f;
     CGFloat imageSize = CGRectGetWidth(rect)-delta*2.0f;
     

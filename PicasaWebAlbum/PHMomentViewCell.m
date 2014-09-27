@@ -15,6 +15,7 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
 @interface PHMomentViewCell ()
 
 @property (strong, nonatomic) UIView *imageViewBackgroundView;
+@property (nonatomic) CGRect rect;
 
 @end
 
@@ -75,6 +76,10 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
     [super layoutSubviews];
     
     CGRect rect = self.contentView.bounds;
+    if (CGRectEqualToRect(_rect, rect)) {
+        return;
+    }
+    
     NSUInteger numberOfRowAndCol = sqrtf(_numberOfImageView);
     if (numberOfRowAndCol > 0) {
         CGFloat imageSize = ceilf((CGRectGetWidth(rect)-2)/numberOfRowAndCol*2.0f+0.5f)/2.0f;

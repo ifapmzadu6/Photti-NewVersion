@@ -13,7 +13,7 @@
 #import "PHPhotoViewCell.h"
 #import "PHAlbumListDataSource.h"
 #import "PATabBarAdsController.h"
-#import "PHPhotoListInAlbumViewController.h"
+#import "PHPhotoListViewController.h"
 
 @interface PHAlbumViewController ()
 
@@ -40,7 +40,7 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            PHPhotoListInAlbumViewController *viewController = [[PHPhotoListInAlbumViewController alloc] initWithAssetCollection:assetCollection];
+            PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
     }

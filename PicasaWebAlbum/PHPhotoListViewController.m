@@ -1,12 +1,12 @@
 //
-//  PHPhotoListInAlbumViewController.m
+//  PHPhotoListViewController.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/09/25.
+//  Created by Keisuke Karijuku on 2014/09/26.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PHPhotoListInAlbumViewController.h"
+#import "PHPhotoListViewController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -16,35 +16,55 @@
 #import "PHPhotoListDataSource.h"
 #import "PHPhotoPageViewController.h"
 
-@interface PHPhotoListInAlbumViewController ()
+@interface PHPhotoListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
-@property (strong, nonatomic) PHAssetCollection *assetCollection;
+@property (nonatomic) PHPhotoListViewControllerType type;
 @property (strong, nonatomic) PHPhotoListDataSource *photoListDataSource;
 @property (nonatomic) BOOL isSelectMode;
 
 @end
 
-@implementation PHPhotoListInAlbumViewController
+@implementation PHPhotoListViewController
 
-- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection {
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type {
     self = [super init];
     if (self) {
-        self.title = assetCollection.localizedTitle;
+        _type = type;
         
-        _assetCollection = assetCollection;
+        if (type == PHPhotoListViewControllerType_AllPhotos) {
+            self.title = NSLocalizedString(@"All Items", nil);
+        }
+        else {
+            self.title = assetCollection.localizedTitle;
+        }
         
-        _photoListDataSource = [PHPhotoDataSourceFactoryMethod makePhotoInAlbumListDataSourceWithCollection:assetCollection];
-        _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
-        __weak typeof(self) wself = self;
-        _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.assetCollection index:index];
-            [sself.navigationController pushViewController:viewController animated:YES];
-        };
+        if (type == PHPhotoListViewControllerType_AllPhotos) {
+            _photoListDataSource = [PHPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
+            _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
+            __weak typeof(self) wself = self;
+            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:nil];
+                PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithResult:fetchResult index:index];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else {
+            _photoListDataSource = [PHPhotoDataSourceFactoryMethod makePhotoInAlbumListDataSourceWithCollection:assetCollection];
+            _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
+            __weak typeof(self) wself = self;
+            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                
+                PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.photoListDataSource.assetCollection index:index];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
     }
     return self;
 }
@@ -78,7 +98,10 @@
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction:)];
     UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PAIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
+    NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, selectBarButtonItem];
+    if (_type == PHPhotoListViewControllerType_Album) {
+        toolbarItems = @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
+    }
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isToolbarHideen]) {

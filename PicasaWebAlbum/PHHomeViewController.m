@@ -27,9 +27,7 @@
 #import "PHMomentListDataSource.h"
 
 #import "PHAlbumViewController.h"
-#import "PHPhotoListInAlbumViewController.h"
-#import "PHPhotoListInPanoramaViewController.h"
-#import "PHPhotoListInVideoViewController.h"
+#import "PHPhotoListViewController.h"
 #import "PHPhotoPageViewController.h"
 
 
@@ -85,7 +83,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            PHPhotoListInAlbumViewController *viewController = [[PHPhotoListInAlbumViewController alloc] initWithAssetCollection:assetCollection];
+            PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
         
@@ -107,7 +105,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         
         _videoListDataSource = [PHPhotoDataSourceFactoryMethod makeVideoListDataSource];
         _videoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-        _videoListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
+        _videoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
         _videoListDataSource.minimumLineSpacing = 15.0f;
         _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
             typeof(wself) sself = wself;
@@ -119,23 +117,51 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         
         _favoriteListDataSource = [PHPhotoDataSourceFactoryMethod makeFavoriteListDataSource];
         _favoriteListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-        _favoriteListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
+        _favoriteListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
         _favoriteListDataSource.minimumLineSpacing = 15.0f;
+        _favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection index:index];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        };
         
         _timelapseListDataSource = [PHPhotoDataSourceFactoryMethod makeTimelapseListDataSource];
         _timelapseListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-        _timelapseListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
+        _timelapseListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
         _timelapseListDataSource.minimumLineSpacing = 15.0f;
+        _timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection index:index];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        };
         
         _cloudListDataSource = [PHPhotoDataSourceFactoryMethod makeCloudListDataSource];
         _cloudListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-        _cloudListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
+        _cloudListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
         _cloudListDataSource.minimumLineSpacing = 15.0f;
+        _cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection index:index];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        };
         
         _allPhotoListDataSource = [PHPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
         _allPhotoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-        _allPhotoListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
+        _allPhotoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
         _allPhotoListDataSource.minimumLineSpacing = 15.0f;
+        _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            
+            PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.allPhotoListDataSource.assetCollection index:index];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        };
     }
     return self;
 }
@@ -285,11 +311,11 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             [_panoramaListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _panoramaListDataSource;
             cell.delegate = _panoramaListDataSource;
-            cell.titleLabel.text = @"パノラマ";
+            cell.titleLabel.text = _panoramaListDataSource.assetCollection.localizedTitle;
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PHPhotoListInPanoramaViewController *viewController = [PHPhotoListInPanoramaViewController new];
+                PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection type:PHPhotoListViewControllerType_Panorama];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
@@ -297,11 +323,11 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             [_videoListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _videoListDataSource;
             cell.delegate = _videoListDataSource;
-            cell.titleLabel.text = @"ビデオ";
+            cell.titleLabel.text = _videoListDataSource.assetCollection.localizedTitle;
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PHPhotoListInVideoViewController *viewController = [PHPhotoListInVideoViewController new];
+                PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection type:PHPhotoListViewControllerType_Video];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
@@ -309,25 +335,49 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             [_favoriteListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _favoriteListDataSource;
             cell.delegate = _favoriteListDataSource;
-            cell.titleLabel.text = @"お気に入り";
+            cell.titleLabel.text = _favoriteListDataSource.assetCollection.localizedTitle;
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection type:PHPhotoListViewControllerType_Favorite];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Timelapse) {
             [_timelapseListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _timelapseListDataSource;
             cell.delegate = _timelapseListDataSource;
-            cell.titleLabel.text = @"タイムラプス";
+            cell.titleLabel.text = _timelapseListDataSource.assetCollection.localizedTitle;
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection type:PHPhotoListViewControllerType_Timelapse];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_iCloud) {
             [_cloudListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _cloudListDataSource;
             cell.delegate = _cloudListDataSource;
-            cell.titleLabel.text = @"iCloud上の写真";
+            cell.titleLabel.text = _cloudListDataSource.assetCollection.localizedTitle;
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection type:PHPhotoListViewControllerType_iCloud];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_AllPhotos) {
             [_allPhotoListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _allPhotoListDataSource;
             cell.delegate = _allPhotoListDataSource;
             cell.titleLabel.text = @"すべての写真とビデオ";
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_AllPhotos];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
         }
         
         return cell;
@@ -342,18 +392,22 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         if (indexPath.row == 0) {
             cell.textLabel.text = @"その他";
             cell.textLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
         else if (indexPath.row == 1) {
             cell.centerTextLabel.text = @"このアプリを他の人に教える";
             cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintDefaultColor];
+            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
         else if (indexPath.row == 2) {
             cell.centerTextLabel.text = @"この作者の他のアプリを見る";
             cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintDefaultColor];
+            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
         else if (indexPath.row == 3) {
             cell.centerTextLabel.text = @"広告を除去する";
             cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintDefaultColor];
+            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
         
         return cell;

@@ -43,6 +43,26 @@
     return self;
 }
 
+- (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index {
+    NSDictionary *option = [NSDictionary dictionaryWithObjectsAndKeys:@(40.0f), UIPageViewControllerOptionInterPageSpacingKey, nil];
+    self = [self initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:option];
+    if (self) {
+        _fetchedResult = result;
+        
+        self.automaticallyAdjustsScrollViewInsets = NO;
+        self.edgesForExtendedLayout = UIRectEdgeAll;
+        
+        self.delegate = self;
+        self.dataSource = self;
+        [self setViewControllers:@[[self makePhotoViewController:index]]
+                       direction:UIPageViewControllerNavigationDirectionForward
+                        animated:NO
+                      completion:nil];
+        self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    }
+    return self;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
