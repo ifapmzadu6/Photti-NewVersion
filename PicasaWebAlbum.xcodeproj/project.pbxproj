@@ -17,9 +17,9 @@
 		71109C14197407E600EEDAAE /* PLRoundedCornerBorderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109C13197407E500EEDAAE /* PLRoundedCornerBorderView.m */; };
 		71109C181974201700EEDAAE /* PLNewAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109C171974201700EEDAAE /* PLNewAlbumEditViewController.m */; };
 		711183A619D0326900548730 /* PAGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 711183A519D0326900548730 /* PAGradientView.m */; };
-		711183AC19D0465800548730 /* PHHorizontalScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 711183AB19D0465800548730 /* PHHorizontalScrollView.m */; };
-		711183AF19D0466B00548730 /* PHCategoryViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 711183AE19D0466B00548730 /* PHCategoryViewCell.m */; };
-		711183B519D06B3F00548730 /* PHScrollBannerHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 711183B419D06B3F00548730 /* PHScrollBannerHeaderView.m */; };
+		711183AC19D0465800548730 /* PEHorizontalScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 711183AB19D0465800548730 /* PEHorizontalScrollView.m */; };
+		711183AF19D0466B00548730 /* PECategoryViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 711183AE19D0466B00548730 /* PECategoryViewCell.m */; };
+		711183B519D06B3F00548730 /* PEScrollBannerHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 711183B419D06B3F00548730 /* PEScrollBannerHeaderView.m */; };
 		7118F86B193318F40016697E /* PLPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F86A193318F40016697E /* PLPhotoListViewController.m */; };
 		7118F882193355600016697E /* PWImagePickerNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F881193355600016697E /* PWImagePickerNavigationController.m */; };
 		7118F88919335B070016697E /* PWImagePickerLocalPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F88819335B070016697E /* PWImagePickerLocalPageViewController.m */; };
@@ -32,12 +32,12 @@
 		71197E7519862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71197E7419862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m */; };
 		711AF61F1993AA7100640D2D /* PAAlbumCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 711AF61E1993AA7100640D2D /* PAAlbumCollectionViewFlowLayout.m */; };
 		711AF6231993ACFA00640D2D /* PAPhotoCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 711AF6221993ACFA00640D2D /* PAPhotoCollectionViewFlowLayout.m */; };
-		711C197019D3134B00FE3536 /* PHMomentListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C196F19D3134B00FE3536 /* PHMomentListDataSource.m */; };
-		711C199519D3C51A00FE3536 /* PHTimelapseViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C199419D3C51A00FE3536 /* PHTimelapseViewCell.m */; };
-		711C199D19D3C78100FE3536 /* PHPhotoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C199C19D3C78100FE3536 /* PHPhotoViewCell.m */; };
-		711C19A519D3D22400FE3536 /* PHAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C19A419D3D22400FE3536 /* PHAlbumListViewController.m */; };
-		711C19B119D3DD6100FE3536 /* PHPhotoDataSourceFactoryMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C19B019D3DD6100FE3536 /* PHPhotoDataSourceFactoryMethod.m */; };
-		711C19B519D3E08E00FE3536 /* PHPhotoListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C19B419D3E08E00FE3536 /* PHPhotoListDataSource.m */; };
+		711C197019D3134B00FE3536 /* PEMomentListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C196F19D3134B00FE3536 /* PEMomentListDataSource.m */; };
+		711C199519D3C51A00FE3536 /* PETimelapseViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C199419D3C51A00FE3536 /* PETimelapseViewCell.m */; };
+		711C199D19D3C78100FE3536 /* PEPhotoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C199C19D3C78100FE3536 /* PEPhotoViewCell.m */; };
+		711C19A519D3D22400FE3536 /* PEAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C19A419D3D22400FE3536 /* PEAlbumListViewController.m */; };
+		711C19B119D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C19B019D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.m */; };
+		711C19B519D3E08E00FE3536 /* PEPhotoListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C19B419D3E08E00FE3536 /* PEPhotoListDataSource.m */; };
 		711FE8E5195E99F500AF296B /* PWSettingHTMLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711FE8E4195E99F500AF296B /* PWSettingHTMLViewController.m */; };
 		711FE8E8195EA48400AF296B /* thirdpartycopyright.html in Resources */ = {isa = PBXBuildFile; fileRef = 711FE8E7195EA48400AF296B /* thirdpartycopyright.html */; };
 		711FE8F5195F2F6B00AF296B /* PABaseNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711FE8F4195F2F6B00AF296B /* PABaseNavigationController.m */; };
@@ -86,9 +86,9 @@
 		715EF2CC19B153880071A363 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 715A3172198E0243002A0A37 /* StoreKit.framework */; };
 		716243331952090300168825 /* PLPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 716243321952090300168825 /* PLPhotoObject.m */; };
 		71649BF1195907A400009C1F /* PAInAppPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 71649BF0195907A400009C1F /* PAInAppPurchase.m */; };
-		7165408319D4800500960F70 /* PHPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165408219D4800500960F70 /* PHPhotoListViewController.m */; };
+		7165408319D4800500960F70 /* PEPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165408219D4800500960F70 /* PEPhotoListViewController.m */; };
 		7165408719D8FF1300960F70 /* PHMomentListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165408619D8FF1200960F70 /* PHMomentListViewController.m */; };
-		7165408B19D93DC900960F70 /* PHAssetsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165408A19D93DC900960F70 /* PHAssetsManager.m */; };
+		7165408B19D93DC900960F70 /* PEAssetsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165408A19D93DC900960F70 /* PEAssetsManager.m */; };
 		71737EBA19A3193100CBE68A /* PANetworkActivityIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 71737EB919A3193100CBE68A /* PANetworkActivityIndicator.m */; };
 		717456E6196AB4F5003D2436 /* XmlReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 717456E5196AB4F5003D2436 /* XmlReader.m */; };
 		7177479F1936F5A8005179B6 /* PDModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7177479D1936F5A8005179B6 /* PDModel.xcdatamodeld */; };
@@ -98,9 +98,9 @@
 		718E9757196E8D8000638A86 /* PWPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 718E9756196E8D8000638A86 /* PWPhotoEditViewController.m */; };
 		718F271519AACCB100156D88 /* PADateTimestamp.m in Sources */ = {isa = PBXBuildFile; fileRef = 718F271419AACCB100156D88 /* PADateTimestamp.m */; };
 		718FF6B9197D6A3300C3D3BF /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 718FF6B8197D6A3300C3D3BF /* Crashlytics.framework */; };
-		7191705A19D10610003BFFC3 /* PHAlbumListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 7191705919D10610003BFFC3 /* PHAlbumListDataSource.m */; };
-		7191705E19D1223E003BFFC3 /* PHAlbumViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7191705D19D1223E003BFFC3 /* PHAlbumViewCell.m */; };
-		7191706219D13564003BFFC3 /* PHMomentViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7191706119D13564003BFFC3 /* PHMomentViewCell.m */; };
+		7191705A19D10610003BFFC3 /* PEAlbumListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 7191705919D10610003BFFC3 /* PEAlbumListDataSource.m */; };
+		7191705E19D1223E003BFFC3 /* PEAlbumViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7191705D19D1223E003BFFC3 /* PEAlbumViewCell.m */; };
+		7191706219D13564003BFFC3 /* PEMomentViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7191706119D13564003BFFC3 /* PEMomentViewCell.m */; };
 		7191706619D15F9D003BFFC3 /* PACenterTextTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7191706519D15F9D003BFFC3 /* PACenterTextTableViewCell.m */; };
 		7194EC7219A23B0F00FD90BB /* icon_80.png in Resources */ = {isa = PBXBuildFile; fileRef = 7194EC7119A23B0F00FD90BB /* icon_80.png */; };
 		7195523619273138003EA9AF /* PWAlbumShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7195523519273138003EA9AF /* PWAlbumShareViewController.m */; };
@@ -157,9 +157,9 @@
 		71BDE3A61998FC2100853E85 /* NSMutableAttributedString+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDE3A51998FC2100853E85 /* NSMutableAttributedString+methods.m */; };
 		71C0784B194ABBD70071702D /* PDTaskTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C0784A194ABBD70071702D /* PDTaskTableViewCell.m */; };
 		71C477A3192CE8C100A60177 /* PLAllPhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C477A2192CE8C100A60177 /* PLAllPhotosViewController.m */; };
-		71C54F4019CD232500BCD9CF /* PHHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C54F3F19CD232500BCD9CF /* PHHomeViewController.m */; };
-		71C54F4419CD235D00BCD9CF /* PHNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C54F4319CD235D00BCD9CF /* PHNavigationController.m */; };
-		71C54F4819CD2B0100BCD9CF /* PHScrollBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C54F4719CD2B0100BCD9CF /* PHScrollBannerView.m */; };
+		71C54F4019CD232500BCD9CF /* PEHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C54F3F19CD232500BCD9CF /* PEHomeViewController.m */; };
+		71C54F4419CD235D00BCD9CF /* PENavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C54F4319CD235D00BCD9CF /* PENavigationController.m */; };
+		71C54F4819CD2B0100BCD9CF /* PEScrollBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C54F4719CD2B0100BCD9CF /* PEScrollBannerView.m */; };
 		71C8C1E21942AA360002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C8C1E11942AA350002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m */; };
 		71CD060F1930E68500BECF6B /* PWSearchTableViewWebAlbumCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71CD060E1930E68500BECF6B /* PWSearchTableViewWebAlbumCell.m */; };
 		71CD06131930EDD200BECF6B /* PWSearchTableViewLocalAlbumCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71CD06121930EDD200BECF6B /* PWSearchTableViewLocalAlbumCell.m */; };
@@ -183,8 +183,8 @@
 		71E885A219120E7A005A78E0 /* PWOAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 71E885A119120E7A005A78E0 /* PWOAuthManager.m */; };
 		71E885A6191215A1005A78E0 /* PWPicasaGETRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 71E885A5191215A1005A78E0 /* PWPicasaGETRequest.m */; };
 		71E885AD19123360005A78E0 /* PWModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 71E885AB19123360005A78E0 /* PWModel.xcdatamodeld */; };
-		71F056D419D3F5030072C2F7 /* PHPhotoPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71F056D319D3F5030072C2F7 /* PHPhotoPageViewController.m */; };
-		71F056D819D3F5C70072C2F7 /* PHPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71F056D719D3F5C70072C2F7 /* PHPhotoViewController.m */; };
+		71F056D419D3F5030072C2F7 /* PEPhotoPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71F056D319D3F5030072C2F7 /* PEPhotoPageViewController.m */; };
+		71F056D819D3F5C70072C2F7 /* PEPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71F056D719D3F5C70072C2F7 /* PEPhotoViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -215,12 +215,12 @@
 		71109C171974201700EEDAAE /* PLNewAlbumEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLNewAlbumEditViewController.m; sourceTree = "<group>"; };
 		711183A419D0326900548730 /* PAGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAGradientView.h; sourceTree = "<group>"; };
 		711183A519D0326900548730 /* PAGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAGradientView.m; sourceTree = "<group>"; };
-		711183AA19D0465800548730 /* PHHorizontalScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHHorizontalScrollView.h; sourceTree = "<group>"; };
-		711183AB19D0465800548730 /* PHHorizontalScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHHorizontalScrollView.m; sourceTree = "<group>"; };
-		711183AD19D0466B00548730 /* PHCategoryViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHCategoryViewCell.h; sourceTree = "<group>"; };
-		711183AE19D0466B00548730 /* PHCategoryViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHCategoryViewCell.m; sourceTree = "<group>"; };
-		711183B319D06B3F00548730 /* PHScrollBannerHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHScrollBannerHeaderView.h; sourceTree = "<group>"; };
-		711183B419D06B3F00548730 /* PHScrollBannerHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHScrollBannerHeaderView.m; sourceTree = "<group>"; };
+		711183AA19D0465800548730 /* PEHorizontalScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEHorizontalScrollView.h; sourceTree = "<group>"; };
+		711183AB19D0465800548730 /* PEHorizontalScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEHorizontalScrollView.m; sourceTree = "<group>"; };
+		711183AD19D0466B00548730 /* PECategoryViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PECategoryViewCell.h; sourceTree = "<group>"; };
+		711183AE19D0466B00548730 /* PECategoryViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PECategoryViewCell.m; sourceTree = "<group>"; };
+		711183B319D06B3F00548730 /* PEScrollBannerHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEScrollBannerHeaderView.h; sourceTree = "<group>"; };
+		711183B419D06B3F00548730 /* PEScrollBannerHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEScrollBannerHeaderView.m; sourceTree = "<group>"; };
 		71166F7A19A7AA9900A55A21 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		71166F7C19A816BE00A55A21 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		71166F7E19A8175600A55A21 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
@@ -248,18 +248,18 @@
 		711AF61E1993AA7100640D2D /* PAAlbumCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAAlbumCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		711AF6211993ACFA00640D2D /* PAPhotoCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAPhotoCollectionViewFlowLayout.h; sourceTree = "<group>"; };
 		711AF6221993ACFA00640D2D /* PAPhotoCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAPhotoCollectionViewFlowLayout.m; sourceTree = "<group>"; };
-		711C196E19D3134B00FE3536 /* PHMomentListDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHMomentListDataSource.h; sourceTree = "<group>"; };
-		711C196F19D3134B00FE3536 /* PHMomentListDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHMomentListDataSource.m; sourceTree = "<group>"; };
-		711C199319D3C51A00FE3536 /* PHTimelapseViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHTimelapseViewCell.h; sourceTree = "<group>"; };
-		711C199419D3C51A00FE3536 /* PHTimelapseViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHTimelapseViewCell.m; sourceTree = "<group>"; };
-		711C199B19D3C78100FE3536 /* PHPhotoViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHPhotoViewCell.h; sourceTree = "<group>"; };
-		711C199C19D3C78100FE3536 /* PHPhotoViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHPhotoViewCell.m; sourceTree = "<group>"; };
-		711C19A319D3D22400FE3536 /* PHAlbumListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHAlbumListViewController.h; sourceTree = "<group>"; };
-		711C19A419D3D22400FE3536 /* PHAlbumListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHAlbumListViewController.m; sourceTree = "<group>"; };
-		711C19AF19D3DD6100FE3536 /* PHPhotoDataSourceFactoryMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHPhotoDataSourceFactoryMethod.h; sourceTree = "<group>"; };
-		711C19B019D3DD6100FE3536 /* PHPhotoDataSourceFactoryMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHPhotoDataSourceFactoryMethod.m; sourceTree = "<group>"; };
-		711C19B319D3E08E00FE3536 /* PHPhotoListDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHPhotoListDataSource.h; sourceTree = "<group>"; };
-		711C19B419D3E08E00FE3536 /* PHPhotoListDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHPhotoListDataSource.m; sourceTree = "<group>"; };
+		711C196E19D3134B00FE3536 /* PEMomentListDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEMomentListDataSource.h; sourceTree = "<group>"; };
+		711C196F19D3134B00FE3536 /* PEMomentListDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEMomentListDataSource.m; sourceTree = "<group>"; };
+		711C199319D3C51A00FE3536 /* PETimelapseViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PETimelapseViewCell.h; sourceTree = "<group>"; };
+		711C199419D3C51A00FE3536 /* PETimelapseViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PETimelapseViewCell.m; sourceTree = "<group>"; };
+		711C199B19D3C78100FE3536 /* PEPhotoViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoViewCell.h; sourceTree = "<group>"; };
+		711C199C19D3C78100FE3536 /* PEPhotoViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoViewCell.m; sourceTree = "<group>"; };
+		711C19A319D3D22400FE3536 /* PEAlbumListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEAlbumListViewController.h; sourceTree = "<group>"; };
+		711C19A419D3D22400FE3536 /* PEAlbumListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEAlbumListViewController.m; sourceTree = "<group>"; };
+		711C19AF19D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoDataSourceFactoryMethod.h; sourceTree = "<group>"; };
+		711C19B019D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoDataSourceFactoryMethod.m; sourceTree = "<group>"; };
+		711C19B319D3E08E00FE3536 /* PEPhotoListDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoListDataSource.h; sourceTree = "<group>"; };
+		711C19B419D3E08E00FE3536 /* PEPhotoListDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoListDataSource.m; sourceTree = "<group>"; };
 		711FE8E3195E99F500AF296B /* PWSettingHTMLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSettingHTMLViewController.h; sourceTree = "<group>"; };
 		711FE8E4195E99F500AF296B /* PWSettingHTMLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSettingHTMLViewController.m; sourceTree = "<group>"; };
 		711FE8E7195EA48400AF296B /* thirdpartycopyright.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = thirdpartycopyright.html; sourceTree = "<group>"; };
@@ -358,12 +358,12 @@
 		716243321952090300168825 /* PLPhotoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoObject.m; sourceTree = "<group>"; };
 		71649BEF195907A400009C1F /* PAInAppPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAInAppPurchase.h; sourceTree = "<group>"; };
 		71649BF0195907A400009C1F /* PAInAppPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAInAppPurchase.m; sourceTree = "<group>"; };
-		7165408119D4800500960F70 /* PHPhotoListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHPhotoListViewController.h; sourceTree = "<group>"; };
-		7165408219D4800500960F70 /* PHPhotoListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHPhotoListViewController.m; sourceTree = "<group>"; };
-		7165408519D8FF1200960F70 /* PHMomentListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHMomentListViewController.h; sourceTree = "<group>"; };
+		7165408119D4800500960F70 /* PEPhotoListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoListViewController.h; sourceTree = "<group>"; };
+		7165408219D4800500960F70 /* PEPhotoListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoListViewController.m; sourceTree = "<group>"; };
+		7165408519D8FF1200960F70 /* PEMomentListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEMomentListViewController.h; sourceTree = "<group>"; };
 		7165408619D8FF1200960F70 /* PHMomentListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHMomentListViewController.m; sourceTree = "<group>"; };
-		7165408919D93DC900960F70 /* PHAssetsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHAssetsManager.h; sourceTree = "<group>"; };
-		7165408A19D93DC900960F70 /* PHAssetsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHAssetsManager.m; sourceTree = "<group>"; };
+		7165408919D93DC900960F70 /* PEAssetsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEAssetsManager.h; sourceTree = "<group>"; };
+		7165408A19D93DC900960F70 /* PEAssetsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEAssetsManager.m; sourceTree = "<group>"; };
 		71737EB819A3193100CBE68A /* PANetworkActivityIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PANetworkActivityIndicator.h; sourceTree = "<group>"; };
 		71737EB919A3193100CBE68A /* PANetworkActivityIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PANetworkActivityIndicator.m; sourceTree = "<group>"; };
 		717456E4196AB4F5003D2436 /* XmlReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlReader.h; sourceTree = "<group>"; };
@@ -380,12 +380,12 @@
 		718F271319AACCB100156D88 /* PADateTimestamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PADateTimestamp.h; sourceTree = "<group>"; };
 		718F271419AACCB100156D88 /* PADateTimestamp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PADateTimestamp.m; sourceTree = "<group>"; };
 		718FF6B8197D6A3300C3D3BF /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
-		7191705819D10610003BFFC3 /* PHAlbumListDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHAlbumListDataSource.h; sourceTree = "<group>"; };
-		7191705919D10610003BFFC3 /* PHAlbumListDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHAlbumListDataSource.m; sourceTree = "<group>"; };
-		7191705C19D1223E003BFFC3 /* PHAlbumViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHAlbumViewCell.h; sourceTree = "<group>"; };
-		7191705D19D1223E003BFFC3 /* PHAlbumViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHAlbumViewCell.m; sourceTree = "<group>"; };
-		7191706019D13564003BFFC3 /* PHMomentViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHMomentViewCell.h; sourceTree = "<group>"; };
-		7191706119D13564003BFFC3 /* PHMomentViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHMomentViewCell.m; sourceTree = "<group>"; };
+		7191705819D10610003BFFC3 /* PEAlbumListDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEAlbumListDataSource.h; sourceTree = "<group>"; };
+		7191705919D10610003BFFC3 /* PEAlbumListDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEAlbumListDataSource.m; sourceTree = "<group>"; };
+		7191705C19D1223E003BFFC3 /* PEAlbumViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEAlbumViewCell.h; sourceTree = "<group>"; };
+		7191705D19D1223E003BFFC3 /* PEAlbumViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEAlbumViewCell.m; sourceTree = "<group>"; };
+		7191706019D13564003BFFC3 /* PEMomentViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEMomentViewCell.h; sourceTree = "<group>"; };
+		7191706119D13564003BFFC3 /* PEMomentViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEMomentViewCell.m; sourceTree = "<group>"; };
 		7191706419D15F9D003BFFC3 /* PACenterTextTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PACenterTextTableViewCell.h; sourceTree = "<group>"; };
 		7191706519D15F9D003BFFC3 /* PACenterTextTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PACenterTextTableViewCell.m; sourceTree = "<group>"; };
 		7194EC7119A23B0F00FD90BB /* icon_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon_80.png; path = Images.xcassets/AppIcon.appiconset/icon_80.png; sourceTree = "<group>"; };
@@ -494,12 +494,12 @@
 		71C0784A194ABBD70071702D /* PDTaskTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskTableViewCell.m; sourceTree = "<group>"; };
 		71C477A1192CE8C100A60177 /* PLAllPhotosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLAllPhotosViewController.h; sourceTree = "<group>"; };
 		71C477A2192CE8C100A60177 /* PLAllPhotosViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLAllPhotosViewController.m; sourceTree = "<group>"; };
-		71C54F3E19CD232500BCD9CF /* PHHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHHomeViewController.h; sourceTree = "<group>"; };
-		71C54F3F19CD232500BCD9CF /* PHHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHHomeViewController.m; sourceTree = "<group>"; };
-		71C54F4219CD235D00BCD9CF /* PHNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHNavigationController.h; sourceTree = "<group>"; };
-		71C54F4319CD235D00BCD9CF /* PHNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHNavigationController.m; sourceTree = "<group>"; };
-		71C54F4619CD2B0100BCD9CF /* PHScrollBannerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHScrollBannerView.h; sourceTree = "<group>"; };
-		71C54F4719CD2B0100BCD9CF /* PHScrollBannerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHScrollBannerView.m; sourceTree = "<group>"; };
+		71C54F3E19CD232500BCD9CF /* PEHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEHomeViewController.h; sourceTree = "<group>"; };
+		71C54F3F19CD232500BCD9CF /* PEHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEHomeViewController.m; sourceTree = "<group>"; };
+		71C54F4219CD235D00BCD9CF /* PENavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PENavigationController.h; sourceTree = "<group>"; };
+		71C54F4319CD235D00BCD9CF /* PENavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PENavigationController.m; sourceTree = "<group>"; };
+		71C54F4619CD2B0100BCD9CF /* PEScrollBannerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEScrollBannerView.h; sourceTree = "<group>"; };
+		71C54F4719CD2B0100BCD9CF /* PEScrollBannerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEScrollBannerView.m; sourceTree = "<group>"; };
 		71C8C1E01942AA350002BDF9 /* PWAlbumPickerLocalAlbumListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumPickerLocalAlbumListViewController.h; sourceTree = "<group>"; };
 		71C8C1E11942AA350002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlbumPickerLocalAlbumListViewController.m; sourceTree = "<group>"; };
 		71CD060D1930E68500BECF6B /* PWSearchTableViewWebAlbumCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSearchTableViewWebAlbumCell.h; sourceTree = "<group>"; };
@@ -537,10 +537,10 @@
 		71E885A4191215A1005A78E0 /* PWPicasaGETRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPicasaGETRequest.h; sourceTree = "<group>"; };
 		71E885A5191215A1005A78E0 /* PWPicasaGETRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPicasaGETRequest.m; sourceTree = "<group>"; };
 		71E885AC19123360005A78E0 /* PWModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PWModel.xcdatamodel; sourceTree = "<group>"; };
-		71F056D219D3F5030072C2F7 /* PHPhotoPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHPhotoPageViewController.h; sourceTree = "<group>"; };
-		71F056D319D3F5030072C2F7 /* PHPhotoPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHPhotoPageViewController.m; sourceTree = "<group>"; };
-		71F056D619D3F5C70072C2F7 /* PHPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHPhotoViewController.h; sourceTree = "<group>"; };
-		71F056D719D3F5C70072C2F7 /* PHPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHPhotoViewController.m; sourceTree = "<group>"; };
+		71F056D219D3F5030072C2F7 /* PEPhotoPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoPageViewController.h; sourceTree = "<group>"; };
+		71F056D319D3F5030072C2F7 /* PEPhotoPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoPageViewController.m; sourceTree = "<group>"; };
+		71F056D619D3F5C70072C2F7 /* PEPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoViewController.h; sourceTree = "<group>"; };
+		71F056D719D3F5C70072C2F7 /* PEPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoViewController.m; sourceTree = "<group>"; };
 		BB88A718BA2F4C6E86D19891 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -656,31 +656,31 @@
 			name = PAGradientView;
 			sourceTree = "<group>";
 		};
-		711183A819D0462500548730 /* PHHorizontalScrollView */ = {
+		711183A819D0462500548730 /* PEHorizontalScrollView */ = {
 			isa = PBXGroup;
 			children = (
-				711183AA19D0465800548730 /* PHHorizontalScrollView.h */,
-				711183AB19D0465800548730 /* PHHorizontalScrollView.m */,
+				711183AA19D0465800548730 /* PEHorizontalScrollView.h */,
+				711183AB19D0465800548730 /* PEHorizontalScrollView.m */,
 			);
-			name = PHHorizontalScrollView;
+			name = PEHorizontalScrollView;
 			sourceTree = "<group>";
 		};
-		711183A919D0464600548730 /* PHCategoryViewCell */ = {
+		711183A919D0464600548730 /* PECategoryViewCell */ = {
 			isa = PBXGroup;
 			children = (
-				711183AD19D0466B00548730 /* PHCategoryViewCell.h */,
-				711183AE19D0466B00548730 /* PHCategoryViewCell.m */,
+				711183AD19D0466B00548730 /* PECategoryViewCell.h */,
+				711183AE19D0466B00548730 /* PECategoryViewCell.m */,
 			);
-			name = PHCategoryViewCell;
+			name = PECategoryViewCell;
 			sourceTree = "<group>";
 		};
-		711183B219D06B1700548730 /* PHScrollBannerReusableView */ = {
+		711183B219D06B1700548730 /* PEScrollBannerReusableView */ = {
 			isa = PBXGroup;
 			children = (
-				711183B319D06B3F00548730 /* PHScrollBannerHeaderView.h */,
-				711183B419D06B3F00548730 /* PHScrollBannerHeaderView.m */,
+				711183B319D06B3F00548730 /* PEScrollBannerHeaderView.h */,
+				711183B419D06B3F00548730 /* PEScrollBannerHeaderView.m */,
 			);
-			name = PHScrollBannerReusableView;
+			name = PEScrollBannerReusableView;
 			sourceTree = "<group>";
 		};
 		7118F85A193318700016697E /* PLPhotoListViewController */ = {
@@ -800,58 +800,58 @@
 			name = PAPhotoCollectionViewFloyLayout;
 			sourceTree = "<group>";
 		};
-		711C196D19D3133000FE3536 /* PHMomentListDataSource */ = {
+		711C196D19D3133000FE3536 /* PEMomentListDataSource */ = {
 			isa = PBXGroup;
 			children = (
-				711C196E19D3134B00FE3536 /* PHMomentListDataSource.h */,
-				711C196F19D3134B00FE3536 /* PHMomentListDataSource.m */,
+				711C196E19D3134B00FE3536 /* PEMomentListDataSource.h */,
+				711C196F19D3134B00FE3536 /* PEMomentListDataSource.m */,
 			);
-			name = PHMomentListDataSource;
+			name = PEMomentListDataSource;
 			sourceTree = "<group>";
 		};
-		711C199219D3C4FA00FE3536 /* PHTimelapseViewCell */ = {
+		711C199219D3C4FA00FE3536 /* PETimelapseViewCell */ = {
 			isa = PBXGroup;
 			children = (
-				711C199319D3C51A00FE3536 /* PHTimelapseViewCell.h */,
-				711C199419D3C51A00FE3536 /* PHTimelapseViewCell.m */,
+				711C199319D3C51A00FE3536 /* PETimelapseViewCell.h */,
+				711C199419D3C51A00FE3536 /* PETimelapseViewCell.m */,
 			);
-			name = PHTimelapseViewCell;
+			name = PETimelapseViewCell;
 			sourceTree = "<group>";
 		};
-		711C199A19D3C76400FE3536 /* PHPhotoViewCell */ = {
+		711C199A19D3C76400FE3536 /* PEPhotoViewCell */ = {
 			isa = PBXGroup;
 			children = (
-				711C199B19D3C78100FE3536 /* PHPhotoViewCell.h */,
-				711C199C19D3C78100FE3536 /* PHPhotoViewCell.m */,
+				711C199B19D3C78100FE3536 /* PEPhotoViewCell.h */,
+				711C199C19D3C78100FE3536 /* PEPhotoViewCell.m */,
 			);
-			name = PHPhotoViewCell;
+			name = PEPhotoViewCell;
 			sourceTree = "<group>";
 		};
-		711C19A219D3CEAC00FE3536 /* PHAlbumViewController */ = {
+		711C19A219D3CEAC00FE3536 /* PEAlbumViewController */ = {
 			isa = PBXGroup;
 			children = (
-				711C19A319D3D22400FE3536 /* PHAlbumListViewController.h */,
-				711C19A419D3D22400FE3536 /* PHAlbumListViewController.m */,
+				711C19A319D3D22400FE3536 /* PEAlbumListViewController.h */,
+				711C19A419D3D22400FE3536 /* PEAlbumListViewController.m */,
 			);
-			name = PHAlbumViewController;
+			name = PEAlbumViewController;
 			sourceTree = "<group>";
 		};
-		711C19AE19D3DD4700FE3536 /* PHPhotoDataSourceFactoryMethod */ = {
+		711C19AE19D3DD4700FE3536 /* PEPhotoDataSourceFactoryMethod */ = {
 			isa = PBXGroup;
 			children = (
-				711C19AF19D3DD6100FE3536 /* PHPhotoDataSourceFactoryMethod.h */,
-				711C19B019D3DD6100FE3536 /* PHPhotoDataSourceFactoryMethod.m */,
+				711C19AF19D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.h */,
+				711C19B019D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.m */,
 			);
-			name = PHPhotoDataSourceFactoryMethod;
+			name = PEPhotoDataSourceFactoryMethod;
 			sourceTree = "<group>";
 		};
-		711C19B219D3E07C00FE3536 /* PHPhotoListDataSource */ = {
+		711C19B219D3E07C00FE3536 /* PEPhotoListDataSource */ = {
 			isa = PBXGroup;
 			children = (
-				711C19B319D3E08E00FE3536 /* PHPhotoListDataSource.h */,
-				711C19B419D3E08E00FE3536 /* PHPhotoListDataSource.m */,
+				711C19B319D3E08E00FE3536 /* PEPhotoListDataSource.h */,
+				711C19B419D3E08E00FE3536 /* PEPhotoListDataSource.m */,
 			);
-			name = PHPhotoListDataSource;
+			name = PEPhotoListDataSource;
 			sourceTree = "<group>";
 		};
 		711FE8E6195E99FA00AF296B /* PWSettingHTMLViewController */ = {
@@ -1241,31 +1241,31 @@
 			name = PAInAppPurchase;
 			sourceTree = "<group>";
 		};
-		7165408019D47FF300960F70 /* PHPhotoListViewController */ = {
+		7165408019D47FF300960F70 /* PEPhotoListViewController */ = {
 			isa = PBXGroup;
 			children = (
-				7165408119D4800500960F70 /* PHPhotoListViewController.h */,
-				7165408219D4800500960F70 /* PHPhotoListViewController.m */,
+				7165408119D4800500960F70 /* PEPhotoListViewController.h */,
+				7165408219D4800500960F70 /* PEPhotoListViewController.m */,
 			);
-			name = PHPhotoListViewController;
+			name = PEPhotoListViewController;
 			sourceTree = "<group>";
 		};
-		7165408419D8FEFB00960F70 /* PHMomentListViewController */ = {
+		7165408419D8FEFB00960F70 /* PEMomentListViewController */ = {
 			isa = PBXGroup;
 			children = (
-				7165408519D8FF1200960F70 /* PHMomentListViewController.h */,
+				7165408519D8FF1200960F70 /* PEMomentListViewController.h */,
 				7165408619D8FF1200960F70 /* PHMomentListViewController.m */,
 			);
-			name = PHMomentListViewController;
+			name = PEMomentListViewController;
 			sourceTree = "<group>";
 		};
-		7165408819D93DB500960F70 /* PHAssetsManager */ = {
+		7165408819D93DB500960F70 /* PEAssetsManager */ = {
 			isa = PBXGroup;
 			children = (
-				7165408919D93DC900960F70 /* PHAssetsManager.h */,
-				7165408A19D93DC900960F70 /* PHAssetsManager.m */,
+				7165408919D93DC900960F70 /* PEAssetsManager.h */,
+				7165408A19D93DC900960F70 /* PEAssetsManager.m */,
 			);
-			name = PHAssetsManager;
+			name = PEAssetsManager;
 			sourceTree = "<group>";
 		};
 		71737EB719A318F800CBE68A /* PANetworkActivityIndicator */ = {
@@ -1337,31 +1337,31 @@
 			name = PADateTimestamp;
 			sourceTree = "<group>";
 		};
-		7191705719D105EB003BFFC3 /* PHAlbumDataSource */ = {
+		7191705719D105EB003BFFC3 /* PEAlbumListDataSource */ = {
 			isa = PBXGroup;
 			children = (
-				7191705819D10610003BFFC3 /* PHAlbumListDataSource.h */,
-				7191705919D10610003BFFC3 /* PHAlbumListDataSource.m */,
+				7191705819D10610003BFFC3 /* PEAlbumListDataSource.h */,
+				7191705919D10610003BFFC3 /* PEAlbumListDataSource.m */,
 			);
-			name = PHAlbumDataSource;
+			name = PEAlbumListDataSource;
 			sourceTree = "<group>";
 		};
-		7191705B19D121FC003BFFC3 /* PHAlbumViewCell */ = {
+		7191705B19D121FC003BFFC3 /* PEAlbumViewCell */ = {
 			isa = PBXGroup;
 			children = (
-				7191705C19D1223E003BFFC3 /* PHAlbumViewCell.h */,
-				7191705D19D1223E003BFFC3 /* PHAlbumViewCell.m */,
+				7191705C19D1223E003BFFC3 /* PEAlbumViewCell.h */,
+				7191705D19D1223E003BFFC3 /* PEAlbumViewCell.m */,
 			);
-			name = PHAlbumViewCell;
+			name = PEAlbumViewCell;
 			sourceTree = "<group>";
 		};
-		7191705F19D1354F003BFFC3 /* PHMomentViewCell */ = {
+		7191705F19D1354F003BFFC3 /* PEMomentViewCell */ = {
 			isa = PBXGroup;
 			children = (
-				7191706019D13564003BFFC3 /* PHMomentViewCell.h */,
-				7191706119D13564003BFFC3 /* PHMomentViewCell.m */,
+				7191706019D13564003BFFC3 /* PEMomentViewCell.h */,
+				7191706119D13564003BFFC3 /* PEMomentViewCell.m */,
 			);
-			name = PHMomentViewCell;
+			name = PEMomentViewCell;
 			sourceTree = "<group>";
 		};
 		7191706319D15F73003BFFC3 /* PACenterTextTableViewCell */ = {
@@ -1686,31 +1686,31 @@
 			name = PLAllPhotosViewController;
 			sourceTree = "<group>";
 		};
-		71C54F3D19CD228100BCD9CF /* PHHomeViewController */ = {
+		71C54F3D19CD228100BCD9CF /* PEHomeViewController */ = {
 			isa = PBXGroup;
 			children = (
-				71C54F3E19CD232500BCD9CF /* PHHomeViewController.h */,
-				71C54F3F19CD232500BCD9CF /* PHHomeViewController.m */,
+				71C54F3E19CD232500BCD9CF /* PEHomeViewController.h */,
+				71C54F3F19CD232500BCD9CF /* PEHomeViewController.m */,
 			);
-			name = PHHomeViewController;
+			name = PEHomeViewController;
 			sourceTree = "<group>";
 		};
-		71C54F4119CD233900BCD9CF /* PHNavigationController */ = {
+		71C54F4119CD233900BCD9CF /* PENavigationController */ = {
 			isa = PBXGroup;
 			children = (
-				71C54F4219CD235D00BCD9CF /* PHNavigationController.h */,
-				71C54F4319CD235D00BCD9CF /* PHNavigationController.m */,
+				71C54F4219CD235D00BCD9CF /* PENavigationController.h */,
+				71C54F4319CD235D00BCD9CF /* PENavigationController.m */,
 			);
-			name = PHNavigationController;
+			name = PENavigationController;
 			sourceTree = "<group>";
 		};
-		71C54F4519CD2ACE00BCD9CF /* PHScrollBannerView */ = {
+		71C54F4519CD2ACE00BCD9CF /* PEScrollBannerView */ = {
 			isa = PBXGroup;
 			children = (
-				71C54F4619CD2B0100BCD9CF /* PHScrollBannerView.h */,
-				71C54F4719CD2B0100BCD9CF /* PHScrollBannerView.m */,
+				71C54F4619CD2B0100BCD9CF /* PEScrollBannerView.h */,
+				71C54F4719CD2B0100BCD9CF /* PEScrollBannerView.m */,
 			);
-			name = PHScrollBannerView;
+			name = PEScrollBannerView;
 			sourceTree = "<group>";
 		};
 		71C8C1CF1942AA160002BDF9 /* PWAlbumPickerLocalAlbumListViewController */ = {
@@ -2087,11 +2087,11 @@
 				7177479C1936F572005179B6 /* PDModelObject */,
 				71BD233D197683C80034CD3B /* PDModelObject+methods */,
 				714318C5193DF6DB0066A1F8 /* PDTaskManager */,
-				7191705719D105EB003BFFC3 /* PHAlbumDataSource */,
-				7165408819D93DB500960F70 /* PHAssetsManager */,
-				711C196D19D3133000FE3536 /* PHMomentListDataSource */,
-				711C19AE19D3DD4700FE3536 /* PHPhotoDataSourceFactoryMethod */,
-				711C19B219D3E07C00FE3536 /* PHPhotoListDataSource */,
+				7191705719D105EB003BFFC3 /* PEAlbumListDataSource */,
+				7165408819D93DB500960F70 /* PEAssetsManager */,
+				711C196D19D3133000FE3536 /* PEMomentListDataSource */,
+				711C19AE19D3DD4700FE3536 /* PEPhotoDataSourceFactoryMethod */,
+				711C19B219D3E07C00FE3536 /* PEPhotoListDataSource */,
 				712E03AD191F613C0035D9E0 /* PLAssetsLibrary */,
 				7195525219290DFB003EA9AF /* PLCoreDataAPI */,
 				7195523B1928FAF8003EA9AF /* PLModelObject */,
@@ -2110,14 +2110,14 @@
 				711183A319D0324C00548730 /* PAGradientView */,
 				71D52EF9197F98D9005CFF30 /* PDTaskManagerViewControllerHeaderView */,
 				71C07838194ABBB60071702D /* PDTaskTableViewCell */,
-				7191705B19D121FC003BFFC3 /* PHAlbumViewCell */,
-				711183A919D0464600548730 /* PHCategoryViewCell */,
-				711183A819D0462500548730 /* PHHorizontalScrollView */,
-				7191705F19D1354F003BFFC3 /* PHMomentViewCell */,
-				711C199A19D3C76400FE3536 /* PHPhotoViewCell */,
-				711183B219D06B1700548730 /* PHScrollBannerReusableView */,
-				71C54F4519CD2ACE00BCD9CF /* PHScrollBannerView */,
-				711C199219D3C4FA00FE3536 /* PHTimelapseViewCell */,
+				7191705B19D121FC003BFFC3 /* PEAlbumViewCell */,
+				711183A919D0464600548730 /* PECategoryViewCell */,
+				711183A819D0462500548730 /* PEHorizontalScrollView */,
+				7191705F19D1354F003BFFC3 /* PEMomentViewCell */,
+				711C199A19D3C76400FE3536 /* PEPhotoViewCell */,
+				711183B219D06B1700548730 /* PEScrollBannerReusableView */,
+				71C54F4519CD2ACE00BCD9CF /* PEScrollBannerView */,
+				711C199219D3C4FA00FE3536 /* PETimelapseViewCell */,
 				719552471929013F003EA9AF /* PLAlbumViewCell */,
 				71349CBD192F2389003CC2AA /* PLCollectionFooterView */,
 				71D52F2319853BD4005CFF30 /* PLFullAlbumViewCell */,
@@ -2141,7 +2141,6 @@
 		71E8859719120BC5005A78E0 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				7165408419D8FEFB00960F70 /* PHMomentListViewController */,
 				711FE8F2195F2F5100AF296B /* PABaseNavigationController */,
 				7137A84B19AD8F3A00C715CB /* PABaseViewController */,
 				7124F13A19B6F81600DFE49E /* PAMigrationViewController */,
@@ -2151,12 +2150,13 @@
 				719D925A1918E24A00B75D8B /* PDTaskManagerViewController */,
 				713A16D719551964004117F0 /* PDTaskViewController */,
 				715943C61957E54E009315E5 /* PDUploadDescriptionViewController */,
-				711C19A219D3CEAC00FE3536 /* PHAlbumViewController */,
-				71C54F3D19CD228100BCD9CF /* PHHomeViewController */,
-				71C54F4119CD233900BCD9CF /* PHNavigationController */,
-				7165408019D47FF300960F70 /* PHPhotoListViewController */,
-				71F056D119D3F4D00072C2F7 /* PHPhotoPageViewController */,
-				71F056D519D3F5B30072C2F7 /* PHPhotoViewController */,
+				711C19A219D3CEAC00FE3536 /* PEAlbumViewController */,
+				71C54F3D19CD228100BCD9CF /* PEHomeViewController */,
+				7165408419D8FEFB00960F70 /* PEMomentListViewController */,
+				71C54F4119CD233900BCD9CF /* PENavigationController */,
+				7165408019D47FF300960F70 /* PEPhotoListViewController */,
+				71F056D119D3F4D00072C2F7 /* PEPhotoPageViewController */,
+				71F056D519D3F5B30072C2F7 /* PEPhotoViewController */,
 				719CFE561959A53F008B4308 /* PLAccessPhotoLibraryViewController */,
 				71109BD21973C8DE00EEDAAE /* PLAlbumEditViewController */,
 				7121AD641918F86C00D5D313 /* PLAlbumListViewController */,
@@ -2223,22 +2223,22 @@
 			name = XmlReader;
 			sourceTree = "<group>";
 		};
-		71F056D119D3F4D00072C2F7 /* PHPhotoPageViewController */ = {
+		71F056D119D3F4D00072C2F7 /* PEPhotoPageViewController */ = {
 			isa = PBXGroup;
 			children = (
-				71F056D219D3F5030072C2F7 /* PHPhotoPageViewController.h */,
-				71F056D319D3F5030072C2F7 /* PHPhotoPageViewController.m */,
+				71F056D219D3F5030072C2F7 /* PEPhotoPageViewController.h */,
+				71F056D319D3F5030072C2F7 /* PEPhotoPageViewController.m */,
 			);
-			name = PHPhotoPageViewController;
+			name = PEPhotoPageViewController;
 			sourceTree = "<group>";
 		};
-		71F056D519D3F5B30072C2F7 /* PHPhotoViewController */ = {
+		71F056D519D3F5B30072C2F7 /* PEPhotoViewController */ = {
 			isa = PBXGroup;
 			children = (
-				71F056D619D3F5C70072C2F7 /* PHPhotoViewController.h */,
-				71F056D719D3F5C70072C2F7 /* PHPhotoViewController.m */,
+				71F056D619D3F5C70072C2F7 /* PEPhotoViewController.h */,
+				71F056D719D3F5C70072C2F7 /* PEPhotoViewController.m */,
 			);
-			name = PHPhotoViewController;
+			name = PEPhotoViewController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2410,8 +2410,8 @@
 			files = (
 				712E03B81920BA360035D9E0 /* PWAlbumObject+Methods.m in Sources */,
 				7118F88919335B070016697E /* PWImagePickerLocalPageViewController.m in Sources */,
-				711C19A519D3D22400FE3536 /* PHAlbumListViewController.m in Sources */,
-				7191705A19D10610003BFFC3 /* PHAlbumListDataSource.m in Sources */,
+				711C19A519D3D22400FE3536 /* PEAlbumListViewController.m in Sources */,
+				7191705A19D10610003BFFC3 /* PEAlbumListDataSource.m in Sources */,
 				711FE8F5195F2F6B00AF296B /* PABaseNavigationController.m in Sources */,
 				71BD235C19779E450034CD3B /* ALAsset+methods.m in Sources */,
 				71342FE91941F7F0002331F6 /* PWAlbumPickerWebAlbumListViewController.m in Sources */,
@@ -2428,7 +2428,7 @@
 				714F53BC196ECEC500FB8992 /* PWMapViewController.m in Sources */,
 				71958C52191B8A2200CFC15F /* UIButton+HitEdgeInsets.m in Sources */,
 				71502F1019349E8A0006979B /* PWImagePickerLocalPhotoListViewController.m in Sources */,
-				711183B519D06B3F00548730 /* PHScrollBannerHeaderView.m in Sources */,
+				711183B519D06B3F00548730 /* PEScrollBannerHeaderView.m in Sources */,
 				71349CBC192F0ADD003CC2AA /* PLPhotoViewHeaderView.m in Sources */,
 				7195524619290062003EA9AF /* PLAlbumListViewController.m in Sources */,
 				7133203E19225E9F00A27B3C /* PWAlbumEditViewController.m in Sources */,
@@ -2441,7 +2441,7 @@
 				7195529B192C862D003EA9AF /* PLAlbumObject.m in Sources */,
 				7195525519290E16003EA9AF /* PLCoreDataAPI.m in Sources */,
 				7124F13F19B6F85E00DFE49E /* PAMigrationViewController.m in Sources */,
-				7191705E19D1223E003BFFC3 /* PHAlbumViewCell.m in Sources */,
+				7191705E19D1223E003BFFC3 /* PEAlbumViewCell.m in Sources */,
 				71A2546819195259009914F7 /* PWPhotoViewCell.m in Sources */,
 				712E03BB1920BA6E0035D9E0 /* PWPhotoObject+Methods.m in Sources */,
 				7118F88F19335B630016697E /* PWImagePickerLocalAllPhotoViewController.m in Sources */,
@@ -2451,20 +2451,20 @@
 				719D924D1918C3DF00B75D8B /* PWPicasaAPI.m in Sources */,
 				71197E7519862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m in Sources */,
 				719D923C1917848A00B75D8B /* PWPhotoLinkObject.m in Sources */,
-				7191706219D13564003BFFC3 /* PHMomentViewCell.m in Sources */,
+				7191706219D13564003BFFC3 /* PEMomentViewCell.m in Sources */,
 				71958C4E191B4BB200CFC15F /* UIImage+ImageEffects.m in Sources */,
 				71CD06131930EDD200BECF6B /* PWSearchTableViewLocalAlbumCell.m in Sources */,
 				7195523619273138003EA9AF /* PWAlbumShareViewController.m in Sources */,
 				713320331921E4AF00A27B3C /* PWDatePickerView.m in Sources */,
-				711C19B119D3DD6100FE3536 /* PHPhotoDataSourceFactoryMethod.m in Sources */,
+				711C19B119D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.m in Sources */,
 				712F39AB1938A37D005CF60B /* PWPhotoMediaObject.m in Sources */,
 				719D92491918038900B75D8B /* PWAlbumListViewController.m in Sources */,
 				71958C30191B492E00CFC15F /* UIView+ScreenCapture.m in Sources */,
 				7118F89219335B6E0016697E /* PWImagePickerLocalAlbumListViewController.m in Sources */,
-				71F056D419D3F5030072C2F7 /* PHPhotoPageViewController.m in Sources */,
+				71F056D419D3F5030072C2F7 /* PEPhotoPageViewController.m in Sources */,
 				719D92421917848A00B75D8B /* PWPhotoMediaContentObject.m in Sources */,
 				7177479F1936F5A8005179B6 /* PDModel.xcdatamodeld in Sources */,
-				71C54F4419CD235D00BCD9CF /* PHNavigationController.m in Sources */,
+				71C54F4419CD235D00BCD9CF /* PENavigationController.m in Sources */,
 				71109C14197407E600EEDAAE /* PLRoundedCornerBorderView.m in Sources */,
 				71E885AD19123360005A78E0 /* PWModel.xcdatamodeld in Sources */,
 				7195523E1928FB3F003EA9AF /* PLModel.xcdatamodeld in Sources */,
@@ -2474,11 +2474,11 @@
 				712F39BC193AC2BB005CF60B /* PLPhotoViewController.m in Sources */,
 				715943C51957C231009315E5 /* PDNavigationController.m in Sources */,
 				7118F882193355600016697E /* PWImagePickerNavigationController.m in Sources */,
-				71F056D819D3F5C70072C2F7 /* PHPhotoViewController.m in Sources */,
+				71F056D819D3F5C70072C2F7 /* PEPhotoViewController.m in Sources */,
 				712F39B8193ABD71005CF60B /* PLPhotoPageViewController.m in Sources */,
 				7118F89B19335BFF0016697E /* PWImagePickerWebAlbumListViewController.m in Sources */,
 				714318D8193DF6F70066A1F8 /* PDTaskManager.m in Sources */,
-				711C19B519D3E08E00FE3536 /* PHPhotoListDataSource.m in Sources */,
+				711C19B519D3E08E00FE3536 /* PEPhotoListDataSource.m in Sources */,
 				71D52EFC197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m in Sources */,
 				714318DC193E04300066A1F8 /* PDTaskManagerViewController.m in Sources */,
 				71A254701919CFF5009914F7 /* PWSearchNavigationController.m in Sources */,
@@ -2488,18 +2488,18 @@
 				7118F89519335B790016697E /* PWImagePickerLocaliCloudViewController.m in Sources */,
 				719D92541918D84700B75D8B /* PWAlbumViewCell.m in Sources */,
 				71958C5C191B933500CFC15F /* PWPhotoViewController.m in Sources */,
-				7165408B19D93DC900960F70 /* PHAssetsManager.m in Sources */,
+				7165408B19D93DC900960F70 /* PEAssetsManager.m in Sources */,
 				71109BD1196FBC3700EEDAAE /* PLPhotoEditViewController.m in Sources */,
-				71C54F4019CD232500BCD9CF /* PHHomeViewController.m in Sources */,
+				71C54F4019CD232500BCD9CF /* PEHomeViewController.m in Sources */,
 				7118F86B193318F40016697E /* PLPhotoListViewController.m in Sources */,
 				715943C91957E573009315E5 /* PDUploadDescriptionViewController.m in Sources */,
 				71342FE51941F7B2002331F6 /* PWAlbumPickerNavigationController.m in Sources */,
 				71109BD51973C90000EEDAAE /* PLAlbumEditViewController.m in Sources */,
 				71342FE11941F76C002331F6 /* PWAlbumPickerController.m in Sources */,
 				71349CB1192DF7A8003CC2AA /* PLPhotoViewCell.m in Sources */,
-				711183AF19D0466B00548730 /* PHCategoryViewCell.m in Sources */,
+				711183AF19D0466B00548730 /* PECategoryViewCell.m in Sources */,
 				719CFE5119598B85008B4308 /* PWGoogleLoginViewController.m in Sources */,
-				7165408319D4800500960F70 /* PHPhotoListViewController.m in Sources */,
+				7165408319D4800500960F70 /* PEPhotoListViewController.m in Sources */,
 				7118F89E19335C0E0016697E /* PWImagePickerWebPhotoListViewController.m in Sources */,
 				712E03A6191DAD7E0035D9E0 /* PWRefreshControl.m in Sources */,
 				719D92581918E08500B75D8B /* PATabBarController.m in Sources */,
@@ -2521,11 +2521,11 @@
 				71737EBA19A3193100CBE68A /* PANetworkActivityIndicator.m in Sources */,
 				71BD234619778C010034CD3B /* PDLocalPhotoObject.m in Sources */,
 				71E885A219120E7A005A78E0 /* PWOAuthManager.m in Sources */,
-				711C197019D3134B00FE3536 /* PHMomentListDataSource.m in Sources */,
+				711C197019D3134B00FE3536 /* PEMomentListDataSource.m in Sources */,
 				719BECEE1957419E005DE6E7 /* PWSettingsTableViewController.m in Sources */,
 				71BDE3A61998FC2100853E85 /* NSMutableAttributedString+methods.m in Sources */,
 				71E8851219115C7E005A78E0 /* PWAppDelegate.m in Sources */,
-				711C199519D3C51A00FE3536 /* PHTimelapseViewCell.m in Sources */,
+				711C199519D3C51A00FE3536 /* PETimelapseViewCell.m in Sources */,
 				71197E7119862EB3009DB4D3 /* PDLocalCopyPhotoObject.m in Sources */,
 				71D52F2219853BCF005CFF30 /* PLFullAlbumViewCell.m in Sources */,
 				71388286193E13E8009AFB1F /* PDCoreDataAPI.m in Sources */,
@@ -2544,15 +2544,15 @@
 				71CD060F1930E68500BECF6B /* PWSearchTableViewWebAlbumCell.m in Sources */,
 				715A31B4198FD5E8002A0A37 /* NSFileManager+methods.m in Sources */,
 				71109C181974201700EEDAAE /* PLNewAlbumEditViewController.m in Sources */,
-				71C54F4819CD2B0100BCD9CF /* PHScrollBannerView.m in Sources */,
+				71C54F4819CD2B0100BCD9CF /* PEScrollBannerView.m in Sources */,
 				712E03B41920B5570035D9E0 /* PAString.m in Sources */,
 				71349CC4192F3731003CC2AA /* PLiCloudViewController.m in Sources */,
-				711C199D19D3C78100FE3536 /* PHPhotoViewCell.m in Sources */,
+				711C199D19D3C78100FE3536 /* PEPhotoViewCell.m in Sources */,
 				71958C57191B8D4400CFC15F /* PWPhotoPageViewController.m in Sources */,
 				7187904319A58B71005545E1 /* PATabBarAdsController.m in Sources */,
 				7187C38C19B6C5780090A51F /* PWModelMigrationPolicy.m in Sources */,
 				71BD235F1977AE100034CD3B /* PDCopyPhotoObject+methods.m in Sources */,
-				711183AC19D0465800548730 /* PHHorizontalScrollView.m in Sources */,
+				711183AC19D0465800548730 /* PEHorizontalScrollView.m in Sources */,
 				718E9757196E8D8000638A86 /* PWPhotoEditViewController.m in Sources */,
 				7195524A19290161003EA9AF /* PLAlbumViewCell.m in Sources */,
 				719D92501918C54E00B75D8B /* PWPicasaPOSTRequest.m in Sources */,

@@ -27,7 +27,7 @@
 #import "PWNavigationController.h"
 #import "PLNavigationController.h"
 #import "PDNavigationController.h"
-#import "PHNavigationController.h"
+#import "PENavigationController.h"
 #import "PATabBarAdsController.h"
 #import "PAMigrationViewController.h"
 
@@ -62,7 +62,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     [[[NSURLSession sharedSession] configuration] setURLCache:nil];
     
     // Google Analytics
-    [GAI sharedInstance].trackUncaughtExceptions = YES;
+//    [GAI sharedInstance].trackUncaughtExceptions = YES;
     [GAI sharedInstance].dispatchInterval = 30;
 #ifdef DEBUG
 //    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
@@ -93,7 +93,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 }
 
 - (UIViewController *)tabBarController {
-    PHNavigationController *phNavigationController = [PHNavigationController new];
+    PENavigationController *phNavigationController = [PENavigationController new];
     PLNavigationController *localNavigationController = [PLNavigationController new];
     PWNavigationController *webNavigationViewController = [PWNavigationController new];
     PDNavigationController *taskNavigationController = [PDNavigationController new];

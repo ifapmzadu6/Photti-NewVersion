@@ -1,38 +1,42 @@
 //
-//  PHmomentListViewController.m
+//  PHAlbumViewController.m
 //  PicasaWebAlbum
 //
-//  Created by Keisuke Karijuku on 2014/09/29.
+//  Created by Keisuke Karijuku on 2014/09/25.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PEMomentListViewController.h"
+#import "PEAlbumListViewController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
-#import "PEMomentListDataSource.h"
-#import "PEPhotoListViewController.h"
+#import "PEPhotoViewCell.h"
+#import "PEAlbumListDataSource.h"
 #import "PATabBarAdsController.h"
+#import "PEPhotoListViewController.h"
 
-@interface PEMomentListViewController ()
+@interface PEAlbumListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
-@property (strong, nonatomic) PEMomentListDataSource *dataSource;
+@property (strong, nonatomic) PEAlbumListDataSource *albumListDataSource;
 @property (nonatomic) BOOL isSelectMode;
 
 @end
 
-@implementation PEMomentListViewController
+@implementation PEAlbumListViewController
 
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _dataSource = [PEMomentListDataSource new];
-        _dataSource.cellSize = CGSizeMake(90.0f, 120.0f);
-        _dataSource.minimumLineSpacing = 15.0f;
+        self.title = NSLocalizedString(@"アルバム", nil);
+        
+        _albumListDataSource = [PEAlbumListDataSource new];
+        _albumListDataSource.cellSize = CGSizeMake(90.0f, 120.0f);
+        _albumListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+        _albumListDataSource.minimumLineSpacing = 15.0f;
         __weak typeof(self) wself = self;
-        _dataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
+        _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
             typeof(wself) sself = wself;
             if (!sself) return;
             
@@ -48,9 +52,9 @@
     
     UICollectionViewFlowLayout *collectionViewLayout = [UICollectionViewFlowLayout new];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
-    _collectionView.dataSource = _dataSource;
-    _collectionView.delegate = _dataSource;
-    [_dataSource prepareForUse:_collectionView];
+    _collectionView.dataSource = _albumListDataSource;
+    _collectionView.delegate = _albumListDataSource;
+    [_albumListDataSource prepareForUse:_collectionView];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;

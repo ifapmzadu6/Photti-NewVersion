@@ -14,7 +14,7 @@
 
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
-#import "PHAssetsManager.h"
+#import "PEAssetsManager.h"
 #import "PLCoreDataAPI.h"
 
 #import "PWPicasaAPI.h"
@@ -77,7 +77,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 }
 
 - (BOOL)checkOKAddTask {
-    if (!PHAssetsManager.isStatusAuthorized) {
+    if (!PEAssetsManager.isStatusAuthorized) {
         if (_notAllowedAccessPhotoLibraryAction) _notAllowedAccessPhotoLibraryAction();
         return NO;
     }

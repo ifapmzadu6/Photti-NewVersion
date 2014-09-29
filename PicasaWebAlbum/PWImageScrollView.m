@@ -110,6 +110,9 @@
         _imageView.image = image;
         return;
     }
+    if (!image) {
+        return;
+    }
     
 	CGSize dimensions = image.size;
 	CGFloat imageWidth = dimensions.width;
