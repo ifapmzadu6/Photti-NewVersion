@@ -48,6 +48,7 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
 - (void)initialization {
     _imageViewBackgroundView = [UIView new];
     _imageViewBackgroundView.backgroundColor = [PAColors getColor:PAColorsTypeTextColor];
+    _imageViewBackgroundView.opaque = YES;
     [self.contentView addSubview:_imageViewBackgroundView];
     
     NSMutableArray *imageViews = @[].mutableCopy;
@@ -56,6 +57,7 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
         imageView.contentMode = UIViewContentModeScaleAspectFill;
         imageView.clipsToBounds = YES;
         imageView.hidden = YES;
+        imageView.opaque = YES;
         [imageViews addObject:imageView];
         [self.contentView addSubview:imageView];
     }
@@ -80,7 +82,7 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
         return;
     }
     
-    NSUInteger numberOfRowAndCol = sqrtf(_numberOfImageView);
+    NSUInteger numberOfRowAndCol = sqrtf(self.numberOfImageView);
     if (numberOfRowAndCol > 0) {
         CGFloat imageSize = ceilf((CGRectGetWidth(rect)-2)/numberOfRowAndCol*2.0f+0.5f)/2.0f;
         
@@ -88,7 +90,7 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
             for (int j=0; j<numberOfRowAndCol; j++) {
                 if (i*numberOfRowAndCol+j < _numberOfImageView) {
                     UIImageView *imageView = _imageViews[i*numberOfRowAndCol+j];
-                    imageView.frame = CGRectMake(imageSize*i +1.0f, imageSize*j +1.0f, imageSize, imageSize);
+                    imageView.frame = CGRectMake(imageSize*i+1.0f, imageSize*j +1.0f, imageSize, imageSize);
                     imageView.hidden = NO;
                 }
             }

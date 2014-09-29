@@ -11,6 +11,7 @@
 @import Photos;
 
 #import "PHMomentViewCell.h"
+#import "PADateFormatter.h"
 
 @interface PHMomentListDataSource () <PHPhotoLibraryChangeObserver>
 
@@ -63,18 +64,26 @@
     PHFetchResult *assetsResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
     
     cell.numberOfImageView = assetsResult.count;
+    CGSize thumbnailTargetSize = CGSizeMake(80.0f, 80.0f);
+    if (cell.numberOfImageView == 1) {
+        thumbnailTargetSize = CGSizeMake(160.0f, 160.0f);
+    }
     for (int i=0; i<cell.numberOfImageView; i++) {
         UIImageView *imageView = cell.imageViews[i];
         imageView.image = nil;
         PHAsset *asset = assetsResult[i];
         if (asset.mediaType == PHAssetMediaTypeImage) {
-            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:thumbnailTargetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
                 imageView.image = result;
             }];
         }
     }
     
-    cell.titleLabel.text = collection.localizedTitle;
+    NSString *title = collection.localizedTitle;
+    if (!title) {
+        title = [[PADateFormatter fullStringFormatter] stringFromDate:collection.startDate];
+    }
+    cell.titleLabel.text = title;
     cell.detailLabel.text = [NSString stringWithFormat:@"%ld個の項目", (long)collection.estimatedAssetCount];
     
     return cell;
@@ -91,6 +100,14 @@
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return _minimumLineSpacing;
+}
+
+#pragma mark UICollectionViewDelegate
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    PHAssetCollection *assetCollection = _fetchResult[indexPath.row];
+    if (_didSelectCollectionBlock) {
+        _didSelectCollectionBlock(assetCollection);
+    }
 }
 
 @end

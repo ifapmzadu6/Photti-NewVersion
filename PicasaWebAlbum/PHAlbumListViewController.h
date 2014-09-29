@@ -10,6 +10,6 @@
 
 #import "PABaseViewController.h"
 
-@interface PHAlbumViewController : PABaseViewController
+@interface PHAlbumListViewController : PABaseViewController
 
 @end

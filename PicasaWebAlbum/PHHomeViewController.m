@@ -26,7 +26,8 @@
 #import "PHAlbumListDataSource.h"
 #import "PHMomentListDataSource.h"
 
-#import "PHAlbumViewController.h"
+#import "PHAlbumListViewController.h"
+#import "PHMomentListViewController.h"
 #import "PHPhotoListViewController.h"
 #import "PHPhotoPageViewController.h"
 
@@ -82,7 +83,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
@@ -90,6 +90,12 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _momentListDataSource = [PHMomentListDataSource new];
         _momentListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
         _momentListDataSource.minimumLineSpacing = 15.0f;
+        _momentListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        };
         
         _panoramaListDataSource = [PHPhotoDataSourceFactoryMethod makePanoramaListDataSource];
         _panoramaListDataSource.cellSize = CGSizeMake(270.0f, 100.0f);
@@ -98,7 +104,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection index:index];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
@@ -110,7 +115,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection index:index];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
@@ -122,7 +126,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection index:index];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
@@ -134,7 +137,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection index:index];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
@@ -146,7 +148,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection index:index];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
@@ -158,7 +159,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.allPhotoListDataSource.assetCollection index:index];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
@@ -297,7 +297,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PHAlbumViewController *viewController = [PHAlbumViewController new];
+                PHAlbumListViewController *viewController = [PHAlbumListViewController new];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
@@ -306,6 +306,12 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             cell.dataSource = _momentListDataSource;
             cell.delegate = _momentListDataSource;
             cell.titleLabel.text = @"モーメント";
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PHMomentListViewController *viewController = [PHMomentListViewController new];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Panorama) {
             [_panoramaListDataSource prepareForUse:cell.horizontalScrollView.collectionView];

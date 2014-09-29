@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PHAlbumViewController.h"
+#import "PHAlbumListViewController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -15,7 +15,7 @@
 #import "PATabBarAdsController.h"
 #import "PHPhotoListViewController.h"
 
-@interface PHAlbumViewController ()
+@interface PHAlbumListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
@@ -24,7 +24,7 @@
 
 @end
 
-@implementation PHAlbumViewController
+@implementation PHAlbumListViewController
 
 - (instancetype)init {
     self = [super init];
