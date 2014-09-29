@@ -64,6 +64,14 @@
     return dataSource;
 }
 
++ (PHPhotoListDataSource *)makePhotoListDataSourceWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate {
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
+    
+    PHPhotoListDataSource *dataSource = [[PHPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult];
+    return dataSource;
+}
 
 
 + (PHPhotoListDataSource *)makePhotoInAlbumListDataSourceWithCollection:(PHAssetCollection *)collection {

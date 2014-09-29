@@ -13,6 +13,7 @@
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PAString.h"
+#import "PADateFormatter.h"
 #import "PATabBarAdsController.h"
 #import "PWSettingsViewController.h"
 #import "PWSearchNavigationController.h"
@@ -199,7 +200,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     
     PHScrollBannerHeaderView *headerView = [PHScrollBannerHeaderView new];
     headerView.frame = CGRectMake(0.0f, 0.0f, 320.0f, 120.0f);
-    headerView.views = @[[self makeTodayBannerView], [self makeYesterdayBannerView], [self makeWeekBannerView], [self makeLastWeekBannerView]];
+    headerView.views = @[[self makeTodayBannerView], [self makeYesterdayBannerView], [self makeThisWeekBannerView], [self makeLastWeekBannerView]];
     _tableView.tableHeaderView = headerView;
     
     UILabel *footerView = [UILabel new];
@@ -469,6 +470,13 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     todayLabel.frame = CGRectMake(16.0f, 4.0f, CGRectGetWidth(view.bounds) - 16.0f*2.0f, 50.0f);
     [view addSubview:todayLabel];
     
+    UIButton *button = [UIButton new];
+    [button addTarget:self action:@selector(todayBannerViewAction:) forControlEvents:UIControlEventTouchUpInside];
+    button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    button.backgroundColor = [UIColor clearColor];
+    button.frame = view.frame;
+    [view addSubview:button];
+    
     return view;
 }
 
@@ -501,10 +509,17 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     yesterdayLabel.frame = CGRectMake(16.0f, 4.0f, CGRectGetWidth(view.bounds) - 16.0f*2.0f, 50.0f);
     [view addSubview:yesterdayLabel];
     
+    UIButton *button = [UIButton new];
+    [button addTarget:self action:@selector(yesterdayBannerViewAction:) forControlEvents:UIControlEventTouchUpInside];
+    button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    button.backgroundColor = [UIColor clearColor];
+    button.frame = view.frame;
+    [view addSubview:button];
+    
     return view;
 }
 
-- (UIView *)makeWeekBannerView {
+- (UIView *)makeThisWeekBannerView {
     UIView *view = [UIView new];
     view.frame = CGRectMake(0.0f, 0.0f, 320.0f, 120.0f);
     
@@ -525,12 +540,19 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     [view addSubview:gradientView];
     
     UILabel *weekLabel = [UILabel new];
-    weekLabel.text = NSLocalizedString(@"Week", nil);
+    weekLabel.text = NSLocalizedString(@"This Week", nil);
     weekLabel.font = [UIFont systemFontOfSize:40.0f];
     weekLabel.textColor = [UIColor whiteColor];
     weekLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     weekLabel.frame = CGRectMake(16.0f, 4.0f, CGRectGetWidth(view.bounds) - 16.0f*2.0f, 50.0f);
     [view addSubview:weekLabel];
+    
+    UIButton *button = [UIButton new];
+    [button addTarget:self action:@selector(thisWeekBannerViewAction:) forControlEvents:UIControlEventTouchUpInside];
+    button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    button.backgroundColor = [UIColor clearColor];
+    button.frame = view.frame;
+    [view addSubview:button];
     
     return view;
 }
@@ -564,7 +586,47 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     lastweekLabel.frame = CGRectMake(16.0f, 4.0f, CGRectGetWidth(view.bounds) - 16.0f*2.0f, 50.0f);
     [view addSubview:lastweekLabel];
     
+    UIButton *button = [UIButton new];
+    [button addTarget:self action:@selector(lastWeekBannerViewAction:) forControlEvents:UIControlEventTouchUpInside];
+    button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    button.backgroundColor = [UIColor clearColor];
+    button.frame = view.frame;
+    [view addSubview:button];
+    
     return view;
+}
+
+#pragma mark BannerAction
+- (void)todayBannerViewAction:(id)sender {
+    NSString *title = NSLocalizedString(@"Today", nil);
+    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60)]];
+    NSDate *endDate = [NSDate date];
+    PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
+    [self.navigationController pushViewController:viewController animated:YES];
+}
+
+- (void)yesterdayBannerViewAction:(id)sender {
+    NSString *title = NSLocalizedString(@"Yesterday", nil);
+    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*2)]];
+    NSDate *endDate = [NSDate dateWithTimeInterval:-(24*60*60) sinceDate:startDate];
+    PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
+    [self.navigationController pushViewController:viewController animated:YES];
+}
+
+- (void)lastWeekBannerViewAction:(id)sender {
+    NSString *title = NSLocalizedString(@"Last Week", nil);
+    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*14)]];
+    NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60*7) sinceDate:startDate];
+    PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
+    [self.navigationController pushViewController:viewController animated:YES];
+}
+
+- (void)thisWeekBannerViewAction:(id)sender {
+    NSString *title = NSLocalizedString(@"This Week", nil);
+    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*7)]];
+    NSDate *endDate = [NSDate date];
+    PHPhotoListViewController *viewController = [[PHPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 

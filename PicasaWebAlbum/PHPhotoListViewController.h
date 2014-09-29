@@ -19,11 +19,14 @@ typedef NS_ENUM(NSUInteger, PHPhotoListViewControllerType){
     PHPhotoListViewControllerType_Timelapse,
     PHPhotoListViewControllerType_Favorite,
     PHPhotoListViewControllerType_iCloud,
-    PHPhotoListViewControllerType_AllPhotos
+    PHPhotoListViewControllerType_AllPhotos,
+    PHPhotoListViewControllerType_Dates
 };
 
 @interface PHPhotoListViewController : PABaseViewController
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type;
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type title:(NSString *)title;
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type title:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate;
 
 @end

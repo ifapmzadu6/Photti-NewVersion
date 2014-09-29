@@ -14,6 +14,7 @@
 
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
+#import "PHAssetsManager.h"
 #import "PLCoreDataAPI.h"
 
 #import "PWPicasaAPI.h"
@@ -53,7 +54,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     self = [super init];
     if (self) {
         NSURLSessionConfiguration *config = nil;
-        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0f) {
+        if ([UIDevice currentDevice].systemVersion.floatValue >= 8.0f) {
             config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kPDTaskManagerBackgroundSessionIdentifier];
         }
         else {
@@ -76,12 +77,12 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 }
 
 - (BOOL)checkOKAddTask {
-    if ([ALAssetsLibrary authorizationStatus] != ALAuthorizationStatusAuthorized) {
+    if (!PHAssetsManager.isStatusAuthorized) {
         if (_notAllowedAccessPhotoLibraryAction) _notAllowedAccessPhotoLibraryAction();
         return NO;
     }
     
-    if (![PWOAuthManager isLogined]) {
+    if (!PWOAuthManager.isLogined) {
         if (_notLoginGoogleAccountAction) _notLoginGoogleAccountAction();
         return NO;
     }

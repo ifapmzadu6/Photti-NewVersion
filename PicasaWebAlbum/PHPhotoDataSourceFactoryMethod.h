@@ -19,6 +19,7 @@
 + (PHPhotoListDataSource *)makeVideoListDataSource;
 + (PHPhotoListDataSource *)makeCloudListDataSource;
 + (PHPhotoListDataSource *)makeFavoriteListDataSource;
++ (PHPhotoListDataSource *)makePhotoListDataSourceWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate;
 
 //+ (PHPhotoListDataSource *)makeMomentListDataSource;
 //+ (PHPhotoListDataSource *)makeMomentListDataSourceWithCollection:(PHAssetCollection *)collection;

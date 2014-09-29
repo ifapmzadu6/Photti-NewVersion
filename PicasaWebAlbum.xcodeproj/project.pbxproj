@@ -88,6 +88,7 @@
 		71649BF1195907A400009C1F /* PAInAppPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 71649BF0195907A400009C1F /* PAInAppPurchase.m */; };
 		7165408319D4800500960F70 /* PHPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165408219D4800500960F70 /* PHPhotoListViewController.m */; };
 		7165408719D8FF1300960F70 /* PHMomentListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165408619D8FF1200960F70 /* PHMomentListViewController.m */; };
+		7165408B19D93DC900960F70 /* PHAssetsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165408A19D93DC900960F70 /* PHAssetsManager.m */; };
 		71737EBA19A3193100CBE68A /* PANetworkActivityIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 71737EB919A3193100CBE68A /* PANetworkActivityIndicator.m */; };
 		717456E6196AB4F5003D2436 /* XmlReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 717456E5196AB4F5003D2436 /* XmlReader.m */; };
 		7177479F1936F5A8005179B6 /* PDModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7177479D1936F5A8005179B6 /* PDModel.xcdatamodeld */; };
@@ -361,6 +362,8 @@
 		7165408219D4800500960F70 /* PHPhotoListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHPhotoListViewController.m; sourceTree = "<group>"; };
 		7165408519D8FF1200960F70 /* PHMomentListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHMomentListViewController.h; sourceTree = "<group>"; };
 		7165408619D8FF1200960F70 /* PHMomentListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHMomentListViewController.m; sourceTree = "<group>"; };
+		7165408919D93DC900960F70 /* PHAssetsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHAssetsManager.h; sourceTree = "<group>"; };
+		7165408A19D93DC900960F70 /* PHAssetsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHAssetsManager.m; sourceTree = "<group>"; };
 		71737EB819A3193100CBE68A /* PANetworkActivityIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PANetworkActivityIndicator.h; sourceTree = "<group>"; };
 		71737EB919A3193100CBE68A /* PANetworkActivityIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PANetworkActivityIndicator.m; sourceTree = "<group>"; };
 		717456E4196AB4F5003D2436 /* XmlReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlReader.h; sourceTree = "<group>"; };
@@ -1256,6 +1259,15 @@
 			name = PHMomentListViewController;
 			sourceTree = "<group>";
 		};
+		7165408819D93DB500960F70 /* PHAssetsManager */ = {
+			isa = PBXGroup;
+			children = (
+				7165408919D93DC900960F70 /* PHAssetsManager.h */,
+				7165408A19D93DC900960F70 /* PHAssetsManager.m */,
+			);
+			name = PHAssetsManager;
+			sourceTree = "<group>";
+		};
 		71737EB719A318F800CBE68A /* PANetworkActivityIndicator */ = {
 			isa = PBXGroup;
 			children = (
@@ -2076,6 +2088,7 @@
 				71BD233D197683C80034CD3B /* PDModelObject+methods */,
 				714318C5193DF6DB0066A1F8 /* PDTaskManager */,
 				7191705719D105EB003BFFC3 /* PHAlbumDataSource */,
+				7165408819D93DB500960F70 /* PHAssetsManager */,
 				711C196D19D3133000FE3536 /* PHMomentListDataSource */,
 				711C19AE19D3DD4700FE3536 /* PHPhotoDataSourceFactoryMethod */,
 				711C19B219D3E07C00FE3536 /* PHPhotoListDataSource */,
@@ -2475,6 +2488,7 @@
 				7118F89519335B790016697E /* PWImagePickerLocaliCloudViewController.m in Sources */,
 				719D92541918D84700B75D8B /* PWAlbumViewCell.m in Sources */,
 				71958C5C191B933500CFC15F /* PWPhotoViewController.m in Sources */,
+				7165408B19D93DC900960F70 /* PHAssetsManager.m in Sources */,
 				71109BD1196FBC3700EEDAAE /* PLPhotoEditViewController.m in Sources */,
 				71C54F4019CD232500BCD9CF /* PHHomeViewController.m in Sources */,
 				7118F86B193318F40016697E /* PLPhotoListViewController.m in Sources */,

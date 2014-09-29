@@ -29,38 +29,66 @@
 @implementation PHPhotoListViewController
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type {
+    self = [self initWithAssetCollection:assetCollection type:type title:nil];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type title:(NSString *)title {
+    self = [self initWithAssetCollection:assetCollection type:type title:title startDate:nil endDate:nil];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type title:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate {
     self = [super init];
     if (self) {
         _type = type;
         
-        if (type == PHPhotoListViewControllerType_AllPhotos) {
-            self.title = NSLocalizedString(@"All Items", nil);
+        if (title) {
+            self.title = title;
         }
         else {
-            self.title = assetCollection.localizedTitle;
+            if (type == PHPhotoListViewControllerType_AllPhotos) {
+                self.title = NSLocalizedString(@"All Items", nil);
+            }
+            else {
+                self.title = assetCollection.localizedTitle;
+            }
         }
         
+        __weak typeof(self) wself = self;
         if (type == PHPhotoListViewControllerType_AllPhotos) {
             _photoListDataSource = [PHPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
             _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
-            __weak typeof(self) wself = self;
             _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                
                 PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:nil];
                 PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithResult:fetchResult index:index];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if (type == PHPhotoListViewControllerType_Dates) {
+            _photoListDataSource = [PHPhotoDataSourceFactoryMethod makePhotoListDataSourceWithStartDate:startDate endDate:endDate];
+            _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
+            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.photoListDataSource.assetCollection index:index];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
         else {
             _photoListDataSource = [PHPhotoDataSourceFactoryMethod makePhotoInAlbumListDataSourceWithCollection:assetCollection];
             _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
-            __weak typeof(self) wself = self;
             _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                
                 PHPhotoPageViewController *viewController = [[PHPhotoPageViewController alloc] initWithAssetCollection:sself.photoListDataSource.assetCollection index:index];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };

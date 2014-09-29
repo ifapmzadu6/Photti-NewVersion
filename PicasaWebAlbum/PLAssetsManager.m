@@ -35,14 +35,14 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
 }
 
 + (ALAssetsLibrary *)sharedLibrary {
-    return [[PLAssetsManager sharedManager] library];
+    return [[self sharedManager] library];
 }
 
 - (id)init {
     self = [super init];
     if (self) {
-        _library = [[ALAssetsLibrary alloc] init];
-                
+        _library = [ALAssetsLibrary new];
+        
         _autoCreateAlbumType = (PLAssetsManagerAutoCreateAlbumType)[[NSUserDefaults standardUserDefaults] integerForKey:kPLAssetsManagerAutoCreateAlbumTypeKey];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(assetsLibraryChangedNotification) name:ALAssetsLibraryChangedNotification object:nil];
@@ -399,7 +399,6 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
         [context deleteObject:photo];
     }
     outdatedPhotos = nil;
-    //NSLog(@"removed = %lu", (unsigned long)outdatedPhotos.count);
 }
 
 + (NSUInteger)makeNewAlbumsFromNewPhotosWithContext:(NSManagedObjectContext *)context enumurateDate:(NSDate *)enumurateDate {
