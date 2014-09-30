@@ -139,7 +139,10 @@
     NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
     NSIndexPath *indexPath = nil;
     if (indexPaths.count > 0) {
-        indexPath = indexPaths[indexPaths.count / 2];
+        NSIndexPath *firstIndexPath = indexPaths.firstObject;
+        if (!(firstIndexPath.item == 0 && firstIndexPath.section == 0)) {
+            indexPath = indexPaths[indexPaths.count / 2];
+        }
     }
     
     PATabBarController *tabBarViewController = (PATabBarController *)self.tabBarController;

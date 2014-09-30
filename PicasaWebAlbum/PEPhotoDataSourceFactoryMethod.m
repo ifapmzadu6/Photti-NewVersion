@@ -67,6 +67,7 @@
 + (PEPhotoListDataSource *)makePhotoListDataSourceWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate {
     PHFetchOptions *options = [PHFetchOptions new];
     options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
     PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
     
     PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult];

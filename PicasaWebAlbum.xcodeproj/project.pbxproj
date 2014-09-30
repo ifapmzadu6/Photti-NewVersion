@@ -198,7 +198,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0A47401350C0473EA84AEC00 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		2E6591034724CD74C9320B7E /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		710461801917725200DF369D /* PWPicasaParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPicasaParser.h; sourceTree = "<group>"; };
 		710461811917725200DF369D /* PWPicasaParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPicasaParser.m; sourceTree = "<group>"; };
 		710461831917742A00DF369D /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -542,6 +542,7 @@
 		71F056D619D3F5C70072C2F7 /* PEPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoViewController.h; sourceTree = "<group>"; };
 		71F056D719D3F5C70072C2F7 /* PEPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoViewController.m; sourceTree = "<group>"; };
 		BB88A718BA2F4C6E86D19891 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E99444F6E64E08CB04EE30C7 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -583,6 +584,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B66A6FFBBD2500CE17242ED /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2E6591034724CD74C9320B7E /* Pods.debug.xcconfig */,
+				E99444F6E64E08CB04EE30C7 /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		710461851917748000DF369D /* PWModelObject */ = {
 			isa = PBXGroup;
 			children = (
@@ -1972,7 +1982,7 @@
 				71E8852919115C7E005A78E0 /* PicasaWebAlbumTests */,
 				71E8850019115C7E005A78E0 /* Frameworks */,
 				71E884FF19115C7E005A78E0 /* Products */,
-				0A47401350C0473EA84AEC00 /* Pods.xcconfig */,
+				0B66A6FFBBD2500CE17242ED /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2370,7 +2380,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		598158475B3A4AE78BA466A4 /* Check Pods Manifest.lock */ = {
@@ -2682,65 +2692,19 @@
 		};
 		71E8853419115C7E005A78E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0A47401350C0473EA84AEC00 /* Pods.xcconfig */;
+			baseConfigurationReference = 2E6591034724CD74C9320B7E /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = PicasaWebAlbum/PicasaWebAlbum.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)",
+					"$(inherited)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PicasaWebAlbum/PicasaWebAlbum-Prefix.pch";
-				HEADER_SEARCH_PATHS = (
-					"\"${PODS_ROOT}/Headers\"",
-					"\"${PODS_ROOT}/Headers/FLAnimatedImage\"",
-					"\"${PODS_ROOT}/Headers/GData\"",
-					"\"${PODS_ROOT}/Headers/GTMHTTPFetcher\"",
-					"\"${PODS_ROOT}/Headers/Google-Mobile-Ads-SDK\"",
-					"\"${PODS_ROOT}/Headers/GoogleAnalytics-iOS-SDK\"",
-					"\"${PODS_ROOT}/Headers/KKStaticTableView\"",
-					"\"${PODS_ROOT}/Headers/LXReorderableCollectionViewFlowLayout\"",
-					"\"${PODS_ROOT}/Headers/Reachability\"",
-					"\"${PODS_ROOT}/Headers/SDWebImage\"",
-					"\"${PODS_ROOT}/Headers/SFHFKeychainUtils\"",
-					"\"${PODS_ROOT}/Headers/UAAppReviewManager\"",
-					"\"${PODS_ROOT}/Headers/gtm-oauth2\"",
-					"\"$(SDKROOT)/usr/include/libxml2\"",
-					"$(SDKROOT)/usr/include/libz",
-				);
 				INFOPLIST_FILE = "PicasaWebAlbum/PicasaWebAlbum-Info.plist";
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-lxml2",
-					"-lGoogleAdMobAds",
-					"-lGoogleAnalyticsServices",
-					"-lsqlite3",
-					"-lz",
-					"-framework",
-					AVFoundation,
-					"-framework",
-					AudioToolbox,
-					"-framework",
-					CFNetwork,
-					"-framework",
-					CoreData,
-					"-framework",
-					CoreGraphics,
-					"-framework",
-					CoreTelephony,
-					"-framework",
-					Foundation,
-					"-framework",
-					MessageUI,
-					"-framework",
-					StoreKit,
-					"-framework",
-					SystemConfiguration,
-					"-framework",
-					UIKit,
-					"-weak_framework",
-					AdSupport,
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2748,65 +2712,19 @@
 		};
 		71E8853519115C7E005A78E0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0A47401350C0473EA84AEC00 /* Pods.xcconfig */;
+			baseConfigurationReference = E99444F6E64E08CB04EE30C7 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = PicasaWebAlbum/PicasaWebAlbum.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)",
+					"$(inherited)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PicasaWebAlbum/PicasaWebAlbum-Prefix.pch";
-				HEADER_SEARCH_PATHS = (
-					"\"${PODS_ROOT}/Headers\"",
-					"\"${PODS_ROOT}/Headers/FLAnimatedImage\"",
-					"\"${PODS_ROOT}/Headers/GData\"",
-					"\"${PODS_ROOT}/Headers/GTMHTTPFetcher\"",
-					"\"${PODS_ROOT}/Headers/Google-Mobile-Ads-SDK\"",
-					"\"${PODS_ROOT}/Headers/GoogleAnalytics-iOS-SDK\"",
-					"\"${PODS_ROOT}/Headers/KKStaticTableView\"",
-					"\"${PODS_ROOT}/Headers/LXReorderableCollectionViewFlowLayout\"",
-					"\"${PODS_ROOT}/Headers/Reachability\"",
-					"\"${PODS_ROOT}/Headers/SDWebImage\"",
-					"\"${PODS_ROOT}/Headers/SFHFKeychainUtils\"",
-					"\"${PODS_ROOT}/Headers/UAAppReviewManager\"",
-					"\"${PODS_ROOT}/Headers/gtm-oauth2\"",
-					"\"$(SDKROOT)/usr/include/libxml2\"",
-					"$(SDKROOT)/usr/include/libz",
-				);
 				INFOPLIST_FILE = "PicasaWebAlbum/PicasaWebAlbum-Info.plist";
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-lxml2",
-					"-lGoogleAdMobAds",
-					"-lGoogleAnalyticsServices",
-					"-lsqlite3",
-					"-lz",
-					"-framework",
-					AVFoundation,
-					"-framework",
-					AudioToolbox,
-					"-framework",
-					CFNetwork,
-					"-framework",
-					CoreData,
-					"-framework",
-					CoreGraphics,
-					"-framework",
-					CoreTelephony,
-					"-framework",
-					Foundation,
-					"-framework",
-					MessageUI,
-					"-framework",
-					StoreKit,
-					"-framework",
-					SystemConfiguration,
-					"-framework",
-					UIKit,
-					"-weak_framework",
-					AdSupport,
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

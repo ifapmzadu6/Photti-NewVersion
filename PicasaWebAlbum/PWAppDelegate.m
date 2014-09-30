@@ -27,11 +27,9 @@
 #import "PWNavigationController.h"
 #import "PLNavigationController.h"
 #import "PDNavigationController.h"
-#import "PENavigationController.h"
+//#import "PENavigationController.h"
 #import "PATabBarAdsController.h"
 #import "PAMigrationViewController.h"
-
-@import Photos;
 
 @implementation PWAppDelegate
 
@@ -93,20 +91,26 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 }
 
 - (UIViewController *)tabBarController {
-    PENavigationController *phNavigationController = [PENavigationController new];
+    // Renewal
+//    PENavigationController *phNavigationController = [PENavigationController new];
+    
     PLNavigationController *localNavigationController = [PLNavigationController new];
     PWNavigationController *webNavigationViewController = [PWNavigationController new];
     PDNavigationController *taskNavigationController = [PDNavigationController new];
     
-//    NSUInteger initialTabPageIndex = 1;
-    NSUInteger initialTabPageIndex = 0;
+    NSUInteger initialTabPageIndex = 1;
+    // Renewal
+//    NSUInteger initialTabPageIndex = 0;
+    
     if ([ALAssetsLibrary authorizationStatus] == kCLAuthorizationStatusAuthorized && ![PWOAuthManager isLogined]) {
         initialTabPageIndex = 0;
     }
-//    NSArray *viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
-//    NSArray *colors = @[[PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor], [PAColors getColor:PAColorsTypeTintUploadColor]];
-    NSArray *viewControllers = @[phNavigationController, localNavigationController, webNavigationViewController, taskNavigationController];
-    NSArray *colors = @[[UIColor colorWithWhite:0.5f alpha:1.0f], [PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor], [PAColors getColor:PAColorsTypeTintUploadColor]];
+    NSArray *viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
+    NSArray *colors = @[[PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor], [PAColors getColor:PAColorsTypeTintUploadColor]];
+    
+    // Renewal
+//    NSArray *viewControllers = @[phNavigationController, localNavigationController, webNavigationViewController, taskNavigationController];
+//    NSArray *colors = @[[UIColor colorWithWhite:0.5f alpha:1.0f], [PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor], [PAColors getColor:PAColorsTypeTintUploadColor]];
     
     PATabBarAdsController *tabBarController = [[PATabBarAdsController alloc] initWithIndex:initialTabPageIndex viewControllers:viewControllers colors:colors];
     tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];

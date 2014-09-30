@@ -68,7 +68,6 @@
     [self setUpTaskManagerSection];
     [self setUpInAppPurchaseSection];
     [self setUpAboutSection];
-    [self setUpOtherAppSection];
     
     [self setInAppPurchaseBlocks];
 }
@@ -329,38 +328,6 @@
         viewController.title = NSLocalizedString(@"Open Source License", nil);
         [sself.navigationController pushViewController:viewController animated:true];
     }];
-}
-
-#pragma mark OtherAppSection
-- (void)setUpOtherAppSection {
-    NSString *sectionTitle = NSLocalizedString(@"Other Apps", nil);
-    [_tableView addSectionWithTitle:sectionTitle];
-    
-    UIColor *tintColor = self.navigationController.navigationBar.tintColor;
-    
-    __weak typeof(self) wself = self;
-    [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeSubTitle cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.imageView.image = [UIImage imageNamed:@"VideoCast"];
-        cell.textLabel.text = @"SmartVideoCast";
-        cell.detailTextLabel.text = @"Made for Chromecast.";
-        cell.accessoryView = [sself roundedButtonWithTitle:NSLocalizedString(@"OPEN", nil) tintColor:tintColor action:@selector(openVideoCastiTunesStore)];
-        
-    } cellHeight:50.0f didSelect:nil];
-    [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeSubTitle cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.imageView.image = [UIImage imageNamed:@"Pixitti"];
-        cell.textLabel.text = @"Pixitti";
-        cell.detailTextLabel.text = @"Pixiv viewer.";
-        cell.accessoryView = [sself roundedButtonWithTitle:NSLocalizedString(@"OPEN", nil) tintColor:tintColor action:@selector(openPixittiiTunesStore)];
-        
-    } cellHeight:50.0f didSelect:nil];
 }
 
 #pragma mark Open iTunes Store
