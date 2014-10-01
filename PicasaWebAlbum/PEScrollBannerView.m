@@ -74,6 +74,7 @@ static NSUInteger KPHScrollBannerViewMaxNumberOfRows = 20000;
     }
     _views = views;
     
+    _collectionView.scrollEnabled = (views.count >= 2) ? YES : NO;
     [_collectionView reloadData];
 }
 
@@ -155,7 +156,7 @@ static NSUInteger KPHScrollBannerViewMaxNumberOfRows = 20000;
     else {
         _ticktock = 0;
         
-        if (_shouldAnimate) {
+        if (_shouldAnimate && (_views.count >= 2)) {
             NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
                 return [obj1 compare:obj2];
             }];

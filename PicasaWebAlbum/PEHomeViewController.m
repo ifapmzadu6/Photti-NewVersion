@@ -477,29 +477,25 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate date]];
         NSDate *endDate = [NSDate date];
         UIView *view = [self makeBannerViewWithTitle:title startDate:startDate endDate:endDate];
-        if (view)
-            [views addObject:view];
+        if (view) [views addObject:view];
     } {
         NSString *title = NSLocalizedString(@"Yesterday", nil);
         NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60)]];
         NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60) sinceDate:startDate];
         UIView *view = [self makeBannerViewWithTitle:title startDate:startDate endDate:endDate];
-        if (view)
-            [views addObject:view];
+        if (view) [views addObject:view];
     } {
         NSString *title = NSLocalizedString(@"This Week", nil);
         NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*7)]];
         NSDate *endDate = [NSDate date];
         UIView *view = [self makeBannerViewWithTitle:title startDate:startDate endDate:endDate];
-        if (view)
-            [views addObject:view];
+        if (view) [views addObject:view];
     } {
         NSString *title = NSLocalizedString(@"Last Week", nil);
         NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*14)]];
         NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60*7) sinceDate:startDate];
         UIView *view = [self makeBannerViewWithTitle:title startDate:startDate endDate:endDate];
-        if (view)
-            [views addObject:view];
+        if (view) [views addObject:view];
     }
     return views;
 }
@@ -535,9 +531,10 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 
 - (PEBannerContentView *)noContentBannerView {
     PEBannerContentView *bannerView = [PEBannerContentView new];
-    
     bannerView.titleLabel.text = NSLocalizedString(@"Let's take a picture.", nil);
-    
+    bannerView.titleLabel.font = [UIFont systemFontOfSize:30.0f];
+    bannerView.gradientView.startColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+    bannerView.gradientView.endColor = [UIColor colorWithRed:129.0f/255.0f green:243.0f/255.0f blue:253.0f/255.0f alpha:1.0f];
     return bannerView;
 }
 

@@ -8,10 +8,13 @@
 
 @import UIKit;
 
+#import "PAGradientView.h"
+
 @interface PEBannerContentView : UIView
 
 @property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UILabel *titleLabel;
+@property (strong, nonatomic) PAGradientView *gradientView;
 
 @property (copy, nonatomic) void (^touchUpInsideActionBlock)();
 

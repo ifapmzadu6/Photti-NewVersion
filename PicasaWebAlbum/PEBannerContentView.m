@@ -8,11 +8,8 @@
 
 #import "PEBannerContentView.h"
 
-#import "PAGradientView.h"
-
 @interface PEBannerContentView ()
 
-@property (strong, nonatomic) PAGradientView *gradientView;
 @property (strong, nonatomic) UIButton *overrayButton;
 
 @end
@@ -31,7 +28,6 @@
         _gradientView = [PAGradientView new];
         _gradientView.startColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
         _gradientView.endColor = [UIColor clearColor];
-        _gradientView.backgroundColor = [UIColor clearColor];
         [self addSubview:_gradientView];
         
         _titleLabel = [UILabel new];

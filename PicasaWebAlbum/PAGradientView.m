@@ -10,6 +10,14 @@
 
 @implementation PAGradientView
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.backgroundColor = [UIColor clearColor];
+    }
+    return self;
+}
+
 #pragma mark methods
 - (void)setStartColor:(UIColor *)startColor {
     _startColor = startColor;
@@ -19,6 +27,18 @@
 
 - (void)setEndColor:(UIColor *)endColor {
     _endColor = endColor;
+    
+    [self setNeedsDisplay];
+}
+
+- (void)setDirection:(kPAGradientViewDirection)direction {
+    _direction = direction;
+    
+    [self setNeedsDisplay];
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
     
     [self setNeedsDisplay];
 }
@@ -33,7 +53,7 @@
 - (void)drawRect:(CGRect)rect {
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    CGRect shadow = CGRectMake(0.0f, 0.0f, CGRectGetMaxX(rect), 80.0f);
+    CGRect shadow = CGRectMake(0.0f, 0.0f, CGRectGetWidth(rect), CGRectGetHeight(rect));
     CGFloat start_red, start_green, start_blue, start_alpha;
     CGFloat end_red, end_green, end_blue, end_alpha;
     [_startColor getRed:&start_red green:&start_green blue:&start_blue alpha:&start_alpha];
