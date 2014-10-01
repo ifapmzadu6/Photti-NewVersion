@@ -13,6 +13,6 @@
 @property (strong, nonatomic) NSArray *views;
 @property (nonatomic, readonly) NSUInteger index;
 @property (nonatomic) BOOL shouldAnimate;
-@property (nonatomic) CGFloat animateInterval;  // default: 10 sec
+@property (nonatomic) CGFloat animateInterval;  // default: 7 sec
 
 @end

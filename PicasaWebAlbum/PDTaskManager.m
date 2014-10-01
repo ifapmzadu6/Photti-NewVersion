@@ -251,6 +251,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     }];
 }
 
+- (void)addTaskFromAssetCollection:(PHAssetCollection *)assetCollection toWebAlbum:(PWAlbumObject *)webAlbum completion:(void (^)(NSError *))completion {
+    
+}
+
 - (void)countOfAllPhotosInTaskWithCompletion:(void (^)(NSUInteger count, NSError *error))completion {
     if (!completion) return;
     

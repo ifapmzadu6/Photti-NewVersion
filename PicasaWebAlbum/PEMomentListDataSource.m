@@ -81,7 +81,14 @@
     
     NSString *title = collection.localizedTitle;
     if (!title) {
-        title = [[PADateFormatter fullStringFormatter] stringFromDate:collection.startDate];
+        NSString *startDate = [[PADateFormatter mmmddFormatter] stringFromDate:collection.startDate];
+        NSString *endDate = [[PADateFormatter mmmddFormatter] stringFromDate:collection.endDate];
+        if ([startDate isEqualToString:endDate]) {
+            title = startDate;
+        }
+        else {
+            title = [NSString stringWithFormat:@"%@ - %@", startDate, endDate];
+        }
     }
     cell.titleLabel.text = title;
     cell.detailLabel.text = [NSString stringWithFormat:@"%ld個の項目", (long)collection.estimatedAssetCount];

@@ -610,7 +610,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 #pragma mark BannerAction
 - (void)todayBannerViewAction:(id)sender {
     NSString *title = NSLocalizedString(@"Today", nil);
-    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60)]];
+    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate date]];
     NSDate *endDate = [NSDate date];
     PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
     [self.navigationController pushViewController:viewController animated:YES];
@@ -618,8 +618,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 
 - (void)yesterdayBannerViewAction:(id)sender {
     NSString *title = NSLocalizedString(@"Yesterday", nil);
-    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*2)]];
-    NSDate *endDate = [NSDate dateWithTimeInterval:-(24*60*60) sinceDate:startDate];
+    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60)]];
+    NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60) sinceDate:startDate];
     PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
     [self.navigationController pushViewController:viewController animated:YES];
 }

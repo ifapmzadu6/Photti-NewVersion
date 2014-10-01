@@ -15,6 +15,8 @@
 
 @interface PECategoryViewCell ()
 
+@property (strong, nonatomic) UIImageView *greaterThanImageView;
+
 @end
 
 @implementation PECategoryViewCell
@@ -62,9 +64,17 @@
     _moreButton = [UIButton new];
     [_moreButton addTarget:self action:@selector(moreButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _moreButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
-    [_moreButton setTitle:@"全て見る>" forState:UIControlStateNormal];
+    [_moreButton setTitle:@"全て見る" forState:UIControlStateNormal];
     [_moreButton setTitleColor:[PAColors getColor:PAColorsTypeTextLightSubColor] forState:UIControlStateNormal];
+    _moreButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    _moreButton.titleEdgeInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 7.0f);
     [self.contentView addSubview:_moreButton];
+    
+    _greaterThanImageView = [UIImageView new];
+    _greaterThanImageView.image = [[UIImage imageNamed:@"GreaterThan"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _greaterThanImageView.tintColor = [PAColors getColor:PAColorsTypeTextLightSubColor];
+    _greaterThanImageView.frame = CGRectMake(0.0f, 0.0f, 7.0f, 10.0f);
+    [self.contentView addSubview:_greaterThanImageView];
     
     _horizontalScrollView = [PEHorizontalScrollView new];
     [_horizontalScrollView.collectionView registerClass:[PEAlbumViewCell class] forCellWithReuseIdentifier:@"PHAlbumViewCell"];
@@ -80,7 +90,9 @@
     
     _titleLabel.frame = CGRectMake(15.0f, 20.0f, 200.0f, 20.0f);
     [_moreButton sizeToFit];
-    _moreButton.frame = CGRectMake(CGRectGetWidth(rect) - CGRectGetWidth(_moreButton.bounds) - 15.0f, 20.0f, CGRectGetWidth(_moreButton.bounds), 20.0f);
+    CGFloat moreButtonWidth = CGRectGetWidth(_moreButton.bounds) + 50.0f;
+    _moreButton.frame = CGRectMake(CGRectGetWidth(rect) - moreButtonWidth - 15.0f, 17.0f, moreButtonWidth, 26.0f);
+    _greaterThanImageView.frame = CGRectMake(CGRectGetMaxX(_moreButton.frame)-CGRectGetWidth(_greaterThanImageView.frame), CGRectGetMinY(_moreButton.frame)+(CGRectGetHeight(_moreButton.frame)-CGRectGetHeight(_greaterThanImageView.frame))/2.0f, CGRectGetWidth(_greaterThanImageView.frame), CGRectGetHeight(_greaterThanImageView.frame));
     _horizontalScrollView.frame = CGRectMake(0.0f, 38.0f, CGRectGetWidth(rect), CGRectGetHeight(rect) - 38.0f);
 }
 

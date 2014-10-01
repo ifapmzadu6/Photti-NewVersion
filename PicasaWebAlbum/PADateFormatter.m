@@ -64,8 +64,7 @@
     }
     
     NSCalendar *calendar = [self calendar];
-	NSDateComponents *components = [calendar components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit
-                                               fromDate:date];
+	NSDateComponents *components = [calendar components:(NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:date];
 	return [calendar dateFromComponents:components];
 }
 
@@ -75,8 +74,7 @@
     }
     
     NSCalendar *calendar = [self calendar];
-	NSDateComponents *components = [calendar components:NSYearCalendarUnit
-                                               fromDate:date];
+	NSDateComponents *components = [calendar components:NSYearCalendarUnit fromDate:date];
 	return [calendar dateFromComponents:components];
 }
 

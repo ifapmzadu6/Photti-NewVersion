@@ -192,7 +192,7 @@
     
     NSDate *date = [PADateTimestamp dateForTimestamp:_timestamp.stringValue];
     _datePickerView = [[PWDatePickerView alloc] initWithDate:date];
-    _datePickerView.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    _datePickerView.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
     CGRect rect = self.view.bounds;
     CGFloat dHeight = 216.0f + 44.0f;
     if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {

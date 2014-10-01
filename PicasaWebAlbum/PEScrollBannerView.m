@@ -14,6 +14,7 @@ static NSUInteger KPHScrollBannerViewMaxNumberOfRows = 20000;
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UIView *buttomLineView;
+@property (nonatomic) NSUInteger ticktock;
 
 @end
 
@@ -41,12 +42,10 @@ static NSUInteger KPHScrollBannerViewMaxNumberOfRows = 20000;
         [self addSubview:_buttomLineView];
         
         _shouldAnimate = YES;
-        _animateInterval = 10.0f;
+        _animateInterval = 7.0f;
         _index = KPHScrollBannerViewMaxNumberOfRows/2;
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_animateInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self animateToNextCell];
-        });
+        [self animateToNextCell];
     }
     return self;
 }
@@ -76,6 +75,12 @@ static NSUInteger KPHScrollBannerViewMaxNumberOfRows = 20000;
     _views = views;
     
     [_collectionView reloadData];
+}
+
+- (void)setShouldAnimate:(BOOL)shouldAnimate {
+    _shouldAnimate = shouldAnimate;
+    
+    _ticktock = 0;
 }
 
 #pragma mark UICollectionViewDataSource
@@ -129,38 +134,48 @@ static NSUInteger KPHScrollBannerViewMaxNumberOfRows = 20000;
 #pragma mark UIScrollViewDelegate
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     _shouldAnimate = NO;
+    _ticktock = 0;
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
     _shouldAnimate = YES;
+    _ticktock = 0;
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     _shouldAnimate = YES;
+    _ticktock = 0;
 }
 
 #pragma mark Animation
 - (void)animateToNextCell {
-    if (_shouldAnimate) {
-        NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
-            return [obj1 compare:obj2];
-        }];
-        if (indexPaths.count > 0) {
-            NSIndexPath *indexPath = indexPaths[indexPaths.count / 2];
-            
-            NSIndexPath *nextIndexPath = nil;
-            if (indexPath.row == KPHScrollBannerViewMaxNumberOfRows) {
-                nextIndexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+    if (_ticktock < _animateInterval) {
+        _ticktock++;
+    }
+    else {
+        _ticktock = 0;
+        
+        if (_shouldAnimate) {
+            NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {
+                return [obj1 compare:obj2];
+            }];
+            if (indexPaths.count > 0) {
+                NSIndexPath *indexPath = indexPaths[indexPaths.count / 2];
+                
+                NSIndexPath *nextIndexPath = nil;
+                if (indexPath.row == KPHScrollBannerViewMaxNumberOfRows) {
+                    nextIndexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+                }
+                else {
+                    nextIndexPath = [NSIndexPath indexPathForItem:indexPath.row + 1 inSection:0];
+                }
+                
+                [_collectionView scrollToItemAtIndexPath:nextIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
             }
-            else {
-                nextIndexPath = [NSIndexPath indexPathForItem:indexPath.row + 1 inSection:0];
-            }
-            
-            [_collectionView scrollToItemAtIndexPath:nextIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
         }
     }
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_animateInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self animateToNextCell];
     });
 }
