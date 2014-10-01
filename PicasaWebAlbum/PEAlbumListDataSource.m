@@ -26,7 +26,7 @@
     if (self) {
         [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
         
-        _fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:0];
+        [self loadData];
     }
     return self;
 }
@@ -44,7 +44,11 @@
 
 #pragma mark PHPhotoLibraryChangeObserver
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
-    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self loadData];
+        
+        [_collectionView reloadData];
+    });
 }
 
 #pragma mark UICollectionViewDelegate
@@ -111,6 +115,10 @@
     if (_didSelectCollectionBlock) {
         _didSelectCollectionBlock(collection);
     }
+}
+
+- (void)loadData {
+    _fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:0];
 }
 
 @end

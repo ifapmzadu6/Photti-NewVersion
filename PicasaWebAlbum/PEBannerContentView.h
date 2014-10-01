@@ -15,6 +15,7 @@
 @property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) PAGradientView *gradientView;
+@property (nonatomic) UIEdgeInsets gradientViewInsets;
 
 @property (copy, nonatomic) void (^touchUpInsideActionBlock)();
 

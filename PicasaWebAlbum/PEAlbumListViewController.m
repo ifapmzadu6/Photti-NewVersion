@@ -8,6 +8,8 @@
 
 #import "PEAlbumListViewController.h"
 
+@import Photos;
+
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PEPhotoViewCell.h"
@@ -15,12 +17,14 @@
 #import "PATabBarAdsController.h"
 #import "PEPhotoListViewController.h"
 
-@interface PEAlbumListViewController ()
+@interface PEAlbumListViewController () <UITextFieldDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
 @property (strong, nonatomic) PEAlbumListDataSource *albumListDataSource;
 @property (nonatomic) BOOL isSelectMode;
+
+@property (weak, nonatomic) UIAlertAction *saveAlertAction;
 
 @end
 
@@ -39,7 +43,6 @@
         _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
@@ -72,11 +75,10 @@
         }
     }
     
-    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction:)];
     UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PAIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
+    NSArray *toolbarItems =  @[flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isToolbarHideen]) {
@@ -120,16 +122,48 @@
 }
 
 #pragma mark UIBarButtonAction
-- (void)actionBarButtonAction:(id)sender {
-    
-}
-
 - (void)addBarButtonAction:(id)sender {
+    NSString *title = NSLocalizedString(@"New Album", nil);
+    NSString *message = NSLocalizedString(@"Enter a name for this album.", nil);
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = NSLocalizedString(@"Title", nil);
+        textField.delegate = self;
+    }];
+    UIAlertAction *cancelAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+    [alertController addAction:cancelAlertAction];
+    __weak typeof(self) wself = self;
+    _saveAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Save", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        UITextField *textFields = alertController.textFields.firstObject;
+        [sself makeNewAlbumWithTitle:textFields.text];
+    }];
+    _saveAlertAction.enabled = NO;
+    [alertController addAction:_saveAlertAction];
     
+    [self.tabBarController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)selectBarButtonAction:(id)sender {
     
+}
+
+#pragma mark UITextFieldDelegate
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    NSString *text = [textField.text stringByReplacingCharactersInRange:range withString:string];
+    _saveAlertAction.enabled = (text.length > 0) ? YES : NO;
+    
+    return YES;
+}
+
+#pragma mark MakeNewAlbum
+- (void)makeNewAlbumWithTitle:(NSString *)title {
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title];
+    } completionHandler:^(BOOL success, NSError *error) {
+        
+    }];
 }
 
 @end

@@ -526,6 +526,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         if (!scontentView) return;
         scontentView.imageView.image = result;
     }];
+    contentView.gradientViewInsets = UIEdgeInsetsMake(0.0f, 0.0f, 40.0f, 0.0f);
     return contentView;
 }
 

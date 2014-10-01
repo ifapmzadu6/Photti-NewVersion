@@ -48,8 +48,8 @@
     CGRect rect = self.bounds;
     
     _imageView.frame = rect;
-    _gradientView.frame = rect;
     _overrayButton.frame = rect;
+    _gradientView.frame = CGRectMake(_gradientViewInsets.left, _gradientViewInsets.top, CGRectGetWidth(rect) - _gradientViewInsets.left - _gradientViewInsets.right, CGRectGetHeight(rect) - _gradientViewInsets.top - _gradientViewInsets.bottom);
     _titleLabel.frame = CGRectMake(16.0f, 4.0f, CGRectGetWidth(rect) - 16.0f*2.0f, 50.0f);
 }
 
