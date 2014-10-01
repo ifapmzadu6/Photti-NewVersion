@@ -76,6 +76,7 @@
 		714318D8193DF6F70066A1F8 /* PDTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 714318D7193DF6F70066A1F8 /* PDTaskManager.m */; };
 		714318DC193E04300066A1F8 /* PDTaskManagerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 714318DB193E04300066A1F8 /* PDTaskManagerViewController.m */; };
 		71433D9319B6C4950046F37C /* PWModel.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = 71433D9219B6C4950046F37C /* PWModel.xcmappingmodel */; };
+		7149D2D319DC2CFE004BD7A7 /* NSIndexSet+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 7149D2D219DC2CFE004BD7A7 /* NSIndexSet+methods.m */; };
 		714F53BC196ECEC500FB8992 /* PWMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 714F53BB196ECEC500FB8992 /* PWMapViewController.m */; };
 		71502F1019349E8A0006979B /* PWImagePickerLocalPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71502F0F19349E8A0006979B /* PWImagePickerLocalPhotoListViewController.m */; };
 		715943C11957C1F3009315E5 /* PLNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 715943C01957C1F3009315E5 /* PLNavigationController.m */; };
@@ -334,6 +335,8 @@
 		714318DB193E04300066A1F8 /* PDTaskManagerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskManagerViewController.m; sourceTree = "<group>"; };
 		71433D9119B6C4560046F37C /* PWModel 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PWModel 2.xcdatamodel"; sourceTree = "<group>"; };
 		71433D9219B6C4950046F37C /* PWModel.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = PWModel.xcmappingmodel; sourceTree = "<group>"; };
+		7149D2D119DC2CFE004BD7A7 /* NSIndexSet+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSIndexSet+methods.h"; sourceTree = "<group>"; };
+		7149D2D219DC2CFE004BD7A7 /* NSIndexSet+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSIndexSet+methods.m"; sourceTree = "<group>"; };
 		714F53BA196ECEC500FB8992 /* PWMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWMapViewController.h; sourceTree = "<group>"; };
 		714F53BB196ECEC500FB8992 /* PWMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWMapViewController.m; sourceTree = "<group>"; };
 		71502F0E19349E8A0006979B /* PWImagePickerLocalPhotoListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWImagePickerLocalPhotoListViewController.h; sourceTree = "<group>"; };
@@ -1189,6 +1192,15 @@
 				714318D7193DF6F70066A1F8 /* PDTaskManager.m */,
 			);
 			name = PDTaskManager;
+			sourceTree = "<group>";
+		};
+		7149D2D019DC2CB1004BD7A7 /* NSIndexSet+methods */ = {
+			isa = PBXGroup;
+			children = (
+				7149D2D119DC2CFE004BD7A7 /* NSIndexSet+methods.h */,
+				7149D2D219DC2CFE004BD7A7 /* NSIndexSet+methods.m */,
+			);
+			name = "NSIndexSet+methods";
 			sourceTree = "<group>";
 		};
 		714F53B9196ECEAD00FB8992 /* PWMapViewController */ = {
@@ -2094,6 +2106,7 @@
 				71BD235919779E1C0034CD3B /* ALAsset+methods */,
 				71BDE39D1998FA8100853E85 /* NSAttributedString+methods */,
 				715A31B5198FD5F6002A0A37 /* NSFileManager+methods */,
+				7149D2D019DC2CB1004BD7A7 /* NSIndexSet+methods */,
 				715A30FF1989372A002A0A37 /* NSURLResponse+methods */,
 				711AF61C1993AA4400640D2D /* PAAlbumCollectionViewFlowLayout */,
 				71A2542219190EBD009914F7 /* PAColors */,
@@ -2466,6 +2479,7 @@
 				7124F13F19B6F85E00DFE49E /* PAMigrationViewController.m in Sources */,
 				7191705E19D1223E003BFFC3 /* PEAlbumViewCell.m in Sources */,
 				71A2546819195259009914F7 /* PWPhotoViewCell.m in Sources */,
+				7149D2D319DC2CFE004BD7A7 /* NSIndexSet+methods.m in Sources */,
 				712E03BB1920BA6E0035D9E0 /* PWPhotoObject+Methods.m in Sources */,
 				7118F88F19335B630016697E /* PWImagePickerLocalAllPhotoViewController.m in Sources */,
 				71BD235219778C020034CD3B /* PDBasePhotoObject.m in Sources */,

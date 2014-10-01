@@ -9,6 +9,7 @@
 #import "PEAlbumListDataSource.h"
 
 #import "PEAlbumViewCell.h"
+#import "NSIndexSet+methods.h"
 
 @import Photos;
 
@@ -44,10 +45,28 @@
 
 #pragma mark PHPhotoLibraryChangeObserver
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
+    PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:_fetchResult];
+    if (!changeDetails) {
+        return;
+    }
+    NSArray *deleteIndexPaths = [changeDetails.removedIndexes indexPathsForSection:0];
+    NSArray *insertIndexPaths = [changeDetails.insertedIndexes indexPathsForSection:0];
+    NSArray *reloadIndexPaths = [changeDetails.changedIndexes indexPathsForSection:0];
+    
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self loadData];
+        _fetchResult = changeDetails.fetchResultAfterChanges;
         
-        [_collectionView reloadData];
+        [_collectionView performBatchUpdates:^{
+            if (deleteIndexPaths) {
+                [_collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
+            }
+            if (insertIndexPaths) {
+                [_collectionView insertItemsAtIndexPaths:insertIndexPaths];
+            }
+            if (reloadIndexPaths) {
+                [_collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
+            }
+        } completion:nil];
     });
 }
 
