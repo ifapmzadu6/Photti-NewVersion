@@ -20,7 +20,7 @@
 #import "PECategoryViewCell.h"
 #import "PACenterTextTableViewCell.h"
 #import "PEScrollBannerHeaderView.h"
-#import "PAGradientView.h"
+#import "PEBannerContentView.h"
 #import "PEHorizontalScrollView.h"
 
 #import "PEPhotoDataSourceFactoryMethod.h"
@@ -75,7 +75,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         else {
             self.title = NSLocalizedString(@"iPad上の写真", nil);
         }
-        
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
         
@@ -204,7 +203,13 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     PEScrollBannerHeaderView *headerView = [PEScrollBannerHeaderView new];
     headerView.frame = CGRectMake(0.0f, 0.0f, 320.0f, 120.0f);
     headerView.shouldAnimate = NO;
-    headerView.views = @[[self makeTodayBannerView], [self makeYesterdayBannerView], [self makeThisWeekBannerView], [self makeLastWeekBannerView]];
+    NSArray *headerContentViews = [self bannerContentViews];
+    if (headerContentViews.count > 0) {
+        headerView.views = headerContentViews;
+    }
+    else {
+        headerView.views = @[[self noContentBannerView]];
+    }
     _tableView.tableHeaderView = headerView;
     
     UILabel *footerView = [UILabel new];
@@ -295,7 +300,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         return kPHHomeViewControllerCell_Count;
     }
     else {
-        return 4;
+        return 3;
     }
 }
 
@@ -421,11 +426,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
         else if (indexPath.row == 2) {
-            cell.centerTextLabel.text = @"この作者の他のアプリを見る";
-            cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintDefaultColor];
-            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-        }
-        else if (indexPath.row == 3) {
             cell.centerTextLabel.text = @"広告を除去する";
             cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintDefaultColor];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
@@ -453,251 +453,92 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 #pragma mark UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (indexPath.section == 0) {
+        
+    }
+    else if (indexPath.section == 1) {
+        if (indexPath.row == 1) {
+            NSString *title = NSLocalizedString(@"Photti - Unlimitedly upload your photos. Free! New Photo Management App.", nil);
+            NSURL *url = [NSURL URLWithString:@"https://itunes.apple.com/app/id892657316"];
+            UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:@[title, url] applicationActivities:nil];
+            [self.tabBarController presentViewController:viewController animated:YES completion:nil];
+        }
+        else if (indexPath.row == 2) {
+            [self settingsBarButtonAction];
+        }
+    }
 }
 
-#pragma mark MakeBannerView
-- (UIView *)makeTodayBannerView {
-    UIView *view = [UIView new];
-    view.frame = CGRectMake(0.0f, 0.0f, 320.0f, 120.0f);
-    
-    UIImageView *imageView = [UIImageView new];
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
-    imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    imageView.frame = view.frame;
-    [view addSubview:imageView];
-    _todayImageView = imageView;
-    
-    PAGradientView *gradientView = [PAGradientView new];
-    gradientView.startColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
-    gradientView.endColor = [UIColor clearColor];
-    gradientView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    gradientView.backgroundColor = [UIColor clearColor];
-    gradientView.frame = view.frame;
-    [view addSubview:gradientView];
-    
-    UILabel *todayLabel = [UILabel new];
-    todayLabel.text = NSLocalizedString(@"Today", nil);
-    todayLabel.font = [UIFont systemFontOfSize:40.0f];
-    todayLabel.textColor = [UIColor whiteColor];
-    todayLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    todayLabel.frame = CGRectMake(16.0f, 4.0f, CGRectGetWidth(view.bounds) - 16.0f*2.0f, 50.0f);
-    [view addSubview:todayLabel];
-    
-    UIButton *button = [UIButton new];
-    [button addTarget:self action:@selector(todayBannerViewAction:) forControlEvents:UIControlEventTouchUpInside];
-    button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    button.backgroundColor = [UIColor clearColor];
-    button.frame = view.frame;
-    [view addSubview:button];
-    
-    [self setTodayBannerViewImage];
-    
-    return view;
+#pragma mark Banner
+- (NSMutableArray *)bannerContentViews {
+    NSMutableArray *views = @[].mutableCopy;
+    {
+        NSString *title = NSLocalizedString(@"Today", nil);
+        NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate date]];
+        NSDate *endDate = [NSDate date];
+        UIView *view = [self makeBannerViewWithTitle:title startDate:startDate endDate:endDate];
+        if (view)
+            [views addObject:view];
+    } {
+        NSString *title = NSLocalizedString(@"Yesterday", nil);
+        NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60)]];
+        NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60) sinceDate:startDate];
+        UIView *view = [self makeBannerViewWithTitle:title startDate:startDate endDate:endDate];
+        if (view)
+            [views addObject:view];
+    } {
+        NSString *title = NSLocalizedString(@"This Week", nil);
+        NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*7)]];
+        NSDate *endDate = [NSDate date];
+        UIView *view = [self makeBannerViewWithTitle:title startDate:startDate endDate:endDate];
+        if (view)
+            [views addObject:view];
+    } {
+        NSString *title = NSLocalizedString(@"Last Week", nil);
+        NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*14)]];
+        NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60*7) sinceDate:startDate];
+        UIView *view = [self makeBannerViewWithTitle:title startDate:startDate endDate:endDate];
+        if (view)
+            [views addObject:view];
+    }
+    return views;
 }
 
-- (UIView *)makeYesterdayBannerView {
-    UIView *view = [UIView new];
-    view.frame = CGRectMake(0.0f, 0.0f, 320.0f, 120.0f);
-    
-    UIImageView *imageView = [UIImageView new];
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
-    imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    imageView.frame = view.frame;
-    [view addSubview:imageView];
-    _yesterdayImageView = imageView;
-    
-    PAGradientView *gradientView = [PAGradientView new];
-    gradientView.startColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
-    gradientView.endColor = [UIColor clearColor];
-    gradientView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    gradientView.backgroundColor = [UIColor clearColor];
-    gradientView.frame = view.frame;
-    [view addSubview:gradientView];
-    
-    UILabel *yesterdayLabel = [UILabel new];
-    yesterdayLabel.text = NSLocalizedString(@"Yesterday", nil);
-    yesterdayLabel.font = [UIFont systemFontOfSize:40.0f];
-    yesterdayLabel.textAlignment = NSTextAlignmentRight;
-    yesterdayLabel.textColor = [UIColor whiteColor];
-    yesterdayLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    yesterdayLabel.frame = CGRectMake(16.0f, 4.0f, CGRectGetWidth(view.bounds) - 16.0f*2.0f, 50.0f);
-    [view addSubview:yesterdayLabel];
-    
-    UIButton *button = [UIButton new];
-    [button addTarget:self action:@selector(yesterdayBannerViewAction:) forControlEvents:UIControlEventTouchUpInside];
-    button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    button.backgroundColor = [UIColor clearColor];
-    button.frame = view.frame;
-    [view addSubview:button];
-    
-    [self setYesterdayBannerViewImage];
-    
-    return view;
-}
 
-- (UIView *)makeThisWeekBannerView {
-    UIView *view = [UIView new];
-    view.frame = CGRectMake(0.0f, 0.0f, 320.0f, 120.0f);
-    
-    UIImageView *imageView = [UIImageView new];
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
-    imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    imageView.frame = view.frame;
-    [view addSubview:imageView];
-    _thisWeekImageView = imageView;
-    
-    PAGradientView *gradientView = [PAGradientView new];
-    gradientView.startColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
-    gradientView.endColor = [UIColor clearColor];
-    gradientView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    gradientView.backgroundColor = [UIColor clearColor];
-    gradientView.frame = view.frame;
-    [view addSubview:gradientView];
-    
-    UILabel *weekLabel = [UILabel new];
-    weekLabel.text = NSLocalizedString(@"This Week", nil);
-    weekLabel.font = [UIFont systemFontOfSize:40.0f];
-    weekLabel.textColor = [UIColor whiteColor];
-    weekLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    weekLabel.frame = CGRectMake(16.0f, 4.0f, CGRectGetWidth(view.bounds) - 16.0f*2.0f, 50.0f);
-    [view addSubview:weekLabel];
-    
-    UIButton *button = [UIButton new];
-    [button addTarget:self action:@selector(thisWeekBannerViewAction:) forControlEvents:UIControlEventTouchUpInside];
-    button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    button.backgroundColor = [UIColor clearColor];
-    button.frame = view.frame;
-    [view addSubview:button];
-    
-    [self setThisWeekBannerViewImage];
-    
-    return view;
-}
-
-- (UIView *)makeLastWeekBannerView {
-    UIView *view = [UIView new];
-    view.frame = CGRectMake(0.0f, 0.0f, 320.0f, 120.0f);
-    
-    UIImageView *imageView = [UIImageView new];
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
-    imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    imageView.frame = view.frame;
-    [view addSubview:imageView];
-    _lastWeekImageView = imageView;
-    
-    PAGradientView *gradientView = [PAGradientView new];
-    gradientView.startColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
-    gradientView.endColor = [UIColor clearColor];
-    gradientView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    gradientView.backgroundColor = [UIColor clearColor];
-    gradientView.frame = view.frame;
-    [view addSubview:gradientView];
-    
-    UILabel *lastweekLabel = [UILabel new];
-    lastweekLabel.text = NSLocalizedString(@"Last Week", nil);
-    lastweekLabel.font = [UIFont systemFontOfSize:40.0f];
-    lastweekLabel.textColor = [UIColor whiteColor];
-    lastweekLabel.textAlignment = NSTextAlignmentRight;
-    lastweekLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    lastweekLabel.frame = CGRectMake(16.0f, 4.0f, CGRectGetWidth(view.bounds) - 16.0f*2.0f, 50.0f);
-    [view addSubview:lastweekLabel];
-    
-    UIButton *button = [UIButton new];
-    [button addTarget:self action:@selector(lastWeekBannerViewAction:) forControlEvents:UIControlEventTouchUpInside];
-    button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    button.backgroundColor = [UIColor clearColor];
-    button.frame = view.frame;
-    [view addSubview:button];
-    
-    [self setLastWeekBannerViewImage];
-    
-    return view;
-}
-
-#pragma mark BannerAction
-- (void)todayBannerViewAction:(id)sender {
-    NSString *title = NSLocalizedString(@"Today", nil);
-    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate date]];
-    NSDate *endDate = [NSDate date];
-    PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
-    [self.navigationController pushViewController:viewController animated:YES];
-}
-
-- (void)yesterdayBannerViewAction:(id)sender {
-    NSString *title = NSLocalizedString(@"Yesterday", nil);
-    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60)]];
-    NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60) sinceDate:startDate];
-    PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
-    [self.navigationController pushViewController:viewController animated:YES];
-}
-
-- (void)thisWeekBannerViewAction:(id)sender {
-    NSString *title = NSLocalizedString(@"This Week", nil);
-    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*7)]];
-    NSDate *endDate = [NSDate date];
-    PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
-    [self.navigationController pushViewController:viewController animated:YES];
-}
-
-- (void)lastWeekBannerViewAction:(id)sender {
-    NSString *title = NSLocalizedString(@"Last Week", nil);
-    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*14)]];
-    NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60*7) sinceDate:startDate];
-    PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
-    [self.navigationController pushViewController:viewController animated:YES];
-}
-
-#pragma mark setImageBannerView
-- (void)setTodayBannerViewImage {
-    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate date]];
-    NSDate *endDate = [NSDate date];
+- (PEBannerContentView *)makeBannerViewWithTitle:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate {
     PHFetchOptions *options = [PHFetchOptions new];
     options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
     options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
     PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
+    if (fetchResult.count == 0) {
+        return nil;
+    }
+    PEBannerContentView *contentView = [PEBannerContentView new];
+    contentView.titleLabel.text = title;
+    __weak typeof(self) wself = self;
+    contentView.touchUpInsideActionBlock = ^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
+        [sself.navigationController pushViewController:viewController animated:YES];
+    };
     PHAsset *asset = fetchResult.firstObject;
+    __weak typeof(contentView) wcontentView = contentView;
     [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
-        _todayImageView.image = result;
+        typeof(wcontentView) scontentView = wcontentView;
+        if (!scontentView) return;
+        scontentView.imageView.image = result;
     }];
+    return contentView;
 }
 
-- (void)setYesterdayBannerViewImage {
-    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60)]];
-    NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60) sinceDate:startDate];
-    PHFetchOptions *options = [PHFetchOptions new];
-    options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
-    PHAsset *asset = fetchResult.firstObject;
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
-        _yesterdayImageView.image = result;
-    }];
-}
-
-- (void)setThisWeekBannerViewImage {
-    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*7)]];
-    NSDate *endDate = [NSDate date];
-    PHFetchOptions *options = [PHFetchOptions new];
-    options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
-    PHAsset *asset = fetchResult.firstObject;
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
-        _thisWeekImageView.image = result;
-    }];
-}
-
-- (void)setLastWeekBannerViewImage {
-    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*14)]];
-    NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60*7) sinceDate:startDate];
-    PHFetchOptions *options = [PHFetchOptions new];
-    options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
-    PHAsset *asset = fetchResult.firstObject;
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
-        _lastWeekImageView.image = result;
-    }];
+- (PEBannerContentView *)noContentBannerView {
+    PEBannerContentView *bannerView = [PEBannerContentView new];
+    
+    bannerView.titleLabel.text = NSLocalizedString(@"Let's take a picture.", nil);
+    
+    return bannerView;
 }
 
 @end
