@@ -19,4 +19,6 @@
 
 - (void)prepareForUse:(UICollectionView *)collectionView;
 
++ (NSString *)titleForMoment:(PHAssetCollection *)moment;
+
 @end

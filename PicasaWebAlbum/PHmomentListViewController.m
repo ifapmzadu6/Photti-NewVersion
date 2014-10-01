@@ -28,6 +28,8 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        self.title = NSLocalizedString(@"Moment", nil);
+        
         _dataSource = [PEMomentListDataSource new];
         _dataSource.cellSize = CGSizeMake(90.0f, 120.0f);
         _dataSource.minimumLineSpacing = 15.0f;

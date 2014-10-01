@@ -79,18 +79,7 @@
         }
     }
     
-    NSString *title = collection.localizedTitle;
-    if (!title) {
-        NSString *startDate = [[PADateFormatter mmmddFormatter] stringFromDate:collection.startDate];
-        NSString *endDate = [[PADateFormatter mmmddFormatter] stringFromDate:collection.endDate];
-        if ([startDate isEqualToString:endDate]) {
-            title = startDate;
-        }
-        else {
-            title = [NSString stringWithFormat:@"%@ - %@", startDate, endDate];
-        }
-    }
-    cell.titleLabel.text = title;
+    cell.titleLabel.text = [PEMomentListDataSource titleForMoment:collection];
     cell.detailLabel.text = [NSString stringWithFormat:@"%ld個の項目", (long)collection.estimatedAssetCount];
     
     return cell;
@@ -115,6 +104,22 @@
     if (_didSelectCollectionBlock) {
         _didSelectCollectionBlock(assetCollection);
     }
+}
+
+#pragma mark Title
++ (NSString *)titleForMoment:(PHAssetCollection *)moment {
+    NSString *title = moment.localizedTitle;
+    if (!title) {
+        NSString *startDate = [[PADateFormatter mmmddFormatter] stringFromDate:moment.startDate];
+        NSString *endDate = [[PADateFormatter mmmddFormatter] stringFromDate:moment.endDate];
+        if ([startDate isEqualToString:endDate]) {
+            title = startDate;
+        }
+        else {
+            title = [NSString stringWithFormat:@"%@ - %@", startDate, endDate];
+        }
+    }
+    return title;
 }
 
 @end

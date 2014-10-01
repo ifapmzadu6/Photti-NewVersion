@@ -8,6 +8,8 @@
 
 @import UIKit;
 
-@interface PEMomentListViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PEMomentListViewController : PABaseViewController
 
 @end

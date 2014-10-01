@@ -48,8 +48,10 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 @interface PEHomeViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
-
 @property (strong, nonatomic) UIImageView *todayImageView;
+@property (strong, nonatomic) UIImageView *yesterdayImageView;
+@property (strong, nonatomic) UIImageView *thisWeekImageView;
+@property (strong, nonatomic) UIImageView *lastWeekImageView;
 
 @property (strong, nonatomic) PEAlbumListDataSource *albumListDataSource;
 @property (strong, nonatomic) PEMomentListDataSource *momentListDataSource;
@@ -94,7 +96,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _momentListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
+            NSString *title = [PEMomentListDataSource titleForMoment:assetCollection];
+            PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album title:title];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
         
@@ -460,7 +463,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     UIImageView *imageView = [UIImageView new];
     imageView.contentMode = UIViewContentModeScaleAspectFill;
     imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    imageView.image = [UIImage imageNamed:@"img_16"];
     imageView.frame = view.frame;
     [view addSubview:imageView];
     _todayImageView = imageView;
@@ -488,6 +490,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     button.frame = view.frame;
     [view addSubview:button];
     
+    [self setTodayBannerViewImage];
+    
     return view;
 }
 
@@ -498,10 +502,9 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     UIImageView *imageView = [UIImageView new];
     imageView.contentMode = UIViewContentModeScaleAspectFill;
     imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    imageView.image = [UIImage imageNamed:@"img_17"];
     imageView.frame = view.frame;
     [view addSubview:imageView];
-    _todayImageView = imageView;
+    _yesterdayImageView = imageView;
     
     PAGradientView *gradientView = [PAGradientView new];
     gradientView.startColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
@@ -527,6 +530,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     button.frame = view.frame;
     [view addSubview:button];
     
+    [self setYesterdayBannerViewImage];
+    
     return view;
 }
 
@@ -537,10 +542,9 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     UIImageView *imageView = [UIImageView new];
     imageView.contentMode = UIViewContentModeScaleAspectFill;
     imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    imageView.image = [UIImage imageNamed:@"img_14"];
     imageView.frame = view.frame;
     [view addSubview:imageView];
-    _todayImageView = imageView;
+    _thisWeekImageView = imageView;
     
     PAGradientView *gradientView = [PAGradientView new];
     gradientView.startColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
@@ -565,6 +569,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     button.frame = view.frame;
     [view addSubview:button];
     
+    [self setThisWeekBannerViewImage];
+    
     return view;
 }
 
@@ -575,10 +581,9 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     UIImageView *imageView = [UIImageView new];
     imageView.contentMode = UIViewContentModeScaleAspectFill;
     imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    imageView.image = [UIImage imageNamed:@"img_13"];
     imageView.frame = view.frame;
     [view addSubview:imageView];
-    _todayImageView = imageView;
+    _lastWeekImageView = imageView;
     
     PAGradientView *gradientView = [PAGradientView new];
     gradientView.startColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
@@ -604,6 +609,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     button.frame = view.frame;
     [view addSubview:button];
     
+    [self setLastWeekBannerViewImage];
+    
     return view;
 }
 
@@ -624,6 +631,14 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
+- (void)thisWeekBannerViewAction:(id)sender {
+    NSString *title = NSLocalizedString(@"This Week", nil);
+    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*7)]];
+    NSDate *endDate = [NSDate date];
+    PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
+    [self.navigationController pushViewController:viewController animated:YES];
+}
+
 - (void)lastWeekBannerViewAction:(id)sender {
     NSString *title = NSLocalizedString(@"Last Week", nil);
     NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*14)]];
@@ -632,12 +647,57 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
-- (void)thisWeekBannerViewAction:(id)sender {
-    NSString *title = NSLocalizedString(@"This Week", nil);
+#pragma mark setImageBannerView
+- (void)setTodayBannerViewImage {
+    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate date]];
+    NSDate *endDate = [NSDate date];
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
+    PHAsset *asset = fetchResult.firstObject;
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+        _todayImageView.image = result;
+    }];
+}
+
+- (void)setYesterdayBannerViewImage {
+    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60)]];
+    NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60) sinceDate:startDate];
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
+    PHAsset *asset = fetchResult.firstObject;
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+        _yesterdayImageView.image = result;
+    }];
+}
+
+- (void)setThisWeekBannerViewImage {
     NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*7)]];
     NSDate *endDate = [NSDate date];
-    PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
-    [self.navigationController pushViewController:viewController animated:YES];
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
+    PHAsset *asset = fetchResult.firstObject;
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+        _thisWeekImageView.image = result;
+    }];
+}
+
+- (void)setLastWeekBannerViewImage {
+    NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate dateWithTimeIntervalSinceNow:-(24*60*60*14)]];
+    NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60*7) sinceDate:startDate];
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
+    PHAsset *asset = fetchResult.firstObject;
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+        _lastWeekImageView.image = result;
+    }];
 }
 
 @end
