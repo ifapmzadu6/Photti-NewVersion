@@ -92,6 +92,10 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PEPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PEPhotoViewCell class]) forIndexPath:indexPath];
+    __weak typeof(cell) wcell = cell;
+    NSUInteger index = indexPath.row;
+    cell.tag = index;
+    cell.imageView.image = nil;
     
     CGSize targetSize = CGSizeZero;
     if (_flowLayout) {
@@ -101,7 +105,11 @@
         targetSize = _cellSize;
     }
     [[PHImageManager defaultManager] requestImageForAsset:_fetchResult[indexPath.row] targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
-        cell.imageView.image = result;
+        typeof(wcell) scell = wcell;
+        if (!scell) return;
+        if (scell.tag == index) {
+            scell.imageView.image = result;
+        }
     }];
     
     return cell;

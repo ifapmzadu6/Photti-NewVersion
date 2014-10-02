@@ -90,9 +90,12 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PEMomentViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PEMomentViewCell class]) forIndexPath:indexPath];
+    __weak typeof(cell) wcell = cell;
     NSUInteger index = indexPath.row;
     cell.tag = index;
-    __weak typeof(cell) wcell = cell;
+    for (UIImageView *imageView in cell.imageViews) {
+        imageView.image = nil;
+    }
     
     PHFetchResult *assetsResult = _assetCollectionFetchResults[indexPath.row];
     cell.numberOfImageView = assetsResult.count;

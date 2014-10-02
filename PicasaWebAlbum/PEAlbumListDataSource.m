@@ -119,10 +119,13 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PEAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PEAlbumViewCell class]) forIndexPath:indexPath];
+    __weak typeof(cell) wcell = cell;
     NSUInteger index = indexPath.row;
     cell.tag = index;
-    __weak typeof(cell) wcell = cell;
     
+    cell.firstImageView.image = nil;
+    cell.secondImageView.image = nil;
+    cell.thirdImageView.image = nil;
     cell.backgroundColor = (_cellBackgroundColor) ? _cellBackgroundColor : [UIColor whiteColor];
     
     PHFetchResult *assetsResult = _assetCollectionFetchResults[indexPath.row];
@@ -130,7 +133,7 @@
         [[PHImageManager defaultManager] requestImageForAsset:assetsResult[0] targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
             typeof(wcell) scell = wcell;
             if (!scell) return;
-            if (scell) {
+            if (scell.tag == index) {
                 scell.firstImageView.image = result;
             }
         }];
