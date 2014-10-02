@@ -12,11 +12,15 @@
 @interface PEAlbumListDataSource : NSObject <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (copy, nonatomic) void (^didSelectCollectionBlock)(PHAssetCollection *collection);
+@property (copy, nonatomic) void (^didChangeSelectedItemCountBlock)(NSUInteger count);
 
 @property (nonatomic) CGSize cellSize;
 @property (nonatomic) UIColor *cellBackgroundColor;
 @property (nonatomic) CGFloat minimumInteritemSpacing;
 @property (nonatomic) CGFloat minimumLineSpacing;
+
+@property (nonatomic) BOOL isSelectMode;
+@property (nonatomic, readonly) NSArray *selectedCollections;
 
 - (void)prepareForUse:(UICollectionView *)collectionView;
 

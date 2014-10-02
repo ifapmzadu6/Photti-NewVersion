@@ -313,7 +313,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             [_albumListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _albumListDataSource;
             cell.delegate = _albumListDataSource;
-            cell.titleLabel.text = @"アルバム";
+            cell.titleLabel.text = NSLocalizedString(@"Albums", nil);
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -325,7 +325,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             [_momentListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _momentListDataSource;
             cell.delegate = _momentListDataSource;
-            cell.titleLabel.text = @"モーメント";
+            cell.titleLabel.text = NSLocalizedString(@"Moments", nil);
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -397,7 +397,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             [_allPhotoListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
             cell.dataSource = _allPhotoListDataSource;
             cell.delegate = _allPhotoListDataSource;
-            cell.titleLabel.text = @"すべての写真とビデオ";
+            cell.titleLabel.text = @"All Photos And Videos";
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -416,17 +416,17 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         cell.centerTextLabel.text = nil;
         
         if (indexPath.row == 0) {
-            cell.textLabel.text = @"その他";
+            cell.textLabel.text = NSLocalizedString(@"Other", nil);
             cell.textLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
         else if (indexPath.row == 1) {
-            cell.centerTextLabel.text = @"このアプリを他の人に教える";
+            cell.centerTextLabel.text = NSLocalizedString(@"Tell a frend this app", nil);
             cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintDefaultColor];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
         else if (indexPath.row == 2) {
-            cell.centerTextLabel.text = @"広告を除去する";
+            cell.centerTextLabel.text = NSLocalizedString(@"Remove ads", nil);
             cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintDefaultColor];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
@@ -467,6 +467,29 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             [self settingsBarButtonAction];
         }
     }
+}
+
+#pragma mark UIScrollViewDelegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    CGFloat offsetY = scrollView.contentOffset.y + scrollView.contentInset.top;
+    PEScrollBannerHeaderView *headerView = (PEScrollBannerHeaderView *)_tableView.tableHeaderView;
+    headerView.shouldAnimate = NO;
+    if (offsetY < 0) {
+        headerView.contentInsets = UIEdgeInsetsMake(offsetY, 0.0f, -offsetY, 0.0f);
+    }
+    else {
+        headerView.contentInsets = UIEdgeInsetsZero;
+    }
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    PEScrollBannerHeaderView *headerView = (PEScrollBannerHeaderView *)_tableView.tableHeaderView;
+    headerView.shouldAnimate = YES;
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    PEScrollBannerHeaderView *headerView = (PEScrollBannerHeaderView *)_tableView.tableHeaderView;
+    headerView.shouldAnimate = YES;
 }
 
 #pragma mark Banner
@@ -515,7 +538,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     contentView.touchUpInsideActionBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
         [sself.navigationController pushViewController:viewController animated:YES];
     };

@@ -518,9 +518,7 @@
         
         sself.navigationController.navigationBar.alpha = 0.0f;
     }];
-	if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
-		self.navigationController.interactivePopGestureRecognizer.enabled = NO;
-	}
+    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
@@ -545,13 +543,9 @@
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarHidden:NO animated:NO completion:nil];
     [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
-    
-    self.navigationController.navigationBar.alpha = 1.0f;
     [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
-    
-	if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
-		self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-	}
+    self.navigationController.navigationBar.alpha = 1.0f;
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }

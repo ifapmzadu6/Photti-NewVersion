@@ -43,6 +43,36 @@
     _collectionView = collectionView;
 }
 
+- (void)setIsSelectMode:(BOOL)isSelectMode {
+    _isSelectMode = isSelectMode;
+    
+    UICollectionView *collectionView = _collectionView;
+    if (collectionView) {
+        for (NSIndexPath *indexPath in collectionView.indexPathsForSelectedItems) {
+            [collectionView deselectItemAtIndexPath:indexPath animated:YES];
+        }
+        for (PEAlbumViewCell *cell in collectionView.visibleCells) {
+            cell.isSelectWithCheckmark = isSelectMode;
+        }
+    }
+}
+
+- (NSArray *)selectedCollections {
+    if (!_isSelectMode) {
+        return nil;
+    }
+    
+    NSMutableArray *selectedCollections = @[].mutableCopy;
+    UICollectionView *collectionView = _collectionView;
+    if (collectionView) {
+        for (NSIndexPath *indexPath in collectionView.indexPathsForSelectedItems) {
+            PHAssetCollection *assetCollection = _fetchResult[indexPath.item];
+            [selectedCollections addObject:assetCollection];
+        }
+    }
+    return selectedCollections;
+}
+
 #pragma mark PHPhotoLibraryChangeObserver
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
     PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:_fetchResult];
@@ -112,6 +142,7 @@
     
     cell.titleLabel.text = collection.localizedTitle;
     cell.detailLabel.text = [NSString stringWithFormat:@"%ld個の項目", (long)collection.estimatedAssetCount];
+    cell.isSelectWithCheckmark = _isSelectMode;
     return cell;
 }
 
@@ -130,9 +161,24 @@
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PHAssetCollection *collection = _fetchResult[indexPath.row];
-    if (_didSelectCollectionBlock) {
-        _didSelectCollectionBlock(collection);
+    if (_isSelectMode) {
+        if (_didChangeSelectedItemCountBlock) {
+            _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
+        }
+    }
+    else {
+        PHAssetCollection *collection = _fetchResult[indexPath.row];
+        if (_didSelectCollectionBlock) {
+            _didSelectCollectionBlock(collection);
+        }
+    }
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (_isSelectMode) {
+        if (_didChangeSelectedItemCountBlock) {
+            _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
+        }
     }
 }
 

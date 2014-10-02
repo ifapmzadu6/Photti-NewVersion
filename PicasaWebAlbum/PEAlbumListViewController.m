@@ -22,8 +22,9 @@
 @property (strong, nonatomic) UICollectionView *collectionView;
 
 @property (strong, nonatomic) PEAlbumListDataSource *albumListDataSource;
-@property (nonatomic) BOOL isSelectMode;
 
+@property (strong, nonatomic) UIBarButtonItem *selectTrashBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *selectActionBarButtonItem;
 @property (weak, nonatomic) UIAlertAction *saveAlertAction;
 
 @end
@@ -33,7 +34,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.title = NSLocalizedString(@"アルバム", nil);
+        self.title = NSLocalizedString(@"Albums", nil);
         
         _albumListDataSource = [PEAlbumListDataSource new];
         _albumListDataSource.cellSize = CGSizeMake(90.0f, 120.0f);
@@ -45,6 +46,12 @@
             if (!sself) return;
             PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
             [sself.navigationController pushViewController:viewController animated:YES];
+        };
+        _albumListDataSource.didChangeSelectedItemCountBlock = ^(NSUInteger count){
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            sself.selectActionBarButtonItem.enabled = (count) ? YES : NO;
+            sself.selectTrashBarButtonItem.enabled = (count) ? YES : NO;
         };
     }
     return self;
@@ -61,13 +68,14 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
+    _collectionView.allowsMultipleSelection = YES;
     [self.view addSubview:_collectionView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    if (!_isSelectMode) {
+    if (!_albumListDataSource.isSelectMode) {
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
         
         for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
@@ -146,7 +154,20 @@
 }
 
 - (void)selectBarButtonAction:(id)sender {
+    [self enableSelectMode];
+}
+
+- (void)selectActionBarButtonAction:(id)sender {
     
+}
+
+- (void)selectTrashBarButtonAction:(id)sender {
+    NSArray *selectAssetCollections = _albumListDataSource.selectedCollections;
+    [self deleteAssetCollections:selectAssetCollections];
+}
+
+- (void)cancelBarButtonAction:(id)sender {
+    [self disableSelectMode];
 }
 
 #pragma mark UITextFieldDelegate
@@ -157,13 +178,93 @@
     return YES;
 }
 
-#pragma mark MakeNewAlbum
+#pragma mark SelectMode
+- (void)enableSelectMode {
+    if (_albumListDataSource.isSelectMode) {
+        return;
+    }
+    _albumListDataSource.isSelectMode = YES;
+    
+    _selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction:)];
+    _selectActionBarButtonItem.enabled = NO;
+    _selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction:)];
+    _selectTrashBarButtonItem.enabled = NO;
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    NSArray *toolbarItems = @[_selectActionBarButtonItem, flexibleSpace, _selectTrashBarButtonItem];
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setActionToolbarItems:toolbarItems animated:NO];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    __weak typeof(self) wself = self;
+    [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+        [tabBarController setToolbarHidden:YES animated:NO completion:nil];
+    }];
+    
+    UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction:)];
+    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
+    [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
+    [tabBarController setActionNavigationItem:navigationItem animated:NO];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        sself.navigationController.navigationBar.alpha = 0.0f;
+    }];
+    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+}
+
+- (void)disableSelectMode {
+    if (!_albumListDataSource.isSelectMode) {
+        return;
+    }
+    _albumListDataSource.isSelectMode = NO;
+    
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setToolbarHidden:NO animated:NO completion:nil];
+    [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
+    [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
+    self.navigationController.navigationBar.alpha = 1.0f;
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+}
+
+#pragma mark Photos
 - (void)makeNewAlbumWithTitle:(NSString *)title {
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title];
     } completionHandler:^(BOOL success, NSError *error) {
         
     }];
+}
+
+- (void)deleteAssetCollections:(NSArray *)assetCollections {
+    if (assetCollections.count == 0) {
+        return;
+    }
+    
+    UIAlertAction *deleteAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Delete", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        
+    }];
+    UIAlertAction *cancelAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+    
+    NSString *title = nil;
+    if (assetCollections.count == 1) {
+        PHAssetCollection *assetCollection = assetCollections.firstObject;
+        title = [NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), assetCollection.localizedTitle];
+    }
+    else {
+        title = [NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete %ld albums?", nil), (long)assetCollections.count];
+    }
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    [alertController addAction:deleteAlertAction];
+    [alertController addAction:cancelAlertAction];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

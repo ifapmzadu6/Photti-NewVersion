@@ -14,4 +14,6 @@
 
 @property (strong, nonatomic) NSArray *views;
 
+@property (nonatomic) UIEdgeInsets contentInsets;
+
 @end
