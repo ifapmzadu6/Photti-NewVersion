@@ -311,8 +311,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         __weak typeof(self) wself = self;
         if (indexPath.row == kPHHomeViewControllerCell_Album) {
             [_albumListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
-            cell.dataSource = _albumListDataSource;
-            cell.delegate = _albumListDataSource;
+            cell.horizontalScrollView.dataSource = _albumListDataSource;
+            cell.horizontalScrollView.delegate = _albumListDataSource;
             cell.titleLabel.text = NSLocalizedString(@"Albums", nil);
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
@@ -323,8 +323,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Moment) {
             [_momentListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
-            cell.dataSource = _momentListDataSource;
-            cell.delegate = _momentListDataSource;
+            cell.horizontalScrollView.dataSource = _momentListDataSource;
+            cell.horizontalScrollView.delegate = _momentListDataSource;
             cell.titleLabel.text = NSLocalizedString(@"Moments", nil);
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
@@ -335,8 +335,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Panorama) {
             [_panoramaListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
-            cell.dataSource = _panoramaListDataSource;
-            cell.delegate = _panoramaListDataSource;
+            cell.horizontalScrollView.dataSource = _panoramaListDataSource;
+            cell.horizontalScrollView.delegate = _panoramaListDataSource;
             cell.titleLabel.text = _panoramaListDataSource.assetCollection.localizedTitle;
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
@@ -347,8 +347,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Video) {
             [_videoListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
-            cell.dataSource = _videoListDataSource;
-            cell.delegate = _videoListDataSource;
+            cell.horizontalScrollView.dataSource = _videoListDataSource;
+            cell.horizontalScrollView.delegate = _videoListDataSource;
             cell.titleLabel.text = _videoListDataSource.assetCollection.localizedTitle;
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
@@ -359,8 +359,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Favorite) {
             [_favoriteListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
-            cell.dataSource = _favoriteListDataSource;
-            cell.delegate = _favoriteListDataSource;
+            cell.horizontalScrollView.dataSource = _favoriteListDataSource;
+            cell.horizontalScrollView.delegate = _favoriteListDataSource;
             cell.titleLabel.text = _favoriteListDataSource.assetCollection.localizedTitle;
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
@@ -371,8 +371,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Timelapse) {
             [_timelapseListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
-            cell.dataSource = _timelapseListDataSource;
-            cell.delegate = _timelapseListDataSource;
+            cell.horizontalScrollView.dataSource = _timelapseListDataSource;
+            cell.horizontalScrollView.delegate = _timelapseListDataSource;
             cell.titleLabel.text = _timelapseListDataSource.assetCollection.localizedTitle;
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
@@ -383,8 +383,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         }
         else if (indexPath.row == kPHHomeViewControllerCell_iCloud) {
             [_cloudListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
-            cell.dataSource = _cloudListDataSource;
-            cell.delegate = _cloudListDataSource;
+            cell.horizontalScrollView.dataSource = _cloudListDataSource;
+            cell.horizontalScrollView.delegate = _cloudListDataSource;
             cell.titleLabel.text = _cloudListDataSource.assetCollection.localizedTitle;
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
@@ -395,8 +395,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         }
         else if (indexPath.row == kPHHomeViewControllerCell_AllPhotos) {
             [_allPhotoListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
-            cell.dataSource = _allPhotoListDataSource;
-            cell.delegate = _allPhotoListDataSource;
+            cell.horizontalScrollView.dataSource = _allPhotoListDataSource;
+            cell.horizontalScrollView.delegate = _allPhotoListDataSource;
             cell.titleLabel.text = @"All Photos And Videos";
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;

@@ -103,18 +103,6 @@
     _horizontalScrollView.collectionView.contentOffset = CGPointMake(-contentInsets.left, 0.0f);
 }
 
-- (void)setDataSource:(id<UICollectionViewDataSource>)dataSource {
-    _dataSource = dataSource;
-    
-    _horizontalScrollView.dataSource = dataSource;
-}
-
-- (void)setDelegate:(id<UICollectionViewDelegate>)delegate {
-    _delegate = delegate;
-    
-    _horizontalScrollView.delegate = delegate;
-}
-
 - (void)moreButtonAction {
     if (_moreButtonActionBlock) {
         _moreButtonActionBlock();

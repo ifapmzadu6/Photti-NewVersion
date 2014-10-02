@@ -18,7 +18,4 @@
 @property (strong, nonatomic, readonly) UIButton *moreButton;
 @property (strong, nonatomic, readonly) PEHorizontalScrollView *horizontalScrollView;
 
-@property (weak, nonatomic) id<UICollectionViewDataSource> dataSource;
-@property (weak, nonatomic) id<UICollectionViewDelegate> delegate;
-
 @end
