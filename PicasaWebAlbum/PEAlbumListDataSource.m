@@ -32,7 +32,7 @@
         
         NSMutableArray *assetCollectionFetchResults = @[].mutableCopy;
         for (PHAssetCollection *collection in _fetchResult) {
-            PHFetchResult *fetchResult = [PHAsset fetchKeyAssetsInAssetCollection:collection options:nil];
+            PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
             [assetCollectionFetchResults addObject:fetchResult];
         }
         _assetCollectionFetchResults = assetCollectionFetchResults;
@@ -119,31 +119,38 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PEAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PEAlbumViewCell class]) forIndexPath:indexPath];
+    NSUInteger index = indexPath.row;
+    cell.tag = index;
+    __weak typeof(cell) wcell = cell;
     
-    if (_cellBackgroundColor) {
-        cell.backgroundColor = _cellBackgroundColor;
-    }
-    else {
-        cell.backgroundColor = [UIColor whiteColor];
-    }
-    cell.firstImageView.image = nil;
-    cell.secondImageView.image = nil;
-    cell.thirdImageView.image = nil;
+    cell.backgroundColor = (_cellBackgroundColor) ? _cellBackgroundColor : [UIColor whiteColor];
     
     PHFetchResult *assetsResult = _assetCollectionFetchResults[indexPath.row];
     if (assetsResult.count >= 1) {
         [[PHImageManager defaultManager] requestImageForAsset:assetsResult[0] targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
-            cell.firstImageView.image = result;
+            typeof(wcell) scell = wcell;
+            if (!scell) return;
+            if (scell) {
+                scell.firstImageView.image = result;
+            }
         }];
     }
     if (assetsResult.count >= 2) {
         [[PHImageManager defaultManager] requestImageForAsset:assetsResult[1] targetSize:CGSizeMake(75.0f, 75.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
-            cell.secondImageView.image = result;
+            typeof(wcell) scell = wcell;
+            if (!scell) return;
+            if (scell) {
+                scell.secondImageView.image = result;
+            }
         }];
     }
     if (assetsResult.count >= 3) {
         [[PHImageManager defaultManager] requestImageForAsset:assetsResult[2] targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
-            cell.thirdImageView.image = result;
+            typeof(wcell) scell = wcell;
+            if (!scell) return;
+            if (scell) {
+                scell.thirdImageView.image = result;
+            }
         }];
     }
     

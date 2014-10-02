@@ -33,7 +33,7 @@
         
         NSMutableArray *assetCollectionFetchResults = @[].mutableCopy;
         for (PHAssetCollection *collection in _fetchResult) {
-            PHFetchResult *fetchResult = [PHAsset fetchKeyAssetsInAssetCollection:collection options:nil];
+            PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
             [assetCollectionFetchResults addObject:fetchResult];
         }
         _assetCollectionFetchResults = assetCollectionFetchResults;
@@ -90,22 +90,22 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PEMomentViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PEMomentViewCell class]) forIndexPath:indexPath];
+    NSUInteger index = indexPath.row;
+    cell.tag = index;
+    __weak typeof(cell) wcell = cell;
     
     PHFetchResult *assetsResult = _assetCollectionFetchResults[indexPath.row];
     cell.numberOfImageView = assetsResult.count;
-    CGSize thumbnailTargetSize = CGSizeMake(80.0f, 80.0f);
-    if (cell.numberOfImageView == 1) {
-        thumbnailTargetSize = CGSizeMake(160.0f, 160.0f);
-    }
     for (int i=0; i<cell.numberOfImageView; i++) {
-        UIImageView *imageView = cell.imageViews[i];
-        imageView.image = nil;
         PHAsset *asset = assetsResult[i];
-        if (asset.mediaType == PHAssetMediaTypeImage) {
-            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:thumbnailTargetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:_cellSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+            typeof(wcell) scell = wcell;
+            if (!scell) return;
+            if (scell.tag == index) {
+                UIImageView *imageView = scell.imageViews[i];
                 imageView.image = result;
-            }];
-        }
+            }
+        }];
     }
     
     PHAssetCollection *collection = _fetchResult[indexPath.row];
