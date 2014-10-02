@@ -1746,6 +1746,151 @@
 				71958C54191B8CD000CFC15F /* PWPhotoPageViewController */,
 				71958C59191B931F00CFC15F /* PWPhotoViewController */,
 				71A2546D1919CFD0009914F7 /* PWSearchNavigationController */,
+				719BECE619568D93005DE6E7 /* PWSettingsViewController */,
+			);
+			name = W;
+			sourceTree = "<group>";
+		};
+		71B72FF119DDAB7000D105EA /* A */ = {
+			isa = PBXGroup;
+			children = (
+				7191706319D15F73003BFFC3 /* PACenterTextTableViewCell */,
+				711183A319D0324C00548730 /* PAGradientView */,
+			);
+			name = A;
+			sourceTree = "<group>";
+		};
+		71B72FF219DDAB7F00D105EA /* D */ = {
+			isa = PBXGroup;
+			children = (
+				71D52EF9197F98D9005CFF30 /* PDTaskManagerViewControllerHeaderView */,
+				71C07838194ABBB60071702D /* PDTaskTableViewCell */,
+			);
+			name = D;
+			sourceTree = "<group>";
+		};
+		71B72FF319DDAB8B00D105EA /* E */ = {
+			isa = PBXGroup;
+			children = (
+				7191705B19D121FC003BFFC3 /* PEAlbumViewCell */,
+				712F120F19DBDEFC00ED6566 /* PEBannerContentView */,
+				711183A919D0464600548730 /* PECategoryViewCell */,
+				711183A819D0462500548730 /* PEHorizontalScrollView */,
+				7191705F19D1354F003BFFC3 /* PEMomentViewCell */,
+				711C199A19D3C76400FE3536 /* PEPhotoViewCell */,
+				711183B219D06B1700548730 /* PEScrollBannerReusableView */,
+				71C54F4519CD2ACE00BCD9CF /* PEScrollBannerView */,
+				711C199219D3C4FA00FE3536 /* PETimelapseViewCell */,
+			);
+			name = E;
+			sourceTree = "<group>";
+		};
+		71B72FF519DDAB9C00D105EA /* L */ = {
+			isa = PBXGroup;
+			children = (
+				719552471929013F003EA9AF /* PLAlbumViewCell */,
+				71349CBD192F2389003CC2AA /* PLCollectionFooterView */,
+				71D52F2319853BD4005CFF30 /* PLFullAlbumViewCell */,
+				71349C98192CF2D8003CC2AA /* PLParallelNavigationTitleView */,
+				71349CAE192DF789003CC2AA /* PLPhotoViewCell */,
+				71349CB2192EEA8D003CC2AA /* PLPhotoViewHeaderView */,
+				71109C111974079600EEDAAE /* PLRoundedCornerBorderView */,
+			);
+			name = L;
+			sourceTree = "<group>";
+		};
+		71B72FF619DDABA600D105EA /* W */ = {
+			isa = PBXGroup;
+			children = (
+				719D92511918D81E00B75D8B /* PWAlbumViewCell */,
+				713320301921E48C00A27B3C /* PWDatePickerView */,
+				71958C60191B9B2300CFC15F /* PWImageScrollView */,
+				71A254651919523E009914F7 /* PWPhotoViewCell */,
+				712E03A3191DAD690035D9E0 /* PWRefreshControl */,
+				718A0916194D2FE500480E57 /* PWRoundedCornerBadgeLabel */,
+				71CD06101930EDC200BECF6B /* PWSearchTableViewLocalAlbumCell */,
+				71CD060C1930E65D00BECF6B /* PWSearchTableViewWebAlbumCell */,
+			);
+			name = W;
+			sourceTree = "<group>";
+		};
+		71B72FF719DDABB700D105EA /* X */ = {
+			isa = PBXGroup;
+			children = (
+				71958C53191B8A6800CFC15F /* UIButton+HitEdgeInsets */,
+			);
+			name = X;
+			sourceTree = "<group>";
+		};
+		71B72FF819DDABDC00D105EA /* X */ = {
+			isa = PBXGroup;
+			children = (
+				71BD235919779E1C0034CD3B /* ALAsset+methods */,
+				71BDE39D1998FA8100853E85 /* NSAttributedString+methods */,
+				715A31B5198FD5F6002A0A37 /* NSFileManager+methods */,
+				7149D2D019DC2CB1004BD7A7 /* NSIndexSet+methods */,
+				715A30FF1989372A002A0A37 /* NSURLResponse+methods */,
+				71958C4F191B4BC500CFC15F /* UIImage+ImageEffects */,
+				71958C36191B494A00CFC15F /* UIView+ScreenCapture */,
+			);
+			name = X;
+			sourceTree = "<group>";
+		};
+		71B72FF919DDABF300D105EA /* A */ = {
+			isa = PBXGroup;
+			children = (
+				711AF61C1993AA4400640D2D /* PAAlbumCollectionViewFlowLayout */,
+				71A2542219190EBD009914F7 /* PAColors */,
+				71955277192C27D2003EA9AF /* PADateFormatter */,
+				718F271219AACC8400156D88 /* PADateTimestamp */,
+				71A25475191B3222009914F7 /* PAIcons */,
+				71649BF2195907AB00009C1F /* PAInAppPurchase */,
+				71737EB719A318F800CBE68A /* PANetworkActivityIndicator */,
+				711AF6201993ACBF00640D2D /* PAPhotoCollectionViewFloyLayout */,
+				71CD06141931779D00BECF6B /* PASnowFlake */,
+				712E03B11920B53D0035D9E0 /* PAString */,
+			);
+			name = A;
+			sourceTree = "<group>";
+		};
+		71B72FFA19DDABF900D105EA /* D */ = {
+			isa = PBXGroup;
+			children = (
+				71388283193E13BD009AFB1F /* PDCoreDataAPI */,
+				7177479C1936F572005179B6 /* PDModelObject */,
+				71BD233D197683C80034CD3B /* PDModelObject+methods */,
+				714318C5193DF6DB0066A1F8 /* PDTaskManager */,
+			);
+			name = D;
+			sourceTree = "<group>";
+		};
+		71B72FFB19DDABFE00D105EA /* E */ = {
+			isa = PBXGroup;
+			children = (
+				7191705719D105EB003BFFC3 /* PEAlbumListDataSource */,
+				7165408819D93DB500960F70 /* PEAssetsManager */,
+				711C196D19D3133000FE3536 /* PEMomentListDataSource */,
+				711C19AE19D3DD4700FE3536 /* PEPhotoDataSourceFactoryMethod */,
+				711C19B219D3E07C00FE3536 /* PEPhotoListDataSource */,
+			);
+			name = E;
+			sourceTree = "<group>";
+		};
+		71B72FFC19DDAC0300D105EA /* L */ = {
+			isa = PBXGroup;
+			children = (
+				712E03AD191F613C0035D9E0 /* PLAssetsLibrary */,
+				7195525219290DFB003EA9AF /* PLCoreDataAPI */,
+				7195523B1928FAF8003EA9AF /* PLModelObject */,
+			);
+			name = L;
+			sourceTree = "<group>";
+		};
+		71B72FFD19DDAC0700D105EA /* W */ = {
+			isa = PBXGroup;
+			children = (
+				710461A11917759E00DF369D /* PWCoreDataAPI */,
+				71E885A31912158D005A78E0 /* PWPicasaAPI */,
 			);
 			name = W;
 			sourceTree = "<group>";
@@ -2182,37 +2327,12 @@
 		71E8859519120BB9005A78E0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				71BD235919779E1C0034CD3B /* ALAsset+methods */,
-				71BDE39D1998FA8100853E85 /* NSAttributedString+methods */,
-				715A31B5198FD5F6002A0A37 /* NSFileManager+methods */,
-				7149D2D019DC2CB1004BD7A7 /* NSIndexSet+methods */,
-				715A30FF1989372A002A0A37 /* NSURLResponse+methods */,
-				711AF61C1993AA4400640D2D /* PAAlbumCollectionViewFlowLayout */,
-				71A2542219190EBD009914F7 /* PAColors */,
-				71955277192C27D2003EA9AF /* PADateFormatter */,
-				718F271219AACC8400156D88 /* PADateTimestamp */,
-				71A25475191B3222009914F7 /* PAIcons */,
-				71649BF2195907AB00009C1F /* PAInAppPurchase */,
-				71737EB719A318F800CBE68A /* PANetworkActivityIndicator */,
-				711AF6201993ACBF00640D2D /* PAPhotoCollectionViewFloyLayout */,
-				71CD06141931779D00BECF6B /* PASnowFlake */,
-				712E03B11920B53D0035D9E0 /* PAString */,
-				71388283193E13BD009AFB1F /* PDCoreDataAPI */,
-				7177479C1936F572005179B6 /* PDModelObject */,
-				71BD233D197683C80034CD3B /* PDModelObject+methods */,
-				714318C5193DF6DB0066A1F8 /* PDTaskManager */,
-				7191705719D105EB003BFFC3 /* PEAlbumListDataSource */,
-				7165408819D93DB500960F70 /* PEAssetsManager */,
-				711C196D19D3133000FE3536 /* PEMomentListDataSource */,
-				711C19AE19D3DD4700FE3536 /* PEPhotoDataSourceFactoryMethod */,
-				711C19B219D3E07C00FE3536 /* PEPhotoListDataSource */,
-				712E03AD191F613C0035D9E0 /* PLAssetsLibrary */,
-				7195525219290DFB003EA9AF /* PLCoreDataAPI */,
-				7195523B1928FAF8003EA9AF /* PLModelObject */,
-				710461A11917759E00DF369D /* PWCoreDataAPI */,
-				71E885A31912158D005A78E0 /* PWPicasaAPI */,
-				71958C4F191B4BC500CFC15F /* UIImage+ImageEffects */,
-				71958C36191B494A00CFC15F /* UIView+ScreenCapture */,
+				71B72FF919DDABF300D105EA /* A */,
+				71B72FFA19DDABF900D105EA /* D */,
+				71B72FFB19DDABFE00D105EA /* E */,
+				71B72FFC19DDAC0300D105EA /* L */,
+				71B72FFD19DDAC0700D105EA /* W */,
+				71B72FF819DDABDC00D105EA /* X */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -2220,35 +2340,12 @@
 		71E8859619120BBF005A78E0 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				712F120F19DBDEFC00ED6566 /* PEBannerContentView */,
-				7191706319D15F73003BFFC3 /* PACenterTextTableViewCell */,
-				711183A319D0324C00548730 /* PAGradientView */,
-				71D52EF9197F98D9005CFF30 /* PDTaskManagerViewControllerHeaderView */,
-				71C07838194ABBB60071702D /* PDTaskTableViewCell */,
-				7191705B19D121FC003BFFC3 /* PEAlbumViewCell */,
-				711183A919D0464600548730 /* PECategoryViewCell */,
-				711183A819D0462500548730 /* PEHorizontalScrollView */,
-				7191705F19D1354F003BFFC3 /* PEMomentViewCell */,
-				711C199A19D3C76400FE3536 /* PEPhotoViewCell */,
-				711183B219D06B1700548730 /* PEScrollBannerReusableView */,
-				71C54F4519CD2ACE00BCD9CF /* PEScrollBannerView */,
-				711C199219D3C4FA00FE3536 /* PETimelapseViewCell */,
-				719552471929013F003EA9AF /* PLAlbumViewCell */,
-				71349CBD192F2389003CC2AA /* PLCollectionFooterView */,
-				71D52F2319853BD4005CFF30 /* PLFullAlbumViewCell */,
-				71349C98192CF2D8003CC2AA /* PLParallelNavigationTitleView */,
-				71349CAE192DF789003CC2AA /* PLPhotoViewCell */,
-				71349CB2192EEA8D003CC2AA /* PLPhotoViewHeaderView */,
-				71109C111974079600EEDAAE /* PLRoundedCornerBorderView */,
-				719D92511918D81E00B75D8B /* PWAlbumViewCell */,
-				713320301921E48C00A27B3C /* PWDatePickerView */,
-				71958C60191B9B2300CFC15F /* PWImageScrollView */,
-				71A254651919523E009914F7 /* PWPhotoViewCell */,
-				712E03A3191DAD690035D9E0 /* PWRefreshControl */,
-				718A0916194D2FE500480E57 /* PWRoundedCornerBadgeLabel */,
-				71CD06101930EDC200BECF6B /* PWSearchTableViewLocalAlbumCell */,
-				71CD060C1930E65D00BECF6B /* PWSearchTableViewWebAlbumCell */,
-				71958C53191B8A6800CFC15F /* UIButton+HitEdgeInsets */,
+				71B72FF119DDAB7000D105EA /* A */,
+				71B72FF219DDAB7F00D105EA /* D */,
+				71B72FF319DDAB8B00D105EA /* E */,
+				71B72FF519DDAB9C00D105EA /* L */,
+				71B72FF619DDABA600D105EA /* W */,
+				71B72FF719DDABB700D105EA /* X */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -2261,7 +2358,6 @@
 				71B72FEE19DD705F00D105EA /* E */,
 				71B72FEF19DD706700D105EA /* L */,
 				71B72FF019DD707100D105EA /* W */,
-				719BECE619568D93005DE6E7 /* PWSettingsViewController */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
