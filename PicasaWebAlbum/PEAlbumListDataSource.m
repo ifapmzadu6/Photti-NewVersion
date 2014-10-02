@@ -17,6 +17,7 @@
 
 @property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PHFetchResult *fetchResult;
+@property (strong, nonatomic) NSArray *assetCollectionFetchResults;
 
 @end
 
@@ -27,7 +28,14 @@
     if (self) {
         [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
         
-        [self loadData];
+        _fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:0];
+        
+        NSMutableArray *assetCollectionFetchResults = @[].mutableCopy;
+        for (PHAssetCollection *collection in _fetchResult) {
+            PHFetchResult *fetchResult = [PHAsset fetchKeyAssetsInAssetCollection:collection options:nil];
+            [assetCollectionFetchResults addObject:fetchResult];
+        }
+        _assetCollectionFetchResults = assetCollectionFetchResults;
     }
     return self;
 }
@@ -122,8 +130,7 @@
     cell.secondImageView.image = nil;
     cell.thirdImageView.image = nil;
     
-    PHAssetCollection *collection = _fetchResult[indexPath.row];
-    PHFetchResult *assetsResult = [PHAsset fetchKeyAssetsInAssetCollection:collection options:nil];
+    PHFetchResult *assetsResult = _assetCollectionFetchResults[indexPath.row];
     if (assetsResult.count >= 1) {
         [[PHImageManager defaultManager] requestImageForAsset:assetsResult[0] targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
             cell.firstImageView.image = result;
@@ -140,6 +147,7 @@
         }];
     }
     
+    PHAssetCollection *collection = _fetchResult[indexPath.row];
     cell.titleLabel.text = collection.localizedTitle;
     cell.detailLabel.text = [NSString stringWithFormat:@"%ld個の項目", (long)collection.estimatedAssetCount];
     cell.isSelectWithCheckmark = _isSelectMode;
@@ -180,10 +188,6 @@
             _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
         }
     }
-}
-
-- (void)loadData {
-    _fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:0];
 }
 
 @end

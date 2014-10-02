@@ -16,6 +16,7 @@
 @interface PEPhotoListDataSource () <PHPhotoLibraryChangeObserver>
 
 @property (weak, nonatomic) UICollectionView *collectionView;
+@property (strong, nonatomic) NSMutableArray *requestIDs;
 
 @end
 
@@ -36,6 +37,8 @@
         
         _fetchResult = fetchResult;
         _assetCollection = assetCollection;
+        
+        _requestIDs = @[].mutableCopy;
     }
     return self;
 }

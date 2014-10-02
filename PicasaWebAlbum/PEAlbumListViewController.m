@@ -24,6 +24,7 @@
 @property (strong, nonatomic) PEAlbumListDataSource *albumListDataSource;
 
 @property (strong, nonatomic) UIBarButtonItem *selectTrashBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *selectUploadBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButtonItem;
 @property (weak, nonatomic) UIAlertAction *saveAlertAction;
 
@@ -51,6 +52,7 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             sself.selectActionBarButtonItem.enabled = (count) ? YES : NO;
+            sself.selectUploadBarButtonItem.enabled = (count) ? YES : NO;
             sself.selectTrashBarButtonItem.enabled = (count) ? YES : NO;
         };
     }
@@ -134,12 +136,7 @@
     NSString *title = NSLocalizedString(@"New Album", nil);
     NSString *message = NSLocalizedString(@"Enter a name for this album.", nil);
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = NSLocalizedString(@"Title", nil);
-        textField.delegate = self;
-    }];
     UIAlertAction *cancelAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
-    [alertController addAction:cancelAlertAction];
     __weak typeof(self) wself = self;
     _saveAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Save", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         typeof(wself) sself = wself;
@@ -148,8 +145,14 @@
         [sself makeNewAlbumWithTitle:textFields.text];
     }];
     _saveAlertAction.enabled = NO;
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        textField.placeholder = NSLocalizedString(@"Title", nil);
+        textField.delegate = sself;
+    }];
     [alertController addAction:_saveAlertAction];
-    
+    [alertController addAction:cancelAlertAction];
     [self.tabBarController presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -158,6 +161,11 @@
 }
 
 - (void)selectActionBarButtonAction:(id)sender {
+    NSArray *selectAssetCollections = _albumListDataSource.selectedCollections;
+    [self actionAssetCollections:selectAssetCollections];
+}
+
+- (void)selectUploadBarButtonAction:(id)sender {
     
 }
 
@@ -187,10 +195,13 @@
     
     _selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction:)];
     _selectActionBarButtonItem.enabled = NO;
+    _selectUploadBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"Upload"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] style:UIBarButtonItemStylePlain target:self action:@selector(selectUploadBarButtonAction:)];
+    _selectActionBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    _selectActionBarButtonItem.enabled = NO;
     _selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction:)];
     _selectTrashBarButtonItem.enabled = NO;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems = @[_selectActionBarButtonItem, flexibleSpace, _selectTrashBarButtonItem];
+    NSArray *toolbarItems = @[_selectActionBarButtonItem, flexibleSpace, _selectUploadBarButtonItem, flexibleSpace, _selectTrashBarButtonItem];
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
     [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
@@ -250,9 +261,29 @@
     
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         [PHAssetCollectionChangeRequest deleteAssetCollections:assetCollections];
-        
     } completionHandler:^(BOOL success, NSError *error) {
+        NSLog(@"%@", error);
     }];
+}
+
+- (void)actionAssetCollections:(NSArray *)assetCollections {
+    NSMutableArray *assets = @[].mutableCopy;
+    
+//    PHImageRequestOptions *options = [PHImageRequestOptions new];
+//    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+//    options.synchronous = YES;
+    for (PHAssetCollection *assetCollection in assetCollections) {
+        PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+        for (PHAsset *asset in fetchResult) {
+//            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage *result, NSDictionary *info) {
+//                [assets addObject:result];
+//            }];
+            [assets addObject:asset];
+        }
+    }
+    
+    UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:assets applicationActivities:nil];
+    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
 @end

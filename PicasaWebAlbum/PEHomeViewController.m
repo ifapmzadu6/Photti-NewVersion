@@ -482,6 +482,11 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     }
 }
 
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    PEScrollBannerHeaderView *headerView = (PEScrollBannerHeaderView *)_tableView.tableHeaderView;
+    headerView.shouldAnimate = YES;
+}
+
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
     PEScrollBannerHeaderView *headerView = (PEScrollBannerHeaderView *)_tableView.tableHeaderView;
     headerView.shouldAnimate = YES;

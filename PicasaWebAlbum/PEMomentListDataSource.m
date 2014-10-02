@@ -18,6 +18,7 @@
 
 @property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PHFetchResult *fetchResult;
+@property (strong, nonatomic) NSArray *assetCollectionFetchResults;
 
 @end
 
@@ -29,6 +30,13 @@
         [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
         
         _fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeMoment subtype:PHAssetCollectionSubtypeAny options:0];
+        
+        NSMutableArray *assetCollectionFetchResults = @[].mutableCopy;
+        for (PHAssetCollection *collection in _fetchResult) {
+            PHFetchResult *fetchResult = [PHAsset fetchKeyAssetsInAssetCollection:collection options:nil];
+            [assetCollectionFetchResults addObject:fetchResult];
+        }
+        _assetCollectionFetchResults = assetCollectionFetchResults;
     }
     return self;
 }
@@ -83,9 +91,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PEMomentViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PEMomentViewCell class]) forIndexPath:indexPath];
     
-    PHAssetCollection *collection = _fetchResult[indexPath.row];
-    PHFetchResult *assetsResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
-    
+    PHFetchResult *assetsResult = _assetCollectionFetchResults[indexPath.row];
     cell.numberOfImageView = assetsResult.count;
     CGSize thumbnailTargetSize = CGSizeMake(80.0f, 80.0f);
     if (cell.numberOfImageView == 1) {
@@ -102,6 +108,7 @@
         }
     }
     
+    PHAssetCollection *collection = _fetchResult[indexPath.row];
     cell.titleLabel.text = [PEMomentListDataSource titleForMoment:collection];
     cell.detailLabel.text = [NSString stringWithFormat:@"%ld個の項目", (long)collection.estimatedAssetCount];
     
