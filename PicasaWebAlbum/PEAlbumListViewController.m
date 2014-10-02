@@ -248,23 +248,11 @@
         return;
     }
     
-    UIAlertAction *deleteAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Delete", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        [PHAssetCollectionChangeRequest deleteAssetCollections:assetCollections];
         
+    } completionHandler:^(BOOL success, NSError *error) {
     }];
-    UIAlertAction *cancelAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
-    
-    NSString *title = nil;
-    if (assetCollections.count == 1) {
-        PHAssetCollection *assetCollection = assetCollections.firstObject;
-        title = [NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), assetCollection.localizedTitle];
-    }
-    else {
-        title = [NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete %ld albums?", nil), (long)assetCollections.count];
-    }
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    [alertController addAction:deleteAlertAction];
-    [alertController addAction:cancelAlertAction];
-    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

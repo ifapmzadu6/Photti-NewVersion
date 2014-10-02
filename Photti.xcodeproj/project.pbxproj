@@ -521,19 +521,19 @@
 		71D52EFB197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskManagerViewControllerHeaderView.m; sourceTree = "<group>"; };
 		71D52F2019853BCF005CFF30 /* PLFullAlbumViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLFullAlbumViewCell.h; sourceTree = "<group>"; };
 		71D52F2119853BCF005CFF30 /* PLFullAlbumViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLFullAlbumViewCell.m; sourceTree = "<group>"; };
-		71E884FE19115C7E005A78E0 /* PicasaWebAlbum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PicasaWebAlbum.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		71E884FE19115C7E005A78E0 /* Photti.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Photti.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		71E8850119115C7E005A78E0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		71E8850319115C7E005A78E0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		71E8850519115C7E005A78E0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		71E8850919115C7E005A78E0 /* PicasaWebAlbum-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PicasaWebAlbum-Info.plist"; sourceTree = "<group>"; };
+		71E8850919115C7E005A78E0 /* Photti-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Photti-Info.plist"; sourceTree = "<group>"; };
 		71E8850B19115C7E005A78E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		71E8850D19115C7E005A78E0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		71E8850F19115C7E005A78E0 /* PicasaWebAlbum-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PicasaWebAlbum-Prefix.pch"; sourceTree = "<group>"; };
+		71E8850F19115C7E005A78E0 /* Photti-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Photti-Prefix.pch"; sourceTree = "<group>"; };
 		71E8851019115C7E005A78E0 /* PWAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PWAppDelegate.h; sourceTree = "<group>"; };
 		71E8851119115C7E005A78E0 /* PWAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PWAppDelegate.m; sourceTree = "<group>"; };
-		71E8852219115C7E005A78E0 /* PicasaWebAlbumTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PicasaWebAlbumTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		71E8852219115C7E005A78E0 /* PhottiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhottiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		71E8852319115C7E005A78E0 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		71E8852B19115C7E005A78E0 /* PicasaWebAlbumTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PicasaWebAlbumTests-Info.plist"; sourceTree = "<group>"; };
+		71E8852B19115C7E005A78E0 /* PhottiTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PhottiTests-Info.plist"; sourceTree = "<group>"; };
 		71E8852D19115C7E005A78E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		71E8852F19115C7E005A78E0 /* PicasaWebAlbumTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PicasaWebAlbumTests.m; sourceTree = "<group>"; };
 		71E8856719115DBE005A78E0 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -2013,8 +2013,8 @@
 		71E884FF19115C7E005A78E0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				71E884FE19115C7E005A78E0 /* PicasaWebAlbum.app */,
-				71E8852219115C7E005A78E0 /* PicasaWebAlbumTests.xctest */,
+				71E884FE19115C7E005A78E0 /* Photti.app */,
+				71E8852219115C7E005A78E0 /* PhottiTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2074,10 +2074,10 @@
 				713746D0193DD6500097470A /* PicasaWebAlbum.entitlements */,
 				715A31AD198F5876002A0A37 /* Localizable.strings */,
 				711FE8E7195EA48400AF296B /* thirdpartycopyright.html */,
-				71E8850919115C7E005A78E0 /* PicasaWebAlbum-Info.plist */,
+				71E8850919115C7E005A78E0 /* Photti-Info.plist */,
 				71E8850A19115C7E005A78E0 /* InfoPlist.strings */,
 				71E8850D19115C7E005A78E0 /* main.m */,
-				71E8850F19115C7E005A78E0 /* PicasaWebAlbum-Prefix.pch */,
+				71E8850F19115C7E005A78E0 /* Photti-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -2094,7 +2094,7 @@
 		71E8852A19115C7E005A78E0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				71E8852B19115C7E005A78E0 /* PicasaWebAlbumTests-Info.plist */,
+				71E8852B19115C7E005A78E0 /* PhottiTests-Info.plist */,
 				71E8852C19115C7E005A78E0 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
@@ -2280,9 +2280,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		71E884FD19115C7E005A78E0 /* PicasaWebAlbum */ = {
+		71E884FD19115C7E005A78E0 /* Photti */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 71E8853319115C7E005A78E0 /* Build configuration list for PBXNativeTarget "PicasaWebAlbum" */;
+			buildConfigurationList = 71E8853319115C7E005A78E0 /* Build configuration list for PBXNativeTarget "Photti" */;
 			buildPhases = (
 				598158475B3A4AE78BA466A4 /* Check Pods Manifest.lock */,
 				71E884FA19115C7E005A78E0 /* Sources */,
@@ -2295,14 +2295,14 @@
 			);
 			dependencies = (
 			);
-			name = PicasaWebAlbum;
+			name = Photti;
 			productName = PicasaWebAlbum;
-			productReference = 71E884FE19115C7E005A78E0 /* PicasaWebAlbum.app */;
+			productReference = 71E884FE19115C7E005A78E0 /* Photti.app */;
 			productType = "com.apple.product-type.application";
 		};
-		71E8852119115C7E005A78E0 /* PicasaWebAlbumTests */ = {
+		71E8852119115C7E005A78E0 /* PhottiTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 71E8853619115C7E005A78E0 /* Build configuration list for PBXNativeTarget "PicasaWebAlbumTests" */;
+			buildConfigurationList = 71E8853619115C7E005A78E0 /* Build configuration list for PBXNativeTarget "PhottiTests" */;
 			buildPhases = (
 				71E8851E19115C7E005A78E0 /* Sources */,
 				71E8851F19115C7E005A78E0 /* Frameworks */,
@@ -2313,9 +2313,9 @@
 			dependencies = (
 				71E8852819115C7E005A78E0 /* PBXTargetDependency */,
 			);
-			name = PicasaWebAlbumTests;
+			name = PhottiTests;
 			productName = PicasaWebAlbumTests;
-			productReference = 71E8852219115C7E005A78E0 /* PicasaWebAlbumTests.xctest */;
+			productReference = 71E8852219115C7E005A78E0 /* PhottiTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -2350,7 +2350,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 71E884F919115C7E005A78E0 /* Build configuration list for PBXProject "PicasaWebAlbum" */;
+			buildConfigurationList = 71E884F919115C7E005A78E0 /* Build configuration list for PBXProject "Photti" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -2364,8 +2364,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				71E884FD19115C7E005A78E0 /* PicasaWebAlbum */,
-				71E8852119115C7E005A78E0 /* PicasaWebAlbumTests */,
+				71E884FD19115C7E005A78E0 /* Photti */,
+				71E8852119115C7E005A78E0 /* PhottiTests */,
 			);
 		};
 /* End PBXProject section */
@@ -2612,7 +2612,7 @@
 /* Begin PBXTargetDependency section */
 		71E8852819115C7E005A78E0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 71E884FD19115C7E005A78E0 /* PicasaWebAlbum */;
+			target = 71E884FD19115C7E005A78E0 /* Photti */;
 			targetProxy = 71E8852719115C7E005A78E0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -2731,9 +2731,9 @@
 					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "PicasaWebAlbum/PicasaWebAlbum-Prefix.pch";
-				INFOPLIST_FILE = "PicasaWebAlbum/PicasaWebAlbum-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				GCC_PREFIX_HEADER = "PicasaWebAlbum/Photti-Prefix.pch";
+				INFOPLIST_FILE = "PicasaWebAlbum/Photti-Info.plist";
+				PRODUCT_NAME = Photti;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -2751,9 +2751,9 @@
 					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "PicasaWebAlbum/PicasaWebAlbum-Prefix.pch";
-				INFOPLIST_FILE = "PicasaWebAlbum/PicasaWebAlbum-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				GCC_PREFIX_HEADER = "PicasaWebAlbum/Photti-Prefix.pch";
+				INFOPLIST_FILE = "PicasaWebAlbum/Photti-Info.plist";
+				PRODUCT_NAME = Photti;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -2773,8 +2773,8 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "PicasaWebAlbumTests/PicasaWebAlbumTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_FILE = "PicasaWebAlbumTests/PhottiTests-Info.plist";
+				PRODUCT_NAME = PhottiTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -2791,8 +2791,8 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PicasaWebAlbum/PicasaWebAlbum-Prefix.pch";
-				INFOPLIST_FILE = "PicasaWebAlbumTests/PicasaWebAlbumTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_FILE = "PicasaWebAlbumTests/PhottiTests-Info.plist";
+				PRODUCT_NAME = PhottiTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -2801,7 +2801,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		71E884F919115C7E005A78E0 /* Build configuration list for PBXProject "PicasaWebAlbum" */ = {
+		71E884F919115C7E005A78E0 /* Build configuration list for PBXProject "Photti" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				71E8853119115C7E005A78E0 /* Debug */,
@@ -2810,7 +2810,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		71E8853319115C7E005A78E0 /* Build configuration list for PBXNativeTarget "PicasaWebAlbum" */ = {
+		71E8853319115C7E005A78E0 /* Build configuration list for PBXNativeTarget "Photti" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				71E8853419115C7E005A78E0 /* Debug */,
@@ -2819,7 +2819,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		71E8853619115C7E005A78E0 /* Build configuration list for PBXNativeTarget "PicasaWebAlbumTests" */ = {
+		71E8853619115C7E005A78E0 /* Build configuration list for PBXNativeTarget "PhottiTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				71E8853719115C7E005A78E0 /* Debug */,
