@@ -754,7 +754,12 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         });
     };
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    if (self.isPhone) {
+        navigationController.transitioningDelegate = (id)navigationController;
+    }
+    else {
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    }
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
@@ -769,7 +774,12 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         });
     };
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    if (self.isPhone) {
+        navigationController.transitioningDelegate = (id)navigationController;
+    }
+    else {
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    }
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 

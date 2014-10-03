@@ -15,6 +15,7 @@
 #import "PWModelObject.h"
 #import "PWCoreDataAPI.h"
 #import "PWOAuthManager.h"
+#import "PADepressingTransition.h"
 
 #import "PWImagePickerNavigationController.h"
 #import "PWImagePickerLocalPageViewController.h"
@@ -33,6 +34,8 @@
 @property (nonatomic) NSUInteger countOfSelectedLocalPhoto;
 
 @property (copy, nonatomic) void (^completion)();
+
+@property (strong, nonatomic) PADepressingTransition *transition;
 
 @end
 
@@ -62,6 +65,10 @@
         }
         
         self.delegate = self;
+        BOOL isPhone = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? YES : NO;
+        if (isPhone) {
+            self.transitioningDelegate = (id)self;
+        }
         
         if (_localNavigationcontroller && _webAlbumViewController) {
             self.viewControllers = @[_localNavigationcontroller, _webNavigationController];
@@ -316,6 +323,16 @@
     }
     
     return photo;
+}
+
+#pragma mark - UIViewControllerTransitioningDelegate
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    self.transition = [PADepressingTransition new];
+    return self.transition;
+}
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    return self.transition;
 }
 
 @end

@@ -286,35 +286,28 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     }
     
     __weak typeof(self) wself = self;
-    [PWPicasaAPI putModifyingAlbumWithID:_album.id_str
-                                   title:albumTitle
-                                 summary:_album.summary
-                                location:_album.gphoto.location
-                                  access:kPWPicasaAPIGphotoAccessProtected
-                               timestamp:_timestamp
-                                keywords:_album.media.keywords
-                              completion:^(NSError *error) {
-                                  if (error) {
+    [PWPicasaAPI putModifyingAlbumWithID:_album.id_str title:albumTitle summary:_album.summary location:_album.gphoto.location access:kPWPicasaAPIGphotoAccessProtected timestamp:_timestamp keywords:_album.media.keywords completion:^(NSError *error) {
+        if (error) {
 #ifdef DEBUG
-                                      NSLog(@"%@", error);
+            NSLog(@"%@", error);
 #endif
-                                      dispatch_async(dispatch_get_main_queue(), ^{
-                                          [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                                      });
-                                      return;
-                                  }
-                                  
-                                  dispatch_async(dispatch_get_main_queue(), ^{
-                                      [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                                      
-                                      typeof(wself) sself = wself;
-                                      if (!sself) return;
-                                      [sself dismissViewControllerAnimated:YES completion:nil];
-                                      if (sself.successBlock) {
-                                          sself.successBlock();
-                                      }
-                                  });
-                              }];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [alertView dismissWithClickedButtonIndex:0 animated:YES];
+            });
+            return;
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [alertView dismissWithClickedButtonIndex:0 animated:YES];
+            
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself dismissViewControllerAnimated:YES completion:nil];
+            if (sself.successBlock) {
+                sself.successBlock();
+            }
+        });
+    }];
 }
 
 - (void)cancelBarButtonAction {

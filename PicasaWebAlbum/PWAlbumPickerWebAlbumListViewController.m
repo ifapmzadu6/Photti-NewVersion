@@ -178,6 +178,12 @@
         [sself loadDataWithStartIndex:0];
     }];
     PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+    if (self.isPhone) {
+        navigationController.transitioningDelegate = (id)navigationController;
+    }
+    else {
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    }
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 

@@ -189,6 +189,13 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         }];
     };
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
+    BOOL isPhone = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? YES : NO;
+    if (isPhone) {
+        navigationController.transitioningDelegate = (id)navigationController;
+    }
+    else {
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    }
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
@@ -332,7 +339,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         
     }];
     
-    PLAlbumListViewController *albumListViewController = [[PLAlbumListViewController alloc] init];
+    PLAlbumListViewController *albumListViewController = [PLAlbumListViewController new];
     NSString *albumListViewControllerTitle = albumListViewController.title;
     [albumListViewController setViewDidAppearBlock:^{
         typeof(wself) sself = wself;

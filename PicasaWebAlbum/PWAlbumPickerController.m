@@ -12,6 +12,7 @@
 
 #import "PLAssetsManager.h"
 #import "PWOAuthManager.h"
+#import "PADepressingTransition.h"
 
 #import "PWAlbumPickerNavigationController.h"
 #import "PWAlbumPickerWebAlbumListViewController.h"
@@ -25,6 +26,8 @@
 @property (strong, nonatomic) UIToolbar *toolbar;
 
 @property (copy, nonatomic) void (^completion)(id, BOOL);
+
+@property (strong, nonatomic) PADepressingTransition *transition;
 
 @end
 
@@ -46,6 +49,10 @@
         }
         
         self.delegate = self;
+        BOOL isPhone = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? YES : NO;
+        if (isPhone) {
+            self.transitioningDelegate = (id)self;
+        }
         
         if (_localNavigationController && _webNavigationController) {
             self.viewControllers = @[_localNavigationController, _webNavigationController];
@@ -152,6 +159,16 @@
             viewController.navigationItem.prompt = prompt;
         }
     }
+}
+
+#pragma mark - UIViewControllerTransitioningDelegate
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    self.transition = [PADepressingTransition new];
+    return self.transition;
+}
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    return self.transition;
 }
 
 @end

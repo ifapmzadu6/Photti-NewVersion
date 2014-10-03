@@ -56,6 +56,7 @@
 		712F39B119398EAA005CF60B /* PWAlbumObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 712F39B019398EAA005CF60B /* PWAlbumObject.m */; };
 		712F39B8193ABD71005CF60B /* PLPhotoPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 712F39B7193ABD71005CF60B /* PLPhotoPageViewController.m */; };
 		712F39BC193AC2BB005CF60B /* PLPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 712F39BB193AC2BB005CF60B /* PLPhotoViewController.m */; };
+		712FB60219DF144E00E3B0F3 /* PADepressingTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 712FB60119DF144E00E3B0F3 /* PADepressingTransition.m */; };
 		713300B4194043EB0061DBA3 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 713300B3194043EB0061DBA3 /* ImageIO.framework */; };
 		7133202B1921D29000A27B3C /* PWNewAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7133202A1921D29000A27B3C /* PWNewAlbumEditViewController.m */; };
 		713320331921E4AF00A27B3C /* PWDatePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 713320321921E4AF00A27B3C /* PWDatePickerView.m */; };
@@ -295,6 +296,8 @@
 		712F39B7193ABD71005CF60B /* PLPhotoPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoPageViewController.m; sourceTree = "<group>"; };
 		712F39BA193AC2BB005CF60B /* PLPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPhotoViewController.h; sourceTree = "<group>"; };
 		712F39BB193AC2BB005CF60B /* PLPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoViewController.m; sourceTree = "<group>"; };
+		712FB60019DF144E00E3B0F3 /* PADepressingTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PADepressingTransition.h; sourceTree = "<group>"; };
+		712FB60119DF144E00E3B0F3 /* PADepressingTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PADepressingTransition.m; sourceTree = "<group>"; };
 		713300B3194043EB0061DBA3 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		713300B519404B130061DBA3 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		713320291921D29000A27B3C /* PWNewAlbumEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWNewAlbumEditViewController.h; sourceTree = "<group>"; };
@@ -1037,6 +1040,15 @@
 				712F39BB193AC2BB005CF60B /* PLPhotoViewController.m */,
 			);
 			name = PLPhotoViewController;
+			sourceTree = "<group>";
+		};
+		712FB5FF19DF141A00E3B0F3 /* PADepressingTransition */ = {
+			isa = PBXGroup;
+			children = (
+				712FB60019DF144E00E3B0F3 /* PADepressingTransition.h */,
+				712FB60119DF144E00E3B0F3 /* PADepressingTransition.m */,
+			);
+			name = PADepressingTransition;
 			sourceTree = "<group>";
 		};
 		713320281921D26B00A27B3C /* PWNewAlbumEditViewController */ = {
@@ -1843,6 +1855,7 @@
 				71A2542219190EBD009914F7 /* PAColors */,
 				71955277192C27D2003EA9AF /* PADateFormatter */,
 				718F271219AACC8400156D88 /* PADateTimestamp */,
+				712FB5FF19DF141A00E3B0F3 /* PADepressingTransition */,
 				71A25475191B3222009914F7 /* PAIcons */,
 				71649BF2195907AB00009C1F /* PAInAppPurchase */,
 				71737EB719A318F800CBE68A /* PANetworkActivityIndicator */,
@@ -2719,6 +2732,7 @@
 				715A31B4198FD5E8002A0A37 /* NSFileManager+methods.m in Sources */,
 				71109C181974201700EEDAAE /* PLNewAlbumEditViewController.m in Sources */,
 				71C54F4819CD2B0100BCD9CF /* PEScrollBannerView.m in Sources */,
+				712FB60219DF144E00E3B0F3 /* PADepressingTransition.m in Sources */,
 				712E03B41920B5570035D9E0 /* PAString.m in Sources */,
 				71349CC4192F3731003CC2AA /* PLiCloudViewController.m in Sources */,
 				711C199D19D3C78100FE3536 /* PEPhotoViewCell.m in Sources */,

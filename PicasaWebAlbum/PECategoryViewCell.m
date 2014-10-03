@@ -64,7 +64,7 @@
     _moreButton = [UIButton new];
     [_moreButton addTarget:self action:@selector(moreButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _moreButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
-    [_moreButton setTitle:@"全て見る" forState:UIControlStateNormal];
+    [_moreButton setTitle:NSLocalizedString(@"See All", nil) forState:UIControlStateNormal];
     [_moreButton setTitleColor:[PAColors getColor:PAColorsTypeTextLightSubColor] forState:UIControlStateNormal];
     _moreButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     _moreButton.titleEdgeInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 7.0f);
@@ -73,7 +73,7 @@
     _greaterThanImageView = [UIImageView new];
     _greaterThanImageView.image = [[UIImage imageNamed:@"GreaterThan"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _greaterThanImageView.tintColor = [PAColors getColor:PAColorsTypeTextLightSubColor];
-    _greaterThanImageView.frame = CGRectMake(0.0f, 0.0f, 7.0f, 10.0f);
+    _greaterThanImageView.frame = CGRectMake(0.0f, 0.0f, 8.0f, 10.0f);
     [self.contentView addSubview:_greaterThanImageView];
     
     _horizontalScrollView = [PEHorizontalScrollView new];

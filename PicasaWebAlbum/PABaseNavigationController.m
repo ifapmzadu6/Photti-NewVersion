@@ -9,8 +9,11 @@
 #import "PABaseNavigationController.h"
 
 #import "PAColors.h"
+#import "PADepressingTransition.h"
 
 @interface PABaseNavigationController () <UINavigationControllerDelegate>
+
+@property (strong, nonatomic) PADepressingTransition *transition;
 
 @end
 
@@ -31,6 +34,16 @@
 
 - (BOOL)disablesAutomaticKeyboardDismissal {
     return NO;
+}
+
+#pragma mark - UIViewControllerTransitioningDelegate
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    self.transition = [PADepressingTransition new];
+    return self.transition;
+}
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    return self.transition;
 }
 
 @end

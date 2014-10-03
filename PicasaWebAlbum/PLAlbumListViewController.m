@@ -276,7 +276,13 @@
         }];
     };
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    BOOL isPhone = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? YES : NO;
+    if (isPhone) {
+        navigationController.transitioningDelegate = (id)navigationController;
+    }
+    else {
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    }
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 

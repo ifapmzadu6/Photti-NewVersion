@@ -15,14 +15,12 @@
 #import "PWRefreshControl.h"
 #import "PLCollectionFooterView.h"
 #import "PAAlbumCollectionViewFlowLayout.h"
-#import <Reachability.h>
-#import "PASnowFlake.h"
-#import <SDImageCache.h>
-
 #import "PDTaskManager.h"
-
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
+#import "PASnowFlake.h"
+#import <Reachability.h>
+#import <SDImageCache.h>
 
 #import "PWPhotoListViewController.h"
 #import "PWSearchNavigationController.h"
@@ -286,7 +284,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 }
 
 - (void)addBarButtonAction {
-    PWNewAlbumEditViewController *viewController = [[PWNewAlbumEditViewController alloc] init];
+    PWNewAlbumEditViewController *viewController = [PWNewAlbumEditViewController new];
     __weak typeof(self) wself = self;
     viewController.successBlock = ^{
         typeof(wself) sself = wself;
@@ -295,7 +293,12 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         [sself loadDataWithStartIndex:0];
     };
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    if (self.isPhone) {
+        navigationController.transitioningDelegate = (id)navigationController;
+    }
+    else {
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    }
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
@@ -393,7 +396,12 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         [sself loadDataWithStartIndex:0];
     };
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    if (self.isPhone) {
+        navigationController.transitioningDelegate = (id)navigationController;
+    }
+    else {
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    }
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
@@ -408,7 +416,12 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         });
     };
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    if (self.isPhone) {
+        navigationController.transitioningDelegate = (id)navigationController;
+    }
+    else {
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    }
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 

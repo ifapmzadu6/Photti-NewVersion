@@ -28,7 +28,13 @@
         PWSettingsTableViewController *tableViewController = [PWSettingsTableViewController new];
         self.viewControllers = @[tableViewController];
         
-        self.modalPresentationStyle = UIModalPresentationFormSheet;
+        BOOL isPhone = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? YES : NO;
+        if (isPhone) {
+            self.transitioningDelegate = (id)self;
+        }
+        else {
+            self.modalPresentationStyle = UIModalPresentationFormSheet;
+        }
     }
     return self;
 }
