@@ -121,7 +121,15 @@
 }
 
 - (void)trashBarButtonAction:(id)sender {
-    
+    PHAsset *asset = _fetchedResult[_index];
+    __weak typeof(self) wself = self;
+    [self deleteAssets:@[asset] completion:^(BOOL success, NSError *error) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (success && !error) {
+            [sself.navigationController popViewControllerAnimated:YES];
+        }
+    }];
 }
 
 #pragma mark UIPageViewControllerDataSource
@@ -152,7 +160,6 @@
     viewController.viewDidAppearBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         sself.title = title;
         sself.index = index;
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -163,7 +170,6 @@
     viewController.handleSingleTapBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         if ([tabBarController isToolbarHideen]) {
             [tabBarController setIsStatusBarHidden:NO animated:YES];
@@ -187,5 +193,21 @@
     
     return viewController;
 }
+
+#pragma mark Photo
+- (void)deleteAssets:(NSArray *)assets completion:(void (^)(BOOL, NSError *))completion {
+    if (assets.count == 0) return;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        [PHAssetChangeRequest deleteAssets:assets];
+    } completionHandler:^(BOOL success, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(success, error);
+            }
+        });
+    }];
+}
+
+
 
 @end

@@ -65,6 +65,7 @@
     NSArray *reloadIndexPaths = [changeDetails.changedIndexes indexPathsForSection:0];
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSUInteger count = changeDetails.fetchResultAfterChanges.count;
         _fetchResult = changeDetails.fetchResultAfterChanges;
         
         [_collectionView performBatchUpdates:^{
@@ -77,7 +78,11 @@
             if (reloadIndexPaths) {
                 [_collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
             }
-        } completion:nil];
+        } completion:^(BOOL finished) {
+            if (_didChangeItemCountBlock) {
+                _didChangeItemCountBlock(count);
+            }
+        }];
     });
 }
 

@@ -68,20 +68,20 @@
     }
 }
 
-- (NSArray *)selectedCollections {
+- (NSArray *)selectedAssets {
     if (!_isSelectMode) {
         return nil;
     }
     
-    NSMutableArray *selectedCollections = @[].mutableCopy;
+    NSMutableArray *selectedAssets = @[].mutableCopy;
     UICollectionView *collectionView = _collectionView;
     if (collectionView) {
         for (NSIndexPath *indexPath in collectionView.indexPathsForSelectedItems) {
-            PHAssetCollection *assetCollection = _fetchResult[indexPath.item];
-            [selectedCollections addObject:assetCollection];
+            PHAsset *asset = _fetchResult[indexPath.item];
+            [selectedAssets addObject:asset];
         }
     }
-    return selectedCollections;
+    return selectedAssets;
 }
 
 #pragma mark PHPhotoLibraryChangeObserver
@@ -93,8 +93,8 @@
     NSArray *deleteIndexPaths = [changeDetails.removedIndexes indexPathsForSection:0];
     NSArray *insertIndexPaths = [changeDetails.insertedIndexes indexPathsForSection:0];
     NSArray *reloadIndexPaths = [changeDetails.changedIndexes indexPathsForSection:0];
-    
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSUInteger count = changeDetails.fetchResultAfterChanges.count;
         _fetchResult = changeDetails.fetchResultAfterChanges;
         
         [_collectionView performBatchUpdates:^{
@@ -107,7 +107,11 @@
             if (reloadIndexPaths) {
                 [_collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
             }
-        } completion:nil];
+        } completion:^(BOOL finished) {
+            if (_didChangeItemCountBlock) {
+                _didChangeItemCountBlock(count);
+            }
+        }];
     });
 }
 

@@ -19,7 +19,7 @@
 // test
 #import "PWImagePickerController.h"
 
-@interface PEPhotoListViewController ()
+@interface PEPhotoListViewController () <UITextFieldDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
@@ -29,6 +29,7 @@
 @property (strong, nonatomic) UIBarButtonItem *selectTrashBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectUploadBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButtonItem;
+@property (weak, nonatomic) UIAlertAction *saveAlertAction;
 
 @end
 
@@ -98,6 +99,21 @@
         }
         _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
         _photoListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+        _photoListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (count == 0) {
+                [sself disableSelectMode];
+                [sself.navigationController popViewControllerAnimated:YES];
+            }
+        };
+        _photoListDataSource.didChangeSelectedItemCountBlock = ^(NSUInteger count){
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            sself.selectActionBarButtonItem.enabled = (count) ? YES : NO;
+            sself.selectUploadBarButtonItem.enabled = (count) ? YES : NO;
+            sself.selectTrashBarButtonItem.enabled = (count) ? YES : NO;
+        };
     }
     return self;
 }
@@ -182,16 +198,11 @@
 
 #pragma mark UIBarButtonAction
 - (void)actionBarButtonAction:(id)sender {
-    
+    [self showSlbumActionSheet:sender albumTitle:self.title];
 }
 
 - (void)addBarButtonAction:(id)sender {
-    __weak typeof(self) wself = self;
-    PWImagePickerController *imagePickerController = [[PWImagePickerController alloc] initWithAlbumTitle:_photoListDataSource.assetCollection.localizedTitle completion:^(NSArray *selectedPhotos) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-    }];
-    [self.tabBarController presentViewController:imagePickerController animated:YES completion:nil];
+    [self showImagePicker:sender];
 }
 
 - (void)selectBarButtonAction:(id)sender {
@@ -208,11 +219,28 @@
 
 - (void)selectTrashBarButtonAction:(id)sender {
     NSArray *deleteAssets = _photoListDataSource.selectedAssets;
-    [self deleteAssets:deleteAssets];
+    __weak typeof(self) wself = self;
+    [self deleteAssets:deleteAssets completion:^(BOOL success, NSError *error) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (success && !error) {
+            sself.selectActionBarButtonItem.enabled = NO;
+            sself.selectUploadBarButtonItem.enabled = NO;
+            sself.selectTrashBarButtonItem.enabled = NO;
+        }
+    }];
 }
 
 - (void)cancelBarButtonAction:(id)sender {
     [self disableSelectMode];
+}
+
+#pragma mark UITextFieldDelegate
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    NSString *text = [textField.text stringByReplacingCharactersInRange:range withString:string];
+    _saveAlertAction.enabled = (text.length > 0) ? YES : NO;
+    
+    return YES;
 }
 
 #pragma mark SelectMode
@@ -231,7 +259,7 @@
     NSArray *toolbarItems = @[_selectActionBarButtonItem, flexibleSpace, _selectUploadBarButtonItem, flexibleSpace, _selectTrashBarButtonItem];
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
-    [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
@@ -244,7 +272,7 @@
     UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
-    [tabBarController setActionNavigationTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
     [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
@@ -269,15 +297,131 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
+#pragma mark Album
+- (void)showSlbumActionSheet:(id)sender albumTitle:(NSString *)albumTitle {
+    __weak typeof(self) wself = self;
+    UIAlertAction *editAlertAction = nil;
+    if (_type == PHPhotoListViewControllerType_Album) {
+        editAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Edit", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself editWithAssetCollection:sself.photoListDataSource.assetCollection];
+        }];
+    }
+    UIAlertAction *shareAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Share", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        
+    }];
+    UIAlertAction *uploadAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Upload", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        
+    }];
+    UIAlertAction *deleteAlertAction = nil;
+    if (_type == PHPhotoListViewControllerType_Album) {
+        deleteAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Delete", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself deleteAssetCollection:sself.photoListDataSource.assetCollection completion:^(BOOL success, NSError *error) {
+                if (success && !error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [sself.navigationController popViewControllerAnimated:YES];
+                    });
+                }
+            }];
+        }];
+    }
+    UIAlertAction *cancelAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+    
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), albumTitle];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    if (editAlertAction) {
+        [alertController addAction:editAlertAction];
+    }
+    [alertController addAction:shareAlertAction];
+    [alertController addAction:uploadAlertAction];
+    if (deleteAlertAction) {
+        [alertController addAction:deleteAlertAction];
+    }
+    [alertController addAction:cancelAlertAction];
+    [self.tabBarController presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)showImagePicker:(id)sender {
+    __weak typeof(self) wself = self;
+    PWImagePickerController *imagePickerController = [[PWImagePickerController alloc] initWithAlbumTitle:_photoListDataSource.assetCollection.localizedTitle completion:^(NSArray *selectedPhotos) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+    }];
+    [self.tabBarController presentViewController:imagePickerController animated:YES completion:nil];
+}
+
+- (void)editWithAssetCollection:(PHAssetCollection *)assetCollection {
+    NSString *title = NSLocalizedString(@"Album Title", nil);
+    NSString *message = NSLocalizedString(@"Enter a name for this album.", nil);
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *cancelAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+    __weak typeof(self) wself = self;
+    _saveAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Save", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        UITextField *textFields = alertController.textFields.firstObject;
+        NSString *newName = textFields.text;
+        [sself changeNameAssetCollection:assetCollection newName:newName completion:^(BOOL success, NSError *error) {
+            if (success && !error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    sself.title = newName;
+                });
+            }
+        }];
+    }];
+    _saveAlertAction.enabled = NO;
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        textField.placeholder = NSLocalizedString(@"Title", nil);
+        textField.delegate = sself;
+    }];
+    [alertController addAction:cancelAlertAction];
+    [alertController addAction:_saveAlertAction];
+    [self.tabBarController presentViewController:alertController animated:YES completion:nil];
+}
+
 #pragma mark Photos
+- (void)changeNameAssetCollection:(PHAssetCollection *)assetCollection newName:(NSString *)newName completion:(void (^)(BOOL, NSError *))completion {
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetCollectionChangeRequest *changeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+        changeRequest.title = newName;
+    } completionHandler:^(BOOL success, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(success, error);
+            }
+        });
+    }];
+}
 
+- (void)deleteAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(BOOL, NSError *))completion {
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        [PHAssetCollectionChangeRequest deleteAssetCollections:@[assetCollection]];
+    } completionHandler:^(BOOL success, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(success, error);
+            }
+        });
+    }];
+}
 
-- (void)deleteAssets:(NSArray *)assets {
+- (void)deleteAssets:(NSArray *)assets completion:(void (^)(BOOL, NSError *))completion {
     if (assets.count == 0) return;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         [PHAssetChangeRequest deleteAssets:assets];
     } completionHandler:^(BOOL success, NSError *error) {
-        NSLog(@"%@", error);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(success, error);
+            }
+        });
     }];
 }
 
