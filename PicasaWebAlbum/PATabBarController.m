@@ -53,7 +53,6 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor whiteColor];
-    self.tabBar.barTintColor = [UIColor colorWithWhite:0.95f alpha:1.0f];
     
     _toolbar = [[UIToolbar alloc] init];
     _toolbar.exclusiveTouch = YES;

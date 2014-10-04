@@ -112,14 +112,14 @@
 - (void)setSelected:(BOOL)selected {
     [super setSelected:selected];
     
-    _overrayView.alpha = (selected && _isSelectWithCheckmark) ? 0.7f : 0.0f;
+    _overrayView.alpha = (selected && _isSelectWithCheckmark) ? 0.5f : 0.0f;
     _checkMarkImageView.alpha = (selected && _isSelectWithCheckmark) ? 1.0f : 0.0f;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
     [super setHighlighted:highlighted];
     
-    _overrayView.alpha = (highlighted) ? 0.7f : 0.0f;
+    _overrayView.alpha = (highlighted) ? 0.5f : 0.0f;
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor {

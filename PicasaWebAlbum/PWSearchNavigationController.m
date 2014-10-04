@@ -194,7 +194,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
         statusBarSize = CGSizeMake(statusBarSize.height, statusBarSize.width);
     }
-    _searchBarBackgroundView.frame = CGRectMake(0.0f, 20.0f - statusBarSize.height, navigationBarSize.width, navigationBarSize.height + statusBarSize.height);
+    _searchBarBackgroundView.frame = CGRectMake(0.0f, 0.0f, navigationBarSize.width, navigationBarSize.height + statusBarSize.height);
     CGSize cancelButtonSize = [_cancelButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
     _searchBar.frame = CGRectMake(0.0f, statusBarSize.height, navigationBarSize.width - (cancelButtonSize.width + 10.0f), navigationBarSize.height);
     _cancelButton.frame = CGRectMake(navigationBarSize.width - (cancelButtonSize.width + 10.0f), statusBarSize.height, cancelButtonSize.width, navigationBarSize.height);

@@ -20,6 +20,7 @@
 @property (strong, nonatomic) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic) CGSize cellSize;
 @property (nonatomic) CGSize landscapeCellSize;
+@property (nonatomic) UIColor *cellBackgroundColor;
 @property (nonatomic) CGFloat minimumInteritemSpacing;
 @property (nonatomic) CGFloat minimumLineSpacing;
 

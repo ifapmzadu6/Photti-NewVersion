@@ -194,8 +194,8 @@
     _selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction:)];
     _selectActionBarButtonItem.enabled = NO;
     _selectUploadBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"Upload"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] style:UIBarButtonItemStylePlain target:self action:@selector(selectUploadBarButtonAction:)];
-    _selectActionBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
-    _selectActionBarButtonItem.enabled = NO;
+    _selectUploadBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    _selectUploadBarButtonItem.enabled = NO;
     _selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction:)];
     _selectTrashBarButtonItem.enabled = NO;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -207,7 +207,6 @@
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];
@@ -246,7 +245,9 @@
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title];
     } completionHandler:^(BOOL success, NSError *error) {
-        
+        if (error) {
+            NSLog(@"%@", error);
+        }
     }];
 }
 
@@ -255,7 +256,9 @@
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         [PHAssetCollectionChangeRequest deleteAssetCollections:assetCollections];
     } completionHandler:^(BOOL success, NSError *error) {
-        NSLog(@"%@", error);
+        if (error) {
+            NSLog(@"%@", error);
+        }
     }];
 }
 

@@ -70,7 +70,6 @@
         __weak typeof(self) wself = self;
         if (type == PHPhotoListViewControllerType_AllPhotos) {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
-            _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
             _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -81,7 +80,6 @@
         }
         else if (type == PHPhotoListViewControllerType_Dates) {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makePhotoListDataSourceWithStartDate:startDate endDate:endDate];
-            _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
             _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -91,7 +89,6 @@
         }
         else {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makePhotoInAlbumListDataSourceWithCollection:assetCollection];
-            _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
             _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -99,6 +96,8 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
+        _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
+        _photoListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     }
     return self;
 }
@@ -114,6 +113,7 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
+    _collectionView.allowsMultipleSelection = YES;
     [self.view addSubview:_collectionView];
 }
 
@@ -190,18 +190,16 @@
     PWImagePickerController *imagePickerController = [[PWImagePickerController alloc] initWithAlbumTitle:_photoListDataSource.assetCollection.localizedTitle completion:^(NSArray *selectedPhotos) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
-        
     }];
     [self.tabBarController presentViewController:imagePickerController animated:YES completion:nil];
 }
 
 - (void)selectBarButtonAction:(id)sender {
-    
+    [self enableSelectMode];
 }
 
 - (void)selectActionBarButtonAction:(id)sender {
-    [self enableSelectMode];
+    
 }
 
 - (void)selectUploadBarButtonAction:(id)sender {
@@ -225,8 +223,8 @@
     _selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction:)];
     _selectActionBarButtonItem.enabled = NO;
     _selectUploadBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"Upload"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] style:UIBarButtonItemStylePlain target:self action:@selector(selectUploadBarButtonAction:)];
-    _selectActionBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
-    _selectActionBarButtonItem.enabled = NO;
+    _selectUploadBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    _selectUploadBarButtonItem.enabled = NO;
     _selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction:)];
     _selectTrashBarButtonItem.enabled = NO;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -238,7 +236,6 @@
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];

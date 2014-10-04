@@ -127,6 +127,7 @@
     cell.tag = index;
     cell.imageView.image = nil;
     cell.isSelectWithCheckmark = _isSelectMode;
+    cell.backgroundColor = _cellBackgroundColor;
     
     CGSize targetSize = (_flowLayout) ? _flowLayout.itemSize : _cellSize;
     [[PHImageManager defaultManager] requestImageForAsset:_fetchResult[indexPath.row] targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
