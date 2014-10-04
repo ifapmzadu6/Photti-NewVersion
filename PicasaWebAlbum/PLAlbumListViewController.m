@@ -205,8 +205,7 @@
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PLPhotoListViewController *viewController = [[PLPhotoListViewController alloc] initWithAlbum:[_fetchedResultsController objectAtIndexPath:indexPath]];
-//    [self.navigationController pushViewController:viewController animated:YES];
-    [self.navigationController showViewController:viewController sender:self];
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 #pragma mark NSFetchedResultsControllerDelegate

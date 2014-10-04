@@ -16,6 +16,9 @@
 #import "PEPhotoListDataSource.h"
 #import "PEPhotoPageViewController.h"
 
+// test
+#import "PWImagePickerController.h"
+
 @interface PEPhotoListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
@@ -23,6 +26,9 @@
 @property (nonatomic) PHPhotoListViewControllerType type;
 @property (strong, nonatomic) PEPhotoListDataSource *photoListDataSource;
 @property (nonatomic) BOOL isSelectMode;
+@property (strong, nonatomic) UIBarButtonItem *selectTrashBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *selectUploadBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *selectActionBarButtonItem;
 
 @end
 
@@ -180,11 +186,107 @@
 }
 
 - (void)addBarButtonAction:(id)sender {
-    
+    __weak typeof(self) wself = self;
+    PWImagePickerController *imagePickerController = [[PWImagePickerController alloc] initWithAlbumTitle:_photoListDataSource.assetCollection.localizedTitle completion:^(NSArray *selectedPhotos) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        
+    }];
+    [self.tabBarController presentViewController:imagePickerController animated:YES completion:nil];
 }
 
 - (void)selectBarButtonAction:(id)sender {
     
+}
+
+- (void)selectActionBarButtonAction:(id)sender {
+    [self enableSelectMode];
+}
+
+- (void)selectUploadBarButtonAction:(id)sender {
+    
+}
+
+- (void)selectTrashBarButtonAction:(id)sender {
+    NSArray *deleteAssets = _photoListDataSource.selectedAssets;
+    [self deleteAssets:deleteAssets];
+}
+
+- (void)cancelBarButtonAction:(id)sender {
+    [self disableSelectMode];
+}
+
+#pragma mark SelectMode
+- (void)enableSelectMode {
+    if (_photoListDataSource.isSelectMode) return;
+    _photoListDataSource.isSelectMode = YES;
+    
+    _selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction:)];
+    _selectActionBarButtonItem.enabled = NO;
+    _selectUploadBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"Upload"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] style:UIBarButtonItemStylePlain target:self action:@selector(selectUploadBarButtonAction:)];
+    _selectActionBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    _selectActionBarButtonItem.enabled = NO;
+    _selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction:)];
+    _selectTrashBarButtonItem.enabled = NO;
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    NSArray *toolbarItems = @[_selectActionBarButtonItem, flexibleSpace, _selectUploadBarButtonItem, flexibleSpace, _selectTrashBarButtonItem];
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setActionToolbarItems:toolbarItems animated:NO];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    __weak typeof(self) wself = self;
+    [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+        [tabBarController setToolbarHidden:YES animated:NO completion:nil];
+    }];
+    
+    UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction:)];
+    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
+    [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
+    [tabBarController setActionNavigationItem:navigationItem animated:NO];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        sself.navigationController.navigationBar.alpha = 0.0f;
+    }];
+    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+}
+
+- (void)disableSelectMode {
+    if (!_photoListDataSource.isSelectMode) return;
+    _photoListDataSource.isSelectMode = NO;
+    
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setToolbarHidden:NO animated:NO completion:nil];
+    [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
+    [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
+    self.navigationController.navigationBar.alpha = 1.0f;
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+}
+
+#pragma mark Photos
+
+
+- (void)deleteAssets:(NSArray *)assets {
+    if (assets.count == 0) return;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        [PHAssetChangeRequest deleteAssets:assets];
+    } completionHandler:^(BOOL success, NSError *error) {
+        NSLog(@"%@", error);
+    }];
+}
+
+- (void)actionAssets:(NSArray *)assets {
+    UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:assets applicationActivities:nil];
+    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
 @end

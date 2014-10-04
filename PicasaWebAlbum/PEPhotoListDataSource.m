@@ -54,6 +54,36 @@
     _collectionView = collectionView;
 }
 
+- (void)setIsSelectMode:(BOOL)isSelectMode {
+    _isSelectMode = isSelectMode;
+    
+    UICollectionView *collectionView = _collectionView;
+    if (collectionView) {
+        for (NSIndexPath *indexPath in collectionView.indexPathsForSelectedItems) {
+            [collectionView deselectItemAtIndexPath:indexPath animated:YES];
+        }
+        for (PEPhotoViewCell *cell in collectionView.visibleCells) {
+            cell.isSelectWithCheckmark = isSelectMode;
+        }
+    }
+}
+
+- (NSArray *)selectedCollections {
+    if (!_isSelectMode) {
+        return nil;
+    }
+    
+    NSMutableArray *selectedCollections = @[].mutableCopy;
+    UICollectionView *collectionView = _collectionView;
+    if (collectionView) {
+        for (NSIndexPath *indexPath in collectionView.indexPathsForSelectedItems) {
+            PHAssetCollection *assetCollection = _fetchResult[indexPath.item];
+            [selectedCollections addObject:assetCollection];
+        }
+    }
+    return selectedCollections;
+}
+
 #pragma mark PHPhotoLibraryChangeObserver
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
     PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:_fetchResult];
@@ -96,14 +126,9 @@
     NSUInteger index = indexPath.row;
     cell.tag = index;
     cell.imageView.image = nil;
+    cell.isSelectWithCheckmark = _isSelectMode;
     
-    CGSize targetSize = CGSizeZero;
-    if (_flowLayout) {
-        targetSize = _flowLayout.itemSize;
-    }
-    else {
-        targetSize = _cellSize;
-    }
+    CGSize targetSize = (_flowLayout) ? _flowLayout.itemSize : _cellSize;
     [[PHImageManager defaultManager] requestImageForAsset:_fetchResult[indexPath.row] targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
         typeof(wcell) scell = wcell;
         if (!scell) return;
@@ -147,9 +172,24 @@
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PHAsset *asset = _fetchResult[indexPath.row];
-    if (_didSelectAssetBlock) {
-        _didSelectAssetBlock(asset, indexPath.row);
+    if (_isSelectMode) {
+        if (_didChangeSelectedItemCountBlock) {
+            _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
+        }
+    }
+    else {
+        PHAsset *asset = _fetchResult[indexPath.row];
+        if (_didSelectAssetBlock) {
+            _didSelectAssetBlock(asset, indexPath.row);
+        }
+    }
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (_isSelectMode) {
+        if (_didChangeSelectedItemCountBlock) {
+            _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
+        }
     }
 }
 

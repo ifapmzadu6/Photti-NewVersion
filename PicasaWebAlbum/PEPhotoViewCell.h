@@ -12,4 +12,6 @@
 
 @property (strong, nonatomic, readonly) UIImageView *imageView;
 
+@property (nonatomic) BOOL isSelectWithCheckmark;
+
 @end

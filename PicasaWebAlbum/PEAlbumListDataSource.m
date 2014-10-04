@@ -122,7 +122,7 @@
     __weak typeof(cell) wcell = cell;
     NSUInteger index = indexPath.row;
     cell.tag = index;
-    
+    cell.isSelectWithCheckmark = _isSelectMode;
     cell.firstImageView.image = nil;
     cell.secondImageView.image = nil;
     cell.thirdImageView.image = nil;
@@ -160,7 +160,6 @@
     PHAssetCollection *collection = _fetchResult[indexPath.row];
     cell.titleLabel.text = collection.localizedTitle;
     cell.detailLabel.text = [NSString stringWithFormat:@"%ld個の項目", (long)collection.estimatedAssetCount];
-    cell.isSelectWithCheckmark = _isSelectMode;
     return cell;
 }
 

@@ -25,39 +25,39 @@
 
 #pragma mark Authorization
 + (BOOL)isStatusAuthorized {
-    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-        return [PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized;
-    }
-    else {
+//    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+//        return [PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized;
+//    }
+//    else {
         return [ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized;
-    }
+//    }
 }
 
 + (BOOL)isStatusRestricted {
-    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-        return [PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusRestricted;
-    }
-    else {
+//    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+//        return [PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusRestricted;
+//    }
+//    else {
         return [ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusRestricted;
-    }
+//    }
 }
 
 + (BOOL)isStatusDenied {
-    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-        return [PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusDenied;
-    }
-    else {
+//    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+//        return [PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusDenied;
+//    }
+//    else {
         return [ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusDenied;
-    }
+//    }
 }
 
 + (BOOL)isStatusNotDetermined {
-    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-        return [PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusNotDetermined;
-    }
-    else {
+//    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+//        return [PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusNotDetermined;
+//    }
+//    else {
         return [ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusNotDetermined;
-    }
+//    }
 }
 
 + (void)requestAuthorizationWithCompletion:(void (^)(BOOL isStatusAuthorized))completion {

@@ -188,9 +188,7 @@
 
 #pragma mark SelectMode
 - (void)enableSelectMode {
-    if (_albumListDataSource.isSelectMode) {
-        return;
-    }
+    if (_albumListDataSource.isSelectMode) return;
     _albumListDataSource.isSelectMode = YES;
     
     _selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction:)];
@@ -230,9 +228,7 @@
 }
 
 - (void)disableSelectMode {
-    if (!_albumListDataSource.isSelectMode) {
-        return;
-    }
+    if (!_albumListDataSource.isSelectMode) return;
     _albumListDataSource.isSelectMode = NO;
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
@@ -255,10 +251,7 @@
 }
 
 - (void)deleteAssetCollections:(NSArray *)assetCollections {
-    if (assetCollections.count == 0) {
-        return;
-    }
-    
+    if (assetCollections.count == 0) return;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         [PHAssetCollectionChangeRequest deleteAssetCollections:assetCollections];
     } completionHandler:^(BOOL success, NSError *error) {

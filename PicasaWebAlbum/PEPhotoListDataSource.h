@@ -12,6 +12,7 @@
 @interface PEPhotoListDataSource : NSObject <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (copy, nonatomic) void (^didSelectAssetBlock)(PHAsset *asset, NSUInteger index);
+@property (copy, nonatomic) void (^didChangeSelectedItemCountBlock)(NSUInteger count);
 
 @property (strong, nonatomic, readonly) PHAssetCollection *assetCollection;
 @property (strong, nonatomic, readonly) PHFetchResult *fetchResult;
@@ -26,5 +27,8 @@
 - (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult assetCollection:(PHAssetCollection *)assetCollection;
 
 - (void)prepareForUse:(UICollectionView *)collectionView;
+
+@property (nonatomic) BOOL isSelectMode;
+@property (nonatomic, readonly) NSArray *selectedAssets;
 
 @end
