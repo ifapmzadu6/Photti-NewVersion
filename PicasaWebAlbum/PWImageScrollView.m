@@ -19,7 +19,6 @@
 @property (nonatomic) CGFloat scaleToRestoreAfterResize;
 @property (nonatomic) CGSize imageSize;
 @property (nonatomic) BOOL isZoom;
-@property (nonatomic) BOOL isZoomAnimating;
 
 @end
 
@@ -66,10 +65,6 @@
 
 - (void)layoutSubviews  {
     [super layoutSubviews];
-    
-    if (_isZoomAnimating) {
-        return;
-    }
     
     // center the zoom view as it becomes smaller than the size of the screen
     CGSize boundsSize = self.bounds.size;
@@ -298,12 +293,9 @@
 	if (sender.state == UIGestureRecognizerStateEnded){
 		[NSObject cancelPreviousPerformRequestsWithTarget:self];
         
-        _isZoomAnimating = YES;
         [UIView animateWithDuration:0.4f animations:^{
             if (self.zoomScale == self.minimumZoomScale * 3.0f) {
-                CGFloat width = [sender locationInView:_imageView].x;;
-                CGFloat height = [sender locationInView:_imageView].y;
-                CGPoint center = CGPointMake(width, height);
+                CGPoint center = [sender locationInView:_imageView];
                 CGFloat scale = self.maximumZoomScale;
                 CGRect zoomRect = [self zoomRectForScrollView:self
                                                     withScale:scale
@@ -313,17 +305,16 @@
             else if (self.zoomScale > self.minimumZoomScale) {
                 [self setZoomScale:self.minimumZoomScale animated:NO];
             } else {
-                CGFloat width = [sender locationInView:_imageView].x;;
-                CGFloat height = [sender locationInView:_imageView].y;
-                CGPoint center = CGPointMake(width, height);
+                CGPoint center = [sender locationInView:_imageView];
                 CGFloat scale = self.minimumZoomScale * 3.0f;
                 CGRect zoomRect = [self zoomRectForScrollView:self
                                                     withScale:scale
                                                    withCenter:center];
                 [self zoomToRect:zoomRect animated:NO];
             }
+            [self setNeedsLayout];
+            [self layoutIfNeeded];
         } completion:^(BOOL finished) {
-            _isZoomAnimating = NO;
         }];
 	}
 }
