@@ -19,6 +19,7 @@
 @property (nonatomic) CGFloat scaleToRestoreAfterResize;
 @property (nonatomic) CGSize imageSize;
 @property (nonatomic) BOOL isZoom;
+@property (nonatomic) BOOL isZoomAnimating;
 
 @end
 
@@ -66,6 +67,10 @@
 - (void)layoutSubviews  {
     [super layoutSubviews];
     
+    if (_isZoomAnimating) {
+        return;
+    }
+    
     // center the zoom view as it becomes smaller than the size of the screen
     CGSize boundsSize = self.bounds.size;
     CGRect frameToCenter = _imageView.frame;
@@ -81,23 +86,23 @@
         frameToCenter.origin.y = (boundsSize.height - frameToCenter.size.height) / 2;
     else
         frameToCenter.origin.y = 0;
-	   
+    
     _imageView.frame = frameToCenter;
 }
 
 - (void)setFrame:(CGRect)frame {
-    BOOL sizeChanging = !CGSizeEqualToSize(frame.size, self.frame.size);
-	BOOL myself = !CGSizeEqualToSize(_imageSize, CGSizeZero);
+    BOOL sizeChanging = !CGSizeEqualToSize(frame.size, self.bounds.size);
+	BOOL notSizeZero = !CGSizeEqualToSize(_imageSize, CGSizeZero);
     
 	_isZoom = YES;
 	
-    if (sizeChanging && myself) {
+    if (sizeChanging && notSizeZero) {
         [self prepareToResize];
     }
     
     [super setFrame:frame];
     
-    if (sizeChanging && myself) {
+    if (sizeChanging && notSizeZero) {
         [self recoverFromResizing];
     }
     
@@ -118,17 +123,16 @@
 	CGFloat imageWidth = dimensions.width;
 	CGFloat imageHeight = dimensions.height;
 	if (CGRectGetWidth(self.bounds) > CGRectGetHeight(self.bounds)) {
-		imageHeight = ceilf(imageHeight * CGRectGetWidth(self.bounds) / imageWidth * 2.0f + 1.0f) / 2.0f;
+		imageHeight = ceilf(imageHeight * CGRectGetWidth(self.bounds) / imageWidth * 2.0f) / 2.0f;
 		imageWidth = CGRectGetWidth(self.bounds);
 	}
 	else {
-		imageWidth = ceilf(imageWidth * CGRectGetHeight(self.bounds) / imageHeight * 2.0f + 1.0f) / 2.0f;
+		imageWidth = ceilf(imageWidth * CGRectGetHeight(self.bounds) / imageHeight * 2.0f) / 2.0f;
 		imageHeight = CGRectGetHeight(self.bounds);
 	}
 	_imageSize = CGSizeMake(imageWidth, imageHeight);
 	
 	_imageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, imageWidth, imageHeight)];
-    _imageView.backgroundColor = [UIColor whiteColor];
 	_imageView.contentMode = UIViewContentModeScaleAspectFill;
     _imageView.clipsToBounds = YES;
 	_imageView.image = image;
@@ -279,6 +283,8 @@
 }
 
 - (void)singleTap {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    
     if (_handleSingleTapBlock) {
         _handleSingleTapBlock();
     }
@@ -291,31 +297,34 @@
     
 	if (sender.state == UIGestureRecognizerStateEnded){
 		[NSObject cancelPreviousPerformRequestsWithTarget:self];
-		
-		//NSLog(@"maximum %f  : minimum %f => %f", self.maximumZoomScale, self.minimumZoomScale, self.minimumZoomScale * 3.0f);
-		if (self.zoomScale == self.minimumZoomScale * 3.0f) {
-			CGFloat width = [sender locationInView:_imageView].x;;
-			CGFloat height = [sender locationInView:_imageView].y;
-			CGPoint center = CGPointMake(width, height);
-			CGFloat scale = self.maximumZoomScale;
-			CGRect zoomRect = [self zoomRectForScrollView:self
-												withScale:scale
-											   withCenter:center];
-			
-			[self zoomToRect:zoomRect animated:YES];
-		}
-		else if (self.zoomScale > self.minimumZoomScale) {
-			[self setZoomScale:self.minimumZoomScale animated:YES];
-		} else {
-			CGFloat width = [sender locationInView:_imageView].x;;
-			CGFloat height = [sender locationInView:_imageView].y;
-			CGPoint center = CGPointMake(width, height);
-			CGFloat scale = self.minimumZoomScale * 3.0f;
-			CGRect zoomRect = [self zoomRectForScrollView:self
-												withScale:scale
-											   withCenter:center];
-			[self zoomToRect:zoomRect animated:YES];
-		}
+        
+        _isZoomAnimating = YES;
+        [UIView animateWithDuration:0.4f animations:^{
+            if (self.zoomScale == self.minimumZoomScale * 3.0f) {
+                CGFloat width = [sender locationInView:_imageView].x;;
+                CGFloat height = [sender locationInView:_imageView].y;
+                CGPoint center = CGPointMake(width, height);
+                CGFloat scale = self.maximumZoomScale;
+                CGRect zoomRect = [self zoomRectForScrollView:self
+                                                    withScale:scale
+                                                   withCenter:center];
+                [self zoomToRect:zoomRect animated:NO];
+            }
+            else if (self.zoomScale > self.minimumZoomScale) {
+                [self setZoomScale:self.minimumZoomScale animated:NO];
+            } else {
+                CGFloat width = [sender locationInView:_imageView].x;;
+                CGFloat height = [sender locationInView:_imageView].y;
+                CGPoint center = CGPointMake(width, height);
+                CGFloat scale = self.minimumZoomScale * 3.0f;
+                CGRect zoomRect = [self zoomRectForScrollView:self
+                                                    withScale:scale
+                                                   withCenter:center];
+                [self zoomToRect:zoomRect animated:NO];
+            }
+        } completion:^(BOOL finished) {
+            _isZoomAnimating = NO;
+        }];
 	}
 }
 
