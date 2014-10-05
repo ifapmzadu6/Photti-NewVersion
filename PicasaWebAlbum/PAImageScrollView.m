@@ -6,23 +6,22 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWImageScrollView.h"
+#import "PAImageScrollView.h"
 
 #import <FLAnimatedImage.h>
 #import <FLAnimatedImageView.h>
 
-@interface PWImageScrollView () <UIScrollViewDelegate>
+@interface PAImageScrollView () <UIScrollViewDelegate>
 
 @property (strong, nonatomic) FLAnimatedImageView *imageView;
 
 @property (nonatomic) CGPoint pointToCenterAfterResize;
 @property (nonatomic) CGFloat scaleToRestoreAfterResize;
 @property (nonatomic) CGSize imageSize;
-@property (nonatomic) BOOL isZoom;
 
 @end
 
-@implementation PWImageScrollView
+@implementation PAImageScrollView
 
 - (id)init {
     self = [super init];
@@ -63,34 +62,34 @@
     [_imageView removeFromSuperview];
 }
 
-- (void)layoutSubviews  {
+- (void)layoutSubviews {
     [super layoutSubviews];
-    
+}
+
+- (void)centerScrollViewContentsWithView:(UIView *)view {
     // center the zoom view as it becomes smaller than the size of the screen
     CGSize boundsSize = self.bounds.size;
-    CGRect frameToCenter = _imageView.frame;
+    CGRect frameToCenter = view.frame;
     
     // center horizontally
     if (frameToCenter.size.width < boundsSize.width)
-        frameToCenter.origin.x = (boundsSize.width - frameToCenter.size.width) / 2;
+        frameToCenter.origin.x = (boundsSize.width - frameToCenter.size.width) / 2.0f;
     else
-        frameToCenter.origin.x = 0;
+        frameToCenter.origin.x = 0.0f;
     
     // center vertically
     if (frameToCenter.size.height < boundsSize.height)
-        frameToCenter.origin.y = (boundsSize.height - frameToCenter.size.height) / 2;
+        frameToCenter.origin.y = (boundsSize.height - frameToCenter.size.height) / 2.0f;
     else
-        frameToCenter.origin.y = 0;
+        frameToCenter.origin.y = 0.0f;
     
-    _imageView.frame = frameToCenter;
+    view.frame = frameToCenter;
 }
 
 - (void)setFrame:(CGRect)frame {
     BOOL sizeChanging = !CGSizeEqualToSize(frame.size, self.bounds.size);
 	BOOL notSizeZero = !CGSizeEqualToSize(_imageSize, CGSizeZero);
     
-	_isZoom = YES;
-	
     if (sizeChanging && notSizeZero) {
         [self prepareToResize];
     }
@@ -100,77 +99,80 @@
     if (sizeChanging && notSizeZero) {
         [self recoverFromResizing];
     }
-    
-	_isZoom = NO;
 }
 
 #pragma mark Methods
 - (void)setImage:(UIImage *)image {
     if (_imageView) {
-        _imageView.image = image;
-        return;
+        if ([_imageView isKindOfClass:UIImageView.class]) {
+            _imageView.image = image;
+            return;
+        }
+        else {
+            [_imageView removeFromSuperview];
+        }
     }
     if (!image) {
         return;
     }
     
-	CGSize dimensions = image.size;
-	CGFloat imageWidth = dimensions.width;
-	CGFloat imageHeight = dimensions.height;
+	CGFloat imageWidth = image.size.width;
+	CGFloat imageHeight = image.size.height;
 	if (CGRectGetWidth(self.bounds) > CGRectGetHeight(self.bounds)) {
-		imageHeight = ceilf(imageHeight * CGRectGetWidth(self.bounds) / imageWidth * 2.0f) / 2.0f;
+		imageHeight = imageHeight * CGRectGetWidth(self.bounds) / imageWidth;
 		imageWidth = CGRectGetWidth(self.bounds);
 	}
 	else {
-		imageWidth = ceilf(imageWidth * CGRectGetHeight(self.bounds) / imageHeight * 2.0f) / 2.0f;
+		imageWidth = imageWidth * CGRectGetHeight(self.bounds) / imageHeight;
 		imageHeight = CGRectGetHeight(self.bounds);
 	}
 	_imageSize = CGSizeMake(imageWidth, imageHeight);
 	
-	_imageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, imageWidth, imageHeight)];
-	_imageView.contentMode = UIViewContentModeScaleAspectFill;
-    _imageView.clipsToBounds = YES;
+    _imageView = [[FLAnimatedImageView alloc] initWithFrame:(CGRect){CGPointZero, _imageSize}];
+    _imageView.contentMode = UIViewContentModeScaleAspectFill;
 	_imageView.image = image;
 	[self addSubview:_imageView];
 	
 	self.contentSize = _imageSize;
     [self setMaxMinZoomScalesForCurrentBounds];
     self.zoomScale = self.minimumZoomScale;
-	
-	_isZoom = NO;
+    
+    [self centerScrollViewContentsWithView:_imageView];
 }
 
 - (void)setAnimatedImage:(FLAnimatedImage *)animatedImage {
     if (_imageView) {
-        _imageView.animatedImage = animatedImage;
-        return;
+        if ([_imageView isKindOfClass:FLAnimatedImageView.class]) {
+            _imageView.animatedImage = animatedImage;
+            return;
+        }
+        else {
+            [_imageView removeFromSuperview];
+        }
     }
     
-	CGSize dimensions = animatedImage.size;
-	CGFloat imageWidth = dimensions.width;
-	CGFloat imageHeight = dimensions.height;
+	CGFloat imageWidth = animatedImage.size.width;
+	CGFloat imageHeight = animatedImage.size.height;
 	if (CGRectGetWidth(self.bounds) > CGRectGetHeight(self.bounds)) {
-		imageHeight = ceilf(imageHeight * CGRectGetWidth(self.bounds) / imageWidth * 2.0f + 1.0f) / 2.0f;
-		imageWidth = ceilf(CGRectGetWidth(self.bounds));
+		imageHeight = imageHeight * CGRectGetWidth(self.bounds) / imageWidth;
+		imageWidth = CGRectGetWidth(self.bounds);
 	}
 	else {
-		imageWidth = ceilf(imageWidth * CGRectGetHeight(self.bounds) / imageHeight * 2.0f + 1.0f) / 2.0f;
-		imageHeight = ceilf(CGRectGetHeight(self.bounds));
+		imageWidth = imageWidth * CGRectGetHeight(self.bounds) / imageHeight;
+		imageHeight = CGRectGetHeight(self.bounds);
 	}
 	_imageSize = CGSizeMake(imageWidth, imageHeight);
 	
-	_imageView = [[FLAnimatedImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, imageWidth, imageHeight)];
-    _imageView.backgroundColor = [UIColor whiteColor];
+	_imageView = [[FLAnimatedImageView alloc] initWithFrame:(CGRect){CGPointZero, _imageSize}];
 	_imageView.contentMode = UIViewContentModeScaleAspectFill;
-    _imageView.clipsToBounds = YES;
 	_imageView.animatedImage = animatedImage;
 	[self addSubview:_imageView];
 	
 	self.contentSize = _imageSize;
     [self setMaxMinZoomScalesForCurrentBounds];
     self.zoomScale = self.minimumZoomScale;
-	
-	_isZoom = NO;
+    
+    [self centerScrollViewContentsWithView:_imageView];
 }
 
 - (UIImage *)image {
@@ -187,7 +189,7 @@
 
 #pragma mark - UIScrollViewDelegate
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
-    return  _imageView;
+    return _imageView;
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
@@ -195,6 +197,8 @@
         _handleFirstZoomBlock();
         _handleFirstZoomBlock = nil;
     }
+    
+    [self centerScrollViewContentsWithView:_imageView];
 }
 
 - (void)setMaxMinZoomScalesForCurrentBounds {
@@ -203,7 +207,6 @@
     // calculate min/max zoomscale
     CGFloat xScale = boundsSize.width  / _imageSize.width;
     CGFloat yScale = boundsSize.height / _imageSize.height;
-	
 	CGFloat minScale = MIN(xScale, yScale);
 	
     self.minimumZoomScale = minScale;
@@ -213,9 +216,6 @@
         self.maximumZoomScale = self.minimumZoomScale;
     }
 }
-
-#pragma mark -
-#pragma mark Methods called during rotation to preserve the zoomScale and the visible portion of the image
 
 #pragma mark - Rotation support
 
@@ -244,8 +244,8 @@
     CGPoint boundsCenter = [self convertPoint:_pointToCenterAfterResize fromView:_imageView];
     
     // 2b: calculate the content offset that would yield that center point
-    CGPoint offset = CGPointMake(boundsCenter.x - self.bounds.size.width / 2.0,
-                                 boundsCenter.y - self.bounds.size.height / 2.0);
+    CGPoint offset = CGPointMake(boundsCenter.x - self.bounds.size.width / 2.0f,
+                                 boundsCenter.y - self.bounds.size.height / 2.0f);
     
     // 2c: restore offset, adjusted to be within the allowable range
     CGPoint maxOffset = [self maximumContentOffset];
@@ -273,7 +273,7 @@
 #pragma mark Gesture
 - (void)handleSingleTap:(UIGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded){
-		[self performSelector:@selector(singleTap) withObject:nil afterDelay:0.3f];
+		[self performSelector:@selector(singleTap) withObject:nil afterDelay:0.4f];
 	}
 }
 
@@ -315,6 +315,7 @@
             [self setNeedsLayout];
             [self layoutIfNeeded];
         } completion:^(BOOL finished) {
+            [NSObject cancelPreviousPerformRequestsWithTarget:self];
         }];
 	}
 }
@@ -325,7 +326,6 @@
     zoomRect.size.width  = scrollView.frame.size.width  / scale;
     zoomRect.origin.x = center.x - (zoomRect.size.width  / 2.0f);
     zoomRect.origin.y = center.y - (zoomRect.size.height / 2.0f);
-	
     return zoomRect;
 }
 

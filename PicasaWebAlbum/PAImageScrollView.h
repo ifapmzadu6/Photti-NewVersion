@@ -1,5 +1,5 @@
 //
-//  PWImageScrollView.h
+//  PAImageScrollView.h
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/05/08.
@@ -10,7 +10,7 @@
 
 @class FLAnimatedImage;
 
-@interface PWImageScrollView : UIScrollView
+@interface PAImageScrollView : UIScrollView
 
 @property (copy, nonatomic) void (^handleSingleTapBlock)();
 @property (copy, nonatomic) void (^handleDoubleTapBlock)();
