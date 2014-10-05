@@ -113,7 +113,22 @@
 
 #pragma mark UIBarButtonAction
 - (void)actionBarButtonAction:(id)sender {
-    
+    PHAsset *asset = _fetchedResult[_index];
+    __weak typeof(self) wself = self;
+    if (asset.mediaType == PHAssetMediaTypeImage) {
+        PHImageRequestOptions *options = [PHImageRequestOptions new];
+        options.networkAccessAllowed = YES;
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeDefault options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:@[result] applicationActivities:nil];
+            [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
+        }];
+    }
+    else if (asset.mediaType == PHAssetMediaTypeVideo) {
+        
+    }
 }
 
 - (void)organizeBarButtonAction:(id)sender {

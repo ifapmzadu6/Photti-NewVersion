@@ -16,6 +16,7 @@
 #import "PEAlbumListDataSource.h"
 #import "PATabBarAdsController.h"
 #import "PEPhotoListViewController.h"
+#import "PWSearchNavigationController.h"
 
 @interface PEAlbumListViewController () <UITextFieldDelegate>
 
@@ -61,6 +62,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
+    self.navigationItem.rightBarButtonItems = @[searchBarButtonItem];
     
     UICollectionViewFlowLayout *collectionViewLayout = [UICollectionViewFlowLayout new];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
@@ -132,6 +136,10 @@
 }
 
 #pragma mark UIBarButtonAction
+- (void)searchBarButtonAction {
+    [self openSearchBar];
+}
+
 - (void)addBarButtonAction:(id)sender {
     NSString *title = NSLocalizedString(@"New Album", nil);
     NSString *message = NSLocalizedString(@"Enter a name for this album.", nil);
@@ -184,6 +192,24 @@
     _saveAlertAction.enabled = (text.length > 0) ? YES : NO;
     
     return YES;
+}
+
+#pragma mark SearchBar
+- (void)openSearchBar {
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setTabBarHidden:YES animated:YES completion:nil];
+    [tabBarController setAdsHidden:YES animated:NO];
+    
+    PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
+    navigationController.view.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    __weak typeof(self) wself = self;
+    [navigationController openSearchBarWithCancelBlock:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+        [tabBarController setTabBarHidden:NO animated:NO completion:nil];
+        [tabBarController setAdsHidden:NO animated:YES];
+    }];
 }
 
 #pragma mark SelectMode

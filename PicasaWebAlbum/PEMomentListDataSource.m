@@ -145,9 +145,11 @@
     
     PHFetchResult *assetsResult = _assetCollectionFetchResults[indexPath.row];
     cell.numberOfImageView = assetsResult.count;
+    NSUInteger numberOfColAndRow = sqrtf(cell.numberOfImageView);
+    CGSize targetSize = CGSizeMake(_cellSize.width/numberOfColAndRow, _cellSize.height/numberOfColAndRow);
     for (int i=0; i<cell.numberOfImageView; i++) {
         PHAsset *asset = assetsResult[i];
-        [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:_cellSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
             typeof(wcell) scell = wcell;
             if (!scell) return;
             if (scell.tag == index) {

@@ -67,7 +67,7 @@
     [_moreButton setTitle:NSLocalizedString(@"See All", nil) forState:UIControlStateNormal];
     [_moreButton setTitleColor:[PAColors getColor:PAColorsTypeTextLightSubColor] forState:UIControlStateNormal];
     _moreButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-    _moreButton.titleEdgeInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 7.0f);
+    _moreButton.titleEdgeInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 10.0f);
     [self.contentView addSubview:_moreButton];
     
     _greaterThanImageView = [UIImageView new];

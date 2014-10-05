@@ -58,7 +58,9 @@
 }
 
 + (PEPhotoListDataSource *)makeAllPhotoListDataSource {
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:nil];
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
 
     PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult];
     return dataSource;
