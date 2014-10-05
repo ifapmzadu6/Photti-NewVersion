@@ -15,7 +15,6 @@
 
 @interface PEAlbumListDataSource () <PHPhotoLibraryChangeObserver>
 
-@property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PHFetchResult *fetchResult;
 @property (strong, nonatomic) NSArray *assetCollectionFetchResults;
 
@@ -28,8 +27,7 @@
     if (self) {
         [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
         
-        _fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:0];
-        
+        _fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
         NSMutableArray *assetCollectionFetchResults = @[].mutableCopy;
         for (PHAssetCollection *collection in _fetchResult) {
             PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
@@ -45,10 +43,12 @@
 }
 
 #pragma mark Methods
-- (void)prepareForUse:(UICollectionView *)collectionView {
-    [collectionView registerClass:[PEAlbumViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PEAlbumViewCell class])];
-    
+- (void)setCollectionView:(UICollectionView *)collectionView {
     _collectionView = collectionView;
+    
+    if (collectionView) {
+        [collectionView registerClass:[PEAlbumViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PEAlbumViewCell class])];
+    }
 }
 
 - (void)setIsSelectMode:(BOOL)isSelectMode {
@@ -90,10 +90,16 @@
     NSArray *deleteIndexPaths = [changeDetails.removedIndexes indexPathsForSection:0];
     NSArray *insertIndexPaths = [changeDetails.insertedIndexes indexPathsForSection:0];
     NSArray *reloadIndexPaths = [changeDetails.changedIndexes indexPathsForSection:0];
+    NSMutableArray *assetCollectionFetchResults = @[].mutableCopy;
+    for (PHAssetCollection *collection in changeDetails.fetchResultAfterChanges) {
+        PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+        [assetCollectionFetchResults addObject:fetchResult];
+    }
     
     dispatch_async(dispatch_get_main_queue(), ^{
         NSUInteger count = changeDetails.fetchResultAfterChanges.count;
         _fetchResult = changeDetails.fetchResultAfterChanges;
+        _assetCollectionFetchResults = assetCollectionFetchResults;
         
         [_collectionView performBatchUpdates:^{
             if (deleteIndexPaths) {

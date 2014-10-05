@@ -75,7 +75,7 @@
     _detailLabel.font = [UIFont systemFontOfSize:10.0f];
     _detailLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
     [self.contentView addSubview:_detailLabel];
-        
+    
     _overrayView = [UIView new];
     _overrayView.backgroundColor = self.backgroundColor;
     _overrayView.alpha = 0.0f;

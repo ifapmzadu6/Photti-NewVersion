@@ -13,12 +13,16 @@
 
 @property (copy, nonatomic) void (^didSelectCollectionBlock)(PHAssetCollection *collection);
 @property (copy, nonatomic) void (^didChangeItemCountBlock)(NSUInteger count);
+@property (copy, nonatomic) void (^didChangeSelectedItemCountBlock)(NSUInteger count);
 
+@property (weak, nonatomic) UICollectionView *collectionView;
 @property (nonatomic) CGSize cellSize;
+@property (nonatomic) UIColor *cellBackgroundColor;
 @property (nonatomic) CGFloat minimumInteritemSpacing;
 @property (nonatomic) CGFloat minimumLineSpacing;
 
-- (void)prepareForUse:(UICollectionView *)collectionView;
+@property (nonatomic) BOOL isSelectMode;
+@property (nonatomic, readonly) NSArray *selectedCollections;
 
 + (NSString *)titleForMoment:(PHAssetCollection *)moment;
 

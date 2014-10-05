@@ -20,6 +20,9 @@
 
 @property (strong, nonatomic) PEMomentListDataSource *dataSource;
 @property (nonatomic) BOOL isSelectMode;
+@property (strong, nonatomic) UIBarButtonItem *selectTrashBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *selectUploadBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *selectActionBarButtonItem;
 
 @end
 
@@ -51,7 +54,7 @@
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = _dataSource;
     _collectionView.delegate = _dataSource;
-    [_dataSource prepareForUse:_collectionView];
+    _dataSource.collectionView = _collectionView;
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
@@ -115,16 +118,78 @@
 }
 
 #pragma mark UIBarButtonAction
-- (void)actionBarButtonAction:(id)sender {
-    
-}
-
-- (void)addBarButtonAction:(id)sender {
-    
-}
-
 - (void)selectBarButtonAction:(id)sender {
+    [self enableSelectMode];
+}
+
+- (void)selectActionBarButtonAction:(id)sender {
     
+}
+
+- (void)selectUploadBarButtonAction:(id)sender {
+    
+}
+
+- (void)selectTrashBarButtonAction:(id)sender {
+    
+}
+
+- (void)cancelBarButtonAction:(id)sender {
+    [self disableSelectMode];
+}
+
+#pragma mark SelectMode
+- (void)enableSelectMode {
+    if (_dataSource.isSelectMode) return;
+    _dataSource.isSelectMode = YES;
+    
+    _selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction:)];
+    _selectActionBarButtonItem.enabled = NO;
+    _selectUploadBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"Upload"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] style:UIBarButtonItemStylePlain target:self action:@selector(selectUploadBarButtonAction:)];
+    _selectUploadBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    _selectUploadBarButtonItem.enabled = NO;
+    _selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction:)];
+    _selectTrashBarButtonItem.enabled = NO;
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    NSArray *toolbarItems = @[_selectActionBarButtonItem, flexibleSpace, _selectUploadBarButtonItem, flexibleSpace, _selectTrashBarButtonItem];
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setActionToolbarItems:toolbarItems animated:NO];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
+    __weak typeof(self) wself = self;
+    [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+        [tabBarController setToolbarHidden:YES animated:NO completion:nil];
+    }];
+    
+    UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction:)];
+    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
+    [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
+    [tabBarController setActionNavigationItem:navigationItem animated:NO];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
+    [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        sself.navigationController.navigationBar.alpha = 0.0f;
+    }];
+    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+}
+
+- (void)disableSelectMode {
+    if (!_dataSource.isSelectMode) return;
+    _dataSource.isSelectMode = NO;
+    
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setToolbarHidden:NO animated:NO completion:nil];
+    [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
+    [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
+    self.navigationController.navigationBar.alpha = 1.0f;
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 @end

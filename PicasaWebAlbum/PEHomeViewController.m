@@ -310,7 +310,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         
         __weak typeof(self) wself = self;
         if (indexPath.row == kPHHomeViewControllerCell_Album) {
-            [_albumListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            _albumListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _albumListDataSource;
             cell.horizontalScrollView.delegate = _albumListDataSource;
             cell.titleLabel.text = NSLocalizedString(@"Albums", nil);
@@ -322,7 +322,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Moment) {
-            [_momentListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            _momentListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _momentListDataSource;
             cell.horizontalScrollView.delegate = _momentListDataSource;
             cell.titleLabel.text = NSLocalizedString(@"Moments", nil);
@@ -334,7 +334,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Panorama) {
-            [_panoramaListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            _panoramaListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _panoramaListDataSource;
             cell.horizontalScrollView.delegate = _panoramaListDataSource;
             cell.titleLabel.text = _panoramaListDataSource.assetCollection.localizedTitle;
@@ -346,7 +346,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Video) {
-            [_videoListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            _videoListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _videoListDataSource;
             cell.horizontalScrollView.delegate = _videoListDataSource;
             cell.titleLabel.text = _videoListDataSource.assetCollection.localizedTitle;
@@ -358,7 +358,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Favorite) {
-            [_favoriteListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            _favoriteListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _favoriteListDataSource;
             cell.horizontalScrollView.delegate = _favoriteListDataSource;
             cell.titleLabel.text = _favoriteListDataSource.assetCollection.localizedTitle;
@@ -370,7 +370,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_Timelapse) {
-            [_timelapseListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            _timelapseListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _timelapseListDataSource;
             cell.horizontalScrollView.delegate = _timelapseListDataSource;
             cell.titleLabel.text = _timelapseListDataSource.assetCollection.localizedTitle;
@@ -382,7 +382,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_iCloud) {
-            [_cloudListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            _cloudListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _cloudListDataSource;
             cell.horizontalScrollView.delegate = _cloudListDataSource;
             cell.titleLabel.text = _cloudListDataSource.assetCollection.localizedTitle;
@@ -394,7 +394,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
             };
         }
         else if (indexPath.row == kPHHomeViewControllerCell_AllPhotos) {
-            [_allPhotoListDataSource prepareForUse:cell.horizontalScrollView.collectionView];
+            _allPhotoListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _allPhotoListDataSource;
             cell.horizontalScrollView.delegate = _allPhotoListDataSource;
             cell.titleLabel.text = @"All Photos And Videos";
@@ -435,6 +435,33 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     }
 }
 
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row == kPHHomeViewControllerCell_Album) {
+        _albumListDataSource.collectionView = nil;
+    }
+    else if (indexPath.row == kPHHomeViewControllerCell_Moment) {
+        _momentListDataSource.collectionView = nil;
+    }
+    else if (indexPath.row == kPHHomeViewControllerCell_Panorama) {
+        _panoramaListDataSource.collectionView = nil;
+    }
+    else if (indexPath.row == kPHHomeViewControllerCell_Video) {
+        _videoListDataSource.collectionView = nil;
+    }
+    else if (indexPath.row == kPHHomeViewControllerCell_Favorite) {
+        _favoriteListDataSource.collectionView = nil;
+    }
+    else if (indexPath.row == kPHHomeViewControllerCell_Timelapse) {
+        _timelapseListDataSource.collectionView = nil;
+    }
+    else if (indexPath.row == kPHHomeViewControllerCell_iCloud) {
+        _cloudListDataSource.collectionView = nil;
+    }
+    else if (indexPath.row == kPHHomeViewControllerCell_AllPhotos) {
+        _allPhotoListDataSource.collectionView = nil;
+    }
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         if (indexPath.row == kPHHomeViewControllerCell_Album) {
@@ -449,6 +476,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         return 44.0f;
     }
 }
+
 
 #pragma mark UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

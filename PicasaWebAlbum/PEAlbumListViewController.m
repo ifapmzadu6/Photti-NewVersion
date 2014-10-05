@@ -66,7 +66,7 @@
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = _albumListDataSource;
     _collectionView.delegate = _albumListDataSource;
-    [_albumListDataSource prepareForUse:_collectionView];
+    _albumListDataSource.collectionView = _collectionView;
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;

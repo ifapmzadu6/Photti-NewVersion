@@ -18,6 +18,7 @@
 @property (strong, nonatomic, readonly) PHAssetCollection *assetCollection;
 @property (strong, nonatomic, readonly) PHFetchResult *fetchResult;
 
+@property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic) CGSize cellSize;
 @property (nonatomic) CGSize landscapeCellSize;
@@ -27,8 +28,6 @@
 
 - (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult;
 - (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult assetCollection:(PHAssetCollection *)assetCollection;
-
-- (void)prepareForUse:(UICollectionView *)collectionView;
 
 @property (nonatomic) BOOL isSelectMode;
 @property (nonatomic, readonly) NSArray *selectedAssets;

@@ -16,4 +16,6 @@
 @property (strong, nonatomic, readonly) UILabel *titleLabel;
 @property (strong, nonatomic, readonly) UILabel *detailLabel;
 
+@property (nonatomic) BOOL isSelectWithCheckmark;
+
 @end

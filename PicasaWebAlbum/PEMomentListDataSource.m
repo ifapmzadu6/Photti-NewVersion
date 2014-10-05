@@ -16,9 +16,8 @@
 
 @interface PEMomentListDataSource () <PHPhotoLibraryChangeObserver>
 
-@property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PHFetchResult *fetchResult;
-@property (strong, nonatomic) NSArray *assetCollectionFetchResults;
+@property (strong, nonatomic) NSMutableArray *assetCollectionFetchResults;
 
 @end
 
@@ -32,7 +31,6 @@
         PHFetchOptions *options = [PHFetchOptions new];
         options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"endDate" ascending:NO]];
         _fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeMoment subtype:PHAssetCollectionSubtypeAny options:options];
-        
         NSMutableArray *assetCollectionFetchResults = @[].mutableCopy;
         for (PHAssetCollection *collection in _fetchResult) {
             PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
@@ -48,10 +46,42 @@
 }
 
 #pragma mark Methods
-- (void)prepareForUse:(UICollectionView *)collectionView {
-    [collectionView registerClass:[PEMomentViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PEMomentViewCell class])];
-    
+- (void)setCollectionView:(UICollectionView *)collectionView {
     _collectionView = collectionView;
+    
+    if (collectionView) {
+        [collectionView registerClass:[PEMomentViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PEMomentViewCell class])];
+    }
+}
+
+- (void)setIsSelectMode:(BOOL)isSelectMode {
+    _isSelectMode = isSelectMode;
+    
+    UICollectionView *collectionView = _collectionView;
+    if (collectionView) {
+        for (NSIndexPath *indexPath in collectionView.indexPathsForSelectedItems) {
+            [collectionView deselectItemAtIndexPath:indexPath animated:YES];
+        }
+        for (PEMomentViewCell *cell in collectionView.visibleCells) {
+            cell.isSelectWithCheckmark = isSelectMode;
+        }
+    }
+}
+
+- (NSArray *)selectedCollections {
+    if (!_isSelectMode) {
+        return nil;
+    }
+    
+    NSMutableArray *selectedCollections = @[].mutableCopy;
+    UICollectionView *collectionView = _collectionView;
+    if (collectionView) {
+        for (NSIndexPath *indexPath in collectionView.indexPathsForSelectedItems) {
+            PHAssetCollection *assetCollection = _fetchResult[indexPath.item];
+            [selectedCollections addObject:assetCollection];
+        }
+    }
+    return selectedCollections;
 }
 
 #pragma mark PHPhotoLibraryChangeObserver
@@ -63,20 +93,27 @@
     NSArray *deleteIndexPaths = [changeDetails.removedIndexes indexPathsForSection:0];
     NSArray *insertIndexPaths = [changeDetails.insertedIndexes indexPathsForSection:0];
     NSArray *reloadIndexPaths = [changeDetails.changedIndexes indexPathsForSection:0];
+    NSMutableArray *assetCollectionFetchResults = @[].mutableCopy;
+    for (PHAssetCollection *collection in changeDetails.fetchResultAfterChanges) {
+        PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+        [assetCollectionFetchResults addObject:fetchResult];
+    }
     
     dispatch_async(dispatch_get_main_queue(), ^{
         NSUInteger count = changeDetails.fetchResultAfterChanges.count;
         _fetchResult = changeDetails.fetchResultAfterChanges;
+        _assetCollectionFetchResults = assetCollectionFetchResults;
         
-        [_collectionView performBatchUpdates:^{
+        UICollectionView *collectionView = _collectionView;
+        [collectionView performBatchUpdates:^{
             if (deleteIndexPaths) {
-                [_collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
+                [collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
             }
             if (insertIndexPaths) {
-                [_collectionView insertItemsAtIndexPaths:insertIndexPaths];
+                [collectionView insertItemsAtIndexPaths:insertIndexPaths];
             }
             if (reloadIndexPaths) {
-                [_collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
+                [collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
             }
         } completion:^(BOOL finished) {
             if (_didChangeItemCountBlock) {
@@ -100,9 +137,11 @@
     __weak typeof(cell) wcell = cell;
     NSUInteger index = indexPath.row;
     cell.tag = index;
+    cell.isSelectWithCheckmark = _isSelectMode;
     for (UIImageView *imageView in cell.imageViews) {
         imageView.image = nil;
     }
+    cell.backgroundColor = (_cellBackgroundColor) ? _cellBackgroundColor : [UIColor whiteColor];
     
     PHFetchResult *assetsResult = _assetCollectionFetchResults[indexPath.row];
     cell.numberOfImageView = assetsResult.count;
@@ -140,9 +179,24 @@
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PHAssetCollection *assetCollection = _fetchResult[indexPath.row];
-    if (_didSelectCollectionBlock) {
-        _didSelectCollectionBlock(assetCollection);
+    if (_isSelectMode) {
+        if (_didChangeSelectedItemCountBlock) {
+            _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
+        }
+    }
+    else {
+        PHAssetCollection *collection = _fetchResult[indexPath.row];
+        if (_didSelectCollectionBlock) {
+            _didSelectCollectionBlock(collection);
+        }
+    }
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (_isSelectMode) {
+        if (_didChangeSelectedItemCountBlock) {
+            _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
+        }
     }
 }
 

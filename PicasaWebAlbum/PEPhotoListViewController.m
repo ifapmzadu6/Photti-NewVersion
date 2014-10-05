@@ -125,7 +125,7 @@
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = _photoListDataSource;
     _collectionView.delegate = _photoListDataSource;
-    [_photoListDataSource prepareForUse:_collectionView];
+    _photoListDataSource.collectionView = _collectionView;
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;

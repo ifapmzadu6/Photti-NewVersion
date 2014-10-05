@@ -15,6 +15,7 @@
 @property (copy, nonatomic) void (^didChangeItemCountBlock)(NSUInteger count);
 @property (copy, nonatomic) void (^didChangeSelectedItemCountBlock)(NSUInteger count);
 
+@property (weak, nonatomic) UICollectionView *collectionView;
 @property (nonatomic) CGSize cellSize;
 @property (nonatomic) UIColor *cellBackgroundColor;
 @property (nonatomic) CGFloat minimumInteritemSpacing;
@@ -22,7 +23,5 @@
 
 @property (nonatomic) BOOL isSelectMode;
 @property (nonatomic, readonly) NSArray *selectedCollections;
-
-- (void)prepareForUse:(UICollectionView *)collectionView;
 
 @end

@@ -15,7 +15,6 @@
 
 @interface PEPhotoListDataSource () <PHPhotoLibraryChangeObserver>
 
-@property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSMutableArray *requestIDs;
 
 @end
@@ -48,10 +47,12 @@
 }
 
 #pragma mark Methods
-- (void)prepareForUse:(UICollectionView *)collectionView {
-    [collectionView registerClass:[PEPhotoViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PEPhotoViewCell class])];
-    
+- (void)setCollectionView:(UICollectionView *)collectionView {
     _collectionView = collectionView;
+    
+    if (collectionView) {
+        [collectionView registerClass:[PEPhotoViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PEPhotoViewCell class])];
+    }
 }
 
 - (void)setIsSelectMode:(BOOL)isSelectMode {
