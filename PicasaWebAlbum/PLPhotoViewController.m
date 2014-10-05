@@ -15,7 +15,7 @@
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
 #import <SDImageCache.h>
-#import "PAImageScrollView.h"
+#import <PAImageScrollView.h>
 #import "PATabBarController.h"
 
 @interface PLPhotoViewController ()

@@ -8,7 +8,7 @@
 
 #import "PEPhotoViewController.h"
 
-#import "PAImageScrollView.h"
+#import <PAImageScrollView.h>
 
 @interface PEPhotoViewController ()
 

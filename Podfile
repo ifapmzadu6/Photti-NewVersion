@@ -12,6 +12,7 @@ pod 'SFHFKeychainUtils'
 pod 'Reachability'
 pod 'UAAppReviewManager'
 pod 'FLAnimatedImage'
+pod 'PAImageScrollView', :git => 'git@github.com:ifapmzadu6/PAImageScrollView.git'
 pod 'GoogleAnalytics-iOS-SDK'
 pod 'Google-Mobile-Ads-SDK'
 

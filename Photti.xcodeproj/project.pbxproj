@@ -125,7 +125,6 @@
 		71958C52191B8A2200CFC15F /* UIButton+HitEdgeInsets.m in Sources */ = {isa = PBXBuildFile; fileRef = 71958C51191B8A2200CFC15F /* UIButton+HitEdgeInsets.m */; };
 		71958C57191B8D4400CFC15F /* PWPhotoPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71958C56191B8D4400CFC15F /* PWPhotoPageViewController.m */; };
 		71958C5C191B933500CFC15F /* PWPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71958C5B191B933500CFC15F /* PWPhotoViewController.m */; };
-		71958C66191B9B7100CFC15F /* PAImageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71958C65191B9B7100CFC15F /* PAImageScrollView.m */; };
 		719BECEA19568EAE005DE6E7 /* PWSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719BECE919568EAE005DE6E7 /* PWSettingsViewController.m */; };
 		719BECEE1957419E005DE6E7 /* PWSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719BECED1957419E005DE6E7 /* PWSettingsTableViewController.m */; };
 		719CFE5119598B85008B4308 /* PWGoogleLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719CFE5019598B85008B4308 /* PWGoogleLoginViewController.m */; };
@@ -432,8 +431,6 @@
 		71958C56191B8D4400CFC15F /* PWPhotoPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPhotoPageViewController.m; sourceTree = "<group>"; };
 		71958C5A191B933500CFC15F /* PWPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPhotoViewController.h; sourceTree = "<group>"; };
 		71958C5B191B933500CFC15F /* PWPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPhotoViewController.m; sourceTree = "<group>"; };
-		71958C64191B9B7100CFC15F /* PAImageScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAImageScrollView.h; sourceTree = "<group>"; };
-		71958C65191B9B7100CFC15F /* PAImageScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAImageScrollView.m; sourceTree = "<group>"; };
 		719BECE819568EAE005DE6E7 /* PWSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSettingsViewController.h; sourceTree = "<group>"; };
 		719BECE919568EAE005DE6E7 /* PWSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSettingsViewController.m; sourceTree = "<group>"; };
 		719BECEC1957419E005DE6E7 /* PWSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSettingsTableViewController.h; sourceTree = "<group>"; };
@@ -1528,15 +1525,6 @@
 			name = PWPhotoViewController;
 			sourceTree = "<group>";
 		};
-		71958C60191B9B2300CFC15F /* PAImageScrollView */ = {
-			isa = PBXGroup;
-			children = (
-				71958C64191B9B7100CFC15F /* PAImageScrollView.h */,
-				71958C65191B9B7100CFC15F /* PAImageScrollView.m */,
-			);
-			name = PAImageScrollView;
-			sourceTree = "<group>";
-		};
 		719BECE619568D93005DE6E7 /* PWSettingsViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -1768,7 +1756,6 @@
 			children = (
 				7191706319D15F73003BFFC3 /* PACenterTextTableViewCell */,
 				711183A319D0324C00548730 /* PAGradientView */,
-				71958C60191B9B2300CFC15F /* PAImageScrollView */,
 			);
 			name = A;
 			sourceTree = "<group>";
@@ -2603,7 +2590,6 @@
 				71A2541C19190EB6009914F7 /* PAColors.m in Sources */,
 				717456E6196AB4F5003D2436 /* XmlReader.m in Sources */,
 				71BD235819779D010034CD3B /* PDCopyPhotoObject.m in Sources */,
-				71958C66191B9B7100CFC15F /* PAImageScrollView.m in Sources */,
 				7195529E192CB1DB003EA9AF /* PLPageViewController.m in Sources */,
 				719D92331917848A00B75D8B /* PWPhotoExitObject.m in Sources */,
 				71C477A3192CE8C100A60177 /* PLAllPhotosViewController.m in Sources */,

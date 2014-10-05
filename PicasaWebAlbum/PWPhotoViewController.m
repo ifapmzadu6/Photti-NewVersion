@@ -13,7 +13,7 @@
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PWPicasaAPI.h"
-#import "PAImageScrollView.h"
+#import <PAImageScrollView.h>
 #import "PATabBarController.h"
 #import "PANetworkActivityIndicator.h"
 #import <Reachability.h>
