@@ -8,11 +8,11 @@
 
 #import "PEPhotoViewController.h"
 
-#import "PWImageScrollView.h"
+#import "PAImageScrollView.h"
 
 @interface PEPhotoViewController ()
 
-@property (strong, nonatomic) PWImageScrollView *imageScrollView;
+@property (strong, nonatomic) PAImageScrollView *imageScrollView;
 
 @end
 
@@ -29,7 +29,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _imageScrollView = [[PWImageScrollView alloc] initWithFrame:self.view.bounds];
+    _imageScrollView = [[PAImageScrollView alloc] initWithFrame:self.view.bounds];
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     __weak typeof(self) wself = self;
     _imageScrollView.handleFirstZoomBlock = ^{

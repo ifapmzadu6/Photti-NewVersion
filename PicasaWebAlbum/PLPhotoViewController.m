@@ -15,12 +15,12 @@
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
 #import <SDImageCache.h>
-#import "PWImageScrollView.h"
+#import "PAImageScrollView.h"
 #import "PATabBarController.h"
 
 @interface PLPhotoViewController ()
 
-@property (strong, nonatomic) PWImageScrollView *imageScrollView;
+@property (strong, nonatomic) PAImageScrollView *imageScrollView;
 @property (strong, nonatomic) UIButton *videoButton;
 
 @property (strong, nonatomic) MPMoviePlayerController *moviePlayerController;
@@ -42,7 +42,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _imageScrollView = [[PWImageScrollView alloc] initWithFrame:self.view.bounds];
+    _imageScrollView = [[PAImageScrollView alloc] initWithFrame:self.view.bounds];
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     __weak typeof(self) wself = self;
     _imageScrollView.handleFirstZoomBlock = ^{

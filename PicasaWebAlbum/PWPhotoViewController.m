@@ -13,7 +13,7 @@
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PWPicasaAPI.h"
-#import "PWImageScrollView.h"
+#import "PAImageScrollView.h"
 #import "PATabBarController.h"
 #import "PANetworkActivityIndicator.h"
 #import <Reachability.h>
@@ -25,7 +25,7 @@
 @property (strong, nonatomic) id placeholder;
 @property (strong, nonatomic) NSCache *cache;
 
-@property (strong, nonatomic) PWImageScrollView *imageScrollView;
+@property (strong, nonatomic) PAImageScrollView *imageScrollView;
 @property (strong, nonatomic) UIButton *videoButton;
 @property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
@@ -55,7 +55,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _imageScrollView = [[PWImageScrollView alloc] initWithFrame:self.view.bounds];
+    _imageScrollView = [[PAImageScrollView alloc] initWithFrame:self.view.bounds];
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:_imageScrollView];
     
