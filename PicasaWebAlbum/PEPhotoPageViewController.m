@@ -182,7 +182,7 @@
             item.enabled = isGPSEnable;
         });
     };
-    viewController.handleSingleTapBlock = ^{
+    viewController.didSingleTapBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;

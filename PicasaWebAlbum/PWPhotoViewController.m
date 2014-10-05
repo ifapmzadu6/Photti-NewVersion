@@ -109,13 +109,13 @@
         _viewDidAppearBlock();
     }
     
-    _imageScrollView.handleSingleTapBlock = _handleSingleTapBlock;
+    _imageScrollView.didSingleTapBlock = _didSingleTapBlock;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    _imageScrollView.handleSingleTapBlock = nil;
+    _imageScrollView.didSingleTapBlock = nil;
 }
 
 - (void)dealloc {

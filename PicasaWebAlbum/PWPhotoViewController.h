@@ -18,6 +18,6 @@
 
 @property (strong, nonatomic, readonly) PWPhotoObject *photo;
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
-@property (copy, nonatomic) void (^handleSingleTapBlock)();
+@property (copy, nonatomic) void (^didSingleTapBlock)();
 
 @end

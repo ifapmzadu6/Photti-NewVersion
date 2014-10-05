@@ -32,12 +32,12 @@
     _imageScrollView = [[PAImageScrollView alloc] initWithFrame:self.view.bounds];
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     __weak typeof(self) wself = self;
-    _imageScrollView.handleFirstZoomBlock = ^{
+    _imageScrollView.firstTimeZoomBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
         [sself loadFullResolutionImage];
     };
-    [_imageScrollView setHandleSingleTapBlock:_handleSingleTapBlock];
+    _imageScrollView.didSingleTapBlock = _didSingleTapBlock;
     [self.view addSubview:_imageScrollView];
     
     CGRect rect = [UIScreen mainScreen].bounds;
