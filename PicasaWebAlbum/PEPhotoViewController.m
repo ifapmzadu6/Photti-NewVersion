@@ -35,15 +35,26 @@
     _imageScrollView.handleFirstZoomBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
-//        [sself loadFullResolutionImage];
+        [sself loadFullResolutionImage];
     };
     [_imageScrollView setHandleSingleTapBlock:_handleSingleTapBlock];
     [self.view addSubview:_imageScrollView];
     
-    [[PHImageManager defaultManager] requestImageForAsset:_asset targetSize:CGSizeMake(_asset.pixelWidth, _asset.pixelHeight) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+    CGRect rect = [UIScreen mainScreen].bounds;
+    CGFloat imageWidth = _asset.pixelWidth;
+    CGFloat imageHeight = _asset.pixelHeight;
+    if (CGRectGetWidth(rect) > CGRectGetHeight(rect)) {
+        imageHeight = ceilf(imageHeight * CGRectGetWidth(rect) / imageWidth * 2.0f) / 2.0f;
+        imageWidth = CGRectGetWidth(rect);
+    }
+    else {
+        imageWidth = ceilf(imageWidth * CGRectGetHeight(rect) / imageHeight * 2.0f) / 2.0f;
+        imageHeight = CGRectGetHeight(rect);
+    }
+    CGSize targetSize = CGSizeMake(imageWidth, imageHeight);
+    [[PHImageManager defaultManager] requestImageForAsset:_asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         sself.imageScrollView.image = result;
     }];
 }
@@ -58,6 +69,19 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+#pragma loadFullResolutionImage
+- (void)loadFullResolutionImage {
+    CGSize targetSize = CGSizeMake(_asset.pixelWidth, _asset.pixelHeight);
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    __weak typeof(self) wself = self;
+    [[PHImageManager defaultManager] requestImageForAsset:_asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        sself.imageScrollView.image = result;
+    }];
 }
 
 @end
