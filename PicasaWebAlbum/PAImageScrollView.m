@@ -8,12 +8,7 @@
 
 #import "PAImageScrollView.h"
 
-#import <FLAnimatedImage.h>
-#import <FLAnimatedImageView.h>
-
 @interface PAImageScrollView () <UIScrollViewDelegate>
-
-@property (strong, nonatomic) FLAnimatedImageView *imageView;
 
 @property (nonatomic) CGPoint pointToCenterAfterResize;
 @property (nonatomic) CGFloat scaleToRestoreAfterResize;
@@ -54,6 +49,8 @@
     UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
     doubleTapGesture.numberOfTapsRequired = 2;
     [self addGestureRecognizer:doubleTapGesture];
+    
+    _imageViewClass = UIImageView.class;
 }
 
 - (void)removeFromSuperview {
@@ -104,13 +101,8 @@
 #pragma mark Methods
 - (void)setImage:(UIImage *)image {
     if (_imageView) {
-        if ([_imageView isKindOfClass:UIImageView.class]) {
-            _imageView.image = image;
-            return;
-        }
-        else {
-            [_imageView removeFromSuperview];
-        }
+        _imageView.image = image;
+        return;
     }
     if (!image) {
         return;
@@ -128,44 +120,9 @@
 	}
 	_imageSize = CGSizeMake(imageWidth, imageHeight);
 	
-    _imageView = [[FLAnimatedImageView alloc] initWithFrame:(CGRect){CGPointZero, _imageSize}];
+    _imageView = [[_imageViewClass alloc] initWithFrame:(CGRect){CGPointZero, _imageSize}];
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
 	_imageView.image = image;
-	[self addSubview:_imageView];
-	
-	self.contentSize = _imageSize;
-    [self setMaxMinZoomScalesForCurrentBounds];
-    self.zoomScale = self.minimumZoomScale;
-    
-    [self centerScrollViewContentsWithView:_imageView];
-}
-
-- (void)setAnimatedImage:(FLAnimatedImage *)animatedImage {
-    if (_imageView) {
-        if ([_imageView isKindOfClass:FLAnimatedImageView.class]) {
-            _imageView.animatedImage = animatedImage;
-            return;
-        }
-        else {
-            [_imageView removeFromSuperview];
-        }
-    }
-    
-	CGFloat imageWidth = animatedImage.size.width;
-	CGFloat imageHeight = animatedImage.size.height;
-	if (CGRectGetWidth(self.bounds) > CGRectGetHeight(self.bounds)) {
-		imageHeight = imageHeight * CGRectGetWidth(self.bounds) / imageWidth;
-		imageWidth = CGRectGetWidth(self.bounds);
-	}
-	else {
-		imageWidth = imageWidth * CGRectGetHeight(self.bounds) / imageHeight;
-		imageHeight = CGRectGetHeight(self.bounds);
-	}
-	_imageSize = CGSizeMake(imageWidth, imageHeight);
-	
-	_imageView = [[FLAnimatedImageView alloc] initWithFrame:(CGRect){CGPointZero, _imageSize}];
-	_imageView.contentMode = UIViewContentModeScaleAspectFill;
-	_imageView.animatedImage = animatedImage;
 	[self addSubview:_imageView];
 	
 	self.contentSize = _imageSize;

@@ -8,16 +8,15 @@
 
 @import UIKit;
 
-@class FLAnimatedImage;
-
 @interface PAImageScrollView : UIScrollView
 
 @property (copy, nonatomic) void (^handleSingleTapBlock)();
 @property (copy, nonatomic) void (^handleDoubleTapBlock)();
 @property (copy, nonatomic) void (^handleFirstZoomBlock)();
 
+@property (nonatomic) Class imageViewClass;
+@property (nonatomic, readonly) UIImageView *imageView;
 @property (strong, nonatomic) UIImage *image;
-@property (strong, nonatomic) FLAnimatedImage *animatedImage;
 @property (nonatomic) BOOL isDisableZoom;
 
 @end

@@ -18,6 +18,7 @@
 #import "PANetworkActivityIndicator.h"
 #import <Reachability.h>
 #import <FLAnimatedImage.h>
+#import <FLAnimatedImageView.h>
 #import <SDImageCache.h>
 
 @interface PWPhotoViewController () <UIAlertViewDelegate>
@@ -56,12 +57,16 @@
     [super viewDidLoad];
     
     _imageScrollView = [[PAImageScrollView alloc] initWithFrame:self.view.bounds];
+    _imageScrollView.imageViewClass = FLAnimatedImageView.class;
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:_imageScrollView];
     
     if (_placeholder) {
         if ([_placeholder isKindOfClass:[FLAnimatedImage class]]) {
-            _imageScrollView.animatedImage = _placeholder;
+            FLAnimatedImage *animatedImage = _placeholder;
+            _imageScrollView.image = animatedImage.posterImage;
+            FLAnimatedImageView *imageView = (FLAnimatedImageView *)_imageScrollView.imageView;
+            imageView.animatedImage = animatedImage;
         }
         else {
             _imageScrollView.image = _placeholder;
@@ -275,7 +280,9 @@
                     typeof(wself) sself = wself;
                     if (!sself) return;
                     [sself.indicatorView stopAnimating];
-                    [sself.imageScrollView setAnimatedImage:animatedImage];
+                    sself.imageScrollView.image = animatedImage.posterImage;
+                    FLAnimatedImageView *imageView = (FLAnimatedImageView *)sself.imageScrollView.imageView;
+                    imageView.animatedImage = animatedImage;
                 });
             }
             else {
@@ -319,7 +326,9 @@
                     FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [sself.indicatorView stopAnimating];
-                        sself.imageScrollView.animatedImage = animatedImage;
+                        sself.imageScrollView.image = animatedImage.posterImage;
+                        FLAnimatedImageView *imageView = (FLAnimatedImageView *)sself.imageScrollView.imageView;
+                        imageView.animatedImage = animatedImage;
                     });
                     
                     if (data && urlString) {
