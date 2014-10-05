@@ -1528,13 +1528,13 @@
 			name = PWPhotoViewController;
 			sourceTree = "<group>";
 		};
-		71958C60191B9B2300CFC15F /* PWImageScrollView */ = {
+		71958C60191B9B2300CFC15F /* PAImageScrollView */ = {
 			isa = PBXGroup;
 			children = (
 				71958C64191B9B7100CFC15F /* PAImageScrollView.h */,
 				71958C65191B9B7100CFC15F /* PAImageScrollView.m */,
 			);
-			name = PWImageScrollView;
+			name = PAImageScrollView;
 			sourceTree = "<group>";
 		};
 		719BECE619568D93005DE6E7 /* PWSettingsViewController */ = {
@@ -1768,6 +1768,7 @@
 			children = (
 				7191706319D15F73003BFFC3 /* PACenterTextTableViewCell */,
 				711183A319D0324C00548730 /* PAGradientView */,
+				71958C60191B9B2300CFC15F /* PAImageScrollView */,
 			);
 			name = A;
 			sourceTree = "<group>";
@@ -1816,7 +1817,6 @@
 			children = (
 				719D92511918D81E00B75D8B /* PWAlbumViewCell */,
 				713320301921E48C00A27B3C /* PWDatePickerView */,
-				71958C60191B9B2300CFC15F /* PWImageScrollView */,
 				71A254651919523E009914F7 /* PWPhotoViewCell */,
 				712E03A3191DAD690035D9E0 /* PWRefreshControl */,
 				718A0916194D2FE500480E57 /* PWRoundedCornerBadgeLabel */,

@@ -1,5 +1,5 @@
 //
-//  PWImageScrollView.m
+//  PAImageScrollView.m
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/05/08.
