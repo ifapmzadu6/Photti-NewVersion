@@ -30,12 +30,21 @@
 }
 
 - (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult assetCollection:(PHAssetCollection *)assetCollection {
+    self = [self initWithFetchResultOfPhoto:fetchResult assetCollection:assetCollection ascending:NO];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult assetCollection:(PHAssetCollection *)assetCollection ascending:(BOOL)ascending {
     self = [super init];
     if (self) {
         [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
         
         _fetchResult = fetchResult;
         _assetCollection = assetCollection;
+        _ascending = ascending;
         
         _requestIDs = @[].mutableCopy;
     }
@@ -78,7 +87,8 @@
     UICollectionView *collectionView = _collectionView;
     if (collectionView) {
         for (NSIndexPath *indexPath in collectionView.indexPathsForSelectedItems) {
-            PHAsset *asset = _fetchResult[indexPath.item];
+            NSUInteger index = (_ascending) ? _fetchResult.count-indexPath.item-1 : indexPath.item;
+            PHAsset *asset = _fetchResult[index];
             [selectedAssets addObject:asset];
         }
     }
@@ -94,6 +104,12 @@
     NSArray *deleteIndexPaths = [changeDetails.removedIndexes indexPathsForSection:0];
     NSArray *insertIndexPaths = [changeDetails.insertedIndexes indexPathsForSection:0];
     NSArray *reloadIndexPaths = [changeDetails.changedIndexes indexPathsForSection:0];
+    if (_ascending) {
+        deleteIndexPaths = [self.class convertIndexPaths:deleteIndexPaths reverseIndex:_fetchResult.count-1];
+        insertIndexPaths = [self.class convertIndexPaths:insertIndexPaths reverseIndex:_fetchResult.count-1];
+        reloadIndexPaths = [self.class convertIndexPaths:reloadIndexPaths reverseIndex:_fetchResult.count-1];
+    }
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         NSUInteger count = changeDetails.fetchResultAfterChanges.count;
         _fetchResult = changeDetails.fetchResultAfterChanges;
@@ -128,17 +144,19 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PEPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PEPhotoViewCell class]) forIndexPath:indexPath];
     __weak typeof(cell) wcell = cell;
-    NSUInteger index = indexPath.row;
-    cell.tag = index;
+    NSUInteger tag = indexPath.row;
+    cell.tag = tag;
     cell.imageView.image = nil;
     cell.isSelectWithCheckmark = _isSelectMode;
     cell.backgroundColor = _cellBackgroundColor;
     
     CGSize targetSize = (_flowLayout) ? _flowLayout.itemSize : _cellSize;
-    [[PHImageManager defaultManager] requestImageForAsset:_fetchResult[indexPath.row] targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+    NSUInteger index = (_ascending) ? _fetchResult.count-indexPath.item-1 : indexPath.item;
+    PHAsset *asset = _fetchResult[index];
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
         typeof(wcell) scell = wcell;
         if (!scell) return;
-        if (scell.tag == index) {
+        if (scell.tag == tag) {
             scell.imageView.image = result;
         }
     }];
@@ -184,9 +202,10 @@
         }
     }
     else {
-        PHAsset *asset = _fetchResult[indexPath.row];
+        NSUInteger index = (_ascending) ? _fetchResult.count-indexPath.item-1 : indexPath.item;
+        PHAsset *asset = _fetchResult[index];
         if (_didSelectAssetBlock) {
-            _didSelectAssetBlock(asset, indexPath.row);
+            _didSelectAssetBlock(asset, index);
         }
     }
 }
@@ -197,6 +216,18 @@
             _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
         }
     }
+}
+
+#pragma mark Ascending
++ (NSArray *)convertIndexPaths:(NSArray *)indexPaths reverseIndex:(NSUInteger)index {
+    NSMutableArray *convertedIndexPaths = @[].mutableCopy;
+    
+    for (NSIndexPath *indexPath in indexPaths) {
+        NSIndexPath *convertedIndexPath = [NSIndexPath indexPathForItem:(index-indexPath.item) inSection:indexPath.section];
+        [convertedIndexPaths addObject:convertedIndexPath];
+    }
+    
+    return convertedIndexPaths;
 }
 
 @end

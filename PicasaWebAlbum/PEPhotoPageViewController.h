@@ -11,7 +11,10 @@
 
 @interface PEPhotoPageViewController : UIPageViewController
 
+@property (nonatomic, readonly) BOOL ascending;
+
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection index:(NSUInteger)index;
 - (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index;
+- (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index ascending:(BOOL)ascending;
 
 @end

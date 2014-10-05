@@ -160,7 +160,7 @@
             cell.detailTextLabel.text = NSLocalizedString(@"Original", nil);
         }
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    } cellHeight:CGFLOAT_MIN didSelect:^{
+    } cellHeight:CGFLOAT_MIN didSelect:^(KKStaticTableView *tableView, NSIndexPath* indexPath){
         typeof(wself) sself = wself;
         if (!sself) return;
         
@@ -319,7 +319,7 @@
     [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeDefault cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.textLabel.text = NSLocalizedString(@"Open Source License", nil);
-    } cellHeight:CGFLOAT_MIN didSelect:^{
+    } cellHeight:CGFLOAT_MIN didSelect:^(KKStaticTableView *tableView, NSIndexPath* indexPath){
         typeof(wself) sself = wself;
         if (!sself) return;
         

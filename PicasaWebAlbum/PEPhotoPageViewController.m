@@ -44,10 +44,19 @@
 }
 
 - (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index {
+    self = [self initWithResult:result index:index ascending:NO];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index ascending:(BOOL)ascending {
     NSDictionary *option = [NSDictionary dictionaryWithObjectsAndKeys:@(40.0f), UIPageViewControllerOptionInterPageSpacingKey, nil];
     self = [self initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:option];
     if (self) {
         _fetchedResult = result;
+        _ascending = ascending;
         
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
@@ -151,13 +160,15 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
     PEPhotoViewController *photoViewController = (PEPhotoViewController *)viewController;
     NSInteger index = [_fetchedResult indexOfObject:photoViewController.asset];
-    return [self makePhotoViewController:index - 1];
+    NSUInteger beforeIndex = (_ascending) ? index+1 : index-1;
+    return [self makePhotoViewController:beforeIndex];
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController {
     PEPhotoViewController *photoViewController = (PEPhotoViewController *)viewController;
     NSInteger index = [_fetchedResult indexOfObject:photoViewController.asset];
-    return [self makePhotoViewController:index + 1];
+    NSUInteger afterIndex = (_ascending) ? index-1 : index+1;
+    return [self makePhotoViewController:afterIndex];
 }
 
 #pragma mark PHPhotoViewController

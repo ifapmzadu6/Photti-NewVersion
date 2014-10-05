@@ -131,8 +131,8 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PEAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PEAlbumViewCell class]) forIndexPath:indexPath];
     __weak typeof(cell) wcell = cell;
-    NSUInteger index = indexPath.row;
-    cell.tag = index;
+    NSUInteger tag = indexPath.row;
+    cell.tag = tag;
     cell.isSelectWithCheckmark = _isSelectMode;
     cell.firstImageView.image = nil;
     cell.secondImageView.image = nil;
@@ -144,7 +144,7 @@
         [[PHImageManager defaultManager] requestImageForAsset:assetsResult[0] targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
             typeof(wcell) scell = wcell;
             if (!scell) return;
-            if (scell.tag == index) {
+            if (scell.tag == tag) {
                 scell.firstImageView.image = result;
             }
         }];

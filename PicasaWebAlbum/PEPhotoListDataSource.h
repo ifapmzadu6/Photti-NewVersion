@@ -17,6 +17,7 @@
 
 @property (strong, nonatomic, readonly) PHAssetCollection *assetCollection;
 @property (strong, nonatomic, readonly) PHFetchResult *fetchResult;
+@property (nonatomic, readonly) BOOL ascending;
 
 @property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UICollectionViewFlowLayout *flowLayout;
@@ -28,6 +29,7 @@
 
 - (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult;
 - (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult assetCollection:(PHAssetCollection *)assetCollection;
+- (instancetype)initWithFetchResultOfPhoto:(PHFetchResult *)fetchResult assetCollection:(PHAssetCollection *)assetCollection ascending:(BOOL)ascending;
 
 @property (nonatomic) BOOL isSelectMode;
 @property (nonatomic, readonly) NSArray *selectedAssets;

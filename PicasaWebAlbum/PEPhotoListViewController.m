@@ -75,8 +75,7 @@
             _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:nil];
-                PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:fetchResult index:index];
+                PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.photoListDataSource.fetchResult index:index ascending:sself.photoListDataSource.ascending];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }

@@ -135,8 +135,8 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PEMomentViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PEMomentViewCell class]) forIndexPath:indexPath];
     __weak typeof(cell) wcell = cell;
-    NSUInteger index = indexPath.row;
-    cell.tag = index;
+    NSUInteger tag = indexPath.row;
+    cell.tag = tag;
     cell.isSelectWithCheckmark = _isSelectMode;
     for (UIImageView *imageView in cell.imageViews) {
         imageView.image = nil;
@@ -152,7 +152,7 @@
         [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
             typeof(wcell) scell = wcell;
             if (!scell) return;
-            if (scell.tag == index) {
+            if (scell.tag == tag) {
                 UIImageView *imageView = scell.imageViews[i];
                 imageView.image = result;
             }
