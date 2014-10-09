@@ -132,7 +132,7 @@
     CGRect rect = self.view.bounds;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if ((int)[[UIScreen mainScreen] bounds].size.height > 480) {
+        if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
             if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
                 _iconImageView.frame = CGRectMake(70.0f, 60.0f, 190.0f, 190.0f);
                 _titleLabel.frame = CGRectMake(250.0f + 0.0f, 280.0f - 212.0f, CGRectGetHeight(rect), 36.0f);
@@ -181,10 +181,6 @@
             _disableButton.frame = CGRectMake(454.0f, 800.0f, 160.0f, 50.0f);
         }
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark UIBarButtonAction

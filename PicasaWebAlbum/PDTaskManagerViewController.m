@@ -98,10 +98,6 @@
     _tableView.frame = rect;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 - (void)dealloc {
 #ifdef DEBUG
     NSLog(@"%s", __func__);

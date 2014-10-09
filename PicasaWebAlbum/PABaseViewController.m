@@ -34,10 +34,6 @@
     self.screenName = NSStringFromClass([self class]);
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark methods
 - (BOOL)isLandscape {
     return UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);

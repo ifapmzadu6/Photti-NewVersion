@@ -32,8 +32,4 @@
     [_webView loadHTMLString:html baseURL:nil];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 @end

@@ -67,10 +67,6 @@
     }
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma loadFullResolutionImage
 - (void)loadFullResolutionImage {
     CGSize targetSize = CGSizeMake(_asset.pixelWidth, _asset.pixelHeight);

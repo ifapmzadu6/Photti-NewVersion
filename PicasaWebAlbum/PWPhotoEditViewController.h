@@ -15,5 +15,6 @@
 @interface PWPhotoEditViewController : PABaseViewController
 
 - (id)initWithPhoto:(PWPhotoObject *)photo;
+- (id)initWithPhoto:(PWPhotoObject *)photo backgroundScreenshot:(UIImage *)backgroundScreenshot;
 
 @end

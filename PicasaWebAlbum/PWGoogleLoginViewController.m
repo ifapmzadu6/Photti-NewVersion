@@ -144,7 +144,7 @@
     CGRect rect = self.view.bounds;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if ((int)[[UIScreen mainScreen] bounds].size.height > 480) {
+        if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
             if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
                 _iconImageView.frame = CGRectMake(64.0f, 80.0f, 180.0f, 180.0f);
                 if (!_skipButton) {
@@ -228,10 +228,6 @@
             }
         }
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark UIBarButtonAction

@@ -31,10 +31,6 @@
     [item.titleView setNeedsLayout];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 - (void)setTitleOnNavigationBar:(NSString *)titleOnNavigationBar {
     _titleOnNavigationBar = titleOnNavigationBar;
     

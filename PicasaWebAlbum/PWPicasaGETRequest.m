@@ -16,24 +16,30 @@
 
 @implementation PWPicasaGETRequest
 
-static NSString * const PWGETListURL = @"https://picasaweb.google.com/data/feed/api/user/default";
-static NSString * const PWPicasaGETRequestAlbumThumbnailSizeName = @"320u";
-static NSString * const PWPicasaGETRequestPhotoThumbnailSizeName = @"288u";
-static NSString * const PWPicasaGETRequestPhotoThumbnailMaxSizeName = @"1024";
+static NSString * const kPWGETListURL = @"https://picasaweb.google.com/data/feed/api/user/default";
+static NSString * const kPWPicasaGETRequestAlbumThumbnailSizeName = @"320u";
+static NSString * const kPWPicasaGETRequestPhotoThumbnailSizeName = @"288u";
+static NSString * const kPWPicasaGETRequestPhotoThumbnailMaxSizeName = @"1024";
+static NSString * const kPWPicasaGETRequestNumberOfRecentlyUploadedPhotos = @"50";
 
 + (void)getListOfAlbumsWithIndex:(NSUInteger)index completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion {
-    NSURL *url = [PWPicasaGETRequest urlWithUrlString:PWGETListURL param:@{@"thumbsize": PWPicasaGETRequestAlbumThumbnailSizeName}];
+    NSURL *url = [PWPicasaGETRequest urlWithUrlString:kPWGETListURL param:@{@"thumbsize": kPWPicasaGETRequestAlbumThumbnailSizeName}];
     [PWPicasaGETRequest authorizedGETRequestWithURL:url completion:completion];
 }
 
 + (void)getListOfPhotosInAlbumWithAlbumID:(NSString *)albumID index:(NSUInteger)index completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion {
-    NSString *urlString = [NSString stringWithFormat:@"%@/albumid/%@", PWGETListURL, albumID];
-    NSURL *url = [PWPicasaGETRequest urlWithUrlString:urlString param:@{@"thumbsize": PWPicasaGETRequestPhotoThumbnailSizeName, @"imgmax": PWPicasaGETRequestPhotoThumbnailMaxSizeName}];
+    NSString *urlString = [NSString stringWithFormat:@"%@/albumid/%@", kPWGETListURL, albumID];
+    NSURL *url = [PWPicasaGETRequest urlWithUrlString:urlString param:@{@"thumbsize": kPWPicasaGETRequestPhotoThumbnailSizeName, @"imgmax": kPWPicasaGETRequestPhotoThumbnailMaxSizeName}];
+    [PWPicasaGETRequest authorizedGETRequestWithURL:url completion:completion];
+}
+
++ (void)getListOfRecentlyUploadedPhotosWithCompletion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion {
+    NSURL *url = [PWPicasaGETRequest urlWithUrlString:kPWGETListURL param:@{@"kind": @"photo", @"max-results":kPWPicasaGETRequestNumberOfRecentlyUploadedPhotos, @"thumbsize": kPWPicasaGETRequestPhotoThumbnailSizeName, @"imgmax": kPWPicasaGETRequestPhotoThumbnailMaxSizeName}];
     [PWPicasaGETRequest authorizedGETRequestWithURL:url completion:completion];
 }
 
 + (void)getPhotoWithAlbumID:(NSString *)albumID photoID:(NSString *)photoID completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion {
-    NSString *urlString = [NSString stringWithFormat:@"%@/albumid/%@/photoid/%@", PWGETListURL, albumID, photoID];
+    NSString *urlString = [NSString stringWithFormat:@"%@/albumid/%@/photoid/%@", kPWGETListURL, albumID, photoID];
     NSURL *url = [PWPicasaGETRequest urlWithUrlString:urlString param:nil];
     [PWPicasaGETRequest authorizedGETRequestWithURL:url completion:completion];
 }

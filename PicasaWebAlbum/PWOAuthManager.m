@@ -15,9 +15,12 @@ static NSString * const PWClientID = @"982107973738-pqihuiltucj69o5413n38hm52lj3
 static NSString * const PWClientSecret = @"5OS58Vf-PA09YGHlFZUc_BtX";
 static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 
+static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
+
 @interface PWOAuthManager ()
 
 @property (strong, nonatomic) GTMOAuth2Authentication *auth;
+@property (nonatomic) NSUInteger countOfLoginError;
 
 @end
 
@@ -35,6 +38,8 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
     if (self) {
         void (^block)() = ^{
             _auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
+            
+            _countOfLoginError = 0;
         };
         
         if ([NSThread isMainThread]) {
@@ -182,6 +187,22 @@ static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
     else {
         dispatch_async(dispatch_get_main_queue(), block);
     }
+}
+
++ (NSUInteger)countOfLoginError {
+    return [PWOAuthManager sharedManager].countOfLoginError;
+}
+
++ (BOOL)shouldOpenLoginViewController {
+    return ([PWOAuthManager sharedManager].countOfLoginError > kPWOAuthManagerMaxCounfOfLoginError) ? YES : NO;
+}
+
++ (void)incrementCountOfLoginError {
+    [PWOAuthManager sharedManager].countOfLoginError++;
+}
+
++ (void)resetCountOfLoginError {
+    [PWOAuthManager sharedManager].countOfLoginError = 0;
 }
 
 @end

@@ -27,10 +27,6 @@
     [super viewDidLoad];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UITableViewCellOption
 - (UITextField *)makeTextField:(CGSize)textSize {
     if (self.nameTextField) {

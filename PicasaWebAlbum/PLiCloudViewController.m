@@ -139,10 +139,6 @@
     [self layoutNoItem];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark Methods
 - (void)setSelectedPhotos:(NSMutableArray *)selectedPhotos {
     _selectedPhotos = selectedPhotos;

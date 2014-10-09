@@ -27,10 +27,6 @@
     [super viewWillLayoutSubviews];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UITabBarItem
 - (void)updateTabBarItem {
     for (UIViewController *viewController in self.viewControllers) {

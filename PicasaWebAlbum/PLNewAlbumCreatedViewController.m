@@ -189,7 +189,7 @@
     CGRect rect = self.view.bounds;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if ((int)[[UIScreen mainScreen] bounds].size.height > 480) {
+        if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
             if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
                 _createdNewAlbumLabel.frame = CGRectMake(0.0f, 86.0f, 320.0f, 40.0f);
                 _collectionView.frame = CGRectMake(242.0f, 80.0f, 320.0f, 280.0f);
@@ -248,10 +248,6 @@
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
         [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 - (void)dealloc {

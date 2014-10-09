@@ -66,15 +66,23 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 @implementation PWPhotoListViewController
 
 - (id)initWithAlbum:(PWAlbumObject *)album {
-    self = [super init];
+    self = [self init];
     if (self) {
         _album = album;
-        
+    }
+    return self;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
         _selectedPhotoIDs = @[].mutableCopy;
         _photoViewCache = [NSCache new];
         _photoViewCache.countLimit = 10;
         
-        self.title = album.title;
+        if (_album) {
+            self.title = _album.title;
+        }
         
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
@@ -84,6 +92,9 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
+    self.navigationItem.rightBarButtonItem = searchBarButtonItem;
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
@@ -112,8 +123,13 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
-    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+    if (_album) {
+        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+    }
+    else {
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"published" ascending:NO]];
+    }
     NSString *cacheName = [kPWPhotoListViewControllerName stringByAppendingString:_album.id_str];
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:cacheName];
     _fetchedResultsController.delegate = self;
@@ -229,11 +245,25 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     [super viewWillDisappear:animated];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
+#pragma mark UIBarButtonAction
+- (void)searchBarButtonAction {
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setTabBarHidden:YES animated:YES completion:nil];
+    [tabBarController setAdsHidden:YES animated:NO];
+    
+    PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
+    navigationController.view.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    __weak typeof(self) wself = self;
+    [navigationController openSearchBarWithCancelBlock:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+        [tabBarController setTabBarHidden:NO animated:NO completion:nil];
+        [tabBarController setAdsHidden:NO animated:YES];
+    }];
 }
 
-#pragma mark UIBarButtonAction
 - (void)actionBarButtonAction:(id)sender {
     [self showAlbumActionSheet:_album sender:sender];
 }
@@ -505,7 +535,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     if (_fetchedResultsController.fetchedObjects.count > 0) {
         NSArray *photos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypePhoto)]];
         NSArray *videos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypeVideo)]];
-        
         NSString *albumCountString = [PAString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
         [footerView setText:albumCountString];
     }
@@ -590,7 +619,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];
@@ -663,12 +691,19 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                 NSLog(@"%@", error);
 #endif
                 if (error.code == 401) {
-                    [sself openLoginViewController];
+                    if ([PWOAuthManager shouldOpenLoginViewController]) {
+                        [sself openLoginViewController];
+                    }
+                    else {
+                        [PWOAuthManager incrementCountOfLoginError];
+                        [sself loadDataWithStartIndex:index];
+                    }
                 }
             }
             else {
                 sself.requestIndex = nextIndex;
             }
+            [PWOAuthManager resetCountOfLoginError];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 typeof(wself) sself = wself;
@@ -933,8 +968,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             [alertView setValue:indicator forKey:@"accessoryView"];
             [alertView show];
             
+            PWAlbumObject *album = _actionSheetItem;
+            NSManagedObjectID *albumObjectID = album.objectID;
             __weak typeof(self) wself = self;
-            [PWPicasaAPI deleteAlbum:_actionSheetItem completion:^(NSError *error) {
+            [PWPicasaAPI deleteAlbum:album completion:^(NSError *error) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (error) {
@@ -942,11 +979,15 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                     NSLog(@"%@", error);
 #endif
                 }
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                    [sself loadDataWithStartIndex:0];
-                });
+                [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                    PWAlbumObject *albumObject = (PWAlbumObject *)[context objectWithID:albumObjectID];
+                    [context deleteObject:albumObject];
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                        [sself.navigationController popViewControllerAnimated:YES];
+                    });
+                }];
             }];
         }
         else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {

@@ -125,10 +125,6 @@
 #pragma clang diagnostic pop
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UIBarButtonAction
 - (void)doneBarButtonActionWithSelectedAlbum:(id)selectedAlbum isWebAlbum:(BOOL)isWebAlbum {
     if (_completion) {

@@ -56,10 +56,6 @@
     self.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintUploadColor];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UITabBarItem
 - (void)updateTabBarItem {
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;

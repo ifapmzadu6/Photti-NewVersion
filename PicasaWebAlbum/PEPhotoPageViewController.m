@@ -8,9 +8,16 @@
 
 #import "PEPhotoPageViewController.h"
 
+@import MapKit;
+
 #import "PAColors.h"
+#import "PAIcons.h"
 #import "PEPhotoViewController.h"
+#import "PEPhotoEditViewController.h"
+#import "PABaseNavigationController.h"
+#import "PWMapViewController.h"
 #import "PATabBarAdsController.h"
+#import "UIView+ScreenCapture.h"
 
 @interface PEPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
@@ -72,6 +79,19 @@
     return self;
 }
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction)];
+    tagBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Tag"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction)];
+    pinBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"PinIcon"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    self.navigationItem.rightBarButtonItems = @[pinBarButtonItem, tagBarButtonItem];
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -97,7 +117,6 @@
         [tabBarController setToolbarHidden:NO animated:YES completion:^(BOOL finished) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
             [tabBarController setTabBarHidden:YES animated:YES completion:nil];
         }];
@@ -112,15 +131,45 @@
     [tabBarController setUserInteractionEnabled:YES];
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UIBarButtonAction
+- (void)tagBarButtonAction {
+    PHAsset *asset = _fetchedResult[_index];
+    UIImage *screenshot = [self.view screenCapture];
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    __weak typeof(self) wself = self;
+    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, nil);
+        NSDictionary *metadata = (__bridge NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            PEPhotoEditViewController *viewController = [[PEPhotoEditViewController alloc] initWithAsset:asset metadata:metadata backgroundScreenShot:screenshot];
+            PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
+            navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+            navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            [sself presentViewController:navigationController animated:YES completion:nil];
+        });
+    }];
+}
+
+- (void)pinBarButtonAction {
+    PHAsset *asset = _fetchedResult[_index];
+    CLLocation *location = asset.location;
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    __weak typeof(self) wself = self;
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(200.0f, 200.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PWMapViewController *viewController = [[PWMapViewController alloc] initWithImage:result latitude:location.coordinate.latitude longitude:location.coordinate.longitude];
+        PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
+        navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+        navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        [sself presentViewController:navigationController animated:YES completion:nil];
+    }];
+}
+
 - (void)actionBarButtonAction:(id)sender {
     PHAsset *asset = _fetchedResult[_index];
     __weak typeof(self) wself = self;

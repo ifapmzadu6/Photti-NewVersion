@@ -77,6 +77,10 @@ static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.c
     [segmentedControl addTarget:self action:@selector(segmentedControlAction:) forControlEvents:UIControlEventValueChanged];
     segmentedControl.selectedSegmentIndex = 0;
     self.navigationItem.titleView = segmentedControl;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     
     UIImageView *imageView = [UIImageView new];
     imageView.image = _image;
@@ -102,18 +106,10 @@ static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.c
     }];
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-}
-
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
     _mapView.frame = self.view.bounds;
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark UIBarButtonItem

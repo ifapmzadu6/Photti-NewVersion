@@ -18,7 +18,7 @@ PODS:
   - GTMHTTPFetcher (0.1.0)
   - KKStaticTableView (0.1.0)
   - LXReorderableCollectionViewFlowLayout (0.1.1)
-  - PAImageScrollView (0.2.1)
+  - PAImageScrollView (0.3.2)
   - Reachability (3.1.1)
   - SDWebImage (3.7.1):
     - SDWebImage/Core
@@ -54,10 +54,10 @@ SPEC CHECKSUMS:
   GTMHTTPFetcher: 0f02d5a5803dd08736462981064de6a7f59cf9bd
   KKStaticTableView: 72430b9ddbf508e0fc574bda5aaee232ace55b82
   LXReorderableCollectionViewFlowLayout: b4e25543263e27d4c147109ae5ead01cc9119f23
-  PAImageScrollView: 305ea94432f29ccc20c28828126f8ed13596b0fc
+  PAImageScrollView: a8b492a8248bf64432f54cf401f04cca331e9ee0
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
   SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
   SFHFKeychainUtils: 6fdda05a86d035db406c7662ec1054814b68f0fd
   UAAppReviewManager: f23428de9c9cd242c2ffd899e218ba3620bd0683
 
-COCOAPODS: 0.34.1
+COCOAPODS: 0.34.2

@@ -24,7 +24,9 @@
 + (PEPhotoListDataSource *)makeVideoListDataSource {
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumVideos options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
     
     PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
     return dataSource;
@@ -33,7 +35,9 @@
 + (PEPhotoListDataSource *)makeTimelapseListDataSource {
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumTimelapses options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
     
     PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
     return dataSource;
@@ -42,7 +46,9 @@
 + (PEPhotoListDataSource *)makePanoramaListDataSource {
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumPanoramas options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
     
     PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
     return dataSource;
@@ -51,7 +57,9 @@
 + (PEPhotoListDataSource *)makeFavoriteListDataSource {
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumFavorites options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
     
     PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
     return dataSource;
@@ -67,7 +75,7 @@
 + (PEPhotoListDataSource *)makePhotoListDataSourceWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate {
     PHFetchOptions *options = [PHFetchOptions new];
     options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
     PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
     
     PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult];

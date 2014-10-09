@@ -74,10 +74,6 @@
     [_nameTextField resignFirstResponder];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UIBarButtonItem
 - (void)cancelBarButtonAction {
     [self dismissViewControllerAnimated:YES completion:nil];

@@ -9,6 +9,7 @@
 #import "PEAlbumListDataSource.h"
 
 #import "PEAlbumViewCell.h"
+#import "PAString.h"
 #import "NSIndexSet+methods.h"
 
 @import Photos;
@@ -170,7 +171,17 @@
     
     PHAssetCollection *collection = _fetchResult[indexPath.row];
     cell.titleLabel.text = collection.localizedTitle;
-    cell.detailLabel.text = [NSString stringWithFormat:@"%ld個の項目", (long)collection.estimatedAssetCount];
+    NSUInteger numberOfPhoto = 0;
+    NSUInteger numberOfVideo = 0;
+    for (PHAsset *asset in assetsResult) {
+        if (asset.mediaType == PHAssetMediaTypeImage) {
+            numberOfPhoto++;
+        }
+        else if (asset.mediaType == PHAssetMediaTypeVideo) {
+            numberOfVideo++;
+        }
+    }
+    cell.detailLabel.text = [PAString photoAndVideoStringWithPhotoCount:numberOfPhoto videoCount:numberOfVideo isInitialUpperCase:YES];
     return cell;
 }
 

@@ -24,6 +24,8 @@ static NSString * const kPWPicasaAPILinkRelShare = @"alternate";
 
 + (void)getListOfPhotosInAlbumWithAlbumID:(NSString *)albumID index:(NSUInteger)index completion:(void (^)(NSUInteger nextIndex, NSError *error))completion;
 
++ (void)getListOfRecentlyUploadedPhotosWithCompletion:(void (^)(NSError *error))completion;
+
 //+ (void)getPhotoWithAlbumID:(NSString *)albumID photoID:(NSString *)photoID completion:(void (^)(PWPhotoObject *photo, NSError *error))completion;
 
 + (void)getAuthorizedURLRequest:(NSURL *)url completion:(void (^)(NSMutableURLRequest *request, NSError *error))completion;

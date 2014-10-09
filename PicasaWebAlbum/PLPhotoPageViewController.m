@@ -22,6 +22,7 @@
 #import "PWAlbumPickerController.h"
 #import "PLCoreDataAPI.h"
 #import "PDTaskManager.h"
+#import "UIView+ScreenCapture.h"
 
 @interface PLPhotoPageViewController () <UIActionSheetDelegate>
 
@@ -60,6 +61,9 @@
     UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction)];
     pinBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"PinIcon"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
     self.navigationItem.rightBarButtonItems = @[pinBarButtonItem, tagBarButtonItem];
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -105,10 +109,6 @@
     [tabBarController setUserInteractionEnabled:YES];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UIBarButtonAction
 - (void)actionBarButtonAction {
     PLPhotoObject *photo = _photos[_index];
@@ -117,13 +117,14 @@
     [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         dispatch_async(dispatch_get_main_queue(), ^{
             UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[asset] applicationActivities:nil];
             [sself.tabBarController presentViewController:activityViewController animated:YES completion:nil];
         });
     } failureBlock:^(NSError *error) {
-        
+#ifdef DEBUG
+        NSLog(@"%@", error);
+#endif
     }];
 }
 
@@ -139,7 +140,6 @@
     PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         if (isWebAlbum) {
             [[PDTaskManager sharedManager] addTaskPhotos:@[photo] toWebAlbum:album completion:^(NSError *error) {
                 if (error) {
@@ -167,22 +167,19 @@
 
 - (void)tagBarButtonAction {
     PLPhotoObject *photo = _photos[_index];
-    
+    UIImage *screenshot = [self.view screenCapture];
     __weak typeof(self) wself = self;
     [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:photo.url] resultBlock:^(ALAsset *asset) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         NSDictionary *metadata = nil;
         if ([[asset valueForProperty:ALAssetPropertyType] isEqualToString:ALAssetTypePhoto]) {
             ALAssetRepresentation *representation = asset.defaultRepresentation;
-            
             NSUInteger size = (NSUInteger)representation.size;
             uint8_t *buff = (uint8_t *)malloc(sizeof(uint8_t)*size);
             if(buff == nil){
                 return ;
             }
-            
             NSError *error = nil;
             NSUInteger bytesRead = [representation getBytes:buff fromOffset:0 length:size error:&error];
             if (bytesRead && !error) {
@@ -194,13 +191,16 @@
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            PLPhotoEditViewController *viewController = [[PLPhotoEditViewController alloc] initWithPhoto:photo metadata:metadata];
+            PLPhotoEditViewController *viewController = [[PLPhotoEditViewController alloc] initWithPhoto:photo metadata:metadata backgroundScreenshot:screenshot];
             PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
             navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
             navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             [sself presentViewController:navigationController animated:YES completion:nil];
         });
     } failureBlock:^(NSError *error) {
+#ifdef DEBUG
+        NSLog(@"%@", error);
+#endif
     }];
 }
 
@@ -211,9 +211,7 @@
     [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:photo.url] resultBlock:^(ALAsset *asset) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         UIImage *image = [UIImage imageWithCGImage:asset.aspectRatioThumbnail];
-        
         dispatch_async(dispatch_get_main_queue(), ^{
             PWMapViewController *viewController = [[PWMapViewController alloc] initWithImage:image latitude:photo.latitude.doubleValue longitude:photo.longitude.doubleValue];
             PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
@@ -222,6 +220,9 @@
             [sself presentViewController:navigationController animated:YES completion:nil];
         });
     } failureBlock:^(NSError *error) {
+#ifdef DEBUG
+        NSLog(@"%@", error);
+#endif
     }];
 }
 

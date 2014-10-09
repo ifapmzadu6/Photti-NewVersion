@@ -21,7 +21,7 @@
 #import "PACenterTextTableViewCell.h"
 #import "PEScrollBannerHeaderView.h"
 #import "PEBannerContentView.h"
-#import "PEHorizontalScrollView.h"
+#import "PAHorizontalScrollView.h"
 
 #import "PEPhotoDataSourceFactoryMethod.h"
 #import "PEAlbumListDataSource.h"
@@ -260,10 +260,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     _tableView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom + 30.0f, 0.0f);
     _tableView.scrollIndicatorInsets = viewInsets;
     _tableView.frame = rect;
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark BarButtonAction
@@ -560,7 +556,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 - (PEBannerContentView *)makeBannerViewWithTitle:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate {
     PHFetchOptions *options = [PHFetchOptions new];
     options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
     PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:options];
     if (fetchResult.count == 0) {
         return nil;

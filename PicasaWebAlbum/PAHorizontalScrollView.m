@@ -1,18 +1,18 @@
 //
-//  PALeftCollectionView.m
+//  PAHorizontalScrollView.m
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/09/22.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PEHorizontalScrollView.h"
+#import "PAHorizontalScrollView.h"
 
-@interface PEHorizontalScrollView ()
+@interface PAHorizontalScrollView ()
 
 @end
 
-@implementation PEHorizontalScrollView
+@implementation PAHorizontalScrollView
 
 - (instancetype)init {
     self = [super init];

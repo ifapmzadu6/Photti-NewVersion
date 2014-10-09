@@ -12,7 +12,7 @@
 #import "PWPicasaAPI.h"
 #import "PADateTimestamp.h"
 #import "PADateFormatter.h"
-#import <SDImageCache.h>
+#import "UIImage+ImageEffects.h"
 
 typedef enum _PWPhotoEditViewControllerSectionType {
     PWPhotoEditViewControllerSectionTypeDESCRIPTION,
@@ -63,19 +63,32 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
 @interface PWPhotoEditViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) PWPhotoObject *photo;
+@property (strong, nonatomic) UIImage *backgroundImage;
 
 @property (strong, nonatomic) UITableView *tableView;
+@property (strong, nonatomic) UIImageView *backgroundImageView;
 
 @end
 
 @implementation PWPhotoEditViewController
 
 - (id)initWithPhoto:(PWPhotoObject *)photo {
+    self = [self initWithPhoto:photo backgroundScreenshot:nil];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (id)initWithPhoto:(PWPhotoObject *)photo backgroundScreenshot:(UIImage *)backgroundScreenshot {
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"Info", nil);
         
         _photo = photo;
+        
+        UIColor *tintColor = [UIColor colorWithWhite:0.5f alpha:0.3f];
+        _backgroundImage = [backgroundScreenshot applyBlurWithRadius:25 tintColor:tintColor saturationDeltaFactor:1.8 maskImage:nil];
     }
     return self;
 }
@@ -89,15 +102,30 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
         view.exclusiveTouch = YES;
     }
     
+    BOOL isBackgroundImageEnable = (_backgroundImage) ? YES : NO;
+    if (isBackgroundImageEnable) {
+        _backgroundImageView = [UIImageView new];
+        _backgroundImageView.image = _backgroundImage;
+        [self.view addSubview:_backgroundImageView];
+        _backgroundImage = nil;
+    }
+    
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    if (isBackgroundImageEnable) {
+        _tableView.backgroundColor = [UIColor clearColor];
+    }
+    else {
+        _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    }
+    _tableView.separatorColor = [UIColor colorWithWhite:0.0f alpha:0.15f];
+    CGFloat navigationBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
+    CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    _tableView.contentInset = UIEdgeInsetsMake(navigationBarHeight + statusBarHeight, 0.0f, 0.0f, 0.0f);
+    _tableView.contentOffset = CGPointMake(0.0f, -_tableView.contentInset.top);
+    _tableView.scrollIndicatorInsets = _tableView.contentInset;
     [self.view addSubview:_tableView];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -105,11 +133,13 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     
     CGRect rect = self.view.bounds;
     
+    _backgroundImageView.frame = rect;
+    
+    CGFloat navigationBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
+    CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    _tableView.contentInset = UIEdgeInsetsMake(navigationBarHeight + statusBarHeight, 0.0f, 0.0f, 0.0f);
+    _tableView.scrollIndicatorInsets = _tableView.contentInset;
     _tableView.frame = rect;
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark UIBarButtonItem
@@ -147,11 +177,13 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
         cell.textLabel.font = [UIFont systemFontOfSize:15.0f];
-        cell.textLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+        cell.textLabel.textColor = [PAColors getColor:PAColorsTypeBackgroundColor];
         cell.detailTextLabel.font = [UIFont systemFontOfSize:15.0f];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.detailTextLabel.textColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     }
     cell.textLabel.alpha = 1.0f;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.2f];
     
     if (indexPath.section == PWPhotoEditViewControllerSectionTypeEXIForVIDEO) {
         if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
@@ -309,6 +341,11 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
             break;
     }
     return title;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+    UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
+    [header.textLabel setTextColor:[PAColors getColor:PAColorsTypeBackgroundColor]];
 }
 
 @end

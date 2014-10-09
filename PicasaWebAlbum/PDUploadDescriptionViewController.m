@@ -204,7 +204,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     CGRect rect = self.view.bounds;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height > 480)) {
+        if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
             if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
                 _iconImageView.frame = CGRectMake(46.0f, 80.0f, 170.0f, 170.0f);
                 _uploadSettingLabel.frame = CGRectMake(244.0f + 0.0f, 272.0f - 210.0f, CGRectGetHeight(rect), 20.0f);
@@ -295,10 +295,6 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
             _highResolutionButton.frame = CGRectMake(454.0f, 816.0f, 160.0f, 50.0f);
         }
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark UIBarButtonAction

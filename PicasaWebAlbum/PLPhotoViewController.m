@@ -88,10 +88,6 @@
     _videoButton.center = self.view.center;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UIButton
 - (void)videoButtonAction {
     NSURL *videoUrl = [NSURL URLWithString:_photo.url];
@@ -185,6 +181,9 @@
             [sself loadScreenImage];
             
         } failureBlock:^(NSError *error) {
+#ifdef DEBUG
+            NSLog(@"%@", error);
+#endif
         }];
     });
 }
@@ -207,6 +206,9 @@
                 [sself.imageScrollView setImage:image];
             });
         } failureBlock:^(NSError *error) {
+#ifdef DEBUG
+            NSLog(@"%@", error);
+#endif
         }];
     });
 }
@@ -229,6 +231,9 @@
                 [sself.imageScrollView setImage:image];
             });
         } failureBlock:^(NSError *error) {
+#ifdef DEBUG
+            NSLog(@"%@", error);
+#endif
         }];
     });
 }

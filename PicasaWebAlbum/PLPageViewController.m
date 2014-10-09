@@ -147,10 +147,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [_titleView setNeedsLayout];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UIBarButtonAction
 - (void)searchBarButtonAction {
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
@@ -260,6 +256,9 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
             }
         } failureBlock:^(NSError *error) {
             maxCount--;
+#ifdef DEBUG
+            NSLog(@"%@", error);
+#endif
         }];
     }
 }

@@ -593,7 +593,9 @@
                 completion(image);
             }
         } failureBlock:^(NSError *error) {
-            
+#ifdef DEBUG
+            NSLog(@"%@", error);
+#endif
         }];
     });
 }

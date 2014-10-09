@@ -80,10 +80,6 @@
     _tableView.frame = rect;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UIBarButtonItem
 - (void)doneBarButtonAction {
     [self dismissViewControllerAnimated:YES completion:nil];

@@ -148,10 +148,6 @@
     }
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UITabBarItem
 - (void)updateTabBarItem {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {

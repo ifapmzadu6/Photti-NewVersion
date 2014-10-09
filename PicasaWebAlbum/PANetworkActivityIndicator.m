@@ -8,6 +8,12 @@
 
 #import "PANetworkActivityIndicator.h"
 
+@interface PANetworkActivityIndicator ()
+
+@property (nonatomic) NSUInteger timeInterval;
+
+@end
+
 @implementation PANetworkActivityIndicator
 
 + (PANetworkActivityIndicator *)sharedManager {
@@ -17,6 +23,16 @@
         instance = self.new;
     });
     return instance;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _decrementTimeInterval = 180;
+        
+        [self countTimeInterval];
+    }
+    return self;
 }
 
 - (void)setNumberOfConnection:(NSUInteger)numberOfConnection {
@@ -36,6 +52,7 @@
 
 + (void)increment {
     [PANetworkActivityIndicator sharedManager].numberOfConnection++;
+    [PANetworkActivityIndicator sharedManager].timeInterval = 0;
 }
 
 + (void)decrement {
@@ -44,6 +61,22 @@
 
 + (NSUInteger)numberOfConnection {
     return [[PANetworkActivityIndicator sharedManager] numberOfConnection];
+}
+
+- (void)countTimeInterval {
+    _timeInterval += 10;
+    
+    if (_timeInterval > _decrementTimeInterval) {
+        _timeInterval = 0;
+        
+        if (_numberOfConnection > 0) {
+            _numberOfConnection--;
+        }
+    }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self countTimeInterval];
+    });
 }
 
 @end

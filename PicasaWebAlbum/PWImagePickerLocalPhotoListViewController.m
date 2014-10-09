@@ -110,10 +110,6 @@
     [self layoutNoItem];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 - (void)dealloc {
     NSManagedObjectContext *context = [PLCoreDataAPI readContext];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];

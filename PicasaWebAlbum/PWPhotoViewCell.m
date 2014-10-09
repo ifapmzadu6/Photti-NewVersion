@@ -267,7 +267,13 @@
             if ([[NSFileManager defaultManager] fileExistsAtPath:[sharedImageCache defaultCachePathForKey:urlString]]) {
                 NSData *data = [self diskImageDataBySearchingAllPathsForKey:urlString];
                 FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
-                [self setAnimatedImage:animatedImage hash:hash];
+                if (animatedImage) {
+                    [self setAnimatedImage:animatedImage hash:hash];
+                }
+                else {
+                    UIImage *image = [UIImage imageWithData:data];
+                    [self setImage:[UIImage decodedImageWithImage:image] hash:hash];
+                }
                 return;
             }
         }

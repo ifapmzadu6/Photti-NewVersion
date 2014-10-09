@@ -1,126 +1,123 @@
 //
-//  PLPhotoEditViewController.m
-//  PicasaWebAlbum
+//  PEPhotoEditViewController.m
+//  Photti
 //
-//  Created by Keisuke Karijuku on 2014/07/11.
+//  Created by Keisuke Karijuku on 2014/10/09.
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PLPhotoEditViewController.h"
+#import "PEPhotoEditViewController.h"
 
 #import "PAColors.h"
-#import "PAIcons.h"
 #import "PADateFormatter.h"
-#import "PLModelObject.h"
 #import "UIImage+ImageEffects.h"
 
 #define NtN(obj) ({ __typeof__ (obj) __obj = (obj); __obj == [NSNull null] ? nil : obj; })
 
-typedef enum _PLPhotoEditViewControllerSectionType {
-    PLPhotoEditViewControllerSectionTypeDESCRIPTION,
-    PLPhotoEditViewControllerSectionTypeEXIF,
-    PLPhotoEditViewControllerSectionTypeTIFF,
-    PLPhotoEditViewControllerSectionTypeGPS,
-    PLPhotoEditViewControllerSectionTypeCOUNT
-} PLPhotoEditViewControllerSectionType;
+typedef enum _PEPhotoEditViewControllerSectionType {
+    PEPhotoEditViewControllerSectionTypeDESCRIPTION,
+    PEPhotoEditViewControllerSectionTypeEXIF,
+    PEPhotoEditViewControllerSectionTypeTIFF,
+    PEPhotoEditViewControllerSectionTypeGPS,
+    PEPhotoEditViewControllerSectionTypeCOUNT
+} PEPhotoEditViewControllerSectionType;
 
-typedef enum _PLPhotoEditViewControllerDescriptionType {
-    PLPhotoEditViewControllerDescriptionTypeFILENAME,
-    PLPhotoEditViewControllerDescriptionTypeDATE,
-    PLPhotoEditViewControllerDescriptionTypeHEIGHT,
-    PLPhotoEditViewControllerDescriptionTypeWIDTH,
-    PLPhotoEditViewControllerDescriptionTypeDURATION,
-    PLPhotoEditViewControllerDescriptionTypeCAPTION,
-    PLPhotoEditViewControllerDescriptionTypeCOUNT
-} PLPhotoEditViewControllerDescriptionType;
+typedef enum _PEPhotoEditViewControllerDescriptionType {
+    PEPhotoEditViewControllerDescriptionTypeFILENAME,
+    PEPhotoEditViewControllerDescriptionTypeDATE,
+    PEPhotoEditViewControllerDescriptionTypeHEIGHT,
+    PEPhotoEditViewControllerDescriptionTypeWIDTH,
+    PEPhotoEditViewControllerDescriptionTypeDURATION,
+    PEPhotoEditViewControllerDescriptionTypeCAPTION,
+    PEPhotoEditViewControllerDescriptionTypeCOUNT
+} PEPhotoEditViewControllerDescriptionType;
 
-typedef enum _PLPhotoEditViewControllerExifType {
-    PLPhotoEditViewControllerExifTypeAPERTUREVALUE,
-    PLPhotoEditViewControllerExifTypeBRIGHTNESSVALUE,
-    PLPhotoEditViewControllerExifTypeCOLORSPACE,
-    PLPhotoEditViewControllerExifTypeCOMPONENTCSCONFIGURATION,
-    PLPhotoEditViewControllerExifTypeDATETIMEORIGINAL,
-    PLPhotoEditViewControllerExifTypeDATETIMEDEGITIZED,
-    PLPhotoEditViewControllerExifTypeEXIFVERSION,
-    PLPhotoEditViewControllerExifTypeEXPOSUREMODE,
-    PLPhotoEditViewControllerExifTypeEXPOSUREPROGRAM,
-    PLPhotoEditViewControllerExifTypeEXPOSURETIME,
-    PLPhotoEditViewControllerExifTypeFNUMBER,
-    PLPhotoEditViewControllerExifTypeFLASH,
-    PLPhotoEditViewControllerExifTypeFLASHPIXVERSION,
-    PLPhotoEditViewControllerExifTypeFOCALLENIN35MMFILM,
-    PLPhotoEditViewControllerExifTypeFOCALLENGTH,
-    PLPhotoEditViewControllerExifTypeISOSPEEDRATINGS,
-    PLPhotoEditViewControllerExifTypeLENSMAKE,
-    PLPhotoEditViewControllerExifTypeLENSMODEL,
-    PLPhotoEditViewControllerExifTypeLENSSPICIFICATION,
-    PLPhotoEditViewControllerExifTypeMETERINGMODE,
-    PLPhotoEditViewControllerExifTypePIXELXDIMENTION,
-    PLPhotoEditViewControllerExifTypePIXELYDIMENTION,
-    PLPhotoEditViewControllerExifTypeSCENECAPTURETYPE,
-    PLPhotoEditViewControllerExifTypeSCENETYPE,
-    PLPhotoEditViewControllerExifTypeSENSINGMETHODS,
-    PLPhotoEditViewControllerExifTypeSHUTTERSPEEDVALUE,
-    PLPhotoEditViewControllerExifTypeSUBJECTAREA,
-    PLPhotoEditViewControllerExifTypeSUBSECTIMEDEGITIZED,
-    PLPhotoEditViewControllerExifTypeSUBSECTIMEORIGINAL,
-    PLPhotoEditViewControllerExifTypeWHITEBALANCE,
-    PLPhotoEditViewControllerExifTypeCOUNT
-} PLPhotoEditViewControllerExifType;
+typedef enum _PEPhotoEditViewControllerExifType {
+    PEPhotoEditViewControllerExifTypeAPERTUREVALUE,
+    PEPhotoEditViewControllerExifTypeBRIGHTNESSVALUE,
+    PEPhotoEditViewControllerExifTypeCOLORSPACE,
+    PEPhotoEditViewControllerExifTypeCOMPONENTCSCONFIGURATION,
+    PEPhotoEditViewControllerExifTypeDATETIMEORIGINAL,
+    PEPhotoEditViewControllerExifTypeDATETIMEDEGITIZED,
+    PEPhotoEditViewControllerExifTypeEXIFVERSION,
+    PEPhotoEditViewControllerExifTypeEXPOSUREMODE,
+    PEPhotoEditViewControllerExifTypeEXPOSUREPROGRAM,
+    PEPhotoEditViewControllerExifTypeEXPOSURETIME,
+    PEPhotoEditViewControllerExifTypeFNUMBER,
+    PEPhotoEditViewControllerExifTypeFLASH,
+    PEPhotoEditViewControllerExifTypeFLASHPIXVERSION,
+    PEPhotoEditViewControllerExifTypeFOCALLENIN35MMFILM,
+    PEPhotoEditViewControllerExifTypeFOCALLENGTH,
+    PEPhotoEditViewControllerExifTypeISOSPEEDRATINGS,
+    PEPhotoEditViewControllerExifTypeLENSMAKE,
+    PEPhotoEditViewControllerExifTypeLENSMODEL,
+    PEPhotoEditViewControllerExifTypeLENSSPICIFICATION,
+    PEPhotoEditViewControllerExifTypeMETERINGMODE,
+    PEPhotoEditViewControllerExifTypePIXELXDIMENTION,
+    PEPhotoEditViewControllerExifTypePIXELYDIMENTION,
+    PEPhotoEditViewControllerExifTypeSCENECAPTURETYPE,
+    PEPhotoEditViewControllerExifTypeSCENETYPE,
+    PEPhotoEditViewControllerExifTypeSENSINGMETHODS,
+    PEPhotoEditViewControllerExifTypeSHUTTERSPEEDVALUE,
+    PEPhotoEditViewControllerExifTypeSUBJECTAREA,
+    PEPhotoEditViewControllerExifTypeSUBSECTIMEDEGITIZED,
+    PEPhotoEditViewControllerExifTypeSUBSECTIMEORIGINAL,
+    PEPhotoEditViewControllerExifTypeWHITEBALANCE,
+    PEPhotoEditViewControllerExifTypeCOUNT
+} PEPhotoEditViewControllerExifType;
 
-typedef enum _PLPhotoEditViewControllerTiffType{
-    PLPhotoEditViewControllerTiffTypeDATETIME,
-    PLPhotoEditViewControllerTiffTypeMAKE,
-    PLPhotoEditViewControllerTiffTypeMODEL,
-    PLPhotoEditViewControllerTiffTypeORIENTATION,
-    PLPhotoEditViewControllerTiffTypeRESOLUTIONUNIT,
-    PLPhotoEditViewControllerTiffTypeSOFTWARE,
-    PLPhotoEditViewControllerTiffTypeXRESOLUTION,
-    PLPhotoEditViewControllerTiffTypeYRESOLUTION,
-    PLPhotoEditViewControllerTiffTypeCOUNT
-} PLPhotoEditViewControllerTiffType;
+typedef enum _PEPhotoEditViewControllerTiffType{
+    PEPhotoEditViewControllerTiffTypeDATETIME,
+    PEPhotoEditViewControllerTiffTypeMAKE,
+    PEPhotoEditViewControllerTiffTypeMODEL,
+    PEPhotoEditViewControllerTiffTypeORIENTATION,
+    PEPhotoEditViewControllerTiffTypeRESOLUTIONUNIT,
+    PEPhotoEditViewControllerTiffTypeSOFTWARE,
+    PEPhotoEditViewControllerTiffTypeXRESOLUTION,
+    PEPhotoEditViewControllerTiffTypeYRESOLUTION,
+    PEPhotoEditViewControllerTiffTypeCOUNT
+} PEPhotoEditViewControllerTiffType;
 
-typedef enum _PLPhotoEditViewControllerGPSType {
-    PLPhotoEditViewControllerGPSTypeALTITUDE,
-    PLPhotoEditViewControllerGPSTypeALTITUDEREF,
-    PLPhotoEditViewControllerGPSTypeDATESTAMP,
-    PLPhotoEditViewControllerGPSTypeLATITUDE,
-    PLPhotoEditViewControllerGPSTypeLATITUDEREF,
-    PLPhotoEditViewControllerGPSTypeLONGITUDE,
-    PLPhotoEditViewControllerGPSTypeLONGITUDEREF,
-    PLPhotoEditViewControllerGPSTypeTIMESTAMP,
-    PLPhotoEditViewControllerGPSTypeCOUNT
-} PLPhotoEditViewControllerGPSType;
+typedef enum _PEPhotoEditViewControllerGPSType {
+    PEPhotoEditViewControllerGPSTypeALTITUDE,
+    PEPhotoEditViewControllerGPSTypeALTITUDEREF,
+    PEPhotoEditViewControllerGPSTypeDATESTAMP,
+    PEPhotoEditViewControllerGPSTypeLATITUDE,
+    PEPhotoEditViewControllerGPSTypeLATITUDEREF,
+    PEPhotoEditViewControllerGPSTypeLONGITUDE,
+    PEPhotoEditViewControllerGPSTypeLONGITUDEREF,
+    PEPhotoEditViewControllerGPSTypeTIMESTAMP,
+    PEPhotoEditViewControllerGPSTypeCOUNT
+} PEPhotoEditViewControllerGPSType;
 
-@interface PLPhotoEditViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface PEPhotoEditViewController () <UITableViewDataSource, UITableViewDelegate>
 
-@property (strong, nonatomic) PLPhotoObject *photo;
+@property (strong, nonatomic) UIImageView *backgroundImageView;
+@property (strong, nonatomic) UITableView *tableView;
+
+@property (strong, nonatomic) PHAsset *asset;
 @property (strong, nonatomic) NSDictionary *metadata;
 @property (strong, nonatomic) UIImage *backgroundImage;
 
-@property (strong, nonatomic) UITableView *tableView;
-@property (strong, nonatomic) UIImageView *backgroundImageView;
-
 @end
 
-@implementation PLPhotoEditViewController
+@implementation PEPhotoEditViewController
 
-- (id)initWithPhoto:(PLPhotoObject *)photo metadata:(NSDictionary *)metadata {
-    self = [self initWithPhoto:photo metadata:metadata backgroundScreenshot:nil];
+- (instancetype)initWithAsset:(PHAsset *)asset metadata:(NSDictionary *)metadata {
+    self = [self initWithAsset:asset metadata:metadata backgroundScreenShot:nil];
     if (self) {
         
     }
     return self;
 }
 
-- (id)initWithPhoto:(PLPhotoObject *)photo metadata:(NSDictionary *)metadata backgroundScreenshot:(UIImage *)backgroundScreenshot {
-    self = [super init];
+- (instancetype)initWithAsset:(PHAsset *)asset metadata:(NSDictionary *)metadata backgroundScreenShot:(UIImage *)backgroundScreenshot {
+    self = [self init];
     if (self) {
         self.title = NSLocalizedString(@"Info", nil);
         
-        _photo = photo;
+        _asset = asset;
         _metadata = metadata;
-        
         UIColor *tintColor = [UIColor colorWithWhite:0.5f alpha:0.3f];
         _backgroundImage = [backgroundScreenshot applyBlurWithRadius:25 tintColor:tintColor saturationDeltaFactor:1.8 maskImage:nil];
     }
@@ -183,23 +180,23 @@ typedef enum _PLPhotoEditViewControllerGPSType {
 
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return PLPhotoEditViewControllerSectionTypeCOUNT;
+    return PEPhotoEditViewControllerSectionTypeCOUNT;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     NSInteger numberOfRows = 0;
     switch (section) {
-        case PLPhotoEditViewControllerSectionTypeDESCRIPTION:
-            numberOfRows = PLPhotoEditViewControllerDescriptionTypeCOUNT;
+        case PEPhotoEditViewControllerSectionTypeDESCRIPTION:
+            numberOfRows = PEPhotoEditViewControllerDescriptionTypeCOUNT;
             break;
-        case PLPhotoEditViewControllerSectionTypeEXIF:
-            numberOfRows = PLPhotoEditViewControllerExifTypeCOUNT;
+        case PEPhotoEditViewControllerSectionTypeEXIF:
+            numberOfRows = PEPhotoEditViewControllerExifTypeCOUNT;
             break;
-        case PLPhotoEditViewControllerSectionTypeTIFF:
-            numberOfRows = PLPhotoEditViewControllerTiffTypeCOUNT;
+        case PEPhotoEditViewControllerSectionTypeTIFF:
+            numberOfRows = PEPhotoEditViewControllerTiffTypeCOUNT;
             break;
-        case PLPhotoEditViewControllerSectionTypeGPS:
-            numberOfRows = PLPhotoEditViewControllerGPSTypeCOUNT;
+        case PEPhotoEditViewControllerSectionTypeGPS:
+            numberOfRows = PEPhotoEditViewControllerGPSTypeCOUNT;
             break;
         default:
             break;
@@ -221,156 +218,152 @@ typedef enum _PLPhotoEditViewControllerGPSType {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.2f];
     
-    if (indexPath.section == PLPhotoEditViewControllerSectionTypeDESCRIPTION) {
+    if (indexPath.section == PEPhotoEditViewControllerSectionTypeDESCRIPTION) {
         switch (indexPath.row) {
-            case PLPhotoEditViewControllerDescriptionTypeFILENAME:
-                cell.textLabel.text = NSLocalizedString(@"File Name", nil);
-                cell.detailTextLabel.text = _photo.filename;
-                break;
-            case PLPhotoEditViewControllerDescriptionTypeCAPTION:
-                cell.textLabel.text = NSLocalizedString(@"Caption", nil);
-                cell.detailTextLabel.text = _photo.caption;
-                break;
-            case PLPhotoEditViewControllerDescriptionTypeDATE:
+            case PEPhotoEditViewControllerDescriptionTypeDATE: {
                 cell.textLabel.text = NSLocalizedString(@"Date", nil);
-                cell.detailTextLabel.text = [[PADateFormatter fullStringFormatter] stringFromDate:_photo.date];
+                cell.detailTextLabel.text = [[PADateFormatter fullStringFormatter] stringFromDate:_asset.creationDate];
                 break;
-            case PLPhotoEditViewControllerDescriptionTypeDURATION:
+            }
+            case PEPhotoEditViewControllerDescriptionTypeDURATION: {
                 cell.textLabel.text = NSLocalizedString(@"Duration", nil);
-                cell.detailTextLabel.text = _photo.duration.stringValue;
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%lf", _asset.duration];
                 break;
-            case PLPhotoEditViewControllerDescriptionTypeHEIGHT:
+            }
+            case PEPhotoEditViewControllerDescriptionTypeHEIGHT: {
                 cell.textLabel.text = NSLocalizedString(@"Height", nil);
-                cell.detailTextLabel.text = _photo.height.stringValue;
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (long)_asset.pixelHeight];
                 break;
-            case PLPhotoEditViewControllerDescriptionTypeWIDTH:
+            }
+            case PEPhotoEditViewControllerDescriptionTypeWIDTH: {
                 cell.textLabel.text = NSLocalizedString(@"Width", nil);
-                cell.detailTextLabel.text = _photo.width.stringValue;
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (long)_asset.pixelHeight];
                 break;
+            }
             default:
                 break;
         }
     }
-    else if (indexPath.section == PLPhotoEditViewControllerSectionTypeEXIF) {
+    else if (indexPath.section == PEPhotoEditViewControllerSectionTypeEXIF) {
         NSDictionary *exif = NtN(_metadata[@"{Exif}"]);
         switch (indexPath.row) {
-            case PLPhotoEditViewControllerExifTypeAPERTUREVALUE:
+            case PEPhotoEditViewControllerExifTypeAPERTUREVALUE:
                 cell.textLabel.text = NSLocalizedString(@"ApertureValue", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"ApertureValue"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeBRIGHTNESSVALUE:
+            case PEPhotoEditViewControllerExifTypeBRIGHTNESSVALUE:
                 cell.textLabel.text = NSLocalizedString(@"BrightnessValue", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"BrightnessValue"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeCOLORSPACE:
+            case PEPhotoEditViewControllerExifTypeCOLORSPACE:
                 cell.textLabel.text = NSLocalizedString(@"ColorSpace", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"ColorSpace"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeCOMPONENTCSCONFIGURATION:
+            case PEPhotoEditViewControllerExifTypeCOMPONENTCSCONFIGURATION:
                 cell.textLabel.text = NSLocalizedString(@"ComponentsConfiguration", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"ComponentsConfiguration"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeDATETIMEDEGITIZED:
+            case PEPhotoEditViewControllerExifTypeDATETIMEDEGITIZED:
                 cell.textLabel.text = NSLocalizedString(@"DateTimeDigitized", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"DateTimeDigitized"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeDATETIMEORIGINAL:
+            case PEPhotoEditViewControllerExifTypeDATETIMEORIGINAL:
                 cell.textLabel.text = NSLocalizedString(@"DateTimeOriginal", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"DateTimeOriginal"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeEXIFVERSION:
+            case PEPhotoEditViewControllerExifTypeEXIFVERSION:
                 cell.textLabel.text = NSLocalizedString(@"ExifVersion", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"ExifVersion"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeEXPOSUREMODE:
+            case PEPhotoEditViewControllerExifTypeEXPOSUREMODE:
                 cell.textLabel.text = NSLocalizedString(@"ExposureMode", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"ExposureMode"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeEXPOSUREPROGRAM:
+            case PEPhotoEditViewControllerExifTypeEXPOSUREPROGRAM:
                 cell.textLabel.text = NSLocalizedString(@"ExposureProgram", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"ExposureProgram"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeEXPOSURETIME:
+            case PEPhotoEditViewControllerExifTypeEXPOSURETIME:
                 cell.textLabel.text = NSLocalizedString(@"ExposureTime", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"ExposureTime"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeFLASH:
+            case PEPhotoEditViewControllerExifTypeFLASH:
                 cell.textLabel.text = NSLocalizedString(@"Flash", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"Flash"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeFLASHPIXVERSION:
+            case PEPhotoEditViewControllerExifTypeFLASHPIXVERSION:
                 cell.textLabel.text = NSLocalizedString(@"FlashPixVersion", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"FlashPixVersion"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeFNUMBER:
+            case PEPhotoEditViewControllerExifTypeFNUMBER:
                 cell.textLabel.text = NSLocalizedString(@"FNumber", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"FNumber"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeFOCALLENGTH:
+            case PEPhotoEditViewControllerExifTypeFOCALLENGTH:
                 cell.textLabel.text = NSLocalizedString(@"FocalLength", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"FocalLength"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeFOCALLENIN35MMFILM:
+            case PEPhotoEditViewControllerExifTypeFOCALLENIN35MMFILM:
                 cell.textLabel.text = NSLocalizedString(@"FocalLenIn35mmFilm", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"FocalLenIn35mmFilm"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeISOSPEEDRATINGS:
+            case PEPhotoEditViewControllerExifTypeISOSPEEDRATINGS:
                 cell.textLabel.text = NSLocalizedString(@"ISOSpeedRatings", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"ISOSpeedRatings"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeLENSMAKE:
+            case PEPhotoEditViewControllerExifTypeLENSMAKE:
                 cell.textLabel.text = NSLocalizedString(@"LensMake", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"LensMake"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeLENSMODEL:
+            case PEPhotoEditViewControllerExifTypeLENSMODEL:
                 cell.textLabel.text = NSLocalizedString(@"LensModel", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"LensModel"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeLENSSPICIFICATION:
+            case PEPhotoEditViewControllerExifTypeLENSSPICIFICATION:
                 cell.textLabel.text = NSLocalizedString(@"LensSpecification", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"LensSpecification"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeMETERINGMODE:
+            case PEPhotoEditViewControllerExifTypeMETERINGMODE:
                 cell.textLabel.text = NSLocalizedString(@"MeteringMode", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"MeteringMode"]];
                 break;
-            case PLPhotoEditViewControllerExifTypePIXELXDIMENTION:
+            case PEPhotoEditViewControllerExifTypePIXELXDIMENTION:
                 cell.textLabel.text = NSLocalizedString(@"PixelXDimension", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"PixelXDimension"]];
                 break;
-            case PLPhotoEditViewControllerExifTypePIXELYDIMENTION:
+            case PEPhotoEditViewControllerExifTypePIXELYDIMENTION:
                 cell.textLabel.text = NSLocalizedString(@"PixelYDimension", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"PixelYDimension"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeSCENECAPTURETYPE:
+            case PEPhotoEditViewControllerExifTypeSCENECAPTURETYPE:
                 cell.textLabel.text = NSLocalizedString(@"SceneCaptureType", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"SceneCaptureType"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeSCENETYPE:
+            case PEPhotoEditViewControllerExifTypeSCENETYPE:
                 cell.textLabel.text = NSLocalizedString(@"SceneType", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"SceneType"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeSENSINGMETHODS:
+            case PEPhotoEditViewControllerExifTypeSENSINGMETHODS:
                 cell.textLabel.text = NSLocalizedString(@"SensingMethod", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"SensingMethod"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeSHUTTERSPEEDVALUE:
+            case PEPhotoEditViewControllerExifTypeSHUTTERSPEEDVALUE:
                 cell.textLabel.text = NSLocalizedString(@"ShutterSpeedValue", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"ShutterSpeedValue"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeSUBJECTAREA:
+            case PEPhotoEditViewControllerExifTypeSUBJECTAREA:
                 cell.textLabel.text = NSLocalizedString(@"SubjectArea", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"SubjectArea"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeSUBSECTIMEDEGITIZED:
+            case PEPhotoEditViewControllerExifTypeSUBSECTIMEDEGITIZED:
                 cell.textLabel.text = NSLocalizedString(@"SubsecTimeDigitized", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"SubsecTimeDigitized"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeSUBSECTIMEORIGINAL:
+            case PEPhotoEditViewControllerExifTypeSUBSECTIMEORIGINAL:
                 cell.textLabel.text = NSLocalizedString(@"SubsecTimeOriginal", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"SubsecTimeOriginal"]];
                 break;
-            case PLPhotoEditViewControllerExifTypeWHITEBALANCE:
+            case PEPhotoEditViewControllerExifTypeWHITEBALANCE:
                 cell.textLabel.text = NSLocalizedString(@"WhiteBalance", nil);
                 cell.detailTextLabel.text = [self stringFromObject:exif[@"WhiteBalance"]];
                 break;
@@ -378,38 +371,38 @@ typedef enum _PLPhotoEditViewControllerGPSType {
                 break;
         }
     }
-    else if (indexPath.section == PLPhotoEditViewControllerSectionTypeTIFF) {
+    else if (indexPath.section == PEPhotoEditViewControllerSectionTypeTIFF) {
         NSDictionary *tiff = NtN(_metadata[@"{TIFF}"]);
         switch (indexPath.row) {
-            case PLPhotoEditViewControllerTiffTypeDATETIME:
+            case PEPhotoEditViewControllerTiffTypeDATETIME:
                 cell.textLabel.text = NSLocalizedString(@"DateTime", nil);
                 cell.detailTextLabel.text = [self stringFromObject:tiff[@"DateTime"]];
                 break;
-            case PLPhotoEditViewControllerTiffTypeMAKE:
+            case PEPhotoEditViewControllerTiffTypeMAKE:
                 cell.textLabel.text = NSLocalizedString(@"Make", nil);
                 cell.detailTextLabel.text = [self stringFromObject:tiff[@"Make"]];
                 break;
-            case PLPhotoEditViewControllerTiffTypeMODEL:
+            case PEPhotoEditViewControllerTiffTypeMODEL:
                 cell.textLabel.text = NSLocalizedString(@"Model", nil);
                 cell.detailTextLabel.text = [self stringFromObject:tiff[@"Model"]];
                 break;
-            case PLPhotoEditViewControllerTiffTypeORIENTATION:
+            case PEPhotoEditViewControllerTiffTypeORIENTATION:
                 cell.textLabel.text = NSLocalizedString(@"Orientation", nil);
                 cell.detailTextLabel.text = [self stringFromObject:tiff[@"Orientation"]];
                 break;
-            case PLPhotoEditViewControllerTiffTypeRESOLUTIONUNIT:
+            case PEPhotoEditViewControllerTiffTypeRESOLUTIONUNIT:
                 cell.textLabel.text = NSLocalizedString(@"ResolutionUnit", nil);
                 cell.detailTextLabel.text = [self stringFromObject:tiff[@"ResolutionUnit"]];
                 break;
-            case PLPhotoEditViewControllerTiffTypeSOFTWARE:
+            case PEPhotoEditViewControllerTiffTypeSOFTWARE:
                 cell.textLabel.text = NSLocalizedString(@"Software", nil);
                 cell.detailTextLabel.text = [self stringFromObject:tiff[@"Software"]];
                 break;
-            case PLPhotoEditViewControllerTiffTypeXRESOLUTION:
+            case PEPhotoEditViewControllerTiffTypeXRESOLUTION:
                 cell.textLabel.text = NSLocalizedString(@"XResolution", nil);
                 cell.detailTextLabel.text = [self stringFromObject:tiff[@"XResolution"]];
                 break;
-            case PLPhotoEditViewControllerTiffTypeYRESOLUTION:
+            case PEPhotoEditViewControllerTiffTypeYRESOLUTION:
                 cell.textLabel.text = NSLocalizedString(@"YResolution", nil);
                 cell.detailTextLabel.text = [self stringFromObject:tiff[@"YResolution"]];
                 break;
@@ -417,38 +410,38 @@ typedef enum _PLPhotoEditViewControllerGPSType {
                 break;
         }
     }
-    else if (indexPath.section == PLPhotoEditViewControllerSectionTypeGPS) {
+    else if (indexPath.section == PEPhotoEditViewControllerSectionTypeGPS) {
         NSDictionary *gps = NtN(_metadata[@"{GPS}"]);
         switch (indexPath.row) {
-            case PLPhotoEditViewControllerGPSTypeALTITUDE:
+            case PEPhotoEditViewControllerGPSTypeALTITUDE:
                 cell.textLabel.text = NSLocalizedString(@"Altitude", nil);
                 cell.detailTextLabel.text = [self stringFromObject:gps[@"Altitude"]];
                 break;
-            case PLPhotoEditViewControllerGPSTypeALTITUDEREF:
+            case PEPhotoEditViewControllerGPSTypeALTITUDEREF:
                 cell.textLabel.text = NSLocalizedString(@"AltitudeRef", nil);
                 cell.detailTextLabel.text = [self stringFromObject:gps[@"AltitudeRef"]];
                 break;
-            case PLPhotoEditViewControllerGPSTypeDATESTAMP:
+            case PEPhotoEditViewControllerGPSTypeDATESTAMP:
                 cell.textLabel.text = NSLocalizedString(@"DateStamp", nil);
                 cell.detailTextLabel.text = [self stringFromObject:gps[@"DateStamp"]];
                 break;
-            case PLPhotoEditViewControllerGPSTypeLATITUDE:
+            case PEPhotoEditViewControllerGPSTypeLATITUDE:
                 cell.textLabel.text = NSLocalizedString(@"Latitude", nil);
                 cell.detailTextLabel.text = [self stringFromObject:gps[@"Latitude"]];
                 break;
-            case PLPhotoEditViewControllerGPSTypeLATITUDEREF:
+            case PEPhotoEditViewControllerGPSTypeLATITUDEREF:
                 cell.textLabel.text = NSLocalizedString(@"LatitudeRef", nil);
                 cell.detailTextLabel.text = [self stringFromObject:gps[@"LatitudeRef"]];
                 break;
-            case PLPhotoEditViewControllerGPSTypeLONGITUDE:
+            case PEPhotoEditViewControllerGPSTypeLONGITUDE:
                 cell.textLabel.text = NSLocalizedString(@"Longitude", nil);
                 cell.detailTextLabel.text = [self stringFromObject:gps[@"Longitude"]];
                 break;
-            case PLPhotoEditViewControllerGPSTypeLONGITUDEREF:
+            case PEPhotoEditViewControllerGPSTypeLONGITUDEREF:
                 cell.textLabel.text = NSLocalizedString(@"LongitudeRef", nil);
                 cell.detailTextLabel.text = [self stringFromObject:gps[@"LongitudeRef"]];
                 break;
-            case PLPhotoEditViewControllerGPSTypeTIMESTAMP:
+            case PEPhotoEditViewControllerGPSTypeTIMESTAMP:
                 cell.textLabel.text = NSLocalizedString(@"TimeStamp", nil);
                 cell.detailTextLabel.text = [self stringFromObject:gps[@"TimeStamp"]];
                 break;
@@ -467,16 +460,16 @@ typedef enum _PLPhotoEditViewControllerGPSType {
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     NSString *title = nil;
     switch (section) {
-        case PLPhotoEditViewControllerSectionTypeDESCRIPTION:
+        case PEPhotoEditViewControllerSectionTypeDESCRIPTION:
             title = NSLocalizedString(@"Description", nil);
             break;
-        case PLPhotoEditViewControllerSectionTypeEXIF:
+        case PEPhotoEditViewControllerSectionTypeEXIF:
             title = @"EXIF";
             break;
-        case PLPhotoEditViewControllerSectionTypeTIFF:
+        case PEPhotoEditViewControllerSectionTypeTIFF:
             title = @"TIFF";
             break;
-        case PLPhotoEditViewControllerSectionTypeGPS:
+        case PEPhotoEditViewControllerSectionTypeGPS:
             title = @"GPS";
             break;
         default:

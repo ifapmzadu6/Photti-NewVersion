@@ -19,4 +19,9 @@
 + (void)logout;
 + (void)loginViewControllerWithCompletion:(void (^)(UINavigationController *))completion finish:(void (^)())finish;
 
++ (NSUInteger)countOfLoginError;
++ (BOOL)shouldOpenLoginViewController;
++ (void)incrementCountOfLoginError;
++ (void)resetCountOfLoginError;
+
 @end

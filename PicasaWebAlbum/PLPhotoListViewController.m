@@ -165,10 +165,6 @@
     [self layoutNoItem];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 - (void)dealloc {
     NSManagedObjectContext *context = [PLCoreDataAPI readContext];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
@@ -248,7 +244,9 @@
                 [sself.tabBarController presentViewController:activityViewcontroller animated:YES completion:nil];
             }
         } failureBlock:^(NSError *error) {
-            
+#ifdef DEBUG
+            NSLog(@"%@", error);
+#endif
         }];
     }
 }

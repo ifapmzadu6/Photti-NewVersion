@@ -1,5 +1,5 @@
 //
-//  PALeftCollectionView.h
+//  PAHorizontalScrollView.h
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/09/22.
@@ -8,7 +8,7 @@
 
 @import UIKit;
 
-@interface PEHorizontalScrollView : UIView
+@interface PAHorizontalScrollView : UIView
 
 @property (strong, nonatomic, readonly) UICollectionView *collectionView;
 

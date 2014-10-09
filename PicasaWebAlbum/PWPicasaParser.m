@@ -158,12 +158,16 @@ static NSString * const PWXMLNode = @"text";
     NSMutableArray *existingPhotos = @[].mutableCopy;
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", albumID];
+    if (albumID) {
+        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", albumID];
+    }
     NSError *error = nil;
     NSArray *objects = [context executeFetchRequest:request error:&error];
-    [existingPhotos addObjectsFromArray:objects];
+    if (objects.count > 0) {
+        [existingPhotos addObjectsFromArray:objects];
+    }
     
-    NSMutableArray *photos = [NSMutableArray array];
+    NSMutableArray *photos = @[].mutableCopy;
     if ([entries isKindOfClass:[NSArray class]]) {
         for (NSDictionary *entry in entries) {
             PWPhotoObject *photo = [PWPicasaParser photoFromJson:entry existingPhotos:existingPhotos context:context];
@@ -185,9 +189,11 @@ static NSString * const PWXMLNode = @"text";
         }
     }
     
-    if (existingPhotos.count > 0) {
-        for (PWPhotoObject *photoObject in existingPhotos) {
-            [context deleteObject:photoObject];
+    if (albumID) {
+        if (existingPhotos) {
+            for (PWPhotoObject *photoObject in existingPhotos) {
+                [context deleteObject:photoObject];
+            }
         }
     }
     
@@ -208,6 +214,12 @@ static NSString * const PWXMLNode = @"text";
     NSArray *tmpExistingPhotos = [existingPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
     if (tmpExistingPhotos.count > 0) {
         PWPhotoObject *existingPhoto = tmpExistingPhotos.firstObject;
+        if (tmpExistingPhotos.count >= 2) {
+            for (int i=1; i<tmpExistingPhotos.count; i++) {
+                PWPhotoObject *tmpExistingPhoto = tmpExistingPhotos[i];
+                [existingPhotos removeObject:tmpExistingPhoto];
+            }
+        }
         if ([updated isEqualToString:existingPhoto.updated_str]) {
             return existingPhoto;
         }

@@ -10,6 +10,7 @@
 
 @interface PANetworkActivityIndicator : NSObject
 
+@property (nonatomic) NSUInteger decrementTimeInterval; // default: 3 minutes
 @property (nonatomic) NSUInteger numberOfConnection;
 
 + (PANetworkActivityIndicator *)sharedManager;

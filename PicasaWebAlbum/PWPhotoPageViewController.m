@@ -23,6 +23,7 @@
 #import "PWMapViewController.h"
 #import "PWAlbumPickerController.h"
 #import "PDTaskManager.h"
+#import "UIView+ScreenCapture.h"
 
 @interface PWPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
@@ -70,6 +71,9 @@
     UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction)];
     pinBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"PinIcon"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
     self.navigationItem.rightBarButtonItems = @[pinBarButtonItem, tagBarButtonItem];
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -106,10 +110,6 @@
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
     self.navigationController.navigationBar.userInteractionEnabled = YES;
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark UIBarButtonItemAction
@@ -206,7 +206,8 @@
 }
 
 - (void)tagBarButtonAction {
-    PWPhotoEditViewController *viewController = [[PWPhotoEditViewController alloc] initWithPhoto:_photos[_index]];
+    UIImage *screenshot = [self.view screenCapture];
+    PWPhotoEditViewController *viewController = [[PWPhotoEditViewController alloc] initWithPhoto:_photos[_index] backgroundScreenshot:screenshot];
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self presentViewController:navigationController animated:YES completion:nil];

@@ -135,10 +135,6 @@
     _videoButton.center = self.view.center;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UIButton
 - (void)videoButtonAction {
     if (![Reachability reachabilityForInternetConnection].isReachable) {

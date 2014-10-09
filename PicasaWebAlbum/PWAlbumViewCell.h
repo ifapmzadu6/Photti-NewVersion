@@ -15,6 +15,7 @@
 @property (copy, nonatomic) void (^actionButtonActionBlock)(PWAlbumObject *album);
 
 @property (strong, nonatomic) PWAlbumObject *album;
+@property (nonatomic) BOOL isSelectWithCheckmark;
 @property (nonatomic) BOOL isDisableActionButton;
 
 @end

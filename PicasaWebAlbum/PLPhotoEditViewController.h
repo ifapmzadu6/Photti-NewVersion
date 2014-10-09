@@ -15,5 +15,7 @@
 @interface PLPhotoEditViewController : PABaseViewController
 
 - (id)initWithPhoto:(PLPhotoObject *)photo metadata:(NSDictionary *)metadata;
+- (id)initWithPhoto:(PLPhotoObject *)photo metadata:(NSDictionary *)metadata backgroundScreenshot:(UIImage *)backgroundScreenshot;
+
 
 @end

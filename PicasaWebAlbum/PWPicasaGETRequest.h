@@ -16,6 +16,9 @@
 // Requesting a list of photos
 + (void)getListOfPhotosInAlbumWithAlbumID:(NSString *)albumID index:(NSUInteger)index completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion;
 
+// Requesting a list of photos that is recently uploaded
++ (void)getListOfRecentlyUploadedPhotosWithCompletion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion;
+
 // Requesting a photo
 + (void)getPhotoWithAlbumID:(NSString *)albumID photoID:(NSString *)photoID completion:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion;
 

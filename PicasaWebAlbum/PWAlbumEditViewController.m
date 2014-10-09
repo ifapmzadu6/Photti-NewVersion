@@ -100,10 +100,6 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     [_textField resignFirstResponder];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;

@@ -144,10 +144,6 @@
     [super viewDidLayoutSubviews];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UIBarButtonAction
 - (void)doneBarButtonAction {
     if (_selectedPhotoIDs.count > 0) {

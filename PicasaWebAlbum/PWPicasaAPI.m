@@ -24,15 +24,10 @@ NSString * const PWParserErrorDomain = @"photti.PicasaWebAlbum.com.ErrorDomain";
 static NSString * const PWXMLNode = @"text";
 
 + (void)getListOfAlbumsWithIndex:(NSUInteger)index completion:(void (^)(NSUInteger, NSError *))completion {
-    if (index == NSUIntegerMax) {
-        return;
-    }
     NSInteger apiIndex = index + 1;
-    
     [PANetworkActivityIndicator increment];
     [PWPicasaGETRequest getListOfAlbumsWithIndex:apiIndex completion:^(NSData *data, NSURLResponse *response, NSError *error) {
         [PANetworkActivityIndicator decrement];
-        
         if (error) {
             completion ? completion(index, error) : 0;
             return;
@@ -47,8 +42,6 @@ static NSString * const PWXMLNode = @"text";
         }
         
         NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
-//        NSLog(@"%@", json.description);
-        
         NSDictionary *feed = NtN(json[@"feed"]);
         NSDictionary *startIndexDic = NtN(feed[@"openSearch:startIndex"]);
         NSDictionary *totalResultsDic = NtN(feed[@"openSearch:totalResults"]);
@@ -58,27 +51,25 @@ static NSString * const PWXMLNode = @"text";
                 completion ? completion(index, [PWPicasaAPI parserError]) : 0;
                 return;
             }
-            
             NSString *totalResults = NtN(totalResultsDic[PWXMLNode]);
             if (totalResults.longLongValue > 0) {
-                [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                     NSArray *albums = [PWPicasaParser parseListOfAlbumFromJson:json isDelete:YES context:context];
                     if (!albums) {
                         completion ? completion(index, [PWPicasaAPI parserError]) : 0;
                         return;
                     }
-                    
                     NSDate *date = [NSDate date];
                     for (PWAlbumObject *album in albums) {
                         album.sortIndex = @(startIndex.integerValue + [albums indexOfObject:album]);
                         album.tag_updated = date;
                     }
+                    
+                    completion ? completion(index + totalResults.integerValue, nil) : 0;
                 }];
-                
-                completion ? completion(index + totalResults.integerValue, nil) : 0;
             }
             else {
-                [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                     NSFetchRequest *request = [NSFetchRequest new];
                     request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
                     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
@@ -90,31 +81,21 @@ static NSString * const PWXMLNode = @"text";
                             [context deleteObject:album];
                         }
                     }
+                    completion ? completion(index, nil) : 0;
                 }];
-                
-                completion ? completion(index, nil) : 0;
             }
         }
         else {
-            if (completion) {
-                completion(index, [PWPicasaAPI parserError]);
-            }
-            return;
+            completion ? completion(index, [PWPicasaAPI parserError]) : 0;
         }
     }];
 }
 
 + (void)getListOfPhotosInAlbumWithAlbumID:(NSString *)albumID index:(NSUInteger)index completion:(void (^)(NSUInteger, NSError *))completion {
-    if (index == NSUIntegerMax) {
-        return;
-    }
     NSInteger apiIndex = index + 1;
-    
     [PANetworkActivityIndicator increment];
-    
     [PWPicasaGETRequest getListOfPhotosInAlbumWithAlbumID:albumID index:apiIndex completion:^(NSData *data, NSURLResponse *response, NSError *error) {
         [PANetworkActivityIndicator decrement];
-        
         if (error) {
             completion ? completion(index, error) : 0;
             return;
@@ -129,8 +110,6 @@ static NSString * const PWXMLNode = @"text";
         }
         
         NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
-//        NSLog(@"%@", json.description);
-        
         NSDictionary *feed = NtN(json[@"feed"]);
         NSDictionary *startIndexDic = NtN(feed[@"openSearch:startIndex"]);
         NSDictionary *totalResultsDic = NtN(feed[@"openSearch:totalResults"]);
@@ -140,10 +119,9 @@ static NSString * const PWXMLNode = @"text";
                 completion ? completion(index, [PWPicasaAPI parserError]) : 0;
                 return;
             }
-            
             NSString *totalResults = NtN(totalResultsDic[PWXMLNode]);
             if (totalResults.longLongValue > 0) {
-                [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                     NSArray *photos = [PWPicasaParser parseListOfPhotoFromJson:json albumID:albumID context:context];
                     if (!photos) {
                         completion ? completion(index, [PWPicasaAPI parserError]) : 0;
@@ -152,12 +130,12 @@ static NSString * const PWXMLNode = @"text";
                     for (PWPhotoObject *photo in photos) {
                         photo.sortIndex = @(startIndex.integerValue + [photos indexOfObject:photo]);
                     }
+                    
+                    completion ? completion(index + totalResults.integerValue, nil) : 0;
                 }];
-                
-                completion ? completion(index + totalResults.integerValue, nil) : 0;
             }
             else {
-                [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                     NSFetchRequest *request = [NSFetchRequest new];
                     request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
                     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
@@ -169,20 +147,70 @@ static NSString * const PWXMLNode = @"text";
                             [context deleteObject:album];
                         }
                     }
+                    
+                    completion ? completion(index, nil) : 0;
                 }];
-                
-                completion ? completion(index, nil) : 0;
             }
+        }
+    }];
+}
+
++ (void)getListOfRecentlyUploadedPhotosWithCompletion:(void (^)(NSError *error))completion {
+    [PANetworkActivityIndicator increment];
+    [PWPicasaGETRequest getListOfRecentlyUploadedPhotosWithCompletion:^(NSData *data, NSURLResponse *response, NSError *error) {
+        [PANetworkActivityIndicator decrement];
+        if (error) {
+            completion ? completion(error) : 0;
+            return;
+        }
+        if (!response.isSuccess) {
+            completion ? completion([NSError errorWithDomain:PWParserErrorDomain code:response.statusCode userInfo:nil]) : 0;
+            return;
+        }
+        if (!data) {
+            completion ? completion([PWPicasaAPI parserError]) : 0;
+            return;
+        }
+        
+        NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+        NSDictionary *feed = NtN(json[@"feed"]);
+        NSDictionary *totalResultsDic = NtN(feed[@"openSearch:totalResults"]);
+        NSString *totalResults = NtN(totalResultsDic[PWXMLNode]);
+        if (totalResults.longLongValue > 0) {
+            [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                NSArray *photos = [PWPicasaParser parseListOfPhotoFromJson:json albumID:nil context:context];
+                if (!photos) {
+                    completion ? completion([PWPicasaAPI parserError]) : 0;
+                    return;
+                }
+                
+                completion ? completion(nil) : 0;
+            }];
+        }
+        else {
+            [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+                NSFetchRequest *request = [NSFetchRequest new];
+                request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+                request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+                NSError *error = nil;
+                NSArray *objects = [context executeFetchRequest:request error:&error];
+                if (objects.count > 0) {
+                    for (NSUInteger i = 0; i < objects.count; i++) {
+                        PWPhotoObject *album = objects[i];
+                        [context deleteObject:album];
+                    }
+                }
+                
+                completion ? completion(nil) : 0;
+            }];
         }
     }];
 }
 
 + (void)postCreatingNewAlbumRequestWithTitle:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords completion:(void (^)(PWAlbumObject *album, NSError *error))completion {
     [PANetworkActivityIndicator increment];
-    
     void (^requestCompletion)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
         [PANetworkActivityIndicator decrement];
-        
         if (error) {
             completion ? completion(nil, [NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]) : 0;
             return;
@@ -193,22 +221,17 @@ static NSString * const PWXMLNode = @"text";
         }
         
         NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
-//        NSLog(@"%@", json.description);
-        
         id entries = NtN(json[@"entry"]);
         if (!entries) {
             completion ? completion(nil, [NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]) : 0;
             return;
         };
-        
         [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             PWAlbumObject *album = [PWPicasaParser albumFromJson:entries existingAlbums:nil context:context];
-            
             NSError *error = nil;
             if (![context save:&error]) {
                 abort();
             }
-            
             completion ? completion(album, nil) : 0;
         }];
     };
@@ -217,9 +240,7 @@ static NSString * const PWXMLNode = @"text";
 }
 
 + (void)putModifyingAlbumWithID:(NSString *)albumID title:(NSString *)title summary:(NSString *)summary location:(NSString *)location access:(NSString *)access timestamp:(NSString *)timestamp keywords:(NSString *)keywords completion:(void (^)(NSError *))completion {
-    
     [PANetworkActivityIndicator increment];
-    
     void (^requestCompletion)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
         [PANetworkActivityIndicator increment];
         if (error) {
@@ -230,18 +251,16 @@ static NSString * const PWXMLNode = @"text";
             completion ? completion([NSError errorWithDomain:PWParserErrorDomain code:response.statusCode userInfo:nil]) : 0;
             return;
         }
-        
         NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
         if (!json) {
             completion ? completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]) : 0;
             return;
         }
-        
-        [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             [PWPicasaParser parseListOfAlbumFromJson:json isDelete:NO context:context];
+            
+            completion ? completion(nil) : 0;
         }];
-        
-        completion ? completion(nil) : 0;
     };
     
     [PWPicasaPOSTRequest putModifyingAlbumWithID:albumID title:title summary:summary location:location access:access timestamp:timestamp keywords:keywords completion:requestCompletion];
@@ -252,7 +271,6 @@ static NSString * const PWXMLNode = @"text";
     
     [PWPicasaPOSTRequest deleteAlbumWithID:album.id_str completion:^(NSData *data, NSURLResponse *response, NSError *error) {
         [PANetworkActivityIndicator decrement];
-        
         if (error) {
             completion ? completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]) : 0;
             return;
@@ -268,12 +286,10 @@ static NSString * const PWXMLNode = @"text";
 
 
 + (void)deletePhoto:(PWPhotoObject *)photo completion:(void (^)(NSError *error))completion {
-    [PANetworkActivityIndicator increment];
-    
     NSManagedObjectID *photoObjectID = photo.objectID;
+    [PANetworkActivityIndicator increment];
     [PWPicasaPOSTRequest deletePhotoWithAlbumID:photo.albumid photoID:photo.id_str completion:^(NSData *data, NSURLResponse *response, NSError *error) {
         [PANetworkActivityIndicator decrement];
-        
         if (error) {
             completion ? completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]) : 0;
             return;
@@ -283,7 +299,7 @@ static NSString * const PWXMLNode = @"text";
             return;
         }
         
-        [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
             PWPhotoObject *photoObject = (PWPhotoObject *)[context objectWithID:photoObjectID];
             [context deleteObject:photoObject];
             
@@ -298,9 +314,9 @@ static NSString * const PWXMLNode = @"text";
                 NSInteger numPhotos = album.gphoto.numphotos.integerValue;
                 album.gphoto.numphotos = @(numPhotos - 1).stringValue;
             }
+            
+            completion ? completion(nil) : 0;
         }];
-        
-        completion ? completion(nil) : 0;
     }];
 }
 
@@ -310,7 +326,6 @@ static NSString * const PWXMLNode = @"text";
 
 + (void)authorizedURLRequest:(NSURL *)url completion:(void (^)(NSData *, NSURLResponse *, NSError *))completion {
     [PANetworkActivityIndicator increment];
-    
     [PWPicasaGETRequest authorizedGETRequestWithURL:url completion:^(NSData *data, NSURLResponse *response, NSError *error) {
         [PANetworkActivityIndicator decrement];
         
