@@ -60,6 +60,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     
     _myViewControllers = [self makeViewControllers];
     [self setViewControllers:@[_myViewControllers[1]]
@@ -268,10 +269,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
-//- (void)selectTrashBarButtonAction {
-//    
-//}
-
 #pragma mark UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     CGFloat width = scrollView.bounds.size.width;
@@ -407,7 +404,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     UIBarButtonItem *selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
     UIBarButtonItem *selectOrganizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(selectOrganizeBarButtonAction:)];
-//    UIBarButtonItem *selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     [tabBarController setActionToolbarItems:@[selectActionBarButtonItem, flexibleSpace, selectOrganizeBarButtonItem, flexibleSpace] animated:YES];
     [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
@@ -415,7 +411,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];

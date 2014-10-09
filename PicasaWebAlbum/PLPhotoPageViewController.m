@@ -48,13 +48,14 @@
                        direction:UIPageViewControllerNavigationDirectionForward
                         animated:NO
                       completion:nil];
-        self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     
     UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction)];
     tagBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Tag"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
@@ -274,16 +275,16 @@
         
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         if ([tabBarController isToolbarHideen]) {
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+            [tabBarController setIsStatusBarHidden:NO animated:YES];
             [sself.navigationController setNavigationBarHidden:NO animated:YES];
             [tabBarController setToolbarFadeout:NO animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
-                sself.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+                sself.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
             }];
             sself.navigationController.interactivePopGestureRecognizer.enabled = YES;
         }
         else {
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+            [tabBarController setIsStatusBarHidden:YES animated:YES];
             [sself.navigationController setNavigationBarHidden:YES animated:YES];
             [tabBarController setToolbarFadeout:YES animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{

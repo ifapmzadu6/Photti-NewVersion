@@ -44,12 +44,12 @@
     self.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     
     _textLabel = [UILabel new];
-    _textLabel.font = [UIFont systemFontOfSize:15.0f];
+    _textLabel.font = [UIFont systemFontOfSize:14.0f];
     _textLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
     [self addSubview:_textLabel];
     
     _detailLabel = [UILabel new];
-    _detailLabel.font = [UIFont systemFontOfSize:13.0f];
+    _detailLabel.font = [UIFont systemFontOfSize:12.0f];
     _detailLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
     [self addSubview:_detailLabel];
     
@@ -72,13 +72,13 @@
     CGSize size = self.bounds.size;
     
     CGSize textLabelSize = [_textLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-    _textLabel.frame = CGRectMake(12.0f, 17.0f, textLabelSize.width, 15.0f);
+    _textLabel.frame = CGRectMake(12.0f, 21.0f, textLabelSize.width, 15.0f);
     
     CGSize detailLabelSize = [_detailLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-    _detailLabel.frame = CGRectMake(12.0f, 36.0f, detailLabelSize.width, 13.0f);
+    _detailLabel.frame = CGRectMake(12.0f, 38.0f, detailLabelSize.width, 13.0f);
     
     CGSize selectButtonSize = [_selectButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-    _selectButton.frame = CGRectMake(size.width - selectButtonSize.width - 12.0f, 17.0f, selectButtonSize.width, size.height - 17.0f - 11.0f);
+    _selectButton.frame = CGRectMake(size.width - selectButtonSize.width - 12.0f, 19.0f, selectButtonSize.width, size.height - 19.0f - 11.0f);
 }
 
 - (void)setText:(NSString *)text {

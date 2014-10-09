@@ -123,7 +123,8 @@
         _moviePlayerController.view.alpha = 1.0f;
     } completion:^(BOOL finished) {
         _statusBarHiddenBeforePlay = ![[UIApplication sharedApplication] isStatusBarHidden];
-        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+        PATabBarController *tabBarController = (PATabBarController *)self.tabBarController;
+        [tabBarController setIsStatusBarHidden:YES animated:NO];
         
         [_moviePlayerController prepareToPlay];
     }];
@@ -149,7 +150,8 @@
         [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMoviePlayerPlaybackStateDidChangeNotification object:_moviePlayerController];
         
         if (_statusBarHiddenBeforePlay) {
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+            PATabBarController *tabBarController = (PATabBarController *)self.tabBarController;
+            [tabBarController setIsStatusBarHidden:NO animated:NO];
         }
         
 		[UIView animateWithDuration:0.3f animations:^{

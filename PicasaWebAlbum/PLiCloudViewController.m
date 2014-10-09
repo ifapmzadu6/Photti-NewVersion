@@ -47,7 +47,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    PAPhotoCollectionViewFlowLayout *collectionViewLayout = [[PAPhotoCollectionViewFlowLayout alloc] init];
+    PAPhotoCollectionViewFlowLayout *collectionViewLayout = [PAPhotoCollectionViewFlowLayout new];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
@@ -57,7 +57,7 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.scrollsToTop = NO;
     _collectionView.clipsToBounds = NO;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     

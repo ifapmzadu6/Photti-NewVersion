@@ -394,7 +394,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    [header.textLabel setTextColor:[UIColor colorWithWhite:1.0f alpha:0.667f]];
+    [header.textLabel setTextColor:[PAColors getColor:PAColorsTypeBackgroundColor]];
 }
 
 #pragma mark TableViewMethods

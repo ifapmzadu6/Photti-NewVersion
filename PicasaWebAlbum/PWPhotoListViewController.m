@@ -69,6 +69,8 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     self = [self init];
     if (self) {
         _album = album;
+        
+        self.title = album.title;
     }
     return self;
 }
@@ -79,10 +81,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         _selectedPhotoIDs = @[].mutableCopy;
         _photoViewCache = [NSCache new];
         _photoViewCache.countLimit = 10;
-        
-        if (_album) {
-            self.title = _album.title;
-        }
         
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
@@ -95,6 +93,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     
     UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
     self.navigationItem.rightBarButtonItem = searchBarButtonItem;
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
@@ -105,7 +107,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     _collectionView.delegate = self;
     [_collectionView registerClass:[PWPhotoViewCell class] forCellWithReuseIdentifier:@"Cell"];
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
@@ -216,6 +218,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
+    [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
         __weak typeof(self) wself = self;
@@ -257,7 +260,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         [tabBarController setTabBarHidden:NO animated:NO completion:nil];
         [tabBarController setAdsHidden:NO animated:YES];
@@ -273,7 +275,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     PWImagePickerController *viewController = [[PWImagePickerController alloc] initWithAlbumTitle:_album.title completion:^(NSArray *selectedPhotos) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:sself.album completion:^(NSError *error) {
             if (error) {
 #ifdef DEBUG

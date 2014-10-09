@@ -25,6 +25,7 @@
 #import "PDTaskManager.h"
 #import "PWImagePickerController.h"
 #import "PWAlbumPickerController.h"
+#import "PWSearchNavigationController.h"
 #import "PWModelObject.h"
 #import "PDTaskManager.h"
 
@@ -68,6 +69,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
+    self.navigationItem.rightBarButtonItems = @[searchBarButtonItem];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
+    
     PAPhotoCollectionViewFlowLayout *collectionViewLayout = [[PAPhotoCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
@@ -75,7 +83,7 @@
     [_collectionView registerClass:[PLPhotoViewCell class] forCellWithReuseIdentifier:@"Cell"];
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         _collectionView.contentInset = UIEdgeInsetsMake(20.0f, 20.0f, 20.0f, 20.0f);
     }
@@ -171,6 +179,10 @@
 }
 
 #pragma mark UIBarButtonAction
+- (void)searchBarButtonAction {
+    [self openSearchBar];
+}
+
 - (void)actionBarButtonAction:(id)sender {
     [self showAlbumActionSheet:_album sender:sender];
 }
@@ -497,7 +509,6 @@
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         [tabBarController setToolbarHidden:YES animated:NO completion:nil];
     }];
@@ -708,6 +719,24 @@
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:sender cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:nil];
     actionSheet.tag = 1004;
     [actionSheet showFromBarButtonItem:sender animated:YES];
+}
+
+#pragma mark SearchBar
+- (void)openSearchBar {
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setTabBarHidden:YES animated:YES completion:nil];
+    [tabBarController setAdsHidden:YES animated:NO];
+    
+    PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
+    navigationController.view.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    __weak typeof(self) wself = self;
+    [navigationController openSearchBarWithCancelBlock:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+        [tabBarController setTabBarHidden:NO animated:NO completion:nil];
+        [tabBarController setAdsHidden:NO animated:YES];
+    }];
 }
 
 #pragma mark NoItem

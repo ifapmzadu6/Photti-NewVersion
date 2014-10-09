@@ -180,6 +180,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     settingsBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
     self.navigationItem.leftBarButtonItem = settingsBarButtonItem;
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
@@ -228,9 +229,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
-    [UIView animateWithDuration:0.3f animations:^{
-        [tabBarController setToolbarHidden:YES animated:NO completion:nil];
-    }];
+    [tabBarController setToolbarHidden:YES animated:YES completion:nil];
     [tabBarController setAdsHidden:NO animated:NO];
 }
 

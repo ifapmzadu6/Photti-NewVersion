@@ -48,6 +48,11 @@
 @property (nonatomic) BOOL isRecentlyUploadedRequesting;
 @property (nonatomic) BOOL isRefreshControlAnimating;
 
+@property (nonatomic) BOOL isSelectMode;
+@property (strong, nonatomic) UIBarButtonItem *selectActionBarButton;
+@property (strong, nonatomic) UIBarButtonItem *trashBarButtonItem;
+@property (strong, nonatomic) UIBarButtonItem *organizeBarButtonItem;
+
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSFetchedResultsController *recentlyUploadedFetchedResultsController;
 
@@ -77,6 +82,16 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     
+    UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
+    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
+    self.navigationItem.rightBarButtonItems = @[addBarButtonItem, searchBarButtonItem];
+    UIBarButtonItem *editBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editBarButtonItem:)];
+    self.navigationItem.leftBarButtonItem = editBarButtonItem;
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    for (UIView *view in self.navigationController.navigationBar.subviews) {
+        view.exclusiveTouch = YES;
+    }
+    
     PAAlbumCollectionViewFlowLayout *collectionViewLayout = [PAAlbumCollectionViewFlowLayout new];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
@@ -98,16 +113,6 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.view addSubview:_activityIndicatorView];
-    
-    UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
-    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
-    self.navigationItem.rightBarButtonItems = @[addBarButtonItem, searchBarButtonItem];
-    UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
-    settingsBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
-    self.navigationItem.leftBarButtonItem = settingsBarButtonItem;
-    for (UIView *view in self.navigationController.navigationBar.subviews) {
-        view.exclusiveTouch = YES;
-    }
     
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
@@ -148,17 +153,17 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    NSArray *indexPaths = _collectionView.indexPathsForSelectedItems;
-    for (NSIndexPath *indexPath in indexPaths) {
+    for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
         [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    }
+    for (NSIndexPath *indexPath in _recentlyUploadedCollectionView.indexPathsForSelectedItems) {
+        [_recentlyUploadedCollectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
-    [UIView animateWithDuration:0.3f animations:^{
-        [tabBarController setToolbarHidden:YES animated:NO completion:nil];
-    }];
+    [tabBarController setToolbarHidden:YES animated:YES completion:nil];
     [tabBarController setAdsHidden:NO animated:NO];
 }
 
@@ -420,9 +425,24 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeWeb];
-    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
+- (void)editBarButtonItem:(id)sender {
+    [self enableSelectMode];
+}
+
+- (void)selectActionBarButtonAction:(id)sender {
+    
+}
+
+- (void)selectTrashBarButtonAction:(id)sender {
+    
+}
+
+- (void)selectOrganizeBarButtonAction:(id)sender {
+    
+}
+
+- (void)selectCancelBarButtonAction:(id)sender {
+    [self disableSelectMode];
 }
 
 #pragma mark LoadData
@@ -557,9 +577,7 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     }
     else if (controller == _recentlyUploadedFetchedResultsController) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [_collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
-            
-            [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
+            [_recentlyUploadedCollectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
         });
     }
 }
@@ -723,6 +741,80 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
         else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
         }
     }
+}
+
+#pragma mark SelectMode
+- (void)enableSelectMode {
+    if (_isSelectMode) {
+        return;
+    }
+    _isSelectMode = YES;
+//    _selectedPhotoIDs = @[].mutableCopy;
+    
+    _collectionView.allowsMultipleSelection = YES;
+    for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
+        cell.isSelectWithCheckMark = YES;
+    }
+    
+    _selectActionBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction:)];
+    _selectActionBarButton.enabled = NO;
+    _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction:)];
+    _trashBarButtonItem.enabled = NO;
+    _organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(selectOrganizeBarButtonAction:)];
+    _organizeBarButtonItem.enabled = NO;
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, _trashBarButtonItem];
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setActionToolbarItems:toolbarItems animated:NO];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    __weak typeof(self) wself = self;
+    [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+        [tabBarController setToolbarHidden:YES animated:NO completion:nil];
+    }];
+    
+    UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(selectCancelBarButtonAction:)];
+    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
+    [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
+    [tabBarController setActionNavigationItem:navigationItem animated:NO];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        sself.navigationController.navigationBar.alpha = 0.0f;
+    }];
+    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+}
+
+- (void)disableSelectMode {
+    if (!_isSelectMode) {
+        return;
+    }
+    _isSelectMode = NO;
+//    _selectedPhotoIDs = @[].mutableCopy;
+    
+    _collectionView.allowsMultipleSelection = YES;
+    for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
+        cell.isSelectWithCheckMark = NO;
+    }
+    NSArray *indexPaths = _collectionView.indexPathsForSelectedItems;
+    for (NSIndexPath *indexPath in indexPaths) {
+        [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    }
+    
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setToolbarHidden:NO animated:NO completion:nil];
+    [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
+    [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
+    self.navigationController.navigationBar.alpha = 1.0f;
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 #pragma mark NoItem

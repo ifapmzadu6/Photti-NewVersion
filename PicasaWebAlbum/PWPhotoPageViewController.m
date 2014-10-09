@@ -55,13 +55,14 @@
         self.delegate = self;
         self.dataSource = self;
         [self setViewControllers:@[[self makePhotoViewController:index placeholder:placeholder]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
-        self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     
     //ScrollViewDelegate
     [self.view.subviews.firstObject setDelegate:(id)self];
@@ -81,13 +82,27 @@
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
     
-    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
-    [tabBarController setUserInteractionEnabled:NO];
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
     UIBarButtonItem *organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction:)];
     UIBarButtonItem *trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    [tabBarController setToolbarItems:@[actionBarButtonItem, flexibleSpace, organizeBarButtonItem, flexibleSpace, trashBarButtonItem] animated:YES];
+    NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, organizeBarButtonItem, flexibleSpace, trashBarButtonItem];
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setUserInteractionEnabled:NO];
+    [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    if ([tabBarController isToolbarHideen]) {
+        [tabBarController setToolbarItems:toolbarItems animated:NO];
+        __weak typeof(self) wself = self;
+        [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+            [tabBarController setTabBarHidden:YES animated:NO completion:nil];
+        }];
+    }
+    else {
+        [tabBarController setToolbarItems:toolbarItems animated:YES];
+    }
     [tabBarController setAdsHidden:YES animated:YES];
 }
 
@@ -350,7 +365,6 @@
     viewController.viewDidAppearBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         sself.title = title;
         sself.index = index;
         sself.id_str = id_str;
@@ -362,19 +376,18 @@
     viewController.didSingleTapBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         if ([tabBarController isToolbarHideen]) {
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+            [tabBarController setIsStatusBarHidden:NO animated:YES];
             [sself.navigationController setNavigationBarHidden:NO animated:YES];
             [tabBarController setToolbarFadeout:NO animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
-                sself.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+                sself.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
             }];
             sself.navigationController.interactivePopGestureRecognizer.enabled = YES;
         }
         else {
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+            [tabBarController setIsStatusBarHidden:YES animated:YES];
             [sself.navigationController setNavigationBarHidden:YES animated:YES];
             [tabBarController setToolbarFadeout:YES animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{

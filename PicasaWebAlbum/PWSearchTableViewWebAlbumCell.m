@@ -52,7 +52,7 @@
 }
 
 - (void)initialization {
-    self.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.1f];
+    self.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.2f];
     
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:15.0f];

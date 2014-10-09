@@ -123,6 +123,7 @@
     
     UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
     self.navigationItem.rightBarButtonItems = @[searchBarButtonItem];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }

@@ -111,7 +111,7 @@
     _isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
     
     if (_isPhone) {
-        [UIApplication sharedApplication].statusBarHidden = _isLandscape ? YES : NO;
+        [UIApplication sharedApplication].statusBarHidden = (_isLandscape || _isStatusBarHidden) ? YES : NO;
     }
     
     CGRect rect = self.view.bounds;
@@ -212,7 +212,12 @@
 - (void)setIsStatusBarHidden:(BOOL)isStatusBarHidden animated:(BOOL)animated {
     _isStatusBarHidden = isStatusBarHidden;
     
-    [[UIApplication sharedApplication] setStatusBarHidden:isStatusBarHidden withAnimation:UIStatusBarAnimationFade];
+    if (animated) {
+        [[UIApplication sharedApplication] setStatusBarHidden:isStatusBarHidden withAnimation:UIStatusBarAnimationNone];
+    }
+    else {
+        [[UIApplication sharedApplication] setStatusBarHidden:isStatusBarHidden withAnimation:UIStatusBarAnimationFade];
+    }
 }
 
 #pragma mark TabBarHidden
