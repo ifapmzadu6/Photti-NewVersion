@@ -12,8 +12,15 @@
 
 - (CGSize)itemSize {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        int size = MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds));
         if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
+            if (size > 667) {       //iPhone6Plus
+                return CGSizeMake(121.0f, 121.0f);
+            }
+            else if (size > 568) {  //iPhone6
+                return CGSizeMake(109.5f, 109.5f);
+            }
+            else if (size > 480) {  //iPhone5
                 return CGSizeMake(112.0f, 112.0f);
             }
             else {
@@ -21,7 +28,13 @@
             }
         }
         else {
-            if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
+            if (size > 667) {       //iPhone6Plus
+                return CGSizeMake(102.5f, 102.5f);
+            }
+            else if (size > 568) {  //iPhone6
+                return CGSizeMake(93.0f, 93.0f);
+            }
+            else if (size > 480) {  //iPhone5
                 return CGSizeMake(106.0f, 106.0f);
             }
             else {

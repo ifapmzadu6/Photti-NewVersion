@@ -67,7 +67,7 @@
     [_tableView registerClass:[PDTaskTableViewCell class] forCellReuseIdentifier:@"Cell"];
     [_tableView registerClass:[PDTaskManagerViewControllerHeaderView class] forHeaderFooterViewReuseIdentifier:@"Header"];
     _tableView.rowHeight = 60.0f;
-    _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
     

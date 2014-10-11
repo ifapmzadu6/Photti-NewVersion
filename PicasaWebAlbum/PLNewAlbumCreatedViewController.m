@@ -51,7 +51,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintUploadColor];
     
     UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
@@ -191,18 +191,22 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
             if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                _createdNewAlbumLabel.frame = CGRectMake(0.0f, 86.0f, 320.0f, 40.0f);
-                _collectionView.frame = CGRectMake(242.0f, 80.0f, 320.0f, 280.0f);
-                _uploadButton.frame = CGRectMake(110.0f, 155.0f, 100.0f, 32.0f);
-                _skipButton.frame = CGRectMake(110.0f, 205.0f, 100.0f, 32.0f);
-                _applyAllItemsButton.frame = CGRectMake(17.0f, CGRectGetHeight(rect) - 60.0f, 255.0f + 30.0f, 30.0f);
+                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-568.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-320.0f)/2.0f;
+                _createdNewAlbumLabel.frame = CGRectMake(deltaX, deltaY+86.0f, 320.0f, 40.0f);
+                _collectionView.frame = CGRectMake(deltaX+242.0f, deltaY+80.0f, 320.0f, 280.0f);
+                _uploadButton.frame = CGRectMake(deltaX+110.0f, deltaY+155.0f, 100.0f, 32.0f);
+                _skipButton.frame = CGRectMake(deltaX+110.0f, deltaY+205.0f, 100.0f, 32.0f);
+                _applyAllItemsButton.frame = CGRectMake(deltaX+17.0f, deltaY+320.0f-60.0f, 255.0f+30.0f, 30.0f);
             }
             else {
-                _createdNewAlbumLabel.frame = CGRectMake(0.0f, 86.0f, 320.0f, 40.0f);
-                _collectionView.frame = CGRectMake(0.0f, 150.0f, 320.0f, 280.0f);
-                _uploadButton.frame = CGRectMake(110.0f, 400.0f, 100.0f, 32.0f);
-                _skipButton.frame = CGRectMake(110.0f, 450.0f, 100.0f, 32.0f);
-                _applyAllItemsButton.frame = CGRectMake(20.0f, CGRectGetHeight(rect) - 50.0f, CGRectGetWidth(rect) - 20.0f*2.0f, 30.0f);
+                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-320.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-568.0f)/2.0f;
+                _createdNewAlbumLabel.frame = CGRectMake(deltaX, deltaY+86.0f, 320.0f, 40.0f);
+                _collectionView.frame = CGRectMake(deltaX, deltaY+150.0f, 320.0f, 280.0f);
+                _uploadButton.frame = CGRectMake(deltaX+110.0f, deltaY+400.0f, 100.0f, 32.0f);
+                _skipButton.frame = CGRectMake(deltaX+110.0f, deltaY+450.0f, 100.0f, 32.0f);
+                _applyAllItemsButton.frame = CGRectMake(deltaX+20.0f, deltaY+568.0f-50.0f, 320.0f-20.0f*2.0f, 30.0f);
             }
         }
         else {

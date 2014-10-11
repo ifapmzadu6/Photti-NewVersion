@@ -38,7 +38,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -136,18 +136,22 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
             if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                _iconImageView.frame = CGRectMake(70.0f, 60.0f, 190.0f, 190.0f);
-                _titleLabel.frame = CGRectMake(250.0f + 0.0f, 280.0f - 212.0f, CGRectGetHeight(rect), 36.0f);
-                _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 320.0f - 212.0f, 240.0f, 100.0f);
-                _enableButton.frame = CGRectMake(250.0f + 50.0f, 444.0f - 212.0f, 100.0f, 30.0f);
-                _disableButton.frame = CGRectMake(250.0f + 170.0f, 444.0f - 212.0f, 100.0f, 30.0f);
+                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-568.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-320.0f)/2.0f;
+                _iconImageView.frame = CGRectMake(deltaX+70.0f, deltaY+60.0f, 190.0f, 190.0f);
+                _titleLabel.frame = CGRectMake(deltaX+250.0f, deltaY+280.0f-212.0f, CGRectGetHeight(rect), 36.0f);
+                _descriptionLabel.frame = CGRectMake(deltaX+250.0f+40.0f, deltaY+320.0f-212.0f, 240.0f, 100.0f);
+                _enableButton.frame = CGRectMake(deltaX+250.0f+50.0f, deltaY+444.0f-212.0f, 100.0f, 30.0f);
+                _disableButton.frame = CGRectMake(deltaX+250.0f+170.0f, deltaY+444.0f-212.0f, 100.0f, 30.0f);
             }
             else {
-                _iconImageView.frame = CGRectMake(70.0f, 80.0f, 190.0f, 190.0f);
-                _titleLabel.frame = CGRectMake(0.0f, 280.0f, CGRectGetWidth(rect), 36.0f);
-                _descriptionLabel.frame = CGRectMake(40.0f, 320.0f, 240.0f, 100.0f);
-                _enableButton.frame = CGRectMake(50.0f, 444.0f, 100.0f, 30.0f);
-                _disableButton.frame = CGRectMake(170.0f, 444.0f, 100.0f, 30.0f);
+                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-320.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-568.0f)/2.0f;
+                _iconImageView.frame = CGRectMake(deltaX+70.0f, deltaY+80.0f, 190.0f, 190.0f);
+                _titleLabel.frame = CGRectMake(deltaX, deltaY+280.0f, CGRectGetWidth(rect), 36.0f);
+                _descriptionLabel.frame = CGRectMake(deltaX+40.0f, deltaY+320.0f, 240.0f, 100.0f);
+                _enableButton.frame = CGRectMake(deltaX+50.0f, deltaY+444.0f, 100.0f, 30.0f);
+                _disableButton.frame = CGRectMake(deltaX+170.0f, deltaY+444.0f, 100.0f, 30.0f);
             }
         }
         else {

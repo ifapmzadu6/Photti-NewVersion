@@ -43,7 +43,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -206,32 +206,36 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
             if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                _iconImageView.frame = CGRectMake(46.0f, 80.0f, 170.0f, 170.0f);
-                _uploadSettingLabel.frame = CGRectMake(244.0f + 0.0f, 272.0f - 210.0f, CGRectGetHeight(rect), 20.0f);
-                _unlimitedLabel.frame = CGRectMake(244.0f + 15.0f, 310.0f - 220.0f, 140.0f, 20.0f);
-                _highResolutionLabel.frame = CGRectMake(244.0f + 165.0f, 310.0f - 220.0f, 140.0f, 20.0f);
+                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-568.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-320.0f)/2.0f;
+                _iconImageView.frame = CGRectMake(deltaX+46.0f, deltaY+80.0f, 170.0f, 170.0f);
+                _uploadSettingLabel.frame = CGRectMake(deltaX+244.0f, deltaY+272.0f-210.0f, 320.0f, 20.0f);
+                _unlimitedLabel.frame = CGRectMake(deltaX+244.0f+15.0f, deltaY+310.0f-220.0f, 140.0f, 20.0f);
+                _highResolutionLabel.frame = CGRectMake(deltaX+244.0f+165.0f, deltaY+310.0f-220.0f, 140.0f, 20.0f);
                 CGFloat titleLabelMaxY = CGRectGetMaxY(_unlimitedLabel.frame);
-                CGFloat buttonMinY = 450.0f - 220.0f;
+                CGFloat buttonMinY = deltaY+450.0f - 220.0f;
                 CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-                _unlimitedDescriptionLabel.frame = CGRectMake(244.0f + 10.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
+                _unlimitedDescriptionLabel.frame = CGRectMake(deltaX+244.0f+10.0f, titleLabelMaxY+((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
                 CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-                _highResolutionDescriptionLabel.frame = CGRectMake(244.0f + 165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
-                _unlimitedButton.frame = CGRectMake(244.0f + 30.0f, 458.0f - 220.0f, 110.0, 30.0f);
-                _highResolutionButton.frame = CGRectMake(244.0f + 180.0f, 458.0f - 220.0f, 110.0, 30.0f);
+                _highResolutionDescriptionLabel.frame = CGRectMake(deltaX+244.0f+165.0f, titleLabelMaxY+((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
+                _unlimitedButton.frame = CGRectMake(deltaX+244.0f+30.0f, deltaY+458.0f-220.0f, 110.0, 30.0f);
+                _highResolutionButton.frame = CGRectMake(deltaX+244.0f+180.0f, deltaY+458.0f-220.0f, 110.0, 30.0f);
             }
             else {
-                _iconImageView.frame = CGRectMake(70.0f, 86.0f, 170.0f, 170.0f);
-                _uploadSettingLabel.frame = CGRectMake(0.0f, 272.0f, CGRectGetWidth(rect), 20.0f);
-                _unlimitedLabel.frame = CGRectMake(15.0f, 304.0f, 140.0f, 20.0f);
-                _highResolutionLabel.frame = CGRectMake(165.0f, 304.0f, 140.0f, 20.0f);
+                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-320.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-568.0f)/2.0f;
+                _iconImageView.frame = CGRectMake(deltaX+70.0f, deltaY+86.0f, 170.0f, 170.0f);
+                _uploadSettingLabel.frame = CGRectMake(deltaX, deltaY+272.0f, 320.0f, 20.0f);
+                _unlimitedLabel.frame = CGRectMake(deltaX+15.0f, deltaY+304.0f, 140.0f, 20.0f);
+                _highResolutionLabel.frame = CGRectMake(deltaX+165.0f, deltaY+304.0f, 140.0f, 20.0f);
                 CGFloat titleLabelMaxY = CGRectGetMaxY(_unlimitedLabel.frame);
-                CGFloat buttonMinY = 444.0f;
+                CGFloat buttonMinY = deltaY+444.0f;
                 CGSize unlimitedDescriptionLabelSize = [_unlimitedDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-                _unlimitedDescriptionLabel.frame = CGRectMake(15.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
+                _unlimitedDescriptionLabel.frame = CGRectMake(deltaX+15.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-unlimitedDescriptionLabelSize.height)/2.0f, 140.0f, unlimitedDescriptionLabelSize.height);
                 CGSize highResolutionDescriptionLabelSize = [_highResolutionDescriptionLabel sizeThatFits:CGSizeMake(140.0f, CGFLOAT_MAX)];
-                _highResolutionDescriptionLabel.frame = CGRectMake(165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
-                _unlimitedButton.frame = CGRectMake(30.0f, 454.0f, 110.0, 30.0f);
-                _highResolutionButton.frame = CGRectMake(180.0f, 454.0f, 110.0, 30.0f);
+                _highResolutionDescriptionLabel.frame = CGRectMake(deltaX+165.0f, titleLabelMaxY + ((buttonMinY-titleLabelMaxY)-(highResolutionDescriptionLabelSize.height))/2.0f, 140.0f, highResolutionDescriptionLabelSize.height);
+                _unlimitedButton.frame = CGRectMake(deltaX+30.0f, deltaY+454.0f, 110.0, 30.0f);
+                _highResolutionButton.frame = CGRectMake(deltaX+180.0f, deltaY+454.0f, 110.0, 30.0f);
             }
         }
         else {

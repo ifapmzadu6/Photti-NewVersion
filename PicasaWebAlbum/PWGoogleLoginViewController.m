@@ -43,7 +43,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -146,30 +146,34 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
             if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                _iconImageView.frame = CGRectMake(64.0f, 80.0f, 180.0f, 180.0f);
+                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-568.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-320.0f)/2.0f;
+                _iconImageView.frame = CGRectMake(deltaX+64.0f, deltaY+80.0f, 180.0f, 180.0f);
                 if (!_skipButton) {
-                    _titleLabel.frame = CGRectMake(250.0f, 286.0f - 190.0f, CGRectGetHeight(rect), 36.0f);
-                    _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 326.0f - 202.0f, 240.0f, 100.0f);
-                    _loginButton.frame = CGRectMake(250.0f + 110.0f, 444.0f - 224.0f, 100.0f, 30.0f);
+                    _titleLabel.frame = CGRectMake(deltaX+250.0f, deltaY+286.0f-190.0f, 320.0f, 36.0f);
+                    _descriptionLabel.frame = CGRectMake(deltaX+250.0f+40.0f, deltaY+326.0f-202.0f, 240.0f, 100.0f);
+                    _loginButton.frame = CGRectMake(deltaX+250.0f+110.0f, deltaY+444.0f-224.0f, 100.0f, 30.0f);
                 }
                 else {
-                    _titleLabel.frame = CGRectMake(250.0f, 286.0f - 200.0f, CGRectGetHeight(rect), 36.0f);
-                    _descriptionLabel.frame = CGRectMake(250.0f + 40.0f, 326.0f - 212.0f, 240.0f, 100.0f);
-                    _loginButton.frame = CGRectMake(250.0f + 110.0f, 444.0f - 238.0f, 100.0f, 30.0f);
-                    _skipButton.frame = CGRectMake(250.0f + 110.0f, 468.0f - 224.0f, 100.0f, 30.0f);
+                    _titleLabel.frame = CGRectMake(deltaX+250.0f, deltaY+286.0f-200.0f, 320.0f, 36.0f);
+                    _descriptionLabel.frame = CGRectMake(deltaX+250.0f+40.0f, deltaY+326.0f-212.0f, 240.0f, 100.0f);
+                    _loginButton.frame = CGRectMake(deltaX+250.0f+110.0f, deltaY+444.0f-238.0f, 100.0f, 30.0f);
+                    _skipButton.frame = CGRectMake(deltaX+250.0f+110.0f, deltaY+468.0f-224.0f, 100.0f, 30.0f);
                 }
             }
             else {
-                _iconImageView.frame = CGRectMake(70.0f, 90.0f, 180.0f, 180.0f);
-                _titleLabel.frame = CGRectMake(0.0f, 286.0f, CGRectGetWidth(rect), 36.0f);
-                _descriptionLabel.frame = CGRectMake(40.0f, 316.0f, 240.0f, 100.0f);
+                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-320.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-568.0f)/2.0f;
+                _iconImageView.frame = CGRectMake(deltaX+70.0f, deltaY+90.0f, 180.0f, 180.0f);
+                _titleLabel.frame = CGRectMake(deltaX, deltaY+286.0f, 320.0f, 36.0f);
+                _descriptionLabel.frame = CGRectMake(deltaX+40.0f, deltaY+316.0f, 240.0f, 100.0f);
                 if (!_skipButton) {
-                    _descriptionLabel.frame = CGRectMake(40.0f, 326.0f, 240.0f, 100.0f);
-                    _loginButton.frame = CGRectMake(110.0f, 444.0f, 100.0f, 30.0f);
+                    _descriptionLabel.frame = CGRectMake(deltaX+40.0f, deltaY+326.0f, 240.0f, 100.0f);
+                    _loginButton.frame = CGRectMake(deltaX+110.0f, deltaY+444.0f, 100.0f, 30.0f);
                 }
                 else {
-                    _loginButton.frame = CGRectMake(110.0f, 420.0f, 100.0f, 30.0f);
-                    _skipButton.frame = CGRectMake(110.0f, 468.0f, 100.0f, 30.0f);
+                    _loginButton.frame = CGRectMake(deltaX+110.0f, deltaY+420.0f, 100.0f, 30.0f);
+                    _skipButton.frame = CGRectMake(deltaX+110.0f, deltaY+468.0f, 100.0f, 30.0f);
                 }
             }
         }

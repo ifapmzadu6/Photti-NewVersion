@@ -44,6 +44,8 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     // NSLocalNotification
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
     // User Defaults
     NSDictionary *userDefaults = @{kPDTaskManagerIsResizePhotosKey: @(YES),
                                    kPWAppDelegateBackgroundFetchDateKey: [NSDate date],
