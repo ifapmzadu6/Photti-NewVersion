@@ -21,6 +21,7 @@
 #import <Reachability.h>
 #import "NSURLResponse+methods.h"
 #import "PAString.h"
+#import <FLAnimatedImage.h>
 
 static int const kPWAlbumViewCellNumberOfImageView = 3;
 
@@ -196,18 +197,23 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
     }
     else {
         UIImageView *imageView = _imageViews.firstObject;
-        UIImage *noPhotoImage = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UIImage *noPhotoImage = [UIImage imageNamed:@"icon_240"];
         imageView.image = noPhotoImage;
     }
 }
 
 - (void)loadThumbnailImage:(NSString *)urlString hash:(NSUInteger)hash imageView:(UIImageView *)imageView {
-    UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
-    if (memoryCachedImage) {
-        imageView.image = memoryCachedImage;
-        [_activityIndicatorView stopAnimating];
-        
-        return;
+    NSURL *url = [NSURL URLWithString:urlString];
+    BOOL isGifImage = [url.pathExtension isEqualToString:@"gif"];
+    
+    if (!isGifImage) {
+        UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
+        if (memoryCachedImage) {
+            imageView.image = memoryCachedImage;
+            [_activityIndicatorView stopAnimating];
+            
+            return;
+        }
     }
     
     [_activityIndicatorView startAnimating];
@@ -215,11 +221,27 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (_albumHash != hash) return;
-        if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
-            UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
-            [self setImage:diskCachedImage hash:hash imageView:imageView];
-            
-            return;
+        SDImageCache *sharedImageCache = [SDImageCache sharedImageCache];
+        if (isGifImage) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[sharedImageCache defaultCachePathForKey:urlString]]) {
+                NSData *data = [self diskImageDataBySearchingAllPathsForKey:urlString];
+                FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
+                if (animatedImage) {
+                    [self setImage:[UIImage decodedImageWithImage:animatedImage.posterImage] hash:hash imageView:imageView];
+                }
+                else {
+                    UIImage *image = [UIImage imageWithData:data];
+                    [self setImage:[UIImage decodedImageWithImage:image] hash:hash imageView:imageView];
+                }
+                return;
+            }
+        }
+        else {
+            if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
+                UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
+                [self setImage:diskCachedImage hash:hash imageView:imageView];
+                return;
+            }
         }
         
         if (![Reachability reachabilityForInternetConnection].isReachable) {
@@ -241,21 +263,25 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                if (error) {
+                if (error || !response.isSuccess) {
                     [sself loadThumbnailImage:urlString hash:hash imageView:imageView];
                     return;
                 }
-                if (!response.isSuccess) {
-                    [sself loadThumbnailImage:urlString hash:hash imageView:imageView];
-                    return;
+                if (isGifImage) {
+                    FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
+                    [sself setImage:[UIImage decodedImageWithImage:animatedImage.posterImage] hash:hash imageView:imageView];
+                    if (data && urlString) {
+                        [sself storeData:data key:urlString];
+                    }
+                }
+                else {
+                    UIImage *image = [UIImage imageWithData:data];
+                    [sself setImage:[UIImage decodedImageWithImage:image] hash:hash imageView:imageView];
+                    if (image && urlString) {
+                        [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
+                    }
                 }
                 
-                UIImage *image = [UIImage imageWithData:data];
-                [sself setImage:[UIImage decodedImageWithImage:image] hash:hash imageView:imageView];
-                
-                if (image && urlString) {
-                    [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
-                }
             }];
             [task resume];
         }];
@@ -292,6 +318,28 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
         if (_actionButtonActionBlock) {
             _actionButtonActionBlock(_album);
         }
+    }
+}
+
+#pragma mark DiscCache
+- (NSData *)diskImageDataBySearchingAllPathsForKey:(NSString *)key {
+    NSString *defaultPath = [[SDImageCache sharedImageCache] defaultCachePathForKey:key];
+    NSData *data = [NSData dataWithContentsOfFile:defaultPath];
+    if (data) {
+        return data;
+    }
+    return nil;
+}
+
+- (void)storeData:(NSData *)data key:(NSString *)key {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *diskCachePath = [paths[0] stringByAppendingPathComponent:@"com.hackemist.SDWebImageCache.default"];
+    if (data) {
+        if (![[NSFileManager defaultManager] fileExistsAtPath:diskCachePath]) {
+            [[NSFileManager defaultManager] createDirectoryAtPath:diskCachePath withIntermediateDirectories:YES attributes:nil error:NULL];
+        }
+        
+        [[NSFileManager defaultManager] createFileAtPath:[[SDImageCache sharedImageCache] defaultCachePathForKey:key] contents:data attributes:nil];
     }
 }
 

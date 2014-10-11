@@ -304,6 +304,7 @@
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (error || !response.isSuccess) {
+                    [self loadImageWithURLString:urlString hash:hash];
                     return;
                 }
                 if (isGifImage) {

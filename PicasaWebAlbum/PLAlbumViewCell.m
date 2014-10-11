@@ -190,7 +190,7 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
     else {
         [_activityIndicatorView stopAnimating];
         
-        UIImage *noPhotoImage = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UIImage *noPhotoImage = [UIImage imageNamed:@"icon_240"];
         UIImageView *imageView = self.imageViews.firstObject;
         imageView.image = noPhotoImage;
     }

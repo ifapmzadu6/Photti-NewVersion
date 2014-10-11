@@ -316,8 +316,7 @@
 - (void)showNoItem {
     if (!_noItemImageView) {
         _noItemImageView = [UIImageView new];
-        _noItemImageView.image = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _noItemImageView.tintColor = [[PAColors getColor:PAColorsTypeTintWebColor] colorWithAlphaComponent:0.2f];
+        _noItemImageView.image = [UIImage imageNamed:@"icon_240"];
         _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
         [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
     }
