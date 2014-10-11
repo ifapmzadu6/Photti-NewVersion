@@ -17,7 +17,7 @@ typedef enum _PWSettingsViewControllerInitType {
     PWSettingsViewControllerInitTypeTaskManager
 } PWSettingsViewControllerInitType;
 
-@interface PWSettingsViewController : PABaseNavigationController
+@interface PXSettingsViewController : PABaseNavigationController
 
 - (id)initWithInitType:(PWSettingsViewControllerInitType)type;
 

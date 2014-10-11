@@ -28,6 +28,7 @@
 #import "PLNavigationController.h"
 #import "PDNavigationController.h"
 #import "PENavigationController.h"
+#import "PEHomeViewController.h"
 #import "PATabBarAdsController.h"
 #import "PAMigrationViewController.h"
 
@@ -45,7 +46,9 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     
     // User Defaults
     NSDictionary *userDefaults = @{kPDTaskManagerIsResizePhotosKey: @(YES),
-                                   kPWAppDelegateBackgroundFetchDateKey: [NSDate date]};
+                                   kPWAppDelegateBackgroundFetchDateKey: [NSDate date],
+                                   kPEHomeViewControllerUserDefaultsEnabledItemKey: [PEHomeViewController defaultEnabledItems]
+                                   };
     [[NSUserDefaults standardUserDefaults] registerDefaults:userDefaults];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
@@ -55,9 +58,6 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     // UAAppReviewManager
     [UAAppReviewManager setAppID:APPID];
     [UAAppReviewManager showPromptIfNecessary];
-    
-    // NSURLSession
-    [[[NSURLSession sharedSession] configuration] setURLCache:nil];
     
     // Google Analytics
     [GAI sharedInstance].dispatchInterval = 30;

@@ -16,7 +16,7 @@
 #import "PLNewAlbumEditViewController.h"
 #import "PATabBarAdsController.h"
 #import "PWSearchNavigationController.h"
-#import "PWSettingsViewController.h"
+#import "PXSettingsViewController.h"
 #import "PWAlbumPickerController.h"
 
 #import "PAColors.h"
@@ -197,7 +197,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 }
 
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
+    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 

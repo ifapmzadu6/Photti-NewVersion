@@ -6,15 +6,15 @@
 //  Copyright (c) 2013年 IRIE JUNYA. All rights reserved.
 //
 
-#import "PWSettingHTMLViewController.h"
+#import "PXSettingHTMLViewController.h"
 
-@interface PWSettingHTMLViewController ()
+@interface PXSettingHTMLViewController ()
 
 @property (strong, nonatomic) UIWebView *webView;
 
 @end
 
-@implementation PWSettingHTMLViewController
+@implementation PXSettingHTMLViewController
 
 - (void)loadView {
     _webView = [[UIWebView alloc] init];

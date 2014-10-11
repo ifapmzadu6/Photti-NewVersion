@@ -17,7 +17,7 @@
 @implementation PWPicasaGETRequest
 
 static NSString * const kPWGETListURL = @"https://picasaweb.google.com/data/feed/api/user/default";
-static NSString * const kPWPicasaGETRequestAlbumThumbnailSizeName = @"320u";
+static NSString * const kPWPicasaGETRequestAlbumThumbnailSizeName = @"288u";
 static NSString * const kPWPicasaGETRequestPhotoThumbnailSizeName = @"288u";
 static NSString * const kPWPicasaGETRequestPhotoThumbnailMaxSizeName = @"1024";
 static NSString * const kPWPicasaGETRequestNumberOfRecentlyUploadedPhotos = @"50";
@@ -58,7 +58,6 @@ static NSString * const kPWPicasaGETRequestNumberOfRecentlyUploadedPhotos = @"50
         }
         else {
             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-            request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
             request.allHTTPHeaderFields = headerFields;
             [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
             if (completion) {
@@ -77,7 +76,6 @@ static NSString * const kPWPicasaGETRequestNumberOfRecentlyUploadedPhotos = @"50
         }
         else {
             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-            request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;
             request.allHTTPHeaderFields = headerFields;
             [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];

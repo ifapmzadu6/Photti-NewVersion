@@ -6,11 +6,11 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWSelectItemFromArrayViewController.h"
+#import "PXSelectItemFromArrayViewController.h"
 
 #import "PAColors.h"
 
-@interface PWSelectItemFromArrayViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface PXSelectItemFromArrayViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
 
@@ -19,7 +19,7 @@
 
 @end
 
-@implementation PWSelectItemFromArrayViewController
+@implementation PXSelectItemFromArrayViewController
 
 - (id)initWithItems:(NSArray *)items defaultIndex:(NSUInteger)defaultIndex {
     self = [super init];
@@ -63,7 +63,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     if (!cell) {
-        cell = [[UITableViewCell alloc] init];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
         cell.textLabel.font = [UIFont boldSystemFontOfSize:15.0f];
     }
     

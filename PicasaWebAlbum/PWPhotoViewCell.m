@@ -84,7 +84,7 @@
     _videoIconView.hidden = YES;
     [self.contentView addSubview:_videoIconView];
     
-    _videoDurationLabel = [[UILabel alloc] init];
+    _videoDurationLabel = [UILabel new];
     _videoDurationLabel.text = @"5:21";
     _videoDurationLabel.font = [UIFont systemFontOfSize:12.0f];
     _videoDurationLabel.textColor = [UIColor whiteColor];
@@ -306,11 +306,9 @@
                 if (error || !response.isSuccess) {
                     return;
                 }
-                
                 if (isGifImage) {
                     FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
                     [sself setAnimatedImage:animatedImage hash:hash];
-                    
                     if (data && urlString) {
                         [sself storeData:data key:urlString];
                     }
@@ -318,7 +316,6 @@
                 else {
                     UIImage *image = [UIImage imageWithData:data];
                     [sself setImage:[UIImage decodedImageWithImage:image] hash:hash];
-                    
                     if (image && urlString) {
                         [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
                     }

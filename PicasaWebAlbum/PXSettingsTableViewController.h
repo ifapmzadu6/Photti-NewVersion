@@ -10,6 +10,6 @@
 
 #import "PABaseViewController.h"
 
-@interface PWSettingsTableViewController : PABaseViewController
+@interface PXSettingsTableViewController : PABaseViewController
 
 @end

@@ -6,26 +6,26 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWSettingsViewController.h"
+#import "PXSettingsViewController.h"
 
 #import "PAColors.h"
 
-#import "PWSettingsTableViewController.h"
+#import "PXSettingsTableViewController.h"
 
-@interface PWSettingsViewController ()
+@interface PXSettingsViewController ()
 
 @property (nonatomic) PWSettingsViewControllerInitType type;
 
 @end
 
-@implementation PWSettingsViewController
+@implementation PXSettingsViewController
 
 - (id)initWithInitType:(PWSettingsViewControllerInitType)type {
     self = [super init];
     if (self) {
         _type = type;
         
-        PWSettingsTableViewController *tableViewController = [PWSettingsTableViewController new];
+        PXSettingsTableViewController *tableViewController = [PXSettingsTableViewController new];
         self.viewControllers = @[tableViewController];
         
         BOOL isPhone = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? YES : NO;

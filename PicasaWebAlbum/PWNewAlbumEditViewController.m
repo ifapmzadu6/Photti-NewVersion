@@ -14,7 +14,7 @@
 #import "PWPicasaAPI.h"
 #import <Reachability.h>
 
-#import "PWSelectItemFromArrayViewController.h"
+#import "PXSelectItemFromArrayViewController.h"
 
 @interface PWNewAlbumEditViewController () <UITextFieldDelegate>
 

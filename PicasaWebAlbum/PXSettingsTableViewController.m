@@ -8,7 +8,7 @@
 
 @import StoreKit;
 
-#import "PWSettingsTableViewController.h"
+#import "PXSettingsTableViewController.h"
 
 #import <KKStaticTableView.h>
 #import "PAColors.h"
@@ -19,10 +19,12 @@
 #import "PDCoreDataAPI.h"
 #import "PAInAppPurchase.h"
 #import "PATabBarAdsController.h"
-#import "PWSettingHTMLViewController.h"
-#import "PWSelectItemFromArrayViewController.h"
+#import "PXSettingHTMLViewController.h"
+#import "PXEditItemsViewController.h"
+#import "PXSelectItemFromArrayViewController.h"
+#import "PEHomeViewController.h"
 
-@interface PWSettingsTableViewController () <SKStoreProductViewControllerDelegate, UIActionSheetDelegate>
+@interface PXSettingsTableViewController () <SKStoreProductViewControllerDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) KKStaticTableView *tableView;
 
@@ -32,7 +34,7 @@
 
 @end
 
-@implementation PWSettingsTableViewController
+@implementation PXSettingsTableViewController
 
 - (id)init {
     self = [super init];
@@ -64,7 +66,12 @@
     
     // TableView
     [self setUpWebAlbumSection];
-    [self setUpCameraRollSection];
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        [self setUpCameraRollEditDisplayItemSection];
+    }
+    else {
+        [self setUpCameraRollAutoCreateSection];
+    }
     [self setUpTaskManagerSection];
     [self setUpInAppPurchaseSection];
     [self setUpAboutSection];
@@ -114,7 +121,57 @@
 }
 
 #pragma mark Auto-CreateAlbumSection
-- (void)setUpCameraRollSection {
+- (void)setUpCameraRollEditDisplayItemSection {
+    NSString *sectionTitle = NSLocalizedString(@"Camera Roll", nil);
+    [_tableView addSectionWithTitle:sectionTitle description:nil];
+    
+    __weak typeof(self) wself = self;
+    [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeDefault cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        cell.textLabel.text = NSLocalizedString(@"Displayed Items", nil);
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        
+    } cellHeight:CGFLOAT_MIN didSelect:^(KKStaticTableView *tableView, NSIndexPath *indexPath) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        NSArray *enabledItems = [[NSUserDefaults standardUserDefaults] arrayForKey:kPEHomeViewControllerUserDefaultsEnabledItemKey];
+        NSMutableArray *localizedStringOfEnabledItems = @[].mutableCopy;
+        for (NSString *rowType in enabledItems) {
+            NSString *localizedString = [PEHomeViewController localizedStringFromRowType:rowType];
+            [localizedStringOfEnabledItems addObject:localizedString];
+        }
+        NSArray *disabledItems = [[NSUserDefaults standardUserDefaults] arrayForKey:kPEHomeViewControllerUserDefaultsDisabledItemKey];
+        NSMutableArray *localizedStringOfDisabledItems = @[].mutableCopy;
+        for (NSString *rowType in disabledItems) {
+            NSString *localizedString = [PEHomeViewController localizedStringFromRowType:rowType];
+            [localizedStringOfDisabledItems addObject:localizedString];
+        }
+        PXEditItemsViewController *viewController = [[PXEditItemsViewController alloc] initWithEnabledItems:localizedStringOfEnabledItems disabledItems:localizedStringOfDisabledItems];
+        viewController.title = NSLocalizedString(@"Camera Roll", nil);
+        viewController.enabledItemsTitle = NSLocalizedString(@"Displayed", nil);
+        viewController.disabledItemsTitle = NSLocalizedString(@"Not Displayed", nil);
+        viewController.completionBlock = ^(NSArray *enabledItems, NSArray *disabledItems){
+            NSMutableArray *enabledRowTypes = @[].mutableCopy;
+            for (NSString *localizedString in enabledItems) {
+                NSString *rowType = [PEHomeViewController rowTypeFromLocalizedString:localizedString];
+                [enabledRowTypes addObject:rowType];
+            }
+            NSMutableArray *disabledRowTypes = @[].mutableCopy;
+            for (NSString *localizedString in disabledItems) {
+                NSString *rowType = [PEHomeViewController rowTypeFromLocalizedString:localizedString];
+                [disabledRowTypes addObject:rowType];
+            }
+            [[NSUserDefaults standardUserDefaults] setObject:enabledRowTypes.copy forKey:kPEHomeViewControllerUserDefaultsEnabledItemKey];
+            [[NSUserDefaults standardUserDefaults] setObject:disabledRowTypes.copy forKey:kPEHomeViewControllerUserDefaultsDisabledItemKey];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        };
+        [sself.navigationController pushViewController:viewController animated:YES];
+    }];
+}
+
+- (void)setUpCameraRollAutoCreateSection {
     NSString *sectionTitle = NSLocalizedString(@"Camera Roll", nil);
     [_tableView addSectionWithTitle:sectionTitle description:nil];
     
@@ -165,7 +222,7 @@
             defaultIndex = 1;
         }
         NSArray *items = @[NSLocalizedString(@"Resize", nil), NSLocalizedString(@"Original", nil)];
-        PWSelectItemFromArrayViewController *viewController = [[PWSelectItemFromArrayViewController alloc] initWithItems:items defaultIndex:defaultIndex];
+        PXSelectItemFromArrayViewController *viewController = [[PXSelectItemFromArrayViewController alloc] initWithItems:items defaultIndex:defaultIndex];
         viewController.title = NSLocalizedString(@"Uploading Size", nil);
         viewController.view.tintColor = tintColor;
         viewController.doneBlock = ^(NSString *selectedItem){
@@ -319,7 +376,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        PWSettingHTMLViewController *viewController = [[PWSettingHTMLViewController alloc]init];
+        PXSettingHTMLViewController *viewController = [[PXSettingHTMLViewController alloc]init];
         viewController.fileName = @"thirdpartycopyright";
         viewController.title = NSLocalizedString(@"Open Source License", nil);
         [sself.navigationController pushViewController:viewController animated:true];
@@ -397,7 +454,7 @@
 }
 
 - (void)openTwitterButtonAction {
-    [PWSettingsTableViewController jumpToTwitterWithUserID:@"1432277970" userName:@"Photti_dev"];
+    [PXSettingsTableViewController jumpToTwitterWithUserID:@"1432277970" userName:@"Photti_dev"];
 }
 
 - (void)openReviewOniTunesStore {

@@ -38,7 +38,7 @@
 		711C19A519D3D22400FE3536 /* PEAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C19A419D3D22400FE3536 /* PEAlbumListViewController.m */; };
 		711C19B119D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C19B019D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.m */; };
 		711C19B519D3E08E00FE3536 /* PEPhotoListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C19B419D3E08E00FE3536 /* PEPhotoListDataSource.m */; };
-		711FE8E5195E99F500AF296B /* PWSettingHTMLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711FE8E4195E99F500AF296B /* PWSettingHTMLViewController.m */; };
+		711FE8E5195E99F500AF296B /* PXSettingHTMLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711FE8E4195E99F500AF296B /* PXSettingHTMLViewController.m */; };
 		711FE8E8195EA48400AF296B /* thirdpartycopyright.html in Resources */ = {isa = PBXBuildFile; fileRef = 711FE8E7195EA48400AF296B /* thirdpartycopyright.html */; };
 		711FE8F5195F2F6B00AF296B /* PABaseNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711FE8F4195F2F6B00AF296B /* PABaseNavigationController.m */; };
 		711FE8F91961C62A00AF296B /* PLNewAlbumCreatedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711FE8F81961C62A00AF296B /* PLNewAlbumCreatedViewController.m */; };
@@ -60,7 +60,7 @@
 		713300B4194043EB0061DBA3 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 713300B3194043EB0061DBA3 /* ImageIO.framework */; };
 		7133202B1921D29000A27B3C /* PWNewAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7133202A1921D29000A27B3C /* PWNewAlbumEditViewController.m */; };
 		713320331921E4AF00A27B3C /* PWDatePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 713320321921E4AF00A27B3C /* PWDatePickerView.m */; };
-		7133203A1921F98900A27B3C /* PWSelectItemFromArrayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 713320391921F98900A27B3C /* PWSelectItemFromArrayViewController.m */; };
+		7133203A1921F98900A27B3C /* PXSelectItemFromArrayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 713320391921F98900A27B3C /* PXSelectItemFromArrayViewController.m */; };
 		7133203E19225E9F00A27B3C /* PWAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7133203D19225E9F00A27B3C /* PWAlbumEditViewController.m */; };
 		71342FE11941F76C002331F6 /* PWAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71342FE01941F76C002331F6 /* PWAlbumPickerController.m */; };
 		71342FE51941F7B2002331F6 /* PWAlbumPickerNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71342FE41941F7B2002331F6 /* PWAlbumPickerNavigationController.m */; };
@@ -126,8 +126,8 @@
 		71958C52191B8A2200CFC15F /* UIButton+HitEdgeInsets.m in Sources */ = {isa = PBXBuildFile; fileRef = 71958C51191B8A2200CFC15F /* UIButton+HitEdgeInsets.m */; };
 		71958C57191B8D4400CFC15F /* PWPhotoPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71958C56191B8D4400CFC15F /* PWPhotoPageViewController.m */; };
 		71958C5C191B933500CFC15F /* PWPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71958C5B191B933500CFC15F /* PWPhotoViewController.m */; };
-		719BECEA19568EAE005DE6E7 /* PWSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719BECE919568EAE005DE6E7 /* PWSettingsViewController.m */; };
-		719BECEE1957419E005DE6E7 /* PWSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719BECED1957419E005DE6E7 /* PWSettingsTableViewController.m */; };
+		719BECEA19568EAE005DE6E7 /* PXSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719BECE919568EAE005DE6E7 /* PXSettingsViewController.m */; };
+		719BECEE1957419E005DE6E7 /* PXSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719BECED1957419E005DE6E7 /* PXSettingsTableViewController.m */; };
 		719CFE5119598B85008B4308 /* PWGoogleLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719CFE5019598B85008B4308 /* PWGoogleLoginViewController.m */; };
 		719CFE591959A55B008B4308 /* PLAccessPhotoLibraryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719CFE581959A55B008B4308 /* PLAccessPhotoLibraryViewController.m */; };
 		719CFE5D1959D339008B4308 /* PLAutoCreateAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 719CFE5C1959D339008B4308 /* PLAutoCreateAlbumViewController.m */; };
@@ -147,6 +147,7 @@
 		71A2546C19195EDB009914F7 /* PWNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546B19195EDB009914F7 /* PWNavigationController.m */; };
 		71A254701919CFF5009914F7 /* PWSearchNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546F1919CFF5009914F7 /* PWSearchNavigationController.m */; };
 		71A25478191B3247009914F7 /* PAIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A25477191B3247009914F7 /* PAIcons.m */; };
+		71B11D8719E8E7C000263124 /* PXEditItemsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71B11D8619E8E7C000263124 /* PXEditItemsViewController.m */; };
 		71BA33871978292600CD0011 /* PDTaskObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BA33861978292600CD0011 /* PDTaskObject.m */; };
 		71BD2340197683F40034CD3B /* PDLocalPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD233F197683F40034CD3B /* PDLocalPhotoObject+methods.m */; };
 		71BD234319768D0E0034CD3B /* PDWebPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD234219768D0E0034CD3B /* PDWebPhotoObject+methods.m */; };
@@ -264,8 +265,8 @@
 		711C19B019D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoDataSourceFactoryMethod.m; sourceTree = "<group>"; };
 		711C19B319D3E08E00FE3536 /* PEPhotoListDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoListDataSource.h; sourceTree = "<group>"; };
 		711C19B419D3E08E00FE3536 /* PEPhotoListDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoListDataSource.m; sourceTree = "<group>"; };
-		711FE8E3195E99F500AF296B /* PWSettingHTMLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSettingHTMLViewController.h; sourceTree = "<group>"; };
-		711FE8E4195E99F500AF296B /* PWSettingHTMLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSettingHTMLViewController.m; sourceTree = "<group>"; };
+		711FE8E3195E99F500AF296B /* PXSettingHTMLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PXSettingHTMLViewController.h; sourceTree = "<group>"; };
+		711FE8E4195E99F500AF296B /* PXSettingHTMLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PXSettingHTMLViewController.m; sourceTree = "<group>"; };
 		711FE8E7195EA48400AF296B /* thirdpartycopyright.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = thirdpartycopyright.html; sourceTree = "<group>"; };
 		711FE8F3195F2F6B00AF296B /* PABaseNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PABaseNavigationController.h; sourceTree = "<group>"; };
 		711FE8F4195F2F6B00AF296B /* PABaseNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PABaseNavigationController.m; sourceTree = "<group>"; };
@@ -305,8 +306,8 @@
 		7133202A1921D29000A27B3C /* PWNewAlbumEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWNewAlbumEditViewController.m; sourceTree = "<group>"; };
 		713320311921E4AF00A27B3C /* PWDatePickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWDatePickerView.h; sourceTree = "<group>"; };
 		713320321921E4AF00A27B3C /* PWDatePickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWDatePickerView.m; sourceTree = "<group>"; };
-		713320381921F98900A27B3C /* PWSelectItemFromArrayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSelectItemFromArrayViewController.h; sourceTree = "<group>"; };
-		713320391921F98900A27B3C /* PWSelectItemFromArrayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSelectItemFromArrayViewController.m; sourceTree = "<group>"; };
+		713320381921F98900A27B3C /* PXSelectItemFromArrayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PXSelectItemFromArrayViewController.h; sourceTree = "<group>"; };
+		713320391921F98900A27B3C /* PXSelectItemFromArrayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PXSelectItemFromArrayViewController.m; sourceTree = "<group>"; };
 		7133203C19225E9F00A27B3C /* PWAlbumEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumEditViewController.h; sourceTree = "<group>"; };
 		7133203D19225E9F00A27B3C /* PWAlbumEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlbumEditViewController.m; sourceTree = "<group>"; };
 		71342FDF1941F76C002331F6 /* PWAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumPickerController.h; sourceTree = "<group>"; };
@@ -435,10 +436,10 @@
 		71958C56191B8D4400CFC15F /* PWPhotoPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPhotoPageViewController.m; sourceTree = "<group>"; };
 		71958C5A191B933500CFC15F /* PWPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPhotoViewController.h; sourceTree = "<group>"; };
 		71958C5B191B933500CFC15F /* PWPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPhotoViewController.m; sourceTree = "<group>"; };
-		719BECE819568EAE005DE6E7 /* PWSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSettingsViewController.h; sourceTree = "<group>"; };
-		719BECE919568EAE005DE6E7 /* PWSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSettingsViewController.m; sourceTree = "<group>"; };
-		719BECEC1957419E005DE6E7 /* PWSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSettingsTableViewController.h; sourceTree = "<group>"; };
-		719BECED1957419E005DE6E7 /* PWSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSettingsTableViewController.m; sourceTree = "<group>"; };
+		719BECE819568EAE005DE6E7 /* PXSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PXSettingsViewController.h; sourceTree = "<group>"; };
+		719BECE919568EAE005DE6E7 /* PXSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PXSettingsViewController.m; sourceTree = "<group>"; };
+		719BECEC1957419E005DE6E7 /* PXSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PXSettingsTableViewController.h; sourceTree = "<group>"; };
+		719BECED1957419E005DE6E7 /* PXSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PXSettingsTableViewController.m; sourceTree = "<group>"; };
 		719CFE4F19598B85008B4308 /* PWGoogleLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWGoogleLoginViewController.h; sourceTree = "<group>"; };
 		719CFE5019598B85008B4308 /* PWGoogleLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWGoogleLoginViewController.m; sourceTree = "<group>"; };
 		719CFE571959A55B008B4308 /* PLAccessPhotoLibraryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLAccessPhotoLibraryViewController.h; sourceTree = "<group>"; };
@@ -478,6 +479,8 @@
 		71A2546F1919CFF5009914F7 /* PWSearchNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSearchNavigationController.m; sourceTree = "<group>"; };
 		71A25476191B3247009914F7 /* PAIcons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAIcons.h; sourceTree = "<group>"; };
 		71A25477191B3247009914F7 /* PAIcons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAIcons.m; sourceTree = "<group>"; };
+		71B11D8519E8E7C000263124 /* PXEditItemsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PXEditItemsViewController.h; sourceTree = "<group>"; };
+		71B11D8619E8E7C000263124 /* PXEditItemsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PXEditItemsViewController.m; sourceTree = "<group>"; };
 		71BA33851978292600CD0011 /* PDTaskObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskObject.h; sourceTree = "<group>"; };
 		71BA33861978292600CD0011 /* PDTaskObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskObject.m; sourceTree = "<group>"; };
 		71BD233E197683F40034CD3B /* PDLocalPhotoObject+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PDLocalPhotoObject+methods.h"; sourceTree = "<group>"; };
@@ -876,13 +879,13 @@
 			name = PEPhotoListDataSource;
 			sourceTree = "<group>";
 		};
-		711FE8E6195E99FA00AF296B /* PWSettingHTMLViewController */ = {
+		711FE8E6195E99FA00AF296B /* PXSettingHTMLViewController */ = {
 			isa = PBXGroup;
 			children = (
-				711FE8E3195E99F500AF296B /* PWSettingHTMLViewController.h */,
-				711FE8E4195E99F500AF296B /* PWSettingHTMLViewController.m */,
+				711FE8E3195E99F500AF296B /* PXSettingHTMLViewController.h */,
+				711FE8E4195E99F500AF296B /* PXSettingHTMLViewController.m */,
 			);
-			name = PWSettingHTMLViewController;
+			name = PXSettingHTMLViewController;
 			sourceTree = "<group>";
 		};
 		711FE8ED195EF5A900AF296B /* PWPicasaAPI */ = {
@@ -1072,13 +1075,13 @@
 			name = PWDatePickerView;
 			sourceTree = "<group>";
 		};
-		713320371921F95C00A27B3C /* PWSelectItemFromArrayViewController */ = {
+		713320371921F95C00A27B3C /* PXSelectItemFromArrayViewController */ = {
 			isa = PBXGroup;
 			children = (
-				713320381921F98900A27B3C /* PWSelectItemFromArrayViewController.h */,
-				713320391921F98900A27B3C /* PWSelectItemFromArrayViewController.m */,
+				713320381921F98900A27B3C /* PXSelectItemFromArrayViewController.h */,
+				713320391921F98900A27B3C /* PXSelectItemFromArrayViewController.m */,
 			);
-			name = PWSelectItemFromArrayViewController;
+			name = PXSelectItemFromArrayViewController;
 			sourceTree = "<group>";
 		};
 		7133203B19225E8100A27B3C /* PWAlbumEditViewController */ = {
@@ -1540,33 +1543,22 @@
 			name = PWPhotoViewController;
 			sourceTree = "<group>";
 		};
-		719BECE619568D93005DE6E7 /* PWSettingsViewController */ = {
+		719BECE719568E9D005DE6E7 /* PXSettingsViewController */ = {
 			isa = PBXGroup;
 			children = (
-				719BECE719568E9D005DE6E7 /* PWSettingsViewController */,
-				719BECEB195740EC005DE6E7 /* PWSettingsTableViewController */,
-				711FE8E6195E99FA00AF296B /* PWSettingHTMLViewController */,
-				713320371921F95C00A27B3C /* PWSelectItemFromArrayViewController */,
+				719BECE819568EAE005DE6E7 /* PXSettingsViewController.h */,
+				719BECE919568EAE005DE6E7 /* PXSettingsViewController.m */,
 			);
-			name = PWSettingsViewController;
+			name = PXSettingsViewController;
 			sourceTree = "<group>";
 		};
-		719BECE719568E9D005DE6E7 /* PWSettingsViewController */ = {
+		719BECEB195740EC005DE6E7 /* PXSettingsTableViewController */ = {
 			isa = PBXGroup;
 			children = (
-				719BECE819568EAE005DE6E7 /* PWSettingsViewController.h */,
-				719BECE919568EAE005DE6E7 /* PWSettingsViewController.m */,
+				719BECEC1957419E005DE6E7 /* PXSettingsTableViewController.h */,
+				719BECED1957419E005DE6E7 /* PXSettingsTableViewController.m */,
 			);
-			name = PWSettingsViewController;
-			sourceTree = "<group>";
-		};
-		719BECEB195740EC005DE6E7 /* PWSettingsTableViewController */ = {
-			isa = PBXGroup;
-			children = (
-				719BECEC1957419E005DE6E7 /* PWSettingsTableViewController.h */,
-				719BECED1957419E005DE6E7 /* PWSettingsTableViewController.m */,
-			);
-			name = PWSettingsTableViewController;
+			name = PXSettingsTableViewController;
 			sourceTree = "<group>";
 		};
 		719CFE4E19598B64008B4308 /* PWGoogleLoginViewController */ = {
@@ -1686,6 +1678,27 @@
 			name = PAIcons;
 			sourceTree = "<group>";
 		};
+		71B11D8219E8E50000263124 /* X */ = {
+			isa = PBXGroup;
+			children = (
+				71B11D8319E8E68000263124 /* PXEditItemsViewController */,
+				713320371921F95C00A27B3C /* PXSelectItemFromArrayViewController */,
+				711FE8E6195E99FA00AF296B /* PXSettingHTMLViewController */,
+				719BECEB195740EC005DE6E7 /* PXSettingsTableViewController */,
+				719BECE719568E9D005DE6E7 /* PXSettingsViewController */,
+			);
+			name = X;
+			sourceTree = "<group>";
+		};
+		71B11D8319E8E68000263124 /* PXEditItemsViewController */ = {
+			isa = PBXGroup;
+			children = (
+				71B11D8519E8E7C000263124 /* PXEditItemsViewController.h */,
+				71B11D8619E8E7C000263124 /* PXEditItemsViewController.m */,
+			);
+			name = PXEditItemsViewController;
+			sourceTree = "<group>";
+		};
 		71B72FEC19DD704C00D105EA /* A */ = {
 			isa = PBXGroup;
 			children = (
@@ -1762,7 +1775,6 @@
 				71958C54191B8CD000CFC15F /* PWPhotoPageViewController */,
 				71958C59191B931F00CFC15F /* PWPhotoViewController */,
 				71A2546D1919CFD0009914F7 /* PWSearchNavigationController */,
-				719BECE619568D93005DE6E7 /* PWSettingsViewController */,
 			);
 			name = W;
 			sourceTree = "<group>";
@@ -2392,6 +2404,7 @@
 				71B72FEE19DD705F00D105EA /* E */,
 				71B72FEF19DD706700D105EA /* L */,
 				71B72FF019DD707100D105EA /* W */,
+				71B11D8219E8E50000263124 /* X */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -2624,7 +2637,7 @@
 				7133203E19225E9F00A27B3C /* PWAlbumEditViewController.m in Sources */,
 				71349CA9192CF338003CC2AA /* PLParallelNavigationTitleView.m in Sources */,
 				713EE07819E2F4F900983301 /* PWHorizontalScrollHeaderView.m in Sources */,
-				7133203A1921F98900A27B3C /* PWSelectItemFromArrayViewController.m in Sources */,
+				7133203A1921F98900A27B3C /* PXSelectItemFromArrayViewController.m in Sources */,
 				718F271519AACCB100156D88 /* PADateTimestamp.m in Sources */,
 				71C0784B194ABBD70071702D /* PDTaskTableViewCell.m in Sources */,
 				71D52EE2197F49F2005CFF30 /* PDBasePhotoObject+methods.m in Sources */,
@@ -2662,7 +2675,7 @@
 				7195523E1928FB3F003EA9AF /* PLModel.xcdatamodeld in Sources */,
 				7133202B1921D29000A27B3C /* PWNewAlbumEditViewController.m in Sources */,
 				71433D9319B6C4950046F37C /* PWModel.xcmappingmodel in Sources */,
-				719BECEA19568EAE005DE6E7 /* PWSettingsViewController.m in Sources */,
+				719BECEA19568EAE005DE6E7 /* PXSettingsViewController.m in Sources */,
 				712F39BC193AC2BB005CF60B /* PLPhotoViewController.m in Sources */,
 				715943C51957C231009315E5 /* PDNavigationController.m in Sources */,
 				7118F882193355600016697E /* PWImagePickerNavigationController.m in Sources */,
@@ -2702,7 +2715,7 @@
 				719D923F1917848A00B75D8B /* PWGPhotoObject.m in Sources */,
 				7137A84E19AD8F8400C715CB /* PABaseViewController.m in Sources */,
 				715A310219893754002A0A37 /* NSURLResponse+methods.m in Sources */,
-				711FE8E5195E99F500AF296B /* PWSettingHTMLViewController.m in Sources */,
+				711FE8E5195E99F500AF296B /* PXSettingHTMLViewController.m in Sources */,
 				7195527A192C27E6003EA9AF /* PADateFormatter.m in Sources */,
 				719CFE591959A55B008B4308 /* PLAccessPhotoLibraryViewController.m in Sources */,
 				716243331952090300168825 /* PLPhotoObject.m in Sources */,
@@ -2715,8 +2728,9 @@
 				71BD234619778C010034CD3B /* PDLocalPhotoObject.m in Sources */,
 				71E885A219120E7A005A78E0 /* PWOAuthManager.m in Sources */,
 				711C197019D3134B00FE3536 /* PEMomentListDataSource.m in Sources */,
-				719BECEE1957419E005DE6E7 /* PWSettingsTableViewController.m in Sources */,
+				719BECEE1957419E005DE6E7 /* PXSettingsTableViewController.m in Sources */,
 				71BDE3A61998FC2100853E85 /* NSMutableAttributedString+methods.m in Sources */,
+				71B11D8719E8E7C000263124 /* PXEditItemsViewController.m in Sources */,
 				71E8851219115C7E005A78E0 /* PWAppDelegate.m in Sources */,
 				711C199519D3C51A00FE3536 /* PETimelapseViewCell.m in Sources */,
 				71197E7119862EB3009DB4D3 /* PDLocalCopyPhotoObject.m in Sources */,

@@ -33,7 +33,7 @@
 #import "PWAlbumEditViewController.h"
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
-#import "PWSettingsViewController.h"
+#import "PXSettingsViewController.h"
 
 @interface PWAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, UIActionSheetDelegate>
 
@@ -545,14 +545,7 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     if (controller == _fetchedResultsController) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSMutableArray *indexPaths = @[].mutableCopy;
-            for (int i=0; i<controller.fetchedObjects.count; i++) {
-                NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
-                [indexPaths addObject:indexPath];
-            }
-            if (indexPaths.count > 0) {
-                [_collectionView reloadItemsAtIndexPaths:indexPaths];
-            }
+            [_collectionView reloadData];
             
             [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
         });

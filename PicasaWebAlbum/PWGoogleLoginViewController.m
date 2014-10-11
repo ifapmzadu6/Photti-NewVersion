@@ -15,7 +15,7 @@
 #import "PWPicasaAPI.h"
 #import "PLAssetsManager.h"
 
-#import "PWSettingsViewController.h"
+#import "PXSettingsViewController.h"
 #import "PATabBarAdsController.h"
 
 @interface PWGoogleLoginViewController ()
@@ -232,7 +232,7 @@
 
 #pragma mark UIBarButtonAction
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeWeb];
+    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeWeb];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 

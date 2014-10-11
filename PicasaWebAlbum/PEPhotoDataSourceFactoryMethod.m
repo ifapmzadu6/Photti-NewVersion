@@ -65,6 +65,28 @@
     return dataSource;
 }
 
++ (PEPhotoListDataSource *)makeBurstListDataSource {
+    PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumBursts options:0];
+    PHAssetCollection *collection = collectionResult.firstObject;
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
+    
+    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
+    return dataSource;
+}
+
++ (PEPhotoListDataSource *)makeSlomoVideoListDataSource {
+    PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumSlomoVideos options:0];
+    PHAssetCollection *collection = collectionResult.firstObject;
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
+    
+    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
+    return dataSource;
+}
+
 + (PEPhotoListDataSource *)makeAllPhotoListDataSource {
     PHFetchResult *fetchResult = [PHAsset fetchAssetsWithOptions:nil];
     

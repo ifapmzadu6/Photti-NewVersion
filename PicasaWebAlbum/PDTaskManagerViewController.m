@@ -21,7 +21,7 @@
 #import "PDTaskManagerViewControllerHeaderView.h"
 #import "PATabBarController.h"
 #import "PDTaskViewController.h"
-#import "PWSettingsViewController.h"
+#import "PXSettingsViewController.h"
 
 @interface PDTaskManagerViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
 
@@ -133,7 +133,7 @@
 }
 
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeTaskManager];
+    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeTaskManager];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 

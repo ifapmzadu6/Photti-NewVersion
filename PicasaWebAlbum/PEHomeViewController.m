@@ -15,7 +15,7 @@
 #import "PAString.h"
 #import "PADateFormatter.h"
 #import "PATabBarAdsController.h"
-#import "PWSettingsViewController.h"
+#import "PXSettingsViewController.h"
 #import "PWSearchNavigationController.h"
 #import "PECategoryViewCell.h"
 #import "PACenterTextTableViewCell.h"
@@ -33,18 +33,6 @@
 #import "PEPhotoPageViewController.h"
 
 
-typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
-    kPHHomeViewControllerCell_Album,
-    kPHHomeViewControllerCell_Moment,
-    kPHHomeViewControllerCell_Video,
-    kPHHomeViewControllerCell_Panorama,
-    kPHHomeViewControllerCell_Timelapse,
-    kPHHomeViewControllerCell_Favorite,
-    kPHHomeViewControllerCell_iCloud,
-    kPHHomeViewControllerCell_AllPhotos,
-    kPHHomeViewControllerCell_Count
-};
-
 @interface PEHomeViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
@@ -53,6 +41,8 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 @property (strong, nonatomic) UIImageView *thisWeekImageView;
 @property (strong, nonatomic) UIImageView *lastWeekImageView;
 
+@property (strong, nonatomic) NSArray *enabledItems;
+
 @property (strong, nonatomic) PEAlbumListDataSource *albumListDataSource;
 @property (strong, nonatomic) PEMomentListDataSource *momentListDataSource;
 @property (strong, nonatomic) PEPhotoListDataSource *panoramaListDataSource;
@@ -60,11 +50,67 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 @property (strong, nonatomic) PEPhotoListDataSource *favoriteListDataSource;
 @property (strong, nonatomic) PEPhotoListDataSource *timelapseListDataSource;
 @property (strong, nonatomic) PEPhotoListDataSource *cloudListDataSource;
+@property (strong, nonatomic) PEPhotoListDataSource *burstsListDataSource;
+@property (strong, nonatomic) PEPhotoListDataSource *slomoVideosListDataSource;
 @property (strong, nonatomic) PEPhotoListDataSource *allPhotoListDataSource;
 
 @end
 
 @implementation PEHomeViewController
+
++ (NSArray *)defaultEnabledItems {
+    return @[kPEHomeViewControllerRowType_Albums, kPEHomeViewControllerRowType_Moments, kPEHomeViewControllerRowType_Videos, kPEHomeViewControllerRowType_Panoramas, kPEHomeViewControllerRowType_Timelapse, kPEHomeViewControllerRowType_Favorites, kPEHomeViewControllerRowType_Cloud, kPEHomeViewControllerRowType_Bursts, kPEHomeViewControllerRowType_SlomoVideos, kPEHomeViewControllerRowType_AllPhotos];
+}
+
++ (NSString *)localizedStringFromRowType:(NSString *)rowType {
+    if ([rowType isEqualToString:kPEHomeViewControllerRowType_Albums])
+        return NSLocalizedString(@"Albums", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments])
+        return NSLocalizedString(@"Moments", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos])
+        return NSLocalizedString(@"Videos", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas])
+        return NSLocalizedString(@"Panoramas", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse])
+        return NSLocalizedString(@"Timelapse", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites])
+        return NSLocalizedString(@"Favorites", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud])
+        return NSLocalizedString(@"iCloud", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Bursts])
+        return NSLocalizedString(@"Bursts", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_SlomoVideos])
+        return NSLocalizedString(@"Slo-mo", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos])
+        return NSLocalizedString(@"All Photos and Videos", nil);
+    return nil;
+}
+
++ (NSString *)rowTypeFromLocalizedString:(NSString *)rowType {
+    if ([rowType isEqualToString:NSLocalizedString(@"Albums", nil)])
+        return kPEHomeViewControllerRowType_Albums;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Moments", nil)])
+        return kPEHomeViewControllerRowType_Moments;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Videos", nil)])
+        return kPEHomeViewControllerRowType_Videos;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Panoramas", nil)])
+        return kPEHomeViewControllerRowType_Panoramas;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Timelapse", nil)])
+        return kPEHomeViewControllerRowType_Timelapse;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Favorites", nil)])
+        return kPEHomeViewControllerRowType_Favorites;
+    else if ([rowType isEqualToString:NSLocalizedString(@"iCloud", nil)])
+        return kPEHomeViewControllerRowType_Cloud;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Bursts", nil)])
+        return kPEHomeViewControllerRowType_Bursts;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Slo-mo", nil)])
+        return kPEHomeViewControllerRowType_SlomoVideos;
+    else if ([rowType isEqualToString:NSLocalizedString(@"All Photos and Videos", nil)])
+        return kPEHomeViewControllerRowType_AllPhotos;
+    return nil;
+}
+
+
 
 - (instancetype)init {
     self = [super init];
@@ -78,93 +124,16 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
         
-        _albumListDataSource = [PEAlbumListDataSource new];
-        _albumListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
-        _albumListDataSource.minimumLineSpacing = 15.0f;
-        __weak typeof(self) wself = self;
-        _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
-            [sself.navigationController pushViewController:viewController animated:YES];
-        };
-        
-        _momentListDataSource = [PEMomentListDataSource new];
-        _momentListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
-        _momentListDataSource.minimumLineSpacing = 15.0f;
-        _momentListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            NSString *title = [PEMomentListDataSource titleForMoment:assetCollection];
-            PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album title:title];
-            [sself.navigationController pushViewController:viewController animated:YES];
-        };
-        
-        _panoramaListDataSource = [PEPhotoDataSourceFactoryMethod makePanoramaListDataSource];
-        _panoramaListDataSource.cellSize = CGSizeMake(270.0f, 100.0f);
-        _panoramaListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
-        _panoramaListDataSource.minimumLineSpacing = 15.0f;
-        _panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection index:index];
-            [sself.navigationController pushViewController:viewController animated:YES];
-        };
-        
-        _videoListDataSource = [PEPhotoDataSourceFactoryMethod makeVideoListDataSource];
-        _videoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-        _videoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-        _videoListDataSource.minimumLineSpacing = 15.0f;
-        _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection index:index];
-            [sself.navigationController pushViewController:viewController animated:YES];
-        };
-        
-        _favoriteListDataSource = [PEPhotoDataSourceFactoryMethod makeFavoriteListDataSource];
-        _favoriteListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-        _favoriteListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-        _favoriteListDataSource.minimumLineSpacing = 15.0f;
-        _favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection index:index];
-            [sself.navigationController pushViewController:viewController animated:YES];
-        };
-        
-        _timelapseListDataSource = [PEPhotoDataSourceFactoryMethod makeTimelapseListDataSource];
-        _timelapseListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-        _timelapseListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-        _timelapseListDataSource.minimumLineSpacing = 15.0f;
-        _timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection index:index];
-            [sself.navigationController pushViewController:viewController animated:YES];
-        };
-        
-        _cloudListDataSource = [PEPhotoDataSourceFactoryMethod makeCloudListDataSource];
-        _cloudListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-        _cloudListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-        _cloudListDataSource.minimumLineSpacing = 15.0f;
-        _cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection index:index];
-            [sself.navigationController pushViewController:viewController animated:YES];
-        };
-        
-        _allPhotoListDataSource = [PEPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
-        _allPhotoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-        _allPhotoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-        _allPhotoListDataSource.minimumLineSpacing = 15.0f;
-        _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.allPhotoListDataSource.fetchResult index:index ascending:NO];
-            [sself.navigationController pushViewController:viewController animated:YES];
-        };
+        [self setUpAlbumDataSource];
+        [self setUpMomentsDataSource];
+        [self setUpVideoDataSource];
+        [self setUpPanoramaDataSource];
+        [self setUpFavoriteDataSource];
+        [self setUpTimelapseDataSource];
+        [self setUpCloudDataSource];
+        [self setUpBurstsDataSource];
+        [self setUpSlomoVideosDataSource];
+        [self setUpAllPhotosDataSource];
     }
     return self;
 }
@@ -231,6 +200,13 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
     [tabBarController setToolbarHidden:YES animated:YES completion:nil];
     [tabBarController setAdsHidden:NO animated:NO];
+    
+    NSArray *enabledItems = [[NSUserDefaults standardUserDefaults] arrayForKey:kPEHomeViewControllerUserDefaultsEnabledItemKey];
+    if (![_enabledItems isEqualToArray:enabledItems]) {
+        _enabledItems = enabledItems;
+        
+        [_tableView reloadData];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -273,7 +249,6 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         [tabBarController setTabBarHidden:NO animated:NO completion:nil];
         [tabBarController setAdsHidden:NO animated:YES];
@@ -281,8 +256,148 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 }
 
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
+    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
+}
+
+#pragma mark SetUpDaraSource
+- (void)setUpAlbumDataSource {
+    _albumListDataSource = [PEAlbumListDataSource new];
+    _albumListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
+    _albumListDataSource.minimumLineSpacing = 15.0f;
+    __weak typeof(self) wself = self;
+    _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
+        [sself.navigationController pushViewController:viewController animated:YES];
+    };
+}
+
+- (void)setUpMomentsDataSource {
+    _momentListDataSource = [PEMomentListDataSource new];
+    _momentListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
+    _momentListDataSource.minimumLineSpacing = 15.0f;
+    __weak typeof(self) wself = self;
+    _momentListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        NSString *title = [PEMomentListDataSource titleForMoment:assetCollection];
+        PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album title:title];
+        [sself.navigationController pushViewController:viewController animated:YES];
+    };
+}
+
+- (void)setUpVideoDataSource {
+    _videoListDataSource = [PEPhotoDataSourceFactoryMethod makeVideoListDataSource];
+    _videoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _videoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _videoListDataSource.minimumLineSpacing = 15.0f;
+    __weak typeof(self) wself = self;
+    _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection index:index];
+        [sself.navigationController pushViewController:viewController animated:YES];
+    };
+}
+
+- (void)setUpPanoramaDataSource {
+    _panoramaListDataSource = [PEPhotoDataSourceFactoryMethod makePanoramaListDataSource];
+    _panoramaListDataSource.cellSize = CGSizeMake(270.0f, 100.0f);
+    _panoramaListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
+    _panoramaListDataSource.minimumLineSpacing = 15.0f;
+    __weak typeof(self) wself = self;
+    _panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection index:index];
+        [sself.navigationController pushViewController:viewController animated:YES];
+    };
+}
+
+- (void)setUpFavoriteDataSource {
+    _favoriteListDataSource = [PEPhotoDataSourceFactoryMethod makeFavoriteListDataSource];
+    _favoriteListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _favoriteListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _favoriteListDataSource.minimumLineSpacing = 15.0f;
+    __weak typeof(self) wself = self;
+    _favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection index:index];
+        [sself.navigationController pushViewController:viewController animated:YES];
+    };
+}
+
+- (void)setUpTimelapseDataSource {
+    _timelapseListDataSource = [PEPhotoDataSourceFactoryMethod makeTimelapseListDataSource];
+    _timelapseListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _timelapseListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _timelapseListDataSource.minimumLineSpacing = 15.0f;
+    __weak typeof(self) wself = self;
+    _timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection index:index];
+        [sself.navigationController pushViewController:viewController animated:YES];
+    };
+}
+
+- (void)setUpCloudDataSource {
+    _cloudListDataSource = [PEPhotoDataSourceFactoryMethod makeCloudListDataSource];
+    _cloudListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _cloudListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _cloudListDataSource.minimumLineSpacing = 15.0f;
+    __weak typeof(self) wself = self;
+    _cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection index:index];
+        [sself.navigationController pushViewController:viewController animated:YES];
+    };
+}
+
+- (void)setUpBurstsDataSource {
+    _burstsListDataSource = [PEPhotoDataSourceFactoryMethod makeBurstListDataSource];
+    _burstsListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _burstsListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _burstsListDataSource.minimumLineSpacing = 15.0f;
+    __weak typeof(self) wself = self;
+    _burstsListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection index:index];
+        [sself.navigationController pushViewController:viewController animated:YES];
+    };
+}
+
+- (void)setUpSlomoVideosDataSource {
+    _slomoVideosListDataSource = [PEPhotoDataSourceFactoryMethod makeSlomoVideoListDataSource];
+    _slomoVideosListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _slomoVideosListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _slomoVideosListDataSource.minimumLineSpacing = 15.0f;
+    __weak typeof(self) wself = self;
+    _slomoVideosListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection index:index];
+        [sself.navigationController pushViewController:viewController animated:YES];
+    };
+}
+
+- (void)setUpAllPhotosDataSource {
+    _allPhotoListDataSource = [PEPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
+    _allPhotoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _allPhotoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _allPhotoListDataSource.minimumLineSpacing = 15.0f;
+    __weak typeof(self) wself = self;
+    _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.allPhotoListDataSource.fetchResult index:index ascending:NO];
+        [sself.navigationController pushViewController:viewController animated:YES];
+    };
 }
 
 #pragma mark UITableViewDataSource
@@ -292,7 +407,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0) {
-        return kPHHomeViewControllerCell_Count;
+        return _enabledItems.count;
     }
     else {
         return 3;
@@ -303,12 +418,13 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
     if (indexPath.section == 0) {
         PECategoryViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([PECategoryViewCell class]) forIndexPath:indexPath];
         
+        NSString *rowType = _enabledItems[indexPath.row];
         __weak typeof(self) wself = self;
-        if (indexPath.row == kPHHomeViewControllerCell_Album) {
+        if ([rowType isEqualToString:kPEHomeViewControllerRowType_Albums]) {
             _albumListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _albumListDataSource;
             cell.horizontalScrollView.delegate = _albumListDataSource;
-            cell.titleLabel.text = NSLocalizedString(@"Albums", nil);
+            cell.titleLabel.text = [PEHomeViewController localizedStringFromRowType:rowType];
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -316,11 +432,11 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
-        else if (indexPath.row == kPHHomeViewControllerCell_Moment) {
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments]) {
             _momentListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _momentListDataSource;
             cell.horizontalScrollView.delegate = _momentListDataSource;
-            cell.titleLabel.text = NSLocalizedString(@"Moments", nil);
+            cell.titleLabel.text = [self.class localizedStringFromRowType:rowType];
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -328,7 +444,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
-        else if (indexPath.row == kPHHomeViewControllerCell_Panorama) {
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas]) {
             _panoramaListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _panoramaListDataSource;
             cell.horizontalScrollView.delegate = _panoramaListDataSource;
@@ -340,7 +456,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
-        else if (indexPath.row == kPHHomeViewControllerCell_Video) {
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos]) {
             _videoListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _videoListDataSource;
             cell.horizontalScrollView.delegate = _videoListDataSource;
@@ -352,7 +468,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
-        else if (indexPath.row == kPHHomeViewControllerCell_Favorite) {
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites]) {
             _favoriteListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _favoriteListDataSource;
             cell.horizontalScrollView.delegate = _favoriteListDataSource;
@@ -364,7 +480,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
-        else if (indexPath.row == kPHHomeViewControllerCell_Timelapse) {
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse]) {
             _timelapseListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _timelapseListDataSource;
             cell.horizontalScrollView.delegate = _timelapseListDataSource;
@@ -376,11 +492,11 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
-        else if (indexPath.row == kPHHomeViewControllerCell_iCloud) {
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud]) {
             _cloudListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _cloudListDataSource;
             cell.horizontalScrollView.delegate = _cloudListDataSource;
-            cell.titleLabel.text = _cloudListDataSource.assetCollection.localizedTitle;
+            cell.titleLabel.text = [self.class localizedStringFromRowType:kPEHomeViewControllerRowType_Cloud];
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -388,11 +504,35 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
-        else if (indexPath.row == kPHHomeViewControllerCell_AllPhotos) {
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Bursts]) {
+            _burstsListDataSource.collectionView = cell.horizontalScrollView.collectionView;
+            cell.horizontalScrollView.dataSource = _burstsListDataSource;
+            cell.horizontalScrollView.delegate = _burstsListDataSource;
+            cell.titleLabel.text = _burstsListDataSource.assetCollection.localizedTitle;
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection type:PHPhotoListViewControllerType_Bursts];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_SlomoVideos]) {
+            _slomoVideosListDataSource.collectionView = cell.horizontalScrollView.collectionView;
+            cell.horizontalScrollView.dataSource = _slomoVideosListDataSource;
+            cell.horizontalScrollView.delegate = _slomoVideosListDataSource;
+            cell.titleLabel.text = _slomoVideosListDataSource.assetCollection.localizedTitle;
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection type:PHPhotoListViewControllerType_SlomoVideo];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos]) {
             _allPhotoListDataSource.collectionView = cell.horizontalScrollView.collectionView;
             cell.horizontalScrollView.dataSource = _allPhotoListDataSource;
             cell.horizontalScrollView.delegate = _allPhotoListDataSource;
-            cell.titleLabel.text = @"All Photos And Videos";
+            cell.titleLabel.text = [self.class localizedStringFromRowType:rowType];
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -431,38 +571,39 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == kPHHomeViewControllerCell_Album) {
+    NSString *rowType = _enabledItems[indexPath.row];
+    if ([rowType isEqualToString:kPEHomeViewControllerRowType_Albums]) {
         _albumListDataSource.collectionView = nil;
     }
-    else if (indexPath.row == kPHHomeViewControllerCell_Moment) {
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments]) {
         _momentListDataSource.collectionView = nil;
     }
-    else if (indexPath.row == kPHHomeViewControllerCell_Panorama) {
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas]) {
         _panoramaListDataSource.collectionView = nil;
     }
-    else if (indexPath.row == kPHHomeViewControllerCell_Video) {
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos]) {
         _videoListDataSource.collectionView = nil;
     }
-    else if (indexPath.row == kPHHomeViewControllerCell_Favorite) {
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites]) {
         _favoriteListDataSource.collectionView = nil;
     }
-    else if (indexPath.row == kPHHomeViewControllerCell_Timelapse) {
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse]) {
         _timelapseListDataSource.collectionView = nil;
     }
-    else if (indexPath.row == kPHHomeViewControllerCell_iCloud) {
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud]) {
         _cloudListDataSource.collectionView = nil;
     }
-    else if (indexPath.row == kPHHomeViewControllerCell_AllPhotos) {
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos]) {
         _allPhotoListDataSource.collectionView = nil;
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
-        if (indexPath.row == kPHHomeViewControllerCell_Album) {
+        if ([_enabledItems[indexPath.row] isEqualToString:kPEHomeViewControllerRowType_Albums]) {
             return 200.0f;
         }
-        else if (indexPath.row == kPHHomeViewControllerCell_Moment) {
+        else if ([_enabledItems[indexPath.row] isEqualToString:kPEHomeViewControllerRowType_Moments]) {
             return 200.0f;
         }
         return 170.0f;

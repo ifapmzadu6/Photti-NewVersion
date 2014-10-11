@@ -8,7 +8,7 @@
 
 #import "PABaseViewController.h"
 
-@interface PWSettingHTMLViewController : PABaseViewController
+@interface PXSettingHTMLViewController : PABaseViewController
 
 @property (strong, nonatomic) NSString *fileName;
 

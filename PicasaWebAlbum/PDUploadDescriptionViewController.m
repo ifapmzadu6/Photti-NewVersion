@@ -13,7 +13,7 @@
 #import "PDTaskManager.h"
 #import "PATabBarAdsController.h"
 
-#import "PWSettingsViewController.h"
+#import "PXSettingsViewController.h"
 
 @interface PDUploadDescriptionViewController ()
 
@@ -299,7 +299,7 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
 
 #pragma mark UIBarButtonAction
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeTaskManager];
+    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeTaskManager];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 

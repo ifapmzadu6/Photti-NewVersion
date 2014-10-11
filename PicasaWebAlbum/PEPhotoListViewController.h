@@ -20,6 +20,8 @@ typedef NS_ENUM(NSUInteger, PHPhotoListViewControllerType){
     PHPhotoListViewControllerType_Favorite,
     PHPhotoListViewControllerType_iCloud,
     PHPhotoListViewControllerType_AllPhotos,
+    PHPhotoListViewControllerType_Bursts,
+    PHPhotoListViewControllerType_SlomoVideo,
     PHPhotoListViewControllerType_Dates
 };
 

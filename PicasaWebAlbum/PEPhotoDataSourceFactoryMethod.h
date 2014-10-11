@@ -19,6 +19,8 @@
 + (PEPhotoListDataSource *)makeVideoListDataSource;
 + (PEPhotoListDataSource *)makeCloudListDataSource;
 + (PEPhotoListDataSource *)makeFavoriteListDataSource;
++ (PEPhotoListDataSource *)makeBurstListDataSource;
++ (PEPhotoListDataSource *)makeSlomoVideoListDataSource;
 + (PEPhotoListDataSource *)makePhotoListDataSourceWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate;
 
 //+ (PHPhotoListDataSource *)makeMomentListDataSource;

@@ -12,7 +12,7 @@
 #import "PAIcons.h"
 #import "PLAssetsManager.h"
 
-#import "PWSettingsViewController.h"
+#import "PXSettingsViewController.h"
 #import "PATabBarAdsController.h"
 
 @interface PLAutoCreateAlbumViewController ()
@@ -187,7 +187,7 @@
 
 #pragma mark UIBarButtonAction
 - (void)settingsBarButtonAction {
-    PWSettingsViewController *viewController = [[PWSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
+    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
