@@ -37,20 +37,16 @@
 static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
     // NSLocalNotification
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
-    
     // User Defaults
     NSDictionary *userDefaults = @{kPDTaskManagerIsResizePhotosKey: @(YES),
                                    kPWAppDelegateBackgroundFetchDateKey: [NSDate date],
-                                   kPEHomeViewControllerUserDefaultsEnabledItemKey: [PEHomeViewController defaultEnabledItems]
-                                   };
+                                   kPEHomeViewControllerUserDefaultsEnabledItemKey: [PEHomeViewController defaultEnabledItems]};
     [[NSUserDefaults standardUserDefaults] registerDefaults:userDefaults];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
@@ -89,25 +85,18 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 }
 
 - (UIViewController *)tabBarController {
-    // Renewal
-    PENavigationController *phNavigationController = [PENavigationController new];
-    
-//    PLNavigationController *localNavigationController = [PLNavigationController new];
+    UIViewController *localNavigationController = nil;
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        localNavigationController = [PENavigationController new];;
+    }
+    else {
+        localNavigationController = [PLNavigationController new];
+    }
     PWNavigationController *webNavigationViewController = [PWNavigationController new];
     PDNavigationController *taskNavigationController = [PDNavigationController new];
     
-//    NSUInteger initialTabPageIndex = 1;
-    // Renewal
     NSUInteger initialTabPageIndex = 0;
-    
-    if ([ALAssetsLibrary authorizationStatus] == kCLAuthorizationStatusAuthorized && ![PWOAuthManager isLogined]) {
-        initialTabPageIndex = 0;
-    }
-//    NSArray *viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
-//    NSArray *colors = @[[PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor], [PAColors getColor:PAColorsTypeTintUploadColor]];
-    
-    // Renewal
-    NSArray *viewControllers = @[phNavigationController, webNavigationViewController, taskNavigationController];
+    NSArray *viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
     NSArray *colors = @[[PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor], [PAColors getColor:PAColorsTypeTintUploadColor]];
     
     PATabBarAdsController *tabBarController = [[PATabBarAdsController alloc] initWithIndex:initialTabPageIndex viewControllers:viewControllers colors:colors];
@@ -124,31 +113,24 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-    //    NSLog(@"%s", __func__);
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    //    NSLog(@"%s", __func__);
-    
     [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:kPWAppDelegateBackgroundFetchDateKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    //    NSLog(@"%s", __func__);
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    //    NSLog(@"%s", __func__);
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-    //    NSLog(@"%s", __func__);
 }
 
 #pragma mark Local Notification
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    
 }
 
 #pragma mark Background Fetch
