@@ -18,7 +18,7 @@
 
 @interface PLAlbumViewCell ()
 
-@property (strong, nonatomic) UIImageView *imageView;
+@property (strong, nonatomic) NSArray *imageViews;
 @property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UILabel *numPhotosLabel;
@@ -30,6 +30,8 @@
 @end
 
 @implementation PLAlbumViewCell
+
+static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
 
 - (id)init {
     self = [super init];
@@ -54,23 +56,28 @@
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [self.contentView addSubview:_activityIndicatorView];
     
-    _imageView = [UIImageView new];
-    _imageView.clipsToBounds = YES;
-    _imageView.contentMode = UIViewContentModeScaleAspectFill;
-    _imageView.tintColor = [[PAColors getColor:PAColorsTypeTintLocalColor] colorWithAlphaComponent:0.4f];
-    [self.contentView addSubview:_imageView];
+    NSMutableArray *imageViews = @[].mutableCopy;
+    for (int i=0; i<kPLAlbumViewCellNumberOfImageView; i++) {
+        UIImageView *imageView = [UIImageView new];
+        imageView.clipsToBounds = YES;
+        imageView.contentMode = UIViewContentModeScaleAspectFill;
+        imageView.tintColor = [[PAColors getColor:PAColorsTypeTintWebColor] colorWithAlphaComponent:0.4f];
+        imageView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+        imageView.layer.borderWidth = 1.0f;
+        imageView.layer.borderColor = [UIColor whiteColor].CGColor;
+        [self.contentView insertSubview:imageView atIndex:0];
+        [imageViews addObject:imageView];
+    }
+    _imageViews = imageViews;
     
     _titleLabel = [UILabel new];
-    _titleLabel.font = [UIFont systemFontOfSize:14.0f];
+    _titleLabel.font = [UIFont systemFontOfSize:12.0f];
     _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
-    _titleLabel.numberOfLines = 2;
     [self.contentView addSubview:_titleLabel];
     
     _numPhotosLabel = [UILabel new];
-    _numPhotosLabel.font = [UIFont systemFontOfSize:12.0f];
-    _numPhotosLabel.textAlignment = NSTextAlignmentCenter;
-    _numPhotosLabel.textColor = [UIColor whiteColor];
-    _numPhotosLabel.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.667f];
+    _numPhotosLabel.font = [UIFont systemFontOfSize:10.0f];
+    _numPhotosLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
     [self.contentView addSubview:_numPhotosLabel];
     
     _actionButton = [UIButton new];
@@ -92,47 +99,44 @@
 - (void)setSelected:(BOOL)selected {
     [super setSelected:selected];
     
-    if (selected) {
-        _overrayView.alpha = 1.0f;
-    }
-    else {
-        _overrayView.alpha = 0.0f;
-    }
+    _overrayView.alpha = (selected && _isSelectWithCheckmark) ? 0.5f : 0.0f;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
     [super setHighlighted:highlighted];
     
-    if (highlighted) {
-        _overrayView.alpha = 1.0f;
-    }
-    else {
-        _overrayView.alpha = 0.0f;
-    }
+    _overrayView.alpha = (highlighted) ? 0.5f : 0.0f;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
     CGRect rect = self.contentView.bounds;
     
-    _imageView.frame = CGRectMake(0.0f, 0.0f, rect.size.width, ceilf(rect.size.width * 3.0f / 4.0f));
+    CGFloat delta = 4.0f;
+    CGFloat imageSize = CGRectGetWidth(rect)-delta*2.0f;
     
-    _activityIndicatorView.center = _imageView.center;
+    for (int i=0; i<kPLAlbumViewCellNumberOfImageView; i++) {
+        UIImageView *imageView = _imageViews[i];
+        imageView.frame = CGRectMake(delta*i, delta*(kPLAlbumViewCellNumberOfImageView-i), imageSize, imageSize);
+    }
     
-    _numPhotosLabel.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 40.0f, CGRectGetMaxY(_imageView.frame) - 20.0f, 36.0f, 16.0f);
+    UIImageView *imageView = _imageViews.firstObject;
+    _activityIndicatorView.center = imageView.center;
     
-    _actionButton.frame = CGRectMake(CGRectGetMaxX(rect) - 20.0f, CGRectGetMaxY(_imageView.frame) + 5.0f, 20.0f, 30.0f);
+    _titleLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 26.0f, CGRectGetWidth(rect), 14.0f);
+    _numPhotosLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 12.0f, CGRectGetWidth(rect), 12.0f);
     
-    CGSize titleLabelSize = [_titleLabel sizeThatFits:CGSizeMake(rect.size.width - 20.0f - 8.0f, CGFLOAT_MAX)];
-    _titleLabel.frame = CGRectMake(8.0f, CGRectGetMaxY(_imageView.frame) + 3.0f, rect.size.width - 20.0f - 8.0f, titleLabelSize.height);
-    
-    _overrayView.frame = rect;
+    _overrayView.frame = CGRectMake(0.0f, 0.0f, CGRectGetWidth(rect), CGRectGetWidth(rect));
+//    _checkMarkImageView.frame = CGRectMake(CGRectGetWidth(rect) - 32.0f, CGRectGetWidth(rect) - 32.0f, 28.0f, 28.0f);
 }
 
 - (void)setAlbum:(PLAlbumObject *)album {
     _album = album;
     
-    _imageView.image = nil;
+    for (int i=0; i<kPLAlbumViewCellNumberOfImageView; i++) {
+        UIImageView *imageView = _imageViews[i];
+        imageView.image = nil;
+    }
     
     if (!album) {
         _albumHash = 0;
@@ -149,48 +153,46 @@
     [_activityIndicatorView startAnimating];
     
     _titleLabel.text = album.name;
-    _numPhotosLabel.text = [NSString stringWithFormat:@"%ld", (long)album.photos.count];
+    _numPhotosLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ Items", nil), @(album.photos.count).stringValue];
     _titleLabel.numberOfLines = 2;
     
     [self setNeedsLayout];
     
     __weak typeof(self) wself = self;
     if (album.photos.count > 0) {
-        PLPhotoObject *thumbnail = album.thumbnail;
-        if (!thumbnail) {
-            thumbnail = album.photos.firstObject;
-        }
-        NSURL *url = [NSURL URLWithString:thumbnail.url];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                if (sself.albumHash != hash) return;
-                
-                UIImage *image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
-                dispatch_async(dispatch_get_main_queue(), ^{
+        for (int i=0; i<MIN(kPLAlbumViewCellNumberOfImageView, album.photos.count); i++) {
+            PLPhotoObject *thumbnail = album.photos[i];
+            UIImageView *imageView = _imageViews[i];
+            NSURL *url = [NSURL URLWithString:thumbnail.url];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [[PLAssetsManager sharedLibrary] assetForURL:url resultBlock:^(ALAsset *asset) {
                     typeof(wself) sself = wself;
                     if (!sself) return;
                     if (sself.albumHash != hash) return;
-                    
-                    [sself.activityIndicatorView stopAnimating];
-                    sself.imageView.image = image;
-                });
-            } failureBlock:^(NSError *error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    typeof(wself) sself = wself;
-                    if (!sself) return;
-                    [sself.activityIndicatorView stopAnimating];
-                });
-            }];
-        });
+                    UIImage *image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        typeof(wself) sself = wself;
+                        if (!sself) return;
+                        if (sself.albumHash != hash) return;
+                        [sself.activityIndicatorView stopAnimating];
+                        imageView.image = image;
+                    });
+                } failureBlock:^(NSError *error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        typeof(wself) sself = wself;
+                        if (!sself) return;
+                        [sself.activityIndicatorView stopAnimating];
+                    });
+                }];
+            });
+        }
     }
     else {
         [_activityIndicatorView stopAnimating];
         
         UIImage *noPhotoImage = [[UIImage imageNamed:@"NoPhoto"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        _imageView.image = noPhotoImage;
-        _imageView.alpha = 1.0f;
+        UIImageView *imageView = self.imageViews.firstObject;
+        imageView.image = noPhotoImage;
     }
 }
 

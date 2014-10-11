@@ -10,4 +10,6 @@
 
 @interface PAAlbumCollectionViewFlowLayout : UICollectionViewFlowLayout
 
++ (CGSize)itemSize;
+
 @end

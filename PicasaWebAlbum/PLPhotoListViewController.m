@@ -716,7 +716,7 @@
     _actionSheetItem = album;
     
     NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.name];
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:sender cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:nil];
     actionSheet.tag = 1004;
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }

@@ -308,20 +308,9 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 #pragma mark UICollectionViewFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     if (collectionView == _collectionView) {
-        return CGSizeMake(90.0f, 124.0f);
+        return [PAAlbumCollectionViewFlowLayout itemSize];
     }
-    else if (collectionView == _recentlyUploadedCollectionView) {
-        return CGSizeMake(100.0f, 100.0f);
-    }
-    return CGSizeMake(1.0f, 1.0f);
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 0.0f;
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 15.0f;
+    return CGSizeMake(100.0f, 100.0f);
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
@@ -353,13 +342,6 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     }
     else if (collectionView == _recentlyUploadedCollectionView) {
         PWPhotoViewCell *cell = (PWPhotoViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
-        id placeholder = nil;
-        if (cell.animatedImage) {
-            placeholder = cell.animatedImage;
-        }
-        else {
-            placeholder = cell.image;
-        }
         NSArray *photos = _recentlyUploadedFetchedResultsController.fetchedObjects;
         if (photos.count > kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded) {
             NSMutableArray *tmpPhotos = @[].mutableCopy;

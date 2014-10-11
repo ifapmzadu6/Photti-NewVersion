@@ -162,7 +162,7 @@ typedef NS_ENUM(NSUInteger, kPHHomeViewControllerCell) {
         _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
             typeof(wself) sself = wself;
             if (!sself) return;
-            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.allPhotoListDataSource.fetchResult index:index ascending:sself.allPhotoListDataSource.ascending];
+            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.allPhotoListDataSource.fetchResult index:index ascending:NO];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
     }

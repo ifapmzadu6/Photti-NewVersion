@@ -333,7 +333,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 }
 
 - (void)loadAndSavePhotos {
-    BOOL isContainVideo = NO;
     NSArray *photos = _fetchedResultsController.fetchedObjects;
     NSMutableArray *selectedPhotos = @[].mutableCopy;
     for (NSString *id_str in _selectedPhotoIDs) {
@@ -341,9 +340,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         if (results.count > 0) {
             PWPhotoObject *photo = results.firstObject;
             [selectedPhotos addObject:photo];
-            if (photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-                isContainVideo = YES;
-            }
         }
     }
     if (selectedPhotos.count == 0) return;

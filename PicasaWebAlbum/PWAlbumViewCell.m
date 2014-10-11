@@ -97,7 +97,7 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
     
     _overrayView = [UIView new];
     _overrayView.alpha = 0.0f;
-    _overrayView.backgroundColor = [UIColor whiteColor];
+    _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.1f];
     [self.contentView addSubview:_overrayView];
     
     UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressGestureRecognizerAction:)];
@@ -129,7 +129,8 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
         imageView.frame = CGRectMake(delta*i, delta*(kPWAlbumViewCellNumberOfImageView-i), imageSize, imageSize);
     }
     
-    _activityIndicatorView.frame = CGRectMake(0.0f, 0.0f, CGRectGetWidth(rect), CGRectGetWidth(rect));
+    UIImageView *imageView = _imageViews.firstObject;
+    _activityIndicatorView.center = imageView.center;
     
     _titleLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 26.0f, CGRectGetWidth(rect), 14.0f);
     _numPhotosLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 12.0f, CGRectGetWidth(rect), 12.0f);
