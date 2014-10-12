@@ -17,7 +17,6 @@
 
 @interface PEMomentListDataSource () <PHPhotoLibraryChangeObserver>
 
-@property (strong, nonatomic) PHFetchResult *fetchResult;
 @property (strong, nonatomic) NSMutableArray *assetCollectionFetchResults;
 
 @end

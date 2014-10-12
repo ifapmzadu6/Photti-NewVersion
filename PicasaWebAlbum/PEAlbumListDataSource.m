@@ -16,7 +16,6 @@
 
 @interface PEAlbumListDataSource () <PHPhotoLibraryChangeObserver>
 
-@property (strong, nonatomic) PHFetchResult *fetchResult;
 @property (strong, nonatomic) NSArray *assetCollectionFetchResults;
 
 @end

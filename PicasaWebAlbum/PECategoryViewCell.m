@@ -13,13 +13,15 @@
 #import "PEAlbumViewCell.h"
 #import "PEMomentViewCell.h"
 
-@interface PECategoryViewCell ()
+@interface PECategoryViewCell () <UITextViewDelegate>
 
 @property (strong, nonatomic) UIImageView *greaterThanImageView;
 
 @end
 
 @implementation PECategoryViewCell
+
+static NSString * const kPECategoryViewCellSettingsKey = @"kPECategoryViewCellSettingsKey";
 
 - (instancetype)init {
     self = [super init];
@@ -81,6 +83,25 @@
     [_horizontalScrollView.collectionView registerClass:[PEMomentViewCell class] forCellWithReuseIdentifier:@"PHCollectionViewCell"];
     _horizontalScrollView.collectionView.contentInset = UIEdgeInsetsMake(0.0f, 15.0f, 0.0f, 15.0f);
     [self.contentView addSubview:_horizontalScrollView];
+    
+    _noItemLabel = [UITextView new];
+    NSString *hideOnSettingsString = NSLocalizedString(@"You can hide this category on Settings.", nil);
+    NSMutableAttributedString *hideOnSettingsAttributedString = [[NSMutableAttributedString alloc] initWithString:hideOnSettingsString];
+    NSRange settingsRange = [hideOnSettingsString rangeOfString:NSLocalizedString(@"Settings", nil)];
+    [hideOnSettingsAttributedString addAttribute:NSLinkAttributeName value:kPECategoryViewCellSettingsKey range:settingsRange];
+    NSMutableAttributedString *noItemAttributedString = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"No items", nil)];
+    NSAttributedString *enterCodeAttributedString = [[NSAttributedString alloc] initWithString:@"\n"];
+    [noItemAttributedString appendAttributedString:enterCodeAttributedString];
+    [noItemAttributedString appendAttributedString:hideOnSettingsAttributedString];
+    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    style.alignment = NSTextAlignmentCenter;
+    [noItemAttributedString addAttributes:@{NSParagraphStyleAttributeName: style, NSFontAttributeName: [UIFont systemFontOfSize:12.0f], NSForegroundColorAttributeName: [PAColors getColor:PAColorsTypeTextColor]} range:NSMakeRange(0, noItemAttributedString.length)];
+    _noItemLabel.attributedText = noItemAttributedString;
+    _noItemLabel.linkTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PAColorsTypeTintLocalColor]};
+    _noItemLabel.delegate = self;
+    _noItemLabel.editable = NO;
+    _noItemLabel.scrollEnabled = NO;
+    [self.contentView addSubview:_noItemLabel];
 }
 
 - (void)layoutSubviews {
@@ -94,6 +115,8 @@
     _moreButton.frame = CGRectMake(CGRectGetWidth(rect) - moreButtonWidth - 15.0f, 17.0f, moreButtonWidth, 26.0f);
     _greaterThanImageView.frame = CGRectMake(CGRectGetMaxX(_moreButton.frame)-CGRectGetWidth(_greaterThanImageView.frame), CGRectGetMinY(_moreButton.frame)+(CGRectGetHeight(_moreButton.frame)-CGRectGetHeight(_greaterThanImageView.frame))/2.0f, CGRectGetWidth(_greaterThanImageView.frame), CGRectGetHeight(_greaterThanImageView.frame));
     _horizontalScrollView.frame = CGRectMake(0.0f, 38.0f, CGRectGetWidth(rect), CGRectGetHeight(rect) - 38.0f);
+    [_noItemLabel sizeToFit];
+    _noItemLabel.center = _horizontalScrollView.center;
 }
 
 - (void)prepareForReuse {
@@ -108,5 +131,13 @@
         _moreButtonActionBlock();
     }
 }
+
+#pragma mark UITextViewDelegate
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange {
+    if (_didSelectSettingsBlock) {
+        _didSelectSettingsBlock();
+    }
+    return NO;
+};
 
 @end

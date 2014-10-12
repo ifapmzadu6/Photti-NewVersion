@@ -15,6 +15,8 @@
 @property (copy, nonatomic) void (^didChangeItemCountBlock)(NSUInteger count);
 @property (copy, nonatomic) void (^didChangeSelectedItemCountBlock)(NSUInteger count);
 
+@property (strong, nonatomic) PHFetchResult *fetchResult;
+
 @property (weak, nonatomic) UICollectionView *collectionView;
 @property (nonatomic) CGSize cellSize;
 @property (nonatomic) UIColor *cellBackgroundColor;

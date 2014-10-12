@@ -431,6 +431,13 @@
                 PEAlbumListViewController *viewController = [PEAlbumListViewController new];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
+            cell.noItemLabel.hidden = (_albumListDataSource.fetchResult.count==0) ? NO : YES;
+            __weak typeof(cell) wcell = cell;
+            _albumListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
+                typeof(wcell) scell = wcell;
+                if (!scell) return;
+                cell.noItemLabel.hidden = (count==0) ? NO : YES;
+            };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments]) {
             _momentListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -442,6 +449,13 @@
                 if (!sself) return;
                 PEMomentListViewController *viewController = [PEMomentListViewController new];
                 [sself.navigationController pushViewController:viewController animated:YES];
+            };
+            cell.noItemLabel.hidden = (_momentListDataSource.fetchResult.count==0) ? NO : YES;
+            __weak typeof(cell) wcell = cell;
+            _momentListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
+                typeof(wcell) scell = wcell;
+                if (!scell) return;
+                cell.noItemLabel.hidden = (count==0) ? NO : YES;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas]) {
@@ -455,6 +469,13 @@
                 PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection type:PHPhotoListViewControllerType_Panorama];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
+            cell.noItemLabel.hidden = (_panoramaListDataSource.fetchResult.count==0) ? NO : YES;
+            __weak typeof(cell) wcell = cell;
+            _panoramaListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
+                typeof(wcell) scell = wcell;
+                if (!scell) return;
+                cell.noItemLabel.hidden = (count==0) ? NO : YES;
+            };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos]) {
             _videoListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -466,6 +487,13 @@
                 if (!sself) return;
                 PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection type:PHPhotoListViewControllerType_Video];
                 [sself.navigationController pushViewController:viewController animated:YES];
+            };
+            cell.noItemLabel.hidden = (_videoListDataSource.fetchResult.count==0) ? NO : YES;
+            __weak typeof(cell) wcell = cell;
+            _videoListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
+                typeof(wcell) scell = wcell;
+                if (!scell) return;
+                cell.noItemLabel.hidden = (count==0) ? NO : YES;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites]) {
@@ -479,6 +507,13 @@
                 PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection type:PHPhotoListViewControllerType_Favorite];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
+            cell.noItemLabel.hidden = (_favoriteListDataSource.fetchResult.count==0) ? NO : YES;
+            __weak typeof(cell) wcell = cell;
+            _favoriteListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
+                typeof(wcell) scell = wcell;
+                if (!scell) return;
+                cell.noItemLabel.hidden = (count==0) ? NO : YES;
+            };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse]) {
             _timelapseListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -490,6 +525,13 @@
                 if (!sself) return;
                 PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection type:PHPhotoListViewControllerType_Timelapse];
                 [sself.navigationController pushViewController:viewController animated:YES];
+            };
+            cell.noItemLabel.hidden = (_timelapseListDataSource.fetchResult.count==0) ? NO : YES;
+            __weak typeof(cell) wcell = cell;
+            _timelapseListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
+                typeof(wcell) scell = wcell;
+                if (!scell) return;
+                cell.noItemLabel.hidden = (count==0) ? NO : YES;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud]) {
@@ -503,6 +545,13 @@
                 PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection type:PHPhotoListViewControllerType_iCloud];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
+            cell.noItemLabel.hidden = (_cloudListDataSource.fetchResult.count==0) ? NO : YES;
+            __weak typeof(cell) wcell = cell;
+            _cloudListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
+                typeof(wcell) scell = wcell;
+                if (!scell) return;
+                cell.noItemLabel.hidden = (count==0) ? NO : YES;
+            };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Bursts]) {
             _burstsListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -514,6 +563,13 @@
                 if (!sself) return;
                 PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection type:PHPhotoListViewControllerType_Bursts];
                 [sself.navigationController pushViewController:viewController animated:YES];
+            };
+            cell.noItemLabel.hidden = (_burstsListDataSource.fetchResult.count==0) ? NO : YES;
+            __weak typeof(cell) wcell = cell;
+            _burstsListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
+                typeof(wcell) scell = wcell;
+                if (!scell) return;
+                cell.noItemLabel.hidden = (count==0) ? NO : YES;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_SlomoVideos]) {
@@ -527,6 +583,13 @@
                 PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection type:PHPhotoListViewControllerType_SlomoVideo];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
+            cell.noItemLabel.hidden = (_slomoVideosListDataSource.fetchResult.count==0) ? NO : YES;
+            __weak typeof(cell) wcell = cell;
+            _slomoVideosListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
+                typeof(wcell) scell = wcell;
+                if (!scell) return;
+                cell.noItemLabel.hidden = (count==0) ? NO : YES;
+            };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos]) {
             _allPhotoListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -539,7 +602,20 @@
                 PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_AllPhotos];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
+            cell.noItemLabel.hidden = (_allPhotoListDataSource.fetchResult.count==0) ? NO : YES;
+            __weak typeof(cell) wcell = cell;
+            _allPhotoListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
+                typeof(wcell) scell = wcell;
+                if (!scell) return;
+                cell.noItemLabel.hidden = (count==0) ? NO : YES;
+            };
         }
+        cell.didSelectSettingsBlock = ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
+            [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
+        };
         
         return cell;
     }
@@ -574,27 +650,35 @@
     NSString *rowType = _enabledItems[indexPath.row];
     if ([rowType isEqualToString:kPEHomeViewControllerRowType_Albums]) {
         _albumListDataSource.collectionView = nil;
+        _albumListDataSource.didChangeItemCountBlock = nil;
     }
     else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments]) {
         _momentListDataSource.collectionView = nil;
+        _momentListDataSource.didChangeItemCountBlock = nil;
     }
     else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas]) {
         _panoramaListDataSource.collectionView = nil;
+        _panoramaListDataSource.didChangeItemCountBlock = nil;
     }
     else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos]) {
         _videoListDataSource.collectionView = nil;
+        _videoListDataSource.didChangeItemCountBlock = nil;
     }
     else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites]) {
         _favoriteListDataSource.collectionView = nil;
+        _favoriteListDataSource.didChangeItemCountBlock = nil;
     }
     else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse]) {
         _timelapseListDataSource.collectionView = nil;
+        _timelapseListDataSource.didChangeItemCountBlock = nil;
     }
     else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud]) {
         _cloudListDataSource.collectionView = nil;
+        _cloudListDataSource.didChangeItemCountBlock = nil;
     }
     else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos]) {
         _allPhotoListDataSource.collectionView = nil;
+        _allPhotoListDataSource.didChangeItemCountBlock = nil;
     }
 }
 
