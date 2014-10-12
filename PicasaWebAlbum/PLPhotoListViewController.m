@@ -407,9 +407,9 @@
     if (_album.photos.count > 0) {
         NSArray *photos = [_album.photos.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypePhoto]];
         NSArray *videos = [_album.photos.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", ALAssetTypeVideo]];
-        
         NSString *albumCountString = [PAString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
-        [footerView setText:albumCountString];
+        NSString *footerString =[NSString stringWithFormat:@"- %@ -", albumCountString];
+        [footerView setText:footerString];
     }
     else {
         [footerView setText:nil];

@@ -539,7 +539,8 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         NSArray *photos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypePhoto)]];
         NSArray *videos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypeVideo)]];
         NSString *albumCountString = [PAString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
-        [footerView setText:albumCountString];
+        NSString *footerString =[NSString stringWithFormat:@"- %@ -", albumCountString];
+        [footerView setText:footerString];
     }
     else {
         [footerView setText:nil];
