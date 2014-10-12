@@ -15,64 +15,72 @@
 + (PEPhotoListDataSource *)makeCloudListDataSource {
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumBursts options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+    BOOL isAscending = YES;
+    PHFetchOptions *options = [PHFetchOptions new];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:isAscending]];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
     
-    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
+    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection ascending:isAscending];
     return dataSource;
 }
 
 + (PEPhotoListDataSource *)makeVideoListDataSource {
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumVideos options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
+    BOOL isAscending = YES;
     PHFetchOptions *options = [PHFetchOptions new];
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:isAscending]];
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
     
-    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
+    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection ascending:isAscending];
     return dataSource;
 }
 
 + (PEPhotoListDataSource *)makeTimelapseListDataSource {
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumTimelapses options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
+    BOOL isAscending = YES;
     PHFetchOptions *options = [PHFetchOptions new];
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:isAscending]];
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
     
-    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
+    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection ascending:isAscending];
     return dataSource;
 }
 
 + (PEPhotoListDataSource *)makePanoramaListDataSource {
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumPanoramas options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
+    BOOL isAscending = YES;
     PHFetchOptions *options = [PHFetchOptions new];
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:isAscending]];
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
     
-    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
+    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection ascending:isAscending];
     return dataSource;
 }
 
 + (PEPhotoListDataSource *)makeFavoriteListDataSource {
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumFavorites options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
+    BOOL isAscending = YES;
     PHFetchOptions *options = [PHFetchOptions new];
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:isAscending]];
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
     
-    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
+    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection ascending:isAscending];
     return dataSource;
 }
 
 + (PEPhotoListDataSource *)makeBurstListDataSource {
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumBursts options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
+    BOOL isAscending = YES;
     PHFetchOptions *options = [PHFetchOptions new];
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:isAscending]];
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
     
-    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
+    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection ascending:isAscending];
     return dataSource;
 }
 
@@ -80,10 +88,11 @@
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumSlomoVideos options:0];
     PHAssetCollection *collection = collectionResult.firstObject;
     PHFetchOptions *options = [PHFetchOptions new];
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    BOOL isAscending = YES;
+    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:isAscending]];
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
     
-    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection];
+    PEPhotoListDataSource *dataSource = [[PEPhotoListDataSource alloc] initWithFetchResultOfPhoto:fetchResult assetCollection:collection ascending:isAscending];
     return dataSource;
 }
 

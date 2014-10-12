@@ -165,7 +165,7 @@
         PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
         
         if (_fetchedResultsController.fetchedObjects.count > 0) {
-            NSString *localizedString = NSLocalizedString(@"%lu Albums", nil);
+            NSString *localizedString = NSLocalizedString(@"- %lu Albums -", nil);
             NSString *albumCountString = [NSString stringWithFormat:localizedString, (unsigned long)_fetchedResultsController.fetchedObjects.count];
             [footerView setText:albumCountString];
         }

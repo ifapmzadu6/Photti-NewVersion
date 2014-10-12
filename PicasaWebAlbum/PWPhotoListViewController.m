@@ -112,7 +112,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
-    _refreshControl = [[PWRefreshControl alloc] init];
+    _refreshControl = [PWRefreshControl new];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
     _refreshControl.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
@@ -135,8 +135,13 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     NSString *cacheName = [kPWPhotoListViewControllerName stringByAppendingString:_album.id_str];
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:cacheName];
     _fetchedResultsController.delegate = self;
-    
-    [_fetchedResultsController performFetch:nil];
+    NSError *error = nil;
+    if (![_fetchedResultsController performFetch:&error]) {
+#ifdef DEBUG
+        NSLog(@"%@", error);
+#endif
+        abort();
+    }
     
     if (_fetchedResultsController.fetchedObjects.count == 0) {
         [_activityIndicatorView startAnimating];

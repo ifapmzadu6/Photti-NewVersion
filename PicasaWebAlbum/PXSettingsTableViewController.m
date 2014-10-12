@@ -130,7 +130,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        cell.textLabel.text = NSLocalizedString(@"Displayed Items", nil);
+        cell.textLabel.text = NSLocalizedString(@"Category", nil);
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
     } cellHeight:CGFLOAT_MIN didSelect:^(KKStaticTableView *tableView, NSIndexPath *indexPath) {
@@ -149,9 +149,9 @@
             [localizedStringOfDisabledItems addObject:localizedString];
         }
         PXEditItemsViewController *viewController = [[PXEditItemsViewController alloc] initWithEnabledItems:localizedStringOfEnabledItems disabledItems:localizedStringOfDisabledItems];
-        viewController.title = NSLocalizedString(@"Camera Roll", nil);
-        viewController.enabledItemsTitle = NSLocalizedString(@"Displayed", nil);
-        viewController.disabledItemsTitle = NSLocalizedString(@"Not Displayed", nil);
+        viewController.title = NSLocalizedString(@"Category", nil);
+        viewController.enabledItemsTitle = NSLocalizedString(@"Display", nil);
+        viewController.disabledItemsTitle = NSLocalizedString(@"Not Display", nil);
         viewController.completionBlock = ^(NSArray *enabledItems, NSArray *disabledItems){
             NSMutableArray *enabledRowTypes = @[].mutableCopy;
             for (NSString *localizedString in enabledItems) {

@@ -89,7 +89,7 @@ static NSString * const kPECategoryViewCellSettingsKey = @"kPECategoryViewCellSe
     NSMutableAttributedString *hideOnSettingsAttributedString = [[NSMutableAttributedString alloc] initWithString:hideOnSettingsString];
     NSRange settingsRange = [hideOnSettingsString rangeOfString:NSLocalizedString(@"Settings", nil)];
     [hideOnSettingsAttributedString addAttribute:NSLinkAttributeName value:kPECategoryViewCellSettingsKey range:settingsRange];
-    NSMutableAttributedString *noItemAttributedString = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"No items", nil)];
+    NSMutableAttributedString *noItemAttributedString = [[NSMutableAttributedString alloc] initWithString:NSLocalizedString(@"No Items", nil)];
     NSAttributedString *enterCodeAttributedString = [[NSAttributedString alloc] initWithString:@"\n"];
     [noItemAttributedString appendAttributedString:enterCodeAttributedString];
     [noItemAttributedString appendAttributedString:hideOnSettingsAttributedString];

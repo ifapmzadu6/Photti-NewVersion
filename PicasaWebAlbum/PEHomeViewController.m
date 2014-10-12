@@ -297,7 +297,7 @@
     _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection index:index];
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection index:index ascending:sself.videoListDataSource.ascending];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }
@@ -311,7 +311,7 @@
     _panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection index:index];
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection index:index ascending:sself.panoramaListDataSource.ascending];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }
@@ -325,7 +325,7 @@
     _favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection index:index];
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection index:index ascending:sself.favoriteListDataSource.ascending];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }
@@ -339,7 +339,7 @@
     _timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection index:index];
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection index:index ascending:sself.timelapseListDataSource.ascending];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }
@@ -353,7 +353,7 @@
     _cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection index:index];
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection index:index ascending:sself.cloudListDataSource.ascending];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }
@@ -367,7 +367,7 @@
     _burstsListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection index:index];
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection index:index ascending:sself.burstsListDataSource.ascending];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }
@@ -381,7 +381,7 @@
     _slomoVideosListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection index:index];
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection index:index ascending:sself.slomoVideosListDataSource.ascending];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }
@@ -395,7 +395,7 @@
     _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.allPhotoListDataSource.fetchResult index:index ascending:NO];
+        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.allPhotoListDataSource.fetchResult index:index ascending:sself.allPhotoListDataSource.ascending];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }

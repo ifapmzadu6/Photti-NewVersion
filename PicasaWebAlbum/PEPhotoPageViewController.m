@@ -30,11 +30,20 @@
 @implementation PEPhotoPageViewController
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection index:(NSUInteger)index {
+    self = [self initWithAssetCollection:assetCollection index:index ascending:NO];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection index:(NSUInteger)index ascending:(BOOL)ascending {
     NSDictionary *option = [NSDictionary dictionaryWithObjectsAndKeys:@(40.0f), UIPageViewControllerOptionInterPageSpacingKey, nil];
     self = [self initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:option];
     if (self) {
         _assetCollection = assetCollection;
         _fetchedResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+        _ascending = ascending;
         
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;

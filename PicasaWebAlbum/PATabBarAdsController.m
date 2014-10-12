@@ -50,7 +50,8 @@
     
     CGRect rect = self.view.bounds;
     CGFloat adViewHeight = self.adViewHeight;
-    _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - self.tabBarHeight - adViewHeight, CGRectGetWidth(rect), adViewHeight);
+    CGFloat tabBarHeight = self.tabBarHeight;
+    _bannerView.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - tabBarHeight - adViewHeight, CGRectGetWidth(rect), adViewHeight);
 }
 
 - (CGFloat)adViewHeight {
@@ -118,9 +119,12 @@
 }
 
 - (void)disableBannerBounce:(GADBannerView *)bannerView{
-    for (UIWebView *webView in bannerView.subviews) {
-        if ([webView isKindOfClass:[UIWebView class]]) {
-            webView.scrollView.bounces = NO;
+    for (UIView *view in bannerView.subviews) {
+        if ([view isKindOfClass:[UIWebView class]]) {
+            ((UIWebView *)view).scrollView.bounces = NO;
+        }
+        if ([view isKindOfClass:[UIScrollView class]]) {
+            ((UIScrollView *)view).bounces = NO;
         }
     }
 }

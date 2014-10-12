@@ -14,6 +14,7 @@
 @property (nonatomic, readonly) BOOL ascending;
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection index:(NSUInteger)index;
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection index:(NSUInteger)index ascending:(BOOL)ascending;
 - (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index;
 - (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index ascending:(BOOL)ascending;
 

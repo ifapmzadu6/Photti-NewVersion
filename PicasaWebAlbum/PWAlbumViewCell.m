@@ -187,9 +187,11 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
         if (fetchedCount > 0) {
             for (int i=0; i<MIN(MIN(3, numPhotos), fetchedCount); i++) {
                 PWPhotoObject *photoObject = _fetchedResultsController.fetchedObjects[i];
-                NSString *urlString = photoObject.tag_thumbnail_url;
-                UIImageView *imageView = _imageViews[i];
-                [self loadThumbnailImage:urlString hash:hash imageView:imageView];
+                if (photoObject.sortIndex.integerValue == i+1) {
+                    NSString *urlString = photoObject.tag_thumbnail_url;
+                    UIImageView *imageView = _imageViews[i];
+                    [self loadThumbnailImage:urlString hash:hash imageView:imageView];
+                }
             }
         }
         else {
