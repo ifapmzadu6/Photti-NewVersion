@@ -633,12 +633,12 @@
         }
         else if (indexPath.row == 1) {
             cell.centerTextLabel.text = NSLocalizedString(@"Tell a frend this app", nil);
-            cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintDefaultColor];
+            cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintLocalColor];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
         else if (indexPath.row == 2) {
             cell.centerTextLabel.text = NSLocalizedString(@"Remove ads", nil);
-            cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintDefaultColor];
+            cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintLocalColor];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
         

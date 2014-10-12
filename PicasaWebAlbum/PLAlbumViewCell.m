@@ -126,7 +126,7 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
     _titleLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 26.0f, CGRectGetWidth(rect), 14.0f);
     _numPhotosLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 12.0f, CGRectGetWidth(rect), 12.0f);
     
-    _overrayView.frame = CGRectMake(0.0f, 0.0f, CGRectGetWidth(rect), CGRectGetWidth(rect));
+    _overrayView.frame = CGRectMake(0.0f, 0.0f, CGRectGetWidth(rect), CGRectGetMaxY(imageView.frame));
 //    _checkMarkImageView.frame = CGRectMake(CGRectGetWidth(rect) - 32.0f, CGRectGetWidth(rect) - 32.0f, 28.0f, 28.0f);
 }
 

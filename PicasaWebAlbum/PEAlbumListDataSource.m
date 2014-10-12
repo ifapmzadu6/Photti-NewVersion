@@ -170,30 +170,32 @@
     
     PHAssetCollection *collection = _fetchResult[indexPath.row];
     cell.titleLabel.text = collection.localizedTitle;
-    NSUInteger numberOfPhoto = 0;
-    NSUInteger numberOfVideo = 0;
-    for (PHAsset *asset in assetsResult) {
-        if (asset.mediaType == PHAssetMediaTypeImage) {
-            numberOfPhoto++;
-        }
-        else if (asset.mediaType == PHAssetMediaTypeVideo) {
-            numberOfVideo++;
-        }
-    }
-    cell.detailLabel.text = [PAString photoAndVideoStringWithPhotoCount:numberOfPhoto videoCount:numberOfVideo isInitialUpperCase:YES];
+    cell.detailLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%ld Items", nil), collection.estimatedAssetCount];;
     return cell;
 }
 
 #pragma mark UICollectionViewFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (_flowLayout) {
+        return _flowLayout.itemSize;
+    }
+    
     return _cellSize;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    if (_flowLayout) {
+        return _flowLayout.minimumInteritemSpacing;
+    }
+    
     return _minimumInteritemSpacing;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    if (_flowLayout) {
+        return _flowLayout.minimumLineSpacing;
+    }
+    
     return _minimumLineSpacing;
 }
 

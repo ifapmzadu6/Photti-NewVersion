@@ -17,6 +17,7 @@
 #import "PATabBarAdsController.h"
 #import "PEPhotoListViewController.h"
 #import "PWSearchNavigationController.h"
+#import "PAAlbumCollectionViewFlowLayout.h"
 
 @interface PEAlbumListViewController () <UITextFieldDelegate>
 
@@ -39,9 +40,8 @@
         self.title = NSLocalizedString(@"Albums", nil);
         
         _albumListDataSource = [PEAlbumListDataSource new];
-        _albumListDataSource.cellSize = CGSizeMake(90.0f, 120.0f);
+        _albumListDataSource.flowLayout = [PAAlbumCollectionViewFlowLayout new];
         _albumListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
-        _albumListDataSource.minimumLineSpacing = 15.0f;
         __weak typeof(self) wself = self;
         _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
             typeof(wself) sself = wself;
