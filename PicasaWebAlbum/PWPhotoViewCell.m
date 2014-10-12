@@ -231,6 +231,12 @@
     NSURL *url = [NSURL URLWithString:urlString];
     BOOL isGifImage = [url.pathExtension isEqualToString:@"gif"];
     
+    _imageView.image = nil;
+    _imageView.hidden = YES;
+    _animatedImageView.animatedImage = nil;
+    _animatedImageView.hidden = YES;
+    [_activityIndicatorView startAnimating];
+    
     if (!isGifImage) {
         UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
         if (memoryCachedImage) {
@@ -246,18 +252,11 @@
             [_activityIndicatorView stopAnimating];
             _imageView.image = memoryCachedImage;
             _imageView.hidden = NO;
-            _animatedImageView.hidden = YES;
             [self setNeedsLayout];
             
             return;
         }
     }
-    
-    _imageView.image = nil;
-    _imageView.hidden = YES;
-    _animatedImageView.animatedImage = nil;
-    _animatedImageView.hidden = YES;
-    [_activityIndicatorView startAnimating];
     
     __weak typeof(self) wself = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

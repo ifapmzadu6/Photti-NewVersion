@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "uploadselect.png"
+      "filename" : "Upload.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "uploadselect@2x.png"
+      "filename" : "Upload@2x.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "Upload@3x.png"
     }
   ],
   "info" : {

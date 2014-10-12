@@ -3,16 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "PicasaSelected.png"
+      "filename" : "Picasa.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "PicasaSelected@2x.png"
+      "filename" : "Picasa@2x.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x"
+      "scale" : "3x",
+      "filename" : "Picasa@3x.png"
     }
   ],
   "info" : {

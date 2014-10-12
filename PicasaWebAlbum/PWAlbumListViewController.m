@@ -310,7 +310,7 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     if (collectionView == _collectionView) {
         return [PAAlbumCollectionViewFlowLayout itemSize];
     }
-    return CGSizeMake(100.0f, 100.0f);
+    return CGSizeMake(90.0f, 90.0f);
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
