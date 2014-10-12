@@ -12,6 +12,7 @@
 #import "PAIcons.h"
 #import "PDTaskManager.h"
 #import "PATabBarAdsController.h"
+#import "PALinkableTextView.h"
 
 #import "PXSettingsViewController.h"
 
@@ -23,7 +24,7 @@
 @property (strong, nonatomic) UILabel *unlimitedDescriptionLabel;
 @property (strong, nonatomic) UIButton *unlimitedButton;
 @property (strong, nonatomic) UILabel *highResolutionLabel;
-@property (strong, nonatomic) UITextView *highResolutionDescriptionLabel;
+@property (strong, nonatomic) PALinkableTextView *highResolutionDescriptionLabel;
 @property (strong, nonatomic) UIButton *highResolutionButton;
 
 @end
@@ -132,13 +133,9 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     _highResolutionLabel.textColor = [PAColors getColor:PAColorsTypeTintUploadColor];
     [self.view addSubview:_highResolutionLabel];
     
-    _highResolutionDescriptionLabel = [UITextView new];
+    _highResolutionDescriptionLabel = [PALinkableTextView new];
     _highResolutionDescriptionLabel.clipsToBounds = NO;
     _highResolutionDescriptionLabel.backgroundColor = [UIColor clearColor];
-    _highResolutionDescriptionLabel.scrollEnabled = NO;
-    _highResolutionDescriptionLabel.editable = NO;
-    _highResolutionDescriptionLabel.textContainer.lineFragmentPadding = 0;
-    _highResolutionDescriptionLabel.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0);
     NSString *string = NSLocalizedString(@"Photos bigger than 2048x2048 pixels and videos longer than 15minutes use your Google Storage.", nil);
     NSRange linkRange = [string rangeOfString:@"Google Storage"];
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:string];

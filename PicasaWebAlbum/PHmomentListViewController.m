@@ -44,6 +44,13 @@
             PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
+        _dataSource.didChangeSelectedItemCountBlock = ^(NSUInteger count) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            sself.selectActionBarButtonItem.enabled = (count) ? YES : NO;
+            sself.selectUploadBarButtonItem.enabled = (count) ? YES : NO;
+            sself.selectTrashBarButtonItem.enabled = (count) ? YES : NO;
+        };
     }
     return self;
 }

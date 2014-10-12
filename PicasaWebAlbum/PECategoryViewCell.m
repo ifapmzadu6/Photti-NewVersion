@@ -12,6 +12,7 @@
 #import "PAHorizontalScrollView.h"
 #import "PEAlbumViewCell.h"
 #import "PEMomentViewCell.h"
+#import "PALinkableTextView.h"
 
 @interface PECategoryViewCell () <UITextViewDelegate>
 
@@ -84,7 +85,7 @@ static NSString * const kPECategoryViewCellSettingsKey = @"kPECategoryViewCellSe
     _horizontalScrollView.collectionView.contentInset = UIEdgeInsetsMake(0.0f, 15.0f, 0.0f, 15.0f);
     [self.contentView addSubview:_horizontalScrollView];
     
-    _noItemLabel = [UITextView new];
+    _noItemLabel = [PALinkableTextView new];
     NSString *hideOnSettingsString = NSLocalizedString(@"You can hide this category on Settings.", nil);
     NSMutableAttributedString *hideOnSettingsAttributedString = [[NSMutableAttributedString alloc] initWithString:hideOnSettingsString];
     NSRange settingsRange = [hideOnSettingsString rangeOfString:NSLocalizedString(@"Settings", nil)];
