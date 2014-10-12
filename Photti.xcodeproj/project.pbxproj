@@ -33,7 +33,6 @@
 		711AF61F1993AA7100640D2D /* PAAlbumCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 711AF61E1993AA7100640D2D /* PAAlbumCollectionViewFlowLayout.m */; };
 		711AF6231993ACFA00640D2D /* PAPhotoCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 711AF6221993ACFA00640D2D /* PAPhotoCollectionViewFlowLayout.m */; };
 		711C197019D3134B00FE3536 /* PEMomentListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C196F19D3134B00FE3536 /* PEMomentListDataSource.m */; };
-		711C199519D3C51A00FE3536 /* PETimelapseViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C199419D3C51A00FE3536 /* PETimelapseViewCell.m */; };
 		711C199D19D3C78100FE3536 /* PEPhotoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C199C19D3C78100FE3536 /* PEPhotoViewCell.m */; };
 		711C19A519D3D22400FE3536 /* PEAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C19A419D3D22400FE3536 /* PEAlbumListViewController.m */; };
 		711C19B119D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = 711C19B019D3DD6100FE3536 /* PEPhotoDataSourceFactoryMethod.m */; };
@@ -255,8 +254,6 @@
 		711AF6221993ACFA00640D2D /* PAPhotoCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAPhotoCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		711C196E19D3134B00FE3536 /* PEMomentListDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEMomentListDataSource.h; sourceTree = "<group>"; };
 		711C196F19D3134B00FE3536 /* PEMomentListDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEMomentListDataSource.m; sourceTree = "<group>"; };
-		711C199319D3C51A00FE3536 /* PETimelapseViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PETimelapseViewCell.h; sourceTree = "<group>"; };
-		711C199419D3C51A00FE3536 /* PETimelapseViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PETimelapseViewCell.m; sourceTree = "<group>"; };
 		711C199B19D3C78100FE3536 /* PEPhotoViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoViewCell.h; sourceTree = "<group>"; };
 		711C199C19D3C78100FE3536 /* PEPhotoViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoViewCell.m; sourceTree = "<group>"; };
 		711C19A319D3D22400FE3536 /* PEAlbumListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEAlbumListViewController.h; sourceTree = "<group>"; };
@@ -832,15 +829,6 @@
 				711C196F19D3134B00FE3536 /* PEMomentListDataSource.m */,
 			);
 			name = PEMomentListDataSource;
-			sourceTree = "<group>";
-		};
-		711C199219D3C4FA00FE3536 /* PETimelapseViewCell */ = {
-			isa = PBXGroup;
-			children = (
-				711C199319D3C51A00FE3536 /* PETimelapseViewCell.h */,
-				711C199419D3C51A00FE3536 /* PETimelapseViewCell.m */,
-			);
-			name = PETimelapseViewCell;
 			sourceTree = "<group>";
 		};
 		711C199A19D3C76400FE3536 /* PEPhotoViewCell */ = {
@@ -1808,7 +1796,6 @@
 				711C199A19D3C76400FE3536 /* PEPhotoViewCell */,
 				711183B219D06B1700548730 /* PEScrollBannerReusableView */,
 				71C54F4519CD2ACE00BCD9CF /* PEScrollBannerView */,
-				711C199219D3C4FA00FE3536 /* PETimelapseViewCell */,
 			);
 			name = E;
 			sourceTree = "<group>";
@@ -2732,7 +2719,6 @@
 				71BDE3A61998FC2100853E85 /* NSMutableAttributedString+methods.m in Sources */,
 				71B11D8719E8E7C000263124 /* PXEditItemsViewController.m in Sources */,
 				71E8851219115C7E005A78E0 /* PWAppDelegate.m in Sources */,
-				711C199519D3C51A00FE3536 /* PETimelapseViewCell.m in Sources */,
 				71197E7119862EB3009DB4D3 /* PDLocalCopyPhotoObject.m in Sources */,
 				71D52F2219853BCF005CFF30 /* PLFullAlbumViewCell.m in Sources */,
 				712F121219DBDFE500ED6566 /* PEBannerContentView.m in Sources */,

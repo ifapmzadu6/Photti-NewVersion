@@ -159,6 +159,15 @@
     _checkMark.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 32.0f, CGRectGetMaxY(_imageView.frame) - 32.0f, 28.0f, 28.0f);
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    _imageView.image = nil;
+    _videoBackgroundView.hidden = YES;
+    _videoDurationLabel.hidden = YES;
+    _videoIconView.hidden = YES;
+}
+
 - (void)setIsSelectWithCheckMark:(BOOL)isSelectWithCheckMark {
     _isSelectWithCheckMark = isSelectWithCheckMark;
     
@@ -171,12 +180,7 @@
     NSUInteger hash = photo.hash;
     _photoHash = hash;
     
-    _imageView.image = nil;
     [_activityIndicatorView startAnimating];
-    
-    _videoBackgroundView.hidden = YES;
-    _videoDurationLabel.hidden = YES;
-    _videoIconView.hidden = YES;
     
     NSURL *url = [NSURL URLWithString:photo.url];
     __weak typeof(self) wself = self;

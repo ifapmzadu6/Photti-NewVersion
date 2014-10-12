@@ -146,12 +146,8 @@
     [super setHighlighted:highlighted animated:animated];
 }
 
-#pragma mark Methods
-- (void)setTaskObject:(PDTaskObject *)taskObject {
-    _taskObject = taskObject;
-    
-    NSUInteger hash = taskObject.hash;
-    _taskHash = hash;
+- (void)prepareForReuse {
+    [super prepareForReuse];
     
     _titleLabel.text = nil;
     _thumbnailImageView.alpha = 0.0f;
@@ -160,6 +156,14 @@
     _subTitleLabel.text = nil;
     _subDestiantionThumbnailImageView.alpha = 0.0f;
     _subArrowIcon.hidden = YES;
+}
+
+#pragma mark Methods
+- (void)setTaskObject:(PDTaskObject *)taskObject {
+    _taskObject = taskObject;
+    
+    NSUInteger hash = taskObject.hash;
+    _taskHash = hash;
     
     if (!taskObject) return;
     

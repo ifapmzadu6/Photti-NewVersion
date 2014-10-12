@@ -94,14 +94,17 @@
     }
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    _titleLabel.text = nil;
+    _thumbnailImageView.image = nil;
+    _thumbnailImageView.alpha = 0.0f;
+}
+
 - (void)setAlbum:(PWAlbumObject *)album searchedText:(NSString *)searchedText {
     _album = album;
-    
     if (!album) {
-        _titleLabel.text = nil;
-        _thumbnailImageView.image = nil;
-        _albumTypeLabel.text = nil;
-        
         _albumHash = 0;
         return;
     }
@@ -124,8 +127,6 @@
         
         return;
     }
-    
-    _thumbnailImageView.alpha = 0.0f;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (_albumHash != hash) return;

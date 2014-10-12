@@ -118,6 +118,16 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
     _checkMarkImageView.frame = CGRectMake(CGRectGetMaxX(_imageViewBackgroundView.frame) - 32.0f, CGRectGetMaxY(_imageViewBackgroundView.frame) - 32.0f, 28.0f, 28.0f);
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    _titleLabel.text = nil;
+    _detailLabel.text = nil;
+    for (UIImageView *imageView in _imageViews) {
+        imageView.image = nil;
+    }
+}
+
 - (void)setNumberOfImageView:(NSUInteger)numberOfImageView {
     if (numberOfImageView > kPHCollectionViewCellMaxNumberOfImageViews) {
         numberOfImageView = kPHCollectionViewCellMaxNumberOfImageViews;

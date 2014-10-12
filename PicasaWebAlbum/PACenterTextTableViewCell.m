@@ -60,4 +60,8 @@
     _centerTextLabel.frame = CGRectMake(15.0f, 0.0f, CGRectGetWidth(rect)-15.0f*2.0f, CGRectGetHeight(rect));
 }
 
+- (void)prepareForReuse {
+    _centerTextLabel.text = nil;
+}
+
 @end

@@ -188,6 +188,19 @@
     _checkMark.frame = CGRectMake(CGRectGetMaxX(imageFrame) - 32.0f, CGRectGetMaxY(imageFrame) - 32.0f, 28.0f, 28.0f);
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    _imageView.image = nil;
+    _imageView.hidden = YES;
+    _animatedImageView.animatedImage = nil;
+    _animatedImageView.hidden = YES;
+    _videoBackgroundView.hidden = YES;
+    _videoDurationLabel.hidden = YES;
+    _videoIconView.hidden = YES;
+    
+}
+
 - (UIImage *)image {
     return _imageView.image;
 }
@@ -213,10 +226,6 @@
         [task cancel];
     }
     
-    _videoBackgroundView.hidden = YES;
-    _videoDurationLabel.hidden = YES;
-    _videoIconView.hidden = YES;
-    
     if (!photo) {
         return;
     }
@@ -231,10 +240,6 @@
     NSURL *url = [NSURL URLWithString:urlString];
     BOOL isGifImage = [url.pathExtension isEqualToString:@"gif"];
     
-    _imageView.image = nil;
-    _imageView.hidden = YES;
-    _animatedImageView.animatedImage = nil;
-    _animatedImageView.hidden = YES;
     [_activityIndicatorView startAnimating];
     
     if (!isGifImage) {
@@ -347,8 +352,6 @@
         [_activityIndicatorView stopAnimating];
         _imageView.image = image;
         _imageView.hidden = NO;
-        _animatedImageView.animatedImage = nil;
-        _animatedImageView.hidden = YES;
         [self setNeedsLayout];
     });
 }
@@ -373,8 +376,6 @@
         [_activityIndicatorView stopAnimating];
         _animatedImageView.animatedImage = animatedImage;
         _animatedImageView.hidden = NO;
-        _imageView.image = nil;
-        _imageView.hidden = YES;
         [self setNeedsLayout];
     });
 }

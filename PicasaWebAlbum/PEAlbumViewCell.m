@@ -108,6 +108,16 @@
     _checkMarkImageView.frame = CGRectMake(CGRectGetMaxX(_firstImageView.frame) - 32.0f, CGRectGetMaxY(_firstImageView.frame) - 32.0f, 28.0f, 28.0f);
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    _firstImageView.image = nil;
+    _secondImageView.image = nil;
+    _thirdImageView.image = nil;
+    _titleLabel.text = nil;
+    _detailLabel.text = nil;
+}
+
 #pragma mark methods
 - (void)setSelected:(BOOL)selected {
     [super setSelected:selected];

@@ -89,14 +89,16 @@
     }
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    _titleLabel.text = nil;
+    _thumbnailImageView.image = nil;
+}
+
 - (void)setAlbum:(PLAlbumObject *)album searchedText:(NSString *)searchedText {
     _album = album;
-    
     if (!album) {
-        _titleLabel.text = nil;
-        _thumbnailImageView.image = nil;
-        _albumTypeLabel.text = nil;
-        
         _albumHash = 0;
         return;
     }
@@ -108,8 +110,6 @@
     NSMutableAttributedString *attributedText = [[NSAttributedString alloc] initWithString:title].mutableCopy;
     [attributedText addAttrubutes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:15.0f]} string:searchedText];
     _titleLabel.attributedText = attributedText;
-    
-    _thumbnailImageView.image = nil;
     
     PLPhotoObject *thumbnail = album.thumbnail;
     if (!thumbnail) {

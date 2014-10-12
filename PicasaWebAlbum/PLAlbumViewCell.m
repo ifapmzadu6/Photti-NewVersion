@@ -130,6 +130,16 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
 //    _checkMarkImageView.frame = CGRectMake(CGRectGetWidth(rect) - 32.0f, CGRectGetWidth(rect) - 32.0f, 28.0f, 28.0f);
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    _titleLabel.text = nil;
+    _numPhotosLabel.text = nil;
+    for (UIImageView *imageView in _imageViews) {
+        imageView.image = nil;
+    }
+}
+
 - (void)setAlbum:(PLAlbumObject *)album {
     _album = album;
     
@@ -141,9 +151,6 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
     if (!album) {
         _albumHash = 0;
         
-        _titleLabel.text = nil;
-        _numPhotosLabel.text = nil;
-        
         return;
     }
     
@@ -154,9 +161,6 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
     
     _titleLabel.text = album.name;
     _numPhotosLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ Items", nil), @(album.photos.count).stringValue];
-    _titleLabel.numberOfLines = 2;
-    
-    [self setNeedsLayout];
     
     __weak typeof(self) wself = self;
     if (album.photos.count > 0) {
