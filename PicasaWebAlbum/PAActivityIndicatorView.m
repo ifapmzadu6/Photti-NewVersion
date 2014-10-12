@@ -49,7 +49,7 @@ static const CGFloat delta = 40;
 }
 
 - (void)initialization {
-    NSUInteger rand = arc4random_uniform(NSUIntegerMax)%6;
+    u_int32_t rand = arc4random_uniform(NSUIntegerMax)%6;
     switch (rand) {
         case 0:
             _red = 80; _green = 80; _blue = 240;
