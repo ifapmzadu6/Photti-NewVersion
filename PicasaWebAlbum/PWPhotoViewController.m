@@ -16,6 +16,7 @@
 #import <PAImageScrollView.h>
 #import "PATabBarController.h"
 #import "PANetworkActivityIndicator.h"
+#import "PAActivityIndicatorView.h"
 #import <Reachability.h>
 #import <FLAnimatedImage.h>
 #import <FLAnimatedImageView.h>
@@ -76,7 +77,7 @@
         _placeholder = nil;
     }
     else {
-        _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        _indicatorView = [PAActivityIndicatorView new];
         _indicatorView.center = self.view.center;
         [self.view addSubview:_indicatorView];
         [_indicatorView startAnimating];
@@ -228,7 +229,7 @@
     videoButtonImageView.center = _moviePlayerPlaceholderView.center;
     [_moviePlayerPlaceholderView addSubview:videoButtonImageView];
     
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
     indicator.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
     indicator.center = _moviePlayerPlaceholderView.center;
     [_moviePlayerPlaceholderView addSubview:indicator];

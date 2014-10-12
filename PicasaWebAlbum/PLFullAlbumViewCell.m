@@ -12,6 +12,7 @@
 #import "PAString.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
+#import "PAActivityIndicatorView.h"
 
 @interface PLFullAlbumViewCell () <UITextFieldDelegate>
 
@@ -20,7 +21,7 @@
 @property (strong, nonatomic) UIImageView *backImageView;
 @property (strong, nonatomic) UIImageView *backImageView2;
 @property (strong, nonatomic) UILabel *numberLabel;
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 
 @property (nonatomic) NSUInteger albumHash;
 
@@ -48,7 +49,7 @@
 - (void)initializetion {
     self.clipsToBounds = NO;
     
-    _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _activityIndicatorView = [PAActivityIndicatorView new];
     [self.contentView addSubview:_activityIndicatorView];
     
     _imageView = [UIImageView new];

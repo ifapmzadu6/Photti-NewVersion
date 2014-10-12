@@ -20,6 +20,7 @@
 		711183AC19D0465800548730 /* PAHorizontalScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 711183AB19D0465800548730 /* PAHorizontalScrollView.m */; };
 		711183AF19D0466B00548730 /* PECategoryViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 711183AE19D0466B00548730 /* PECategoryViewCell.m */; };
 		711183B519D06B3F00548730 /* PEScrollBannerHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 711183B419D06B3F00548730 /* PEScrollBannerHeaderView.m */; };
+		71138EB119EABA6800C87BBF /* PAActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71138EB019EABA6800C87BBF /* PAActivityIndicatorView.m */; };
 		7118F86B193318F40016697E /* PLPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F86A193318F40016697E /* PLPhotoListViewController.m */; };
 		7118F882193355600016697E /* PWImagePickerNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F881193355600016697E /* PWImagePickerNavigationController.m */; };
 		7118F88919335B070016697E /* PWImagePickerLocalPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7118F88819335B070016697E /* PWImagePickerLocalPageViewController.m */; };
@@ -225,6 +226,8 @@
 		711183AE19D0466B00548730 /* PECategoryViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PECategoryViewCell.m; sourceTree = "<group>"; };
 		711183B319D06B3F00548730 /* PEScrollBannerHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEScrollBannerHeaderView.h; sourceTree = "<group>"; };
 		711183B419D06B3F00548730 /* PEScrollBannerHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEScrollBannerHeaderView.m; sourceTree = "<group>"; };
+		71138EAF19EABA6800C87BBF /* PAActivityIndicatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAActivityIndicatorView.h; sourceTree = "<group>"; };
+		71138EB019EABA6800C87BBF /* PAActivityIndicatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAActivityIndicatorView.m; sourceTree = "<group>"; };
 		71166F7A19A7AA9900A55A21 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		71166F7C19A816BE00A55A21 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		71166F7E19A8175600A55A21 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
@@ -703,6 +706,15 @@
 				711183B419D06B3F00548730 /* PEScrollBannerHeaderView.m */,
 			);
 			name = PEScrollBannerReusableView;
+			sourceTree = "<group>";
+		};
+		71138EAE19EABA4F00C87BBF /* PAActivityIndicatorView */ = {
+			isa = PBXGroup;
+			children = (
+				71138EAF19EABA6800C87BBF /* PAActivityIndicatorView.h */,
+				71138EB019EABA6800C87BBF /* PAActivityIndicatorView.m */,
+			);
+			name = PAActivityIndicatorView;
 			sourceTree = "<group>";
 		};
 		7118F85A193318700016697E /* PLPhotoListViewController */ = {
@@ -1770,6 +1782,7 @@
 		71B72FF119DDAB7000D105EA /* A */ = {
 			isa = PBXGroup;
 			children = (
+				71138EAE19EABA4F00C87BBF /* PAActivityIndicatorView */,
 				7191706319D15F73003BFFC3 /* PACenterTextTableViewCell */,
 				711183A319D0324C00548730 /* PAGradientView */,
 				711183A819D0462500548730 /* PAHorizontalScrollView */,
@@ -2692,6 +2705,7 @@
 				71349CB1192DF7A8003CC2AA /* PLPhotoViewCell.m in Sources */,
 				711183AF19D0466B00548730 /* PECategoryViewCell.m in Sources */,
 				719CFE5119598B85008B4308 /* PWGoogleLoginViewController.m in Sources */,
+				71138EB119EABA6800C87BBF /* PAActivityIndicatorView.m in Sources */,
 				7165408319D4800500960F70 /* PEPhotoListViewController.m in Sources */,
 				7118F89E19335C0E0016697E /* PWImagePickerWebPhotoListViewController.m in Sources */,
 				712E03A6191DAD7E0035D9E0 /* PWRefreshControl.m in Sources */,

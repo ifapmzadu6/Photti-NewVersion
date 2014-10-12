@@ -25,7 +25,7 @@
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
 #import "PWImagePickerController.h"
-
+#import "PAActivityIndicatorView.h"
 
 @interface PWImagePickerWebPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
@@ -33,7 +33,7 @@
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (nonatomic) NSUInteger requestIndex;
@@ -83,7 +83,7 @@
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
     [_collectionView addSubview:_refreshControl];
     
-    _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _activityIndicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_activityIndicatorView];
     
     [self setRightNavigationItemSelectButton];

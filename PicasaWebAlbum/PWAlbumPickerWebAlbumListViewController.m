@@ -20,12 +20,13 @@
 #import "PWNewAlbumEditViewController.h"
 #import <Reachability.h>
 #import <SDImageCache.h>
+#import "PAActivityIndicatorView.h"
 
 @interface PWAlbumPickerWebAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -77,7 +78,7 @@
     _refreshControl.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
-    _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _activityIndicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_activityIndicatorView];
     
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];

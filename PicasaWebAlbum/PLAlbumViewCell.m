@@ -15,11 +15,12 @@
 #import "PLCoreDataAPI.h"
 #import "PLAssetsManager.h"
 #import "UIButton+HitEdgeInsets.h"
+#import "PAActivityIndicatorView.h"
 
 @interface PLAlbumViewCell ()
 
 @property (strong, nonatomic) NSArray *imageViews;
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UILabel *numPhotosLabel;
 @property (strong, nonatomic) UIButton *actionButton;
@@ -53,7 +54,7 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
 - (void)initializetion {
     self.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     
-    _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _activityIndicatorView = [PAActivityIndicatorView new];
     [self.contentView addSubview:_activityIndicatorView];
     
     NSMutableArray *imageViews = @[].mutableCopy;

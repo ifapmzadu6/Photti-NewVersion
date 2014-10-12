@@ -9,11 +9,12 @@
 #import "PDTaskManagerViewControllerHeaderView.h"
 
 #import "PAColors.h"
+#import "PAActivityIndicatorView.h"
 
 @interface PDTaskManagerViewControllerHeaderView ()
 
 @property (strong, nonatomic) UILabel *titleLabel;
-@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *indicatorView;
 
 @end
 
@@ -41,7 +42,7 @@
     _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
     [self addSubview:_titleLabel];
     
-    _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _indicatorView = [PAActivityIndicatorView new];
     _indicatorView.transform = CGAffineTransformMakeScale(0.75f, 0.75f);
     [self addSubview:_indicatorView];
 }

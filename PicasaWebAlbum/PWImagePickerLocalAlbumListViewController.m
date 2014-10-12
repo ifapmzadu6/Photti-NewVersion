@@ -16,13 +16,14 @@
 #import "PAAlbumCollectionViewFlowLayout.h"
 #import "PWImagePickerController.h"
 #import "PLModelObject.h"
+#import "PAActivityIndicatorView.h"
 
 #import "PWImagePickerLocalPhotoListViewController.h"
 
 @interface PWImagePickerLocalAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
-@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *indicatorView;
 @property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -57,7 +58,7 @@
     
     self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     
-    _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _indicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_indicatorView];
     [_indicatorView startAnimating];
     

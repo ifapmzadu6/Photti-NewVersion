@@ -22,11 +22,12 @@
 #import "PWAlbumPickerController.h"
 #import "PABaseNavigationController.h"
 #import "PLNewAlbumEditViewController.h"
+#import "PAActivityIndicatorView.h"
 
 @interface PWAlbumPickerLocalAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
-@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *indicatorView;
 @property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -73,7 +74,7 @@
     _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 10.0f, 0.0f, 10.0f);
     [self.view addSubview:_collectionView];
     
-    _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _indicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_indicatorView];
     [_indicatorView startAnimating];
     

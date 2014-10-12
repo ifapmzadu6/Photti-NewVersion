@@ -24,6 +24,7 @@
 #import "PWAlbumPickerController.h"
 #import "PDTaskManager.h"
 #import "UIView+ScreenCapture.h"
+#import "PAActivityIndicatorView.h"
 
 @interface PWPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
@@ -150,7 +151,7 @@
             
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
             alertView.tag = 2001;
-            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
             indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
             [indicator startAnimating];
             [alertView setValue:indicator forKey:@"accessoryView"];
@@ -299,7 +300,7 @@
 - (void)deletePhoto {
     PWPhotoObject *photo = _photos[_index];
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
     indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
     [indicator startAnimating];
     [alertView setValue:indicator forKey:@"accessoryView"];
@@ -447,7 +448,7 @@
 - (void)actionWithURLString:(NSString *)urlString {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
     alertView.tag = 2002;
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
     indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
     [indicator startAnimating];
     [alertView setValue:indicator forKey:@"accessoryView"];

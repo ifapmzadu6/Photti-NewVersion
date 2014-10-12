@@ -22,6 +22,7 @@
 #import "PLAlbumEditViewController.h"
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
+#import "PAActivityIndicatorView.h"
 
 #import "PDTaskManager.h"
 
@@ -30,7 +31,7 @@
 @interface PLAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
-@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *indicatorView;
 @property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -84,7 +85,7 @@
     }
     
     if (_fetchedResultsController.fetchedObjects.count == 0) {
-        _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        _indicatorView = [PAActivityIndicatorView new];
         [self.view addSubview:_indicatorView];
         [_indicatorView startAnimating];
     }

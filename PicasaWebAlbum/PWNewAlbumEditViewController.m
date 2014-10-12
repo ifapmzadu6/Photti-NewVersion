@@ -12,6 +12,7 @@
 #import "PWDatePickerView.h"
 #import "PADateTimestamp.h"
 #import "PWPicasaAPI.h"
+#import "PAActivityIndicatorView.h"
 #import <Reachability.h>
 
 #import "PXSelectItemFromArrayViewController.h"
@@ -70,7 +71,7 @@
     }
     
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Saving...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
     indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
     [indicator startAnimating];
     [alertView setValue:indicator forKey:@"accessoryView"];

@@ -21,6 +21,7 @@
 #import <Reachability.h>
 #import "NSURLResponse+methods.h"
 #import "PAString.h"
+#import "PAActivityIndicatorView.h"
 #import <FLAnimatedImage.h>
 
 static int const kPWAlbumViewCellNumberOfImageView = 3;
@@ -28,7 +29,7 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
 @interface PWAlbumViewCell () <NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) NSArray *imageViews;
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UILabel *numPhotosLabel;
 @property (strong, nonatomic) UIButton *actionButton;
@@ -62,7 +63,7 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
 - (void)initialization {
     self.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     
-    _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _activityIndicatorView = [PAActivityIndicatorView new];
     [self.contentView addSubview:_activityIndicatorView];
     
     NSMutableArray *imageViews = @[].mutableCopy;

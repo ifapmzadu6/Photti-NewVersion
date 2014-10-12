@@ -30,6 +30,8 @@
 #import "PWAlbumShareViewController.h"
 #import "PWImagePickerController.h"
 #import "PWAlbumPickerController.h"
+#import "PAActivityIndicatorView.h"
+#import "PAActivityIndicatorView.h"
 
 static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 
@@ -39,7 +41,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButton;
@@ -118,9 +120,8 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
     [_collectionView addSubview:_refreshControl];
     
-    _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _activityIndicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_activityIndicatorView];
-    [_activityIndicatorView startAnimating];
     
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
@@ -350,7 +351,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     if (selectedPhotos.count == 0) return;
     
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
     indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
     [indicator startAnimating];
     [alertView setValue:indicator forKey:@"accessoryView"];
@@ -710,7 +711,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             dispatch_async(dispatch_get_main_queue(), ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                
                 [sself.refreshControl endRefreshing];
                 [sself.activityIndicatorView stopAnimating];
             });
@@ -733,7 +733,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             [sself loadDataWithStartIndex:0];
         });
     }];
@@ -831,7 +830,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     }
     
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
     indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
     [indicator startAnimating];
     [alertView show];
@@ -964,7 +963,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     else if (actionSheet.tag == 1004) {
         if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
             indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
             [indicator startAnimating];
             [alertView setValue:indicator forKey:@"accessoryView"];
@@ -998,7 +997,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     else if (actionSheet.tag == 1005) {
         if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-            UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
             indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
             [indicator startAnimating];
             [alertView setValue:indicator forKey:@"accessoryView"];

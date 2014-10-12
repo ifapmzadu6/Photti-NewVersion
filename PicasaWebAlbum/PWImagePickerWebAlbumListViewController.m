@@ -16,6 +16,7 @@
 #import "PAAlbumCollectionViewFlowLayout.h"
 #import "PWImagePickerWebPhotoListViewController.h"
 #import "PWImagePickerController.h"
+#import "PAActivityIndicatorView.h"
 #import <Reachability.h>
 #import <SDImageCache.h>
 
@@ -23,7 +24,7 @@
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -65,7 +66,7 @@
     _refreshControl.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
-    _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _activityIndicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_activityIndicatorView];
     
     UIBarButtonItem *doneBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];

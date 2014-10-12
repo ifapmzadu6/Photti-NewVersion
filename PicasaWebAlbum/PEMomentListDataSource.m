@@ -14,6 +14,7 @@
 #import "PADateFormatter.h"
 #import "PAString.h"
 #import "NSIndexSet+methods.h"
+#import "PLCollectionFooterView.h"
 
 @interface PEMomentListDataSource () <PHPhotoLibraryChangeObserver>
 
@@ -51,6 +52,7 @@
     
     if (collectionView) {
         [collectionView registerClass:[PEMomentViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PEMomentViewCell class])];
+        [collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:NSStringFromClass([PLCollectionFooterView class])];
     }
 }
 
@@ -176,6 +178,23 @@
     return cell;
 }
 
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+    if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
+        PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:NSStringFromClass([PLCollectionFooterView class]) forIndexPath:indexPath];
+        
+        if (_fetchResult.count > 0) {
+            NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Albums -", nil), (unsigned long)_fetchResult.count];
+            [footerView setText:albumCountString];
+        }
+        else {
+            [footerView setText:nil];
+        }
+        
+        return footerView;
+    }
+    return nil;
+}
+
 #pragma mark UICollectionViewFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     return _cellSize;
@@ -187,6 +206,10 @@
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return _minimumLineSpacing;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    return CGSizeMake(0.0f, 50.0f);
 }
 
 #pragma mark UICollectionViewDelegate

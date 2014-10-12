@@ -66,6 +66,7 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
+    _collectionView.allowsMultipleSelection = YES;
     [self.view addSubview:_collectionView];
 }
 

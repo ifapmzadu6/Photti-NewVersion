@@ -34,13 +34,15 @@
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
 #import "PXSettingsViewController.h"
+#import "PAActivityIndicatorView.h"
+#import "PAActivityIndicatorView.h"
 
 @interface PWAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UICollectionView *recentlyUploadedCollectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (nonatomic) NSUInteger requestIndex;
@@ -111,7 +113,7 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     _refreshControl.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
-    _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _activityIndicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_activityIndicatorView];
     
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
@@ -616,7 +618,7 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     }
     
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
     indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
     [indicator startAnimating];
     [alertView setValue:indicator forKey:@"accessoryView"];
@@ -666,7 +668,7 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 
 - (void)deleteAlbum:(PWAlbumObject *)album {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
     indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
     [indicator startAnimating];
     [alertView setValue:indicator forKey:@"accessoryView"];

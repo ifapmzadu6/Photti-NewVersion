@@ -18,6 +18,7 @@
 #import "PWCoreDataAPI.h"
 #import <Reachability.h>
 #import "NSURLResponse+methods.h"
+#import "PAActivityIndicatorView.h"
 #import <FLAnimatedImageView.h>
 #import <FLAnimatedImage.h>
 
@@ -28,7 +29,7 @@
 @property (strong, nonatomic) UILabel *videoDurationLabel;
 @property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) FLAnimatedImageView *animatedImageView;
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIView *overrayView;
 @property (strong, nonatomic) UIImageView *checkMark;
 
@@ -60,7 +61,7 @@
         self.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     }
     
-    _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _activityIndicatorView = [PAActivityIndicatorView new];
     [self.contentView addSubview:_activityIndicatorView];
     
     _imageView = [UIImageView new];

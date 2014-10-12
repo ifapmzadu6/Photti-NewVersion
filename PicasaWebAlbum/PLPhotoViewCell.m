@@ -15,6 +15,7 @@
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 #import "PADateFormatter.h"
+#import "PAActivityIndicatorView.h"
 
 @interface PLPhotoViewCell ()
 
@@ -22,7 +23,7 @@
 @property (strong, nonatomic) UIImageView *videoBackgroundView;
 @property (strong, nonatomic) UIImageView *videoIconView;
 @property (strong, nonatomic) UILabel *videoDurationLabel;
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIView *overrayView;
 @property (strong, nonatomic) UIImageView *checkMark;
 
@@ -49,7 +50,7 @@
 }
 
 - (void)initialization {
-    _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    _activityIndicatorView = [PAActivityIndicatorView new];
     [self.contentView addSubview:_activityIndicatorView];
     
     _imageView = [UIImageView new];

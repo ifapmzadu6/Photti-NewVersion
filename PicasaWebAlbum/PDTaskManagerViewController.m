@@ -22,6 +22,7 @@
 #import "PATabBarController.h"
 #import "PDTaskViewController.h"
 #import "PXSettingsViewController.h"
+#import "PAActivityIndicatorView.h"
 
 @interface PDTaskManagerViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
 
@@ -117,7 +118,7 @@
 
 #pragma mark UIBarButtonAction
 - (void)refreshBarButtonAction {
-    UIActivityIndicatorView *indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    PAActivityIndicatorView *indicatorView = [PAActivityIndicatorView new];
     UIBarButtonItem *indicatorBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:indicatorView];
     [indicatorView startAnimating];
     [self.navigationItem setRightBarButtonItem:indicatorBarButtonItem animated:YES];

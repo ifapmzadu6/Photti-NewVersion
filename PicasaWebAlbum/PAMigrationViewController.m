@@ -10,10 +10,11 @@
 
 #import "PAColors.h"
 #import "PATabBarController.h"
+#import "PAActivityIndicatorView.h"
 
 @interface PAMigrationViewController ()
 
-@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
+@property (strong, nonatomic) PAActivityIndicatorView *indicatorView;
 @property (strong, nonatomic) UILabel *textLabel;
 @property (strong, nonatomic) UILabel *detailTextLabel;
 
@@ -34,8 +35,7 @@
     
     self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     
-    _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    _indicatorView.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    _indicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_indicatorView];
     [_indicatorView startAnimating];
     
