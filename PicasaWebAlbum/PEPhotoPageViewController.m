@@ -224,6 +224,29 @@
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         NSArray *toolbarItems = [sself toolbarItemsWithIsFavorite:isFavorite];
         [tabBarController setToolbarItems:toolbarItems animated:YES];
+        
+        UIImageView *favoriteLargeIcon = [UIImageView new];
+        favoriteLargeIcon.image = [UIImage imageNamed:@"FavoriteLarge"];
+        favoriteLargeIcon.frame = CGRectMake(0.0f, 0.0f, 140.0f, 140.0f);
+        favoriteLargeIcon.center = sself.view.center;
+        favoriteLargeIcon.alpha = 0.5f;
+        [sself.view addSubview:favoriteLargeIcon];
+        [UIView animateWithDuration:0.1f animations:^{
+            favoriteLargeIcon.frame = CGRectMake(0.0f, 0.0f, 160.0f, 160.0f);
+            favoriteLargeIcon.center = sself.view.center;
+            favoriteLargeIcon.alpha = 1.0f;
+        } completion:^(BOOL finished) {
+            [UIView animateWithDuration:0.2f animations:^{
+                favoriteLargeIcon.frame = CGRectMake(0.0f, 0.0f, 140.0f, 140.0f);
+                favoriteLargeIcon.center = sself.view.center;
+            } completion:^(BOOL finished) {
+                [UIView animateWithDuration:0.3f delay:0.5f options:0 animations:^{
+                    favoriteLargeIcon.alpha = 0.0f;
+                } completion:^(BOOL finished) {
+                    [favoriteLargeIcon removeFromSuperview];
+                }];
+            }];
+        }];
     }];
 }
 

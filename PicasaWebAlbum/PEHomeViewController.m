@@ -326,6 +326,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection index:index ascending:sself.favoriteListDataSource.ascending];
+        viewController.needsFavoriteChangedPopBack = YES;
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }
