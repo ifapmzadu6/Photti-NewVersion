@@ -266,9 +266,6 @@
         NSString *albumCountString = [PAString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
         [footerView setText:albumCountString];
     }
-    else {
-        [footerView setText:nil];
-    }
     
     return footerView;
 }

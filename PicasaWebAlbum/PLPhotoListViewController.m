@@ -411,9 +411,6 @@
         NSString *footerString =[NSString stringWithFormat:@"- %@ -", albumCountString];
         [footerView setText:footerString];
     }
-    else {
-        [footerView setText:nil];
-    }
     
     return footerView;
 }

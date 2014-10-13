@@ -53,6 +53,12 @@
     _textLabel.frame = CGRectMake(12.0f, 0.0f, CGRectGetWidth(rect) - 24.0f, 50.0f);
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    _textLabel.text = nil;
+}
+
 - (void)setText:(NSString *)text {
     _textLabel.text = text;
 }
