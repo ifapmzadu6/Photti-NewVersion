@@ -14,6 +14,7 @@
 
 @property (nonatomic) UIView *overrayView;
 @property (strong, nonatomic) UIImageView *checkMarkImageView;
+@property (strong, nonatomic) UIImageView *checkMarkBackgroundImageView;
 @property (nonatomic) CGRect rect;
 
 @end
@@ -82,9 +83,15 @@
     [self.contentView addSubview:_overrayView];
     
     _checkMarkImageView = [UIImageView new];
-    _checkMarkImageView.image = [UIImage imageNamed:@"CheckMark"];
+    _checkMarkImageView.image = [[UIImage imageNamed:@"CheckMark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _checkMarkImageView.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
     _checkMarkImageView.alpha = 0.0f;
     [self.contentView addSubview:_checkMarkImageView];
+    
+    _checkMarkBackgroundImageView = [UIImageView new];
+    _checkMarkBackgroundImageView.image = [UIImage imageNamed:@"CheckMarkBackground"];
+    _checkMarkBackgroundImageView.alpha = 0.0f;
+    [self.contentView insertSubview:_checkMarkBackgroundImageView belowSubview:_checkMarkImageView];
 }
 
 - (void)layoutSubviews {
@@ -105,7 +112,8 @@
     _detailLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 12.0f, CGRectGetWidth(rect), 12.0f);
     
     _overrayView.frame = CGRectMake(0.0f, 0.0f, CGRectGetWidth(rect), CGRectGetMaxY(_firstImageView.frame));
-    _checkMarkImageView.frame = CGRectMake(CGRectGetMaxX(_firstImageView.frame) - 32.0f, CGRectGetMaxY(_firstImageView.frame) - 32.0f, 28.0f, 28.0f);
+    _checkMarkImageView.frame = CGRectMake(CGRectGetMaxX(_firstImageView.frame) - 32.0f, CGRectGetMaxY(_firstImageView.frame) - 32.0f, 25.0f, 25.0f);
+    _checkMarkBackgroundImageView.frame = _checkMarkImageView.frame;
 }
 
 - (void)prepareForReuse {
@@ -124,6 +132,7 @@
     
     _overrayView.alpha = (selected && _isSelectWithCheckmark) ? 0.5f : 0.0f;
     _checkMarkImageView.alpha = (selected && _isSelectWithCheckmark) ? 1.0f : 0.0f;
+    _checkMarkBackgroundImageView.alpha = _checkMarkImageView.alpha;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {

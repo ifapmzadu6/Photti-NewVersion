@@ -10,6 +10,7 @@
 
 #import "PLPhotoViewCell.h"
 
+#import "PAColors.h"
 #import "PAIcons.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
@@ -25,7 +26,8 @@
 @property (strong, nonatomic) UILabel *videoDurationLabel;
 @property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIView *overrayView;
-@property (strong, nonatomic) UIImageView *checkMark;
+@property (strong, nonatomic) UIImageView *checkMarkImageView;
+@property (strong, nonatomic) UIImageView *checkMarkBackgroundImageView;
 
 @property (nonatomic) NSUInteger photoHash;
 
@@ -81,10 +83,16 @@
     _overrayView.alpha = 0.0f;
     [self.contentView addSubview:_overrayView];
     
-    _checkMark = [UIImageView new];
-    _checkMark.image = [UIImage imageNamed:@"CheckMark"];
-    _checkMark.alpha = 0.0f;
-    [self.contentView addSubview:_checkMark];
+    _checkMarkImageView = [UIImageView new];
+    _checkMarkImageView.image = [[UIImage imageNamed:@"CheckMark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _checkMarkImageView.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    _checkMarkImageView.alpha = 0.0f;
+    [self.contentView addSubview:_checkMarkImageView];
+    
+    _checkMarkBackgroundImageView = [UIImageView new];
+    _checkMarkBackgroundImageView.image = [UIImage imageNamed:@"CheckMarkBackground"];
+    _checkMarkBackgroundImageView.alpha = 0.0f;
+    [self.contentView insertSubview:_checkMarkBackgroundImageView belowSubview:_checkMarkImageView];
 }
 
 - (void)setSelected:(BOOL)selected {
@@ -93,16 +101,19 @@
     if (selected) {
         if (_isSelectWithCheckMark) {
             _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.5f];
-            _checkMark.alpha = 1.0f;
+            _checkMarkImageView.alpha = 1.0f;
+            _checkMarkBackgroundImageView.alpha = _checkMarkImageView.alpha;
         }
         else {
             _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.25f];
-            _checkMark.alpha = 0.0f;
+            _checkMarkImageView.alpha = 0.0f;
+            _checkMarkBackgroundImageView.alpha = _checkMarkImageView.alpha;
         }
         _overrayView.alpha = 1.0f;
     }
     else {
-        _checkMark.alpha = 0.0f;
+        _checkMarkImageView.alpha = 0.0f;
+        _checkMarkBackgroundImageView.alpha = _checkMarkImageView.alpha;
         _overrayView.alpha = 0.0f;
     }
 }
@@ -157,7 +168,8 @@
     
     _activityIndicatorView.center = self.contentView.center;
     _overrayView.frame = _imageView.frame;
-    _checkMark.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 32.0f, CGRectGetMaxY(_imageView.frame) - 32.0f, 28.0f, 28.0f);
+    _checkMarkImageView.frame = CGRectMake(CGRectGetMaxX(_imageView.frame) - 32.0f, CGRectGetMaxY(_imageView.frame) - 32.0f, 25.0f, 25.0f);
+    _checkMarkBackgroundImageView.frame = _checkMarkImageView.frame;
 }
 
 - (void)prepareForReuse {

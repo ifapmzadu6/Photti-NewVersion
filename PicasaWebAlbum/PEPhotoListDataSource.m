@@ -10,6 +10,7 @@
 
 #import "PEPhotoViewCell.h"
 #import "NSIndexSet+methods.h"
+#import "PADateFormatter.h"
 
 @import Photos;
 
@@ -146,12 +147,10 @@
     __weak typeof(cell) wcell = cell;
     NSUInteger tag = indexPath.row;
     cell.tag = tag;
-    cell.imageView.image = nil;
     cell.isSelectWithCheckmark = _isSelectMode;
     cell.backgroundColor = _cellBackgroundColor;
-    
     CGSize targetSize = (_flowLayout) ? _flowLayout.itemSize : _cellSize;
-    NSUInteger index = (_ascending) ? _fetchResult.count-indexPath.item-1 : indexPath.item;
+    NSUInteger index = (_ascending) ? (_fetchResult.count-indexPath.item-1) : indexPath.item;
     PHAsset *asset = _fetchResult[index];
     [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
         typeof(wcell) scell = wcell;
@@ -160,6 +159,18 @@
             scell.imageView.image = result;
         }
     }];
+    cell.favoriteIconView.hidden = (asset.favorite) ? NO : YES;
+    if (asset.mediaType == PHAssetMediaTypeVideo) {
+        cell.videoBackgroundView.hidden = NO;
+        cell.videoDurationLabel.hidden = NO;
+        cell.videoDurationLabel.text = [PADateFormatter arrangeDuration:asset.duration];
+        if (asset.mediaSubtypes == PHAssetMediaSubtypeVideoTimelapse) {
+            cell.videoTimelapseIconView.hidden = NO;
+        }
+        else {
+            cell.videoIconView.hidden = NO;
+        }
+    }
     
     return cell;
 }

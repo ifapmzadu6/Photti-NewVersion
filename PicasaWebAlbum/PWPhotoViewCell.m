@@ -32,6 +32,7 @@
 @property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UIView *overrayView;
 @property (strong, nonatomic) UIImageView *checkMark;
+@property (strong, nonatomic) UIImageView *checkMarkBackgroundImageView;
 
 @property (nonatomic) NSUInteger photoHash;
 @property (weak, nonatomic) NSURLSessionTask *task;
@@ -75,7 +76,7 @@
     [self.contentView insertSubview:_animatedImageView belowSubview:_imageView];
     
     _videoBackgroundView = [UIImageView new];
-    _videoBackgroundView.image = [PAIcons gradientVerticalFromColor:UIColor.clearColor toColor:UIColor.blackColor size:CGSizeMake(200.0f, 200.0f)];
+    _videoBackgroundView.image = [PAIcons gradientVerticalFromColor:UIColor.clearColor toColor:UIColor.blackColor size:CGSizeMake(1.0f, 40.0f)];
     _videoBackgroundView.hidden = YES;
     [self.contentView addSubview:_videoBackgroundView];
     
@@ -98,9 +99,15 @@
     [self.contentView addSubview:_overrayView];
     
     _checkMark = [UIImageView new];
-    _checkMark.image = [UIImage imageNamed:@"CheckMark"];
+    _checkMark.image = [[UIImage imageNamed:@"CheckMark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _checkMark.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     _checkMark.alpha = 0.0f;
     [self.contentView addSubview:_checkMark];
+    
+    _checkMarkBackgroundImageView = [UIImageView new];
+    _checkMarkBackgroundImageView.image = [UIImage imageNamed:@"CheckMarkBackground"];
+    _checkMarkBackgroundImageView.alpha = 0.0f;
+    [self.contentView insertSubview:_checkMarkBackgroundImageView belowSubview:_checkMark];
 }
 
 - (void)setSelected:(BOOL)selected {
@@ -110,15 +117,18 @@
         if (_isSelectWithCheckMark) {
             _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.5f];
             _checkMark.alpha = 1.0f;
+            _checkMarkBackgroundImageView.alpha = 1.0f;
         }
         else {
             _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.25f];
             _checkMark.alpha = 0.0f;
+            _checkMarkBackgroundImageView.alpha = 0.0f;
         }
         _overrayView.alpha = 1.0f;
     }
     else {
         _checkMark.alpha = 0.0f;
+        _checkMarkBackgroundImageView.alpha = 0.0f;
         _overrayView.alpha = 0.0f;
     }
 }
@@ -186,7 +196,8 @@
     _videoDurationLabel.frame = CGRectMake(CGRectGetMinX(imageFrame), CGRectGetMaxY(imageFrame) - 20.0f, CGRectGetWidth(imageFrame) - 5.0f, 20.0f);
     
     _overrayView.frame = imageFrame;
-    _checkMark.frame = CGRectMake(CGRectGetMaxX(imageFrame) - 32.0f, CGRectGetMaxY(imageFrame) - 32.0f, 28.0f, 28.0f);
+    _checkMark.frame = CGRectMake(CGRectGetMaxX(imageFrame) - 32.0f, CGRectGetMaxY(imageFrame) - 32.0f, 25.0f, 25.0f);
+    _checkMarkBackgroundImageView.frame = _checkMark.frame;
 }
 
 - (void)prepareForReuse {
@@ -249,7 +260,7 @@
             if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
                 _videoBackgroundView.hidden = NO;
                 
-                NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
+                NSString *durationString = _photo.gphoto.originalvideo_duration;
                 _videoDurationLabel.text = [PADateFormatter arrangeDuration:durationString.doubleValue];
                 _videoDurationLabel.hidden = NO;
                 _videoIconView.hidden = NO;
