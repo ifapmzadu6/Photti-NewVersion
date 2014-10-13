@@ -227,23 +227,26 @@
         
         UIImageView *favoriteLargeIcon = [UIImageView new];
         favoriteLargeIcon.image = [UIImage imageNamed:@"FavoriteLarge"];
-        favoriteLargeIcon.frame = CGRectMake(0.0f, 0.0f, 140.0f, 140.0f);
+        CGFloat maxSize = MIN(CGRectGetWidth([UIScreen mainScreen].bounds), CGRectGetHeight([UIScreen mainScreen].bounds)) / 2.0f;
+        CGFloat minSize = maxSize - 20.0f;
+        favoriteLargeIcon.frame = CGRectMake(0.0f, 0.0f, minSize, minSize);
         favoriteLargeIcon.center = sself.view.center;
         favoriteLargeIcon.alpha = 0.5f;
         [sself.view addSubview:favoriteLargeIcon];
+        __weak typeof(favoriteLargeIcon) weakFavoriteLargeIcon = favoriteLargeIcon;
         [UIView animateWithDuration:0.1f animations:^{
-            favoriteLargeIcon.frame = CGRectMake(0.0f, 0.0f, 160.0f, 160.0f);
-            favoriteLargeIcon.center = sself.view.center;
-            favoriteLargeIcon.alpha = 1.0f;
+            weakFavoriteLargeIcon.frame = CGRectMake(0.0f, 0.0f, maxSize, maxSize);
+            weakFavoriteLargeIcon.center = sself.view.center;
+            weakFavoriteLargeIcon.alpha = 1.0f;
         } completion:^(BOOL finished) {
             [UIView animateWithDuration:0.2f animations:^{
-                favoriteLargeIcon.frame = CGRectMake(0.0f, 0.0f, 140.0f, 140.0f);
-                favoriteLargeIcon.center = sself.view.center;
+                weakFavoriteLargeIcon.frame = CGRectMake(0.0f, 0.0f, minSize, minSize);
+                weakFavoriteLargeIcon.center = sself.view.center;
             } completion:^(BOOL finished) {
                 [UIView animateWithDuration:0.3f delay:0.5f options:0 animations:^{
-                    favoriteLargeIcon.alpha = 0.0f;
+                    weakFavoriteLargeIcon.alpha = 0.0f;
                 } completion:^(BOOL finished) {
-                    [favoriteLargeIcon removeFromSuperview];
+                    [weakFavoriteLargeIcon removeFromSuperview];
                 }];
             }];
         }];
