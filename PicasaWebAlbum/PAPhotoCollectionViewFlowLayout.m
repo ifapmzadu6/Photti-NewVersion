@@ -11,6 +11,10 @@
 @implementation PAPhotoCollectionViewFlowLayout
 
 - (CGSize)itemSize {
+    return [self.class itemSize];
+}
+
++ (CGSize)itemSize {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         int size = MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds));
         if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {

@@ -97,7 +97,15 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
-        _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
+        if (type == PHPhotoListViewControllerType_Panorama) {
+            CGRect rect = [UIScreen mainScreen].bounds;
+            _photoListDataSource.cellSize = CGSizeMake(CGRectGetWidth(rect), 100.0f);
+            _photoListDataSource.landscapeCellSize = CGSizeMake(CGRectGetHeight(rect), 100.0f);
+            _photoListDataSource.minimumLineSpacing = 15.0f;
+        }
+        else {
+            _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
+        }
         _photoListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
         _photoListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
             typeof(wself) sself = wself;

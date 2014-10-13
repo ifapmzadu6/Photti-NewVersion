@@ -11,6 +11,7 @@
 #import "PEPhotoViewCell.h"
 #import "NSIndexSet+methods.h"
 #import "PADateFormatter.h"
+#import "PLCollectionFooterView.h"
 
 @import Photos;
 
@@ -62,6 +63,7 @@
     
     if (collectionView) {
         [collectionView registerClass:[PEPhotoViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PEPhotoViewCell class])];
+        [collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:NSStringFromClass([PLCollectionFooterView class])];
     }
 }
 
@@ -175,6 +177,20 @@
     return cell;
 }
 
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+    if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
+        PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:NSStringFromClass([PLCollectionFooterView class]) forIndexPath:indexPath];
+        
+        if (_fetchResult.count > 0) {
+            NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Photos -", nil), (unsigned long)_fetchResult.count];
+            [footerView setText:albumCountString];
+        }
+        
+        return footerView;
+    }
+    return nil;
+}
+
 #pragma mark UICollectionViewFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_flowLayout) {
@@ -203,6 +219,10 @@
     }
     
     return _minimumLineSpacing;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    return CGSizeMake(0.0f, 50.0f);
 }
 
 #pragma mark UICollectionViewDelegate
