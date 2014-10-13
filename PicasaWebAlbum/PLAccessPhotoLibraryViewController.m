@@ -226,7 +226,7 @@
 }
 
 - (void)updateAccessButton {
-    if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized || [ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusNotDetermined) {
+    if ([PEAssetsManager isStatusAuthorized] || [PEAssetsManager isStatusNotDetermined]) {
         _accessButton.alpha = 1.0f;
         _accessButton.enabled = YES;
     }
