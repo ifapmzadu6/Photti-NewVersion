@@ -76,7 +76,7 @@
     [self.contentView addSubview:_videoDurationLabel];
     
     _favoriteIconView = [UIImageView new];
-    _favoriteIconView.image = [[UIImage imageNamed:@"Favorite"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _favoriteIconView.image = [[UIImage imageNamed:@"FavoriteMini"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _favoriteIconView.tintColor = [UIColor colorWithRed:240.0f/255.0f green:90.0f/255.0f blue:80.0f/255.0f alpha:1.0f];
     [self.contentView addSubview:_favoriteIconView];
     

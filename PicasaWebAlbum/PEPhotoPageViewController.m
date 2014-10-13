@@ -19,7 +19,7 @@
 #import "PATabBarAdsController.h"
 #import "UIView+ScreenCapture.h"
 
-@interface PEPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
+@interface PEPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, PHPhotoLibraryChangeObserver>
 
 @property (strong, nonatomic) PHAssetCollection *assetCollection;
 @property (strong, nonatomic) PHFetchResult *fetchedResult;
@@ -44,6 +44,8 @@
         _assetCollection = assetCollection;
         _fetchedResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
         _ascending = ascending;
+        
+        [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
         
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
@@ -106,22 +108,15 @@
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
     
-    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
-    UIBarButtonItem *organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction:)];
-    UIBarButtonItem *trashButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction:)];
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, organizeBarButtonItem, flexibleSpace, trashButtonItem];
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
     if ([tabBarController isTabBarHidden]) {
-        [tabBarController setToolbarItems:toolbarItems animated:YES];
         if ([tabBarController isToolbarHideen]) {
             [tabBarController setToolbarHidden:NO animated:YES completion:nil];
         }
     }
     else {
-        [tabBarController setToolbarItems:toolbarItems animated:YES];
         __weak typeof(self) wself = self;
         [tabBarController setToolbarHidden:NO animated:YES completion:^(BOOL finished) {
             typeof(wself) sself = wself;
@@ -138,6 +133,26 @@
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
+}
+
+- (NSArray *)toolbarItemsWithIsFavorite:(BOOL)isFavorite {
+    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
+    UIBarButtonItem *favoriteBarButtonItem = nil;
+    if (isFavorite) {
+        favoriteBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"FavoriteSelect"] landscapeImagePhone:[PAIcons imageWithImage:[UIImage imageNamed:@"FavoriteSelect"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)] style:UIBarButtonItemStylePlain target:self action:@selector(unFavoriteBarButtonAction:)];
+    }
+    else {
+        favoriteBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Favorite"] landscapeImagePhone:[PAIcons imageWithImage:[UIImage imageNamed:@"Favorite"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)] style:UIBarButtonItemStylePlain target:self action:@selector(favoriteBarButtonAction:)];
+    }
+    UIBarButtonItem *organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction:)];
+    UIBarButtonItem *trashButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction:)];
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, favoriteBarButtonItem, flexibleSpace, organizeBarButtonItem, flexibleSpace, trashButtonItem];
+    return toolbarItems;
+}
+
+- (void)dealloc {
+    [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
 }
 
 #pragma mark UIBarButtonAction
@@ -199,6 +214,37 @@
     }
 }
 
+- (void)favoriteBarButtonAction:(id)sender {
+    BOOL isFavorite = YES;
+    PHAsset *asset = _fetchedResult[_index];
+    __weak typeof(self) wself = self;
+    [self.class setFavoriteWithAsset:asset isFavorite:isFavorite completion:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+        NSArray *toolbarItems = [sself toolbarItemsWithIsFavorite:isFavorite];
+        [tabBarController setToolbarItems:toolbarItems animated:YES];
+    }];
+}
+
+- (void)unFavoriteBarButtonAction:(id)sender {
+    BOOL isFavorite = NO;
+    PHAsset *asset = _fetchedResult[_index];
+    __weak typeof(self) wself = self;
+    [self.class setFavoriteWithAsset:asset isFavorite:isFavorite completion:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (sself.needsFavoriteChangedPopBack) {
+            [sself.navigationController popViewControllerAnimated:YES];
+        }
+        else {
+            PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+            NSArray *toolbarItems = [sself toolbarItemsWithIsFavorite:isFavorite];
+            [tabBarController setToolbarItems:toolbarItems animated:YES];
+        }
+    }];
+}
+
 - (void)organizeBarButtonAction:(id)sender {
     
 }
@@ -248,8 +294,16 @@
         sself.title = title;
         sself.index = index;
         dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
             UIBarButtonItem *item = sself.navigationItem.rightBarButtonItems.firstObject;
             item.enabled = isGPSEnable;
+            
+            PHAsset *tmpAsset = sself.fetchedResult[index];
+            BOOL isFavorite = tmpAsset.favorite;
+            PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+            NSArray *toolbarItems = [sself toolbarItemsWithIsFavorite:isFavorite];
+            [tabBarController setToolbarItems:toolbarItems animated:YES];
         });
     };
     viewController.didSingleTapBlock = ^{
@@ -279,6 +333,12 @@
     return viewController;
 }
 
+#pragma mark PHPhotoLibraryDelegate
+- (void)photoLibraryDidChange:(PHChange *)changeInstance {
+    PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:_fetchedResult];
+    _fetchedResult = changeDetails.fetchResultAfterChanges;
+}
+
 #pragma mark Photo
 - (void)deleteAssets:(NSArray *)assets completion:(void (^)(BOOL, NSError *))completion {
     if (assets.count == 0) return;
@@ -293,6 +353,21 @@
     }];
 }
 
+
++ (void)setFavoriteWithAsset:(PHAsset *)asset isFavorite:(BOOL)isFavorite completion:(void (^)())completion {
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetChangeRequest *changeAssetRequest = [PHAssetChangeRequest changeRequestForAsset:asset];
+        changeAssetRequest.favorite = isFavorite;
+    } completionHandler:^(BOOL success, NSError *error) {
+        if (success && !error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (completion) {
+                    completion();
+                }
+            });
+        }
+    }];
+}
 
 
 @end

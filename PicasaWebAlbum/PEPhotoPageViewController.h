@@ -12,6 +12,7 @@
 @interface PEPhotoPageViewController : UIPageViewController
 
 @property (nonatomic, readonly) BOOL ascending;
+@property (nonatomic) BOOL needsFavoriteChangedPopBack;
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection index:(NSUInteger)index;
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection index:(NSUInteger)index ascending:(BOOL)ascending;

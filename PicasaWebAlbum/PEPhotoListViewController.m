@@ -90,10 +90,12 @@
         }
         else {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makePhotoInAlbumListDataSourceWithCollection:assetCollection];
+            BOOL isTypeFavorite = (type==PHPhotoListViewControllerType_Favorite) ? YES : NO;
             _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.photoListDataSource.assetCollection index:index];
+                viewController.needsFavoriteChangedPopBack = isTypeFavorite;
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
