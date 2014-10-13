@@ -11,6 +11,7 @@
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PLAssetsManager.h"
+#import "PEAssetsManager.h"
 
 #import "PXSettingsViewController.h"
 #import "PATabBarAdsController.h"
@@ -124,7 +125,7 @@
                 CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-568.0f)/2.0f;
                 CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-320.0f)/2.0f;
                 _iconImageView.frame = CGRectMake(deltaX+70.0f, deltaY+80.0f, 180.0f, 180.0f);
-                _titleLabel.frame = CGRectMake(deltaX+250.0f, deltaY+286.0f-192.0f, CGRectGetHeight(rect), 36.0f);
+                _titleLabel.frame = CGRectMake(deltaX+250.0f, deltaY+286.0f-192.0f, 320.0f, 36.0f);
                 _descriptionLabel.frame = CGRectMake(deltaX+250.0f+40.0f, deltaY+326.0f-212.0f, 240.0f, 100.0f);
                 _accessButton.frame = CGRectMake(deltaX+250.0f+110.0f, deltaY+444.0f-227.0f, 100.0f, 30.0f);
             }
@@ -132,7 +133,7 @@
                 CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-320.0f)/2.0f;
                 CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-568.0f)/2.0f;
                 _iconImageView.frame = CGRectMake(deltaX+70.0f, deltaY+92.0f, 180.0f, 180.0f);
-                _titleLabel.frame = CGRectMake(deltaX+0.0f, deltaY+286.0f, CGRectGetWidth(rect), 36.0f);
+                _titleLabel.frame = CGRectMake(deltaX+0.0f, deltaY+286.0f, 320.0f, 36.0f);
                 _descriptionLabel.frame = CGRectMake(deltaX+40.0f, deltaY+326.0f, 240.0f, 100.0f);
                 _accessButton.frame = CGRectMake(deltaX+110.0f, deltaY+444.0f, 100.0f, 30.0f);
             }
@@ -177,29 +178,46 @@
 #pragma mark UIButtonAction
 - (void)accessButtonAction {
     __weak typeof(self) wself = self;
-    [[PLAssetsManager sharedManager] testAccessPhotoLibraryWithCompletion:^(NSError *error) {
-        if (error) {
-#ifdef DEBUG
-            NSLog(@"%@", error);
-#endif
-        }
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
-            if (sself.completion) {
-                sself.completion();
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        [PEAssetsManager requestAuthorizationWithCompletion:^(BOOL isStatusAuthorized) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (isStatusAuthorized) {
+                if (sself.completion) {
+                    sself.completion();
+                }
             }
-        }
-        else {
-            [sself setDescriptionLabelText];
-            [sself updateAccessButton];
-        }
-    }];
+            else {
+                [sself setDescriptionLabelText];
+                [sself updateAccessButton];
+            }
+        }];
+    }
+    else {
+        [[PLAssetsManager sharedManager] testAccessPhotoLibraryWithCompletion:^(NSError *error) {
+            if (error) {
+#ifdef DEBUG
+                NSLog(@"%@", error);
+#endif
+            }
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if ([PEAssetsManager isStatusAuthorized]) {
+                if (sself.completion) {
+                    sself.completion();
+                }
+            }
+            else {
+                [sself setDescriptionLabelText];
+                [sself updateAccessButton];
+            }
+        }];
+    }
 }
 
 #pragma mark OtherMethods
 - (void)setDescriptionLabelText {
-    if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized || [ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusNotDetermined) {
+    if ([PEAssetsManager isStatusAuthorized] || [PEAssetsManager isStatusNotDetermined]) {
         _descriptionLabel.text = NSLocalizedString(@"You can manage smartly your Photo Library photos, albums, and videos with Photti.", nil);
     }
     else {

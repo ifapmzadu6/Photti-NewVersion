@@ -8,6 +8,8 @@
 
 #import "PWAlbumListViewController.h"
 
+@import CoreData;
+
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PWPicasaAPI.h"

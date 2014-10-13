@@ -10,8 +10,10 @@
 
 #import "PAColors.h"
 #import "PAIcons.h"
+#import "PEAssetsManager.h"
 #import "PEHomeViewController.h"
 #import "PATabBarAdsController.h"
+#import "PLAccessPhotoLibraryViewController.h"
 
 @interface PENavigationController ()
 
@@ -32,9 +34,24 @@
         _tabBarImageLandspaceSelected = [PAIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
         self.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:tabBarImage selectedImage:tabBarImageSelected];
         
-        PEHomeViewController *homeViewController = [PEHomeViewController new];
-        
-        self.viewControllers = @[homeViewController];
+        if (![PEAssetsManager isStatusAuthorized]) {
+            PLAccessPhotoLibraryViewController *accessPhotoLibraryViewController = [PLAccessPhotoLibraryViewController new];
+            __weak typeof(self) wself = self;
+            accessPhotoLibraryViewController.completion = ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    PEHomeViewController *homeViewController = [PEHomeViewController new];
+                    [sself setViewControllers:@[homeViewController] animated:YES];
+                });
+            };
+            self.viewControllers = @[accessPhotoLibraryViewController];
+        }
+        else {
+            PEHomeViewController *homeViewController = [PEHomeViewController new];
+            self.viewControllers = @[homeViewController];
+        }
+    
     }
     return self;
 }
