@@ -37,6 +37,9 @@
 static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    // OAuth
+    [PWOAuthManager refreshKeychain];
+    
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
@@ -121,12 +124,22 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+    [PWOAuthManager refreshKeychain];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    [PWOAuthManager refreshKeychain];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+}
+
+- (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application {
+    [PWOAuthManager refreshKeychain];
+}
+
+- (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application {
+    [PWOAuthManager refreshKeychain];
 }
 
 #pragma mark Local Notification

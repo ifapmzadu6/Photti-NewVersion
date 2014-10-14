@@ -41,7 +41,6 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
             
             _countOfLoginError = 0;
         };
-        
         if ([NSThread isMainThread]) {
             block();
         }
@@ -50,6 +49,18 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
         }
     }
     return self;
+}
+
++ (void)refreshKeychain {
+    void (^block)() = ^{
+    [self.class sharedManager].auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
+    };
+    if ([NSThread isMainThread]) {
+        block();
+    }
+    else {
+        dispatch_sync(dispatch_get_main_queue(), block);
+    }
 }
 
 + (void)getAccessTokenWithCompletion:(void (^)(NSDictionary *, NSError *))completion {
