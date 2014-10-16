@@ -56,7 +56,10 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    if (![PWOAuthManager isLogined]) {
+    if ([PWOAuthManager isLogined]) {
+        [self setAlbumViewControllerAnimated:NO];
+    }
+    else {
         [self setLoginViewControllerAnimated:NO];
     }
 }

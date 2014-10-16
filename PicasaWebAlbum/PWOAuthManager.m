@@ -66,7 +66,7 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
 
 + (void)getAccessTokenWithCompletion:(void (^)(NSDictionary *, NSError *))completion {
     void (^block)() = ^(){
-        GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
+        GTMOAuth2Authentication *auth = [self sharedManager].auth;
         if (![auth canAuthorize]) {
             completion ? completion(nil, [NSError errorWithDomain:kPWOAuthManagerOAuthErrorDomain code:0 userInfo:nil]) : 0;
             return;
@@ -92,7 +92,7 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
 }
 
 + (void)getAuthorizeHTTPHeaderFields:(void (^)(NSDictionary *, NSError *))completion {
-    [PWOAuthManager getAccessTokenWithCompletion:^(NSDictionary *headerFields, NSError *error) {
+    [self getAccessTokenWithCompletion:^(NSDictionary *headerFields, NSError *error) {
         if (error) {
             completion ? completion(nil, [NSError errorWithDomain:kPWOAuthManagerOAuthErrorDomain code:0 userInfo:nil]) : 0;
         }
@@ -103,7 +103,7 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
 }
 
 + (void)getUserData:(void (^)(NSString *, NSError *))completion {
-    GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
+    GTMOAuth2Authentication *auth = [self sharedManager].auth;
     if ([auth canAuthorize]) {
         completion ? completion(auth.userEmail, nil) : 0;
     }
@@ -113,14 +113,15 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
 }
 
 + (BOOL)isLogined {
-    GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
+    [self refreshKeychain];
+    GTMOAuth2Authentication *auth = [self sharedManager].auth;
     return [GTMOAuth2ViewControllerTouch authorizeFromKeychainForName:PWKeyChainItemName authentication:auth error:nil];
 }
 
 + (void)logout {
     void (^block)() = ^() {
         [GTMOAuth2ViewControllerTouch removeAuthFromKeychainForName:PWKeyChainItemName];
-        GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
+        GTMOAuth2Authentication *auth = [self sharedManager].auth;
         [GTMOAuth2ViewControllerTouch revokeTokenForGoogleAuthentication:auth];
     };
     
@@ -135,7 +136,7 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
 + (void)loginViewControllerWithCompletion:(void (^)(UINavigationController *))completion finish:(void (^)())finish {
     void (^block)() = ^() {
         GTMOAuth2ViewControllerTouch *viewController = [GTMOAuth2ViewControllerTouch controllerWithScope:PWScope clientID:PWClientID clientSecret:PWClientSecret keychainItemName:PWKeyChainItemName completionHandler:^(GTMOAuth2ViewControllerTouch *viewController, GTMOAuth2Authentication *auth, NSError *error) {
-            [PWOAuthManager sharedManager].auth = auth;
+            [self sharedManager].auth = auth;
             [viewController dismissViewControllerAnimated:YES completion:^{
                 NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
                 [auth authorizeRequest:request completionHandler:^(NSError *error) {
@@ -186,19 +187,19 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
 }
 
 + (NSUInteger)countOfLoginError {
-    return [PWOAuthManager sharedManager].countOfLoginError;
+    return [self sharedManager].countOfLoginError;
 }
 
 + (BOOL)shouldOpenLoginViewController {
-    return ([PWOAuthManager sharedManager].countOfLoginError > kPWOAuthManagerMaxCounfOfLoginError) ? YES : NO;
+    return ([self sharedManager].countOfLoginError > kPWOAuthManagerMaxCounfOfLoginError) ? YES : NO;
 }
 
 + (void)incrementCountOfLoginError {
-    [PWOAuthManager sharedManager].countOfLoginError++;
+    [self sharedManager].countOfLoginError++;
 }
 
 + (void)resetCountOfLoginError {
-    [PWOAuthManager sharedManager].countOfLoginError = 0;
+    [self sharedManager].countOfLoginError = 0;
 }
 
 @end
