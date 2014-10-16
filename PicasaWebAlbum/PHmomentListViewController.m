@@ -139,7 +139,8 @@
 }
 
 - (void)selectActionBarButtonAction:(id)sender {
-    
+    NSArray *selectAssetCollections = _dataSource.selectedCollections;
+    [self actionAssetCollections:selectAssetCollections];
 }
 
 - (void)selectUploadBarButtonAction:(id)sender {
@@ -147,7 +148,8 @@
 }
 
 - (void)selectTrashBarButtonAction:(id)sender {
-    
+    NSArray *selectAssetCollections = _dataSource.selectedCollections;
+    [self deleteAssetCollections:selectAssetCollections];
 }
 
 - (void)cancelBarButtonAction:(id)sender {
@@ -224,6 +226,41 @@
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+}
+
+#pragma mark Photo
+- (void)actionAssetCollections:(NSArray *)assetCollections {
+    NSMutableArray *images = @[].mutableCopy;
+    PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
+    imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    imageOptions.synchronous = YES;
+    for (PHAssetCollection *assetCollection in assetCollections) {
+        PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+        for (PHAsset *asset in fetchResult) {
+            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeDefault options:imageOptions resultHandler:^(UIImage *result, NSDictionary *info) {
+                [images addObject:result];
+            }];
+        }
+    }
+    
+    UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:images applicationActivities:nil];
+    viewController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+        
+    };
+    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)deleteAssetCollections:(NSArray *)assetCollections {
+    if (assetCollections.count == 0) return;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        [PHAssetCollectionChangeRequest deleteAssetCollections:assetCollections];
+    } completionHandler:^(BOOL success, NSError *error) {
+        if (error) {
+#ifdef DEBUG
+            NSLog(@"%@", error);
+#endif
+        }
+    }];
 }
 
 @end

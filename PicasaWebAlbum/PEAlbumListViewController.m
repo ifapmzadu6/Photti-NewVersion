@@ -272,7 +272,9 @@
         [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title];
     } completionHandler:^(BOOL success, NSError *error) {
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
         }
     }];
 }
@@ -283,28 +285,31 @@
         [PHAssetCollectionChangeRequest deleteAssetCollections:assetCollections];
     } completionHandler:^(BOOL success, NSError *error) {
         if (error) {
+#ifdef DEBUG
             NSLog(@"%@", error);
+#endif
         }
     }];
 }
 
 - (void)actionAssetCollections:(NSArray *)assetCollections {
-    NSMutableArray *assets = @[].mutableCopy;
-    
-//    PHImageRequestOptions *options = [PHImageRequestOptions new];
-//    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-//    options.synchronous = YES;
+    NSMutableArray *images = @[].mutableCopy;
+    PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
+    imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    imageOptions.synchronous = YES;
     for (PHAssetCollection *assetCollection in assetCollections) {
         PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
         for (PHAsset *asset in fetchResult) {
-//            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage *result, NSDictionary *info) {
-//                [assets addObject:result];
-//            }];
-            [assets addObject:asset];
+            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeDefault options:imageOptions resultHandler:^(UIImage *result, NSDictionary *info) {
+                [images addObject:result];
+            }];
         }
     }
     
-    UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:assets applicationActivities:nil];
+    UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:images applicationActivities:nil];
+    viewController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+        
+    };
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
