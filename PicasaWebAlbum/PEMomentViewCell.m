@@ -121,6 +121,8 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
 - (void)prepareForReuse {
     [super prepareForReuse];
     
+    self.tag = NSIntegerMax;
+    
     _titleLabel.text = nil;
     _detailLabel.text = nil;
     for (UIImageView *imageView in _imageViews) {

@@ -123,6 +123,8 @@ static NSString * const kPECategoryViewCellSettingsKey = @"kPECategoryViewCellSe
 - (void)prepareForReuse {
     [super prepareForReuse];
     
+    self.tag = NSIntegerMax;
+    
     UIEdgeInsets contentInsets = _horizontalScrollView.collectionView.contentInset;
     _horizontalScrollView.collectionView.contentOffset = CGPointMake(-contentInsets.left, 0.0f);
 }

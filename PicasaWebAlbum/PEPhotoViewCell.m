@@ -68,6 +68,12 @@
     _videoTimelapseIconView.hidden = YES;
     [self.contentView addSubview:_videoTimelapseIconView];
     
+    _videoSlomoIconView = [UIImageView new];
+    _videoSlomoIconView.image = [[UIImage imageNamed:@"Slo-mo"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _videoSlomoIconView.tintColor = [UIColor whiteColor];
+    _videoSlomoIconView.hidden = YES;
+    [self.contentView addSubview:_videoSlomoIconView];
+    
     _videoDurationLabel = [UILabel new];
     _videoDurationLabel.font = [UIFont systemFontOfSize:12.0f];
     _videoDurationLabel.textColor = [UIColor whiteColor];
@@ -130,6 +136,7 @@
     _videoBackgroundView.frame = CGRectMake(CGRectGetMinX(imageFrame), CGRectGetMaxY(imageFrame)-20.0f, CGRectGetWidth(imageFrame), 20.0f);
     _videoIconView.frame = CGRectMake(CGRectGetMinX(imageFrame)+5.0f, CGRectGetMaxY(imageFrame)-14.0f, 16.0f, 8.0f);
     _videoTimelapseIconView.frame = CGRectMake(CGRectGetMinX(imageFrame)+5.0f, CGRectGetMaxY(imageFrame)-18.0f, 15.0f, 15.0f);
+    _videoSlomoIconView.frame = CGRectMake(CGRectGetMinX(imageFrame)+5.0f, CGRectGetMaxY(imageFrame)-18.0f, 15.0f, 15.0f);
     _videoDurationLabel.frame = CGRectMake(CGRectGetMinX(imageFrame), CGRectGetMaxY(imageFrame) - 20.0f, CGRectGetWidth(imageFrame) - 5.0f, 20.0f);
     
     _overrayView.frame = rect;
@@ -140,6 +147,8 @@
 - (void)prepareForReuse {
     [super prepareForReuse];
     
+    self.tag = NSIntegerMax;
+    
     _imageView.image = nil;
     
     _videoBackgroundView.hidden = YES;
@@ -147,6 +156,7 @@
     _videoDurationLabel.text = nil;
     _videoIconView.hidden = YES;
     _videoTimelapseIconView.hidden = YES;
+    _videoSlomoIconView.hidden = YES;
     
     _favoriteIconView.hidden = YES;
     

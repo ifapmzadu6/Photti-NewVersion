@@ -176,6 +176,9 @@
         if (asset.mediaSubtypes == PHAssetMediaSubtypeVideoTimelapse) {
             cell.videoTimelapseIconView.hidden = NO;
         }
+        else if (asset.mediaSubtypes == PHAssetMediaSubtypeVideoHighFrameRate) {
+            cell.videoSlomoIconView.hidden = NO;
+        }
         else {
             cell.videoIconView.hidden = NO;
         }

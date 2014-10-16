@@ -119,6 +119,8 @@
 - (void)prepareForReuse {
     [super prepareForReuse];
     
+    self.tag = NSIntegerMax;
+    
     _firstImageView.image = nil;
     _secondImageView.image = nil;
     _thirdImageView.image = nil;

@@ -15,6 +15,7 @@
 @property (strong, nonatomic, readonly) UIImageView *videoBackgroundView;
 @property (strong, nonatomic, readonly) UIImageView *videoIconView;
 @property (strong, nonatomic, readonly) UIImageView *videoTimelapseIconView;
+@property (strong, nonatomic, readonly) UIImageView *videoSlomoIconView;
 
 @property (strong, nonatomic, readonly) UILabel *videoDurationLabel;
 

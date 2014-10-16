@@ -43,7 +43,7 @@ static NSUInteger KPHScrollBannerViewMaxNumberOfRows = 20000;
         
         _shouldAnimate = YES;
         _animateInterval = 7.0f;
-        _index = KPHScrollBannerViewMaxNumberOfRows/2;
+        _index = KPHScrollBannerViewMaxNumberOfRows/2 - 1;
         
         [self animateToNextCell];
     }
