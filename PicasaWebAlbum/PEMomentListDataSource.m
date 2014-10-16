@@ -20,6 +20,8 @@
 
 @property (strong, nonatomic) NSMutableArray *assetCollectionFetchResults;
 
+@property (weak, nonatomic) PLCollectionFooterView *footerView;
+
 @end
 
 @implementation PEMomentListDataSource
@@ -121,6 +123,11 @@
             if (_didChangeItemCountBlock) {
                 _didChangeItemCountBlock(count);
             }
+            PLCollectionFooterView *footerView = _footerView;
+            if (footerView) {
+                NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Moments -", nil), (unsigned long)_fetchResult.count];
+                [footerView setText:albumCountString];
+            }
         }];
     });
 }
@@ -182,10 +189,10 @@
     if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
         PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:NSStringFromClass([PLCollectionFooterView class]) forIndexPath:indexPath];
         
-        if (_fetchResult.count > 0) {
-            NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Albums -", nil), (unsigned long)_fetchResult.count];
-            [footerView setText:albumCountString];
-        }
+        NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Moments -", nil), (unsigned long)_fetchResult.count];
+        [footerView setText:albumCountString];
+        
+        _footerView = footerView;
         
         return footerView;
     }

@@ -160,7 +160,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         [tabBarController setTabBarHidden:NO animated:NO completion:nil];
         [tabBarController setAdsHidden:NO animated:YES];
     }];

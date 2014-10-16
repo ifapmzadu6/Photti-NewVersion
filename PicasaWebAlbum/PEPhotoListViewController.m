@@ -263,7 +263,7 @@
 #pragma mark SearchBar
 - (void)openSearchBar {
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
-    [tabBarController setTabBarHidden:YES animated:YES completion:nil];
+    [tabBarController setToolbarHidden:YES animated:YES completion:nil];
     [tabBarController setAdsHidden:YES animated:NO];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
@@ -273,7 +273,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
-        [tabBarController setTabBarHidden:NO animated:NO completion:nil];
+        [tabBarController setToolbarHidden:NO animated:NO completion:nil];
         [tabBarController setAdsHidden:NO animated:YES];
     }];
 }

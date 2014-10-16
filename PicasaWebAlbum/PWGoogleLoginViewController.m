@@ -129,6 +129,10 @@
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setAdsHidden:YES animated:NO];
+    
+    [PWPicasaAPI getListOfAlbumsWithIndex:0 completion:^(NSUInteger nextIndex, NSError *error) {
+        
+    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

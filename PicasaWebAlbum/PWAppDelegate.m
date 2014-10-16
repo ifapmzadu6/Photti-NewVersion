@@ -134,12 +134,12 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 - (void)applicationWillTerminate:(UIApplication *)application {
 }
 
+#pragma mark KeyChain
 - (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application {
     [PWOAuthManager refreshKeychain];
 }
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application {
-    [PWOAuthManager refreshKeychain];
 }
 
 #pragma mark Local Notification

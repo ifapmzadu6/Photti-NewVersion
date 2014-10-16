@@ -15,6 +15,7 @@ static NSString * const PWClientID = @"982107973738-pqihuiltucj69o5413n38hm52lj3
 static NSString * const PWClientSecret = @"5OS58Vf-PA09YGHlFZUc_BtX";
 static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 
+static NSString * const kPWOAuthManagerOAuthErrorDomain = @"com.photti.PWOAuthManager";
 static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
 
 @interface PWOAuthManager ()
@@ -59,7 +60,7 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
         block();
     }
     else {
-        dispatch_sync(dispatch_get_main_queue(), block);
+        dispatch_async(dispatch_get_main_queue(), block);
     }
 }
 
@@ -67,23 +68,17 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
     void (^block)() = ^(){
         GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
         if (![auth canAuthorize]) {
-            if (completion) {
-                completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:0 userInfo:nil]);
-            }
+            completion ? completion(nil, [NSError errorWithDomain:kPWOAuthManagerOAuthErrorDomain code:0 userInfo:nil]) : 0;
             return;
         }
         
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
         [auth authorizeRequest:request completionHandler:^(NSError *error) {
             if (error) {
-                if (completion) {
-                    completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:0 userInfo:nil]);
-                }
+                completion ? completion(nil, [NSError errorWithDomain:kPWOAuthManagerOAuthErrorDomain code:0 userInfo:nil]) : 0;
             }
             else {
-                if (completion) {
-                    completion(request.allHTTPHeaderFields, nil);
-                }
+                completion ? completion(request.allHTTPHeaderFields, nil) : 0;
             }
         }];
     };
@@ -99,14 +94,10 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
 + (void)getAuthorizeHTTPHeaderFields:(void (^)(NSDictionary *, NSError *))completion {
     [PWOAuthManager getAccessTokenWithCompletion:^(NSDictionary *headerFields, NSError *error) {
         if (error) {
-            if (completion) {
-                completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:0 userInfo:nil]);
-            }
+            completion ? completion(nil, [NSError errorWithDomain:kPWOAuthManagerOAuthErrorDomain code:0 userInfo:nil]) : 0;
         }
         else {
-            if (completion) {
-                completion(headerFields, nil);
-            }
+            completion ? completion(headerFields, nil) : 0;
         }
     }];
 }
@@ -114,19 +105,16 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
 + (void)getUserData:(void (^)(NSString *, NSError *))completion {
     GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
     if ([auth canAuthorize]) {
-        if (completion) {
-            completion(auth.userEmail, nil);
-        }
+        completion ? completion(auth.userEmail, nil) : 0;
     }
     else {
-        if (completion) {
-            completion(nil, [NSError errorWithDomain:@"com.photti.pwoauthmanager" code:0 userInfo:nil]);
-        }
+        completion ? completion(nil, [NSError errorWithDomain:kPWOAuthManagerOAuthErrorDomain code:0 userInfo:nil]) : 0;
     }
 }
 
 + (BOOL)isLogined {
-    return [GTMOAuth2ViewControllerTouch authorizeFromKeychainForName:PWKeyChainItemName authentication:[[PWOAuthManager sharedManager] auth] error:nil];
+    GTMOAuth2Authentication *auth = [PWOAuthManager sharedManager].auth;
+    return [GTMOAuth2ViewControllerTouch authorizeFromKeychainForName:PWKeyChainItemName authentication:auth error:nil];
 }
 
 + (void)logout {
@@ -152,13 +140,12 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
                 NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:auth.tokenURL];
                 [auth authorizeRequest:request completionHandler:^(NSError *error) {
                     if (!error) {
-                        if (finish) {
-                            finish();
-                        }
+                        finish ? finish() : 0;
                     }
                 }];
             }];
         }];
+        viewController.keychainItemAccessibility = kSecAttrAccessibleAfterFirstUnlock;
         viewController.automaticallyAdjustsScrollViewInsets = NO;
         viewController.edgesForExtendedLayout = UIRectEdgeAll;
         viewController.title = NSLocalizedString(@"Login", nil);
@@ -187,9 +174,7 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
         navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PAColorsTypeTextColor]};
         navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         
-        if (completion) {
-            completion(navigationController);
-        }
+        completion ? completion(navigationController) : 0;
     };
     
     if ([NSThread isMainThread]) {
