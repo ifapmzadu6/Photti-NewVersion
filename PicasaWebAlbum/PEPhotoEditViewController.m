@@ -237,7 +237,7 @@ typedef enum _PEPhotoEditViewControllerGPSType {
             }
             case PEPhotoEditViewControllerDescriptionTypeWIDTH: {
                 cell.textLabel.text = NSLocalizedString(@"Width", nil);
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (long)_asset.pixelHeight];
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (long)_asset.pixelWidth];
                 break;
             }
             default:
