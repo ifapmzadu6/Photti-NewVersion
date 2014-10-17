@@ -75,7 +75,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundDarkColor];
+    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     self.tabBar.barTintColor = [UIColor blackColor];
     
     _toolbar = [[UIToolbar alloc] init];
