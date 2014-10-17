@@ -74,10 +74,10 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 
 - (void)finishDownloadWithLocation:(NSURL *)location completion:(void (^)(NSError *))completion {
 //    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-        [self newFinishDownloadWithLocation:location completion:completion];
+//        [self newFinishDownloadWithLocation:location completion:completion];
 //    }
 //    else {
-//        [self oldFinishDownloadWithLocation:location completion:completion];
+        [self oldFinishDownloadWithLocation:location completion:completion];
 //    }
 }
 
