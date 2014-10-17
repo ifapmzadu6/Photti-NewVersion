@@ -8,6 +8,8 @@
 
 #import "PDWebPhotoObject+methods.h"
 
+@import Photos;
+
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
 #import "PWPicasaAPI.h"
@@ -71,10 +73,24 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 };
 
 - (void)finishDownloadWithLocation:(NSURL *)location completion:(void (^)(NSError *))completion {
+//    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        [self newFinishDownloadWithLocation:location completion:completion];
+//    }
+//    else {
+//        [self oldFinishDownloadWithLocation:location completion:completion];
+//    }
+}
+
+- (void)newFinishDownloadWithLocation:(NSURL *)location completion:(void (^)(NSError *))completion {
+    
+}
+
+- (void)oldFinishDownloadWithLocation:(NSURL *)location completion:(void (^)(NSError *))completion {
     PDTaskObject *taskObject = self.task;
+    NSManagedObjectID *taskObjectID = taskObject.objectID;
+    
     NSString *local_album_id_str = taskObject.to_album_id_str;
     NSString *web_album_id_str = taskObject.from_album_id_str;
-    NSManagedObjectID *taskObjectID = taskObject.objectID;
     NSManagedObjectID *objectID = self.objectID;
     
     NSManagedObjectContext *plContext = [PLCoreDataAPI writeContext];
@@ -238,6 +254,27 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 }
 
 
+#pragma mark Photo
+- (PHAssetCollection *)getAssetCollectionWithIdentifier:(NSString *)identifier {
+    PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[identifier] options:nil];
+    if (fetchResult.count == 0) {
+        fetchResult = [PHAssetCollection fetchAssetCollectionsWithALAssetGroupURLs:@[identifier] options:nil];
+    }
+    PHAssetCollection *assetCollection = fetchResult.firstObject;
+    NSAssert(assetCollection, nil);
+    return assetCollection;
+}
+
+- (PHAsset *)getAssetWithIdentifier:(NSString *)identifier {
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[identifier] options:nil];
+    if (fetchResult.count == 0) {
+        fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[identifier] options:nil];
+    }
+    PHAsset *asset = fetchResult.firstObject;
+    NSAssert(asset, nil);
+    return asset;
+}
+
 #pragma mark GetData
 + (PLAlbumObject *)getLocalAlbumWithID:(NSString *)id_str context:(NSManagedObjectContext *)context {
     NSFetchRequest *request = [NSFetchRequest new];
@@ -311,5 +348,6 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     
     return photo;
 }
+
 
 @end

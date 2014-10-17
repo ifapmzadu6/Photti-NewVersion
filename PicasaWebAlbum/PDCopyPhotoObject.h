@@ -13,7 +13,6 @@
 
 @interface PDCopyPhotoObject : PDBasePhotoObject
 
-@property (nonatomic, retain) NSString * photo_object_id_str;
 @property (nonatomic, retain) NSString * downloaded_data_location;
 
 @end

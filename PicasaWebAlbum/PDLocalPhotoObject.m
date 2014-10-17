@@ -11,7 +11,6 @@
 
 @implementation PDLocalPhotoObject
 
-@dynamic photo_object_id_str;
 @dynamic prepared_body_filepath;
 
 @end

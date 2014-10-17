@@ -11,6 +11,4 @@
 
 @implementation PDLocalCopyPhotoObject
 
-@dynamic photo_object_id_str;
-
 @end

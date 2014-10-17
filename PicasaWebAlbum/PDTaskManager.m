@@ -65,7 +65,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
         NSManagedObjectContext *context = [PDCoreDataAPI readContext];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
         
-        _restartTimeInterval = 15;
+        _restartTimeInterval = 60;
         
         [self restartTimer];
     }
@@ -460,27 +460,11 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     
     PDBasePhotoObject *photoObject = photos.firstObject;
     NSManagedObjectID *photoObjectID = photoObject.objectID;
-    if ((![photoObject isKindOfClass:PDLocalCopyPhotoObject.class] && !PWOAuthManager.isLogined) ||
-        (![photoObject isKindOfClass:PDCopyPhotoObject.class] && ALAssetsLibrary.authorizationStatus != ALAuthorizationStatusAuthorized)) {
-        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDTaskObject *tmpTaskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
-            PDBasePhotoObject *tmpPhotoObject = (PDBasePhotoObject *)[context objectWithID:photoObjectID];
-            if (tmpTaskObject) {
-                [tmpTaskObject removePhotosObject:tmpPhotoObject];
-            }
-            if (tmpPhotoObject) {
-                [context deleteObject:tmpPhotoObject];
-            }
-        }];
-        
-        [self taskIsDoneAndStartNext:[PDTaskManager getFirstTaskObject]];
-    }
-    
     if (photoObject.is_done.boolValue) {
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
             PDTaskObject *tmpTaskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
             PDBasePhotoObject *tmpPhotoObject = (PDBasePhotoObject *)[context objectWithID:photoObjectID];
-            if (tmpTaskObject) {
+            if (tmpTaskObject && tmpPhotoObject) {
                 [tmpTaskObject removePhotosObject:tmpPhotoObject];
             }
             if (tmpPhotoObject) {
@@ -505,7 +489,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
         }
         else {
             [(PDLocalCopyPhotoObject *)photoObject copyToLocalAlbum];
-            
             [self taskIsDoneAndStartNext:[PDTaskManager getFirstTaskObject]];
         }
     }

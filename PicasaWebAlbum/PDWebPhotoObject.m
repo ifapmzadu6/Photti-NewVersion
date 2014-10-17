@@ -11,7 +11,6 @@
 
 @implementation PDWebPhotoObject
 
-@dynamic photo_object_id_str;
 @dynamic resume_data_url;
 
 @end

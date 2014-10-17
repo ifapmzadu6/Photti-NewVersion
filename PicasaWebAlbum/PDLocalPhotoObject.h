@@ -13,7 +13,6 @@
 
 @interface PDLocalPhotoObject : PDBasePhotoObject
 
-@property (nonatomic, retain) NSString * photo_object_id_str;
 @property (nonatomic, retain) NSString * prepared_body_filepath;
 
 @end

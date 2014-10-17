@@ -94,6 +94,7 @@
 		7165408319D4800500960F70 /* PEPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165408219D4800500960F70 /* PEPhotoListViewController.m */; };
 		7165408719D8FF1300960F70 /* PHMomentListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165408619D8FF1200960F70 /* PHMomentListViewController.m */; };
 		7165408B19D93DC900960F70 /* PEAssetsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7165408A19D93DC900960F70 /* PEAssetsManager.m */; };
+		7173471919F002330044F56F /* PDModel.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = 7173471819F002330044F56F /* PDModel.xcmappingmodel */; };
 		71737EBA19A3193100CBE68A /* PANetworkActivityIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 71737EB919A3193100CBE68A /* PANetworkActivityIndicator.m */; };
 		717456E6196AB4F5003D2436 /* XmlReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 717456E5196AB4F5003D2436 /* XmlReader.m */; };
 		7177479F1936F5A8005179B6 /* PDModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7177479D1936F5A8005179B6 /* PDModel.xcdatamodeld */; };
@@ -380,6 +381,8 @@
 		7165408619D8FF1200960F70 /* PHMomentListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHMomentListViewController.m; sourceTree = "<group>"; };
 		7165408919D93DC900960F70 /* PEAssetsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEAssetsManager.h; sourceTree = "<group>"; };
 		7165408A19D93DC900960F70 /* PEAssetsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEAssetsManager.m; sourceTree = "<group>"; };
+		7173471719F0007D0044F56F /* PDModel 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PDModel 2.xcdatamodel"; sourceTree = "<group>"; };
+		7173471819F002330044F56F /* PDModel.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = PDModel.xcmappingmodel; sourceTree = "<group>"; };
 		71737EB819A3193100CBE68A /* PANetworkActivityIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PANetworkActivityIndicator.h; sourceTree = "<group>"; };
 		71737EB919A3193100CBE68A /* PANetworkActivityIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PANetworkActivityIndicator.m; sourceTree = "<group>"; };
 		717456E4196AB4F5003D2436 /* XmlReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlReader.h; sourceTree = "<group>"; };
@@ -981,13 +984,6 @@
 			name = PAMigrationViewController;
 			sourceTree = "<group>";
 		};
-		712B54D219EF9B4F00C07B79 /* F */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = F;
-			sourceTree = "<group>";
-		};
 		712E03A3191DAD690035D9E0 /* PWRefreshControl */ = {
 			isa = PBXGroup;
 			children = (
@@ -1368,6 +1364,7 @@
 				71D52EEA197F80A7005CFF30 /* PDCopyPhotoObject */,
 				71D52EEB197F80AD005CFF30 /* PDLocalPhotoObject */,
 				71197E7219862EB9009DB4D3 /* PDLocalCopyPhotoObject */,
+				7173471819F002330044F56F /* PDModel.xcmappingmodel */,
 			);
 			name = PDModelObject;
 			sourceTree = "<group>";
@@ -2396,7 +2393,6 @@
 				71B72FF919DDABF300D105EA /* A */,
 				71B72FFA19DDABF900D105EA /* D */,
 				71B72FFB19DDABFE00D105EA /* E */,
-				712B54D219EF9B4F00C07B79 /* F */,
 				71B72FFC19DDAC0300D105EA /* L */,
 				71B72FFD19DDAC0700D105EA /* W */,
 				71B72FF819DDABDC00D105EA /* X */,
@@ -2772,6 +2768,7 @@
 				719CFE5D1959D339008B4308 /* PLAutoCreateAlbumViewController.m in Sources */,
 				71CD060F1930E68500BECF6B /* PWSearchTableViewWebAlbumCell.m in Sources */,
 				71138EB519EAE32200C87BBF /* PALinkableTextView.m in Sources */,
+				7173471919F002330044F56F /* PDModel.xcmappingmodel in Sources */,
 				715A31B4198FD5E8002A0A37 /* NSFileManager+methods.m in Sources */,
 				71109C181974201700EEDAAE /* PLNewAlbumEditViewController.m in Sources */,
 				71C54F4819CD2B0100BCD9CF /* PEScrollBannerView.m in Sources */,
@@ -3027,9 +3024,10 @@
 		7177479D1936F5A8005179B6 /* PDModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				7173471719F0007D0044F56F /* PDModel 2.xcdatamodel */,
 				7177479E1936F5A8005179B6 /* PDModel.xcdatamodel */,
 			);
-			currentVersion = 7177479E1936F5A8005179B6 /* PDModel.xcdatamodel */;
+			currentVersion = 7173471719F0007D0044F56F /* PDModel 2.xcdatamodel */;
 			path = PDModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

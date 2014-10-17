@@ -13,6 +13,4 @@
 
 @interface PDLocalCopyPhotoObject : PDBasePhotoObject
 
-@property (nonatomic, retain) NSString * photo_object_id_str;
-
 @end

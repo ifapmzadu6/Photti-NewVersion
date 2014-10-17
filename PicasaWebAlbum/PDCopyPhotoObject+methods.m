@@ -14,8 +14,6 @@
 #import "PWCoreDataAPI.h"
 #import "PWModelObject.h"
 #import "PASnowFlake.h"
-#import "PLCoreDataAPI.h"
-#import "PLModelObject.h"
 #import "NSFileManager+methods.h"
 
 static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCopyPhotoObjectMethods";

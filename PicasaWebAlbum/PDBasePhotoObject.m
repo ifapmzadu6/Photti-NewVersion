@@ -13,6 +13,7 @@
 @implementation PDBasePhotoObject
 
 @dynamic is_done;
+@dynamic photo_object_id_str;
 @dynamic session_task_identifier;
 @dynamic tag_sort_index;
 @dynamic task;

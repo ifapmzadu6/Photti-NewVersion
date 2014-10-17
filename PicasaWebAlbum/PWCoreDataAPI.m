@@ -68,7 +68,7 @@
     return !isCompatible;
 }
 
-#pragma mark Class Methods
+#pragma mark Block
 + (NSManagedObjectContext *)writeContext {
     NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     context.parentContext = [self readContext];
@@ -168,16 +168,16 @@
 
 #pragma mark NSNotificationCenter
 - (void)contextDidSaveNotification:(NSNotification *)notification {
-    if (notification.object != [[self class] readContext] && notification.object != [[self class] storeContext]) {
-        [[[self class] readContext] performBlockAndWait:^{
+    if (notification.object != [self.class readContext] && notification.object != [self.class storeContext]) {
+        [[self.class readContext] performBlockAndWait:^{
             NSError *error = nil;
-            if (![[[self class] readContext] save:&error]) {
+            if (![[self.class readContext] save:&error]) {
                 abort();
             }
             
-            [[[self class] storeContext] performBlock:^{
+            [[self.class storeContext] performBlock:^{
                 NSError *error = nil;
-                if (![[[self class] storeContext] save:&error]) {
+                if (![[self.class storeContext] save:&error]) {
                     abort();
                 }
             }];

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6244" systemVersion="14A388a" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="PDBasePhotoObject" representedClassName="PDBasePhotoObject" isAbstract="YES" syncable="YES">
+        <attribute name="is_done" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="photo_object_id_str" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="session_task_identifier" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="tag_sort_index" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="task" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PDTaskObject" inverseName="photos" inverseEntity="PDTaskObject" syncable="YES"/>
+    </entity>
+    <entity name="PDCopyPhotoObject" representedClassName="PDCopyPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES">
+        <attribute name="downloaded_data_location" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="PDLocalCopyPhotoObject" representedClassName="PDLocalCopyPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES"/>
+    <entity name="PDLocalPhotoObject" representedClassName="PDLocalPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES">
+        <attribute name="prepared_body_filepath" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="PDTaskObject" representedClassName="PDTaskObject" syncable="YES">
+        <attribute name="error_description" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="from_album_id_str" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sort_index" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="to_album_id_str" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="to_album_identifier" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PDBasePhotoObject" inverseName="task" inverseEntity="PDBasePhotoObject" syncable="YES"/>
+    </entity>
+    <entity name="PDWebPhotoObject" representedClassName="PDWebPhotoObject" parentEntity="PDBasePhotoObject" syncable="YES"/>
+    <elements>
+        <element name="PDBasePhotoObject" positionX="-135" positionY="-504" width="128" height="120"/>
+        <element name="PDCopyPhotoObject" positionX="0" positionY="-495" width="128" height="58"/>
+        <element name="PDLocalCopyPhotoObject" positionX="-63" positionY="-513" width="128" height="45"/>
+        <element name="PDLocalPhotoObject" positionX="16" positionY="-661" width="128" height="60"/>
+        <element name="PDTaskObject" positionX="-119" positionY="-324" width="128" height="148"/>
+        <element name="PDWebPhotoObject" positionX="-135" positionY="-661" width="128" height="43"/>
+    </elements>
+</model>
