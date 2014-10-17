@@ -409,6 +409,11 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)settingsBarButtonAction {
+    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeWeb];
+    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
+}
+
 - (void)editBarButtonItem:(id)sender {
     [self enableSelectMode];
 }
