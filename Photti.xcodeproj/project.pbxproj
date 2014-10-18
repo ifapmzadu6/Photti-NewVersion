@@ -175,6 +175,7 @@
 		71D52EE2197F49F2005CFF30 /* PDBasePhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71D52EE1197F49F2005CFF30 /* PDBasePhotoObject+methods.m */; };
 		71D52EFC197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71D52EFB197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m */; };
 		71D52F2219853BCF005CFF30 /* PLFullAlbumViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71D52F2119853BCF005CFF30 /* PLFullAlbumViewCell.m */; };
+		71DD7CFA19F1E8EF00115D88 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 71DD7CF919F1E8EF00115D88 /* libc++.dylib */; };
 		71E8850219115C7E005A78E0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8850119115C7E005A78E0 /* Foundation.framework */; };
 		71E8850419115C7E005A78E0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8850319115C7E005A78E0 /* CoreGraphics.framework */; };
 		71E8850619115C7E005A78E0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8850519115C7E005A78E0 /* UIKit.framework */; };
@@ -536,6 +537,8 @@
 		71D52EFB197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskManagerViewControllerHeaderView.m; sourceTree = "<group>"; };
 		71D52F2019853BCF005CFF30 /* PLFullAlbumViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLFullAlbumViewCell.h; sourceTree = "<group>"; };
 		71D52F2119853BCF005CFF30 /* PLFullAlbumViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLFullAlbumViewCell.m; sourceTree = "<group>"; };
+		71DD7CF719F1E89F00115D88 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		71DD7CF919F1E8EF00115D88 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		71E884FE19115C7E005A78E0 /* Photti.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Photti.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		71E8850119115C7E005A78E0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		71E8850319115C7E005A78E0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -571,6 +574,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71DD7CFA19F1E8EF00115D88 /* libc++.dylib in Frameworks */,
 				712F194719CC660F00C184B5 /* Photos.framework in Frameworks */,
 				71E8850419115C7E005A78E0 /* CoreGraphics.framework in Frameworks */,
 				71958C49191B4A9D00CFC15F /* AVFoundation.framework in Frameworks */,
@@ -2309,6 +2313,8 @@
 		71E8850019115C7E005A78E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				71DD7CF919F1E8EF00115D88 /* libc++.dylib */,
+				71DD7CF719F1E89F00115D88 /* CFNetwork.framework */,
 				712F194619CC660F00C184B5 /* Photos.framework */,
 				71166F7E19A8175600A55A21 /* libsqlite3.0.dylib */,
 				71166F7C19A816BE00A55A21 /* libsqlite3.dylib */,

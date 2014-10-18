@@ -13,6 +13,7 @@
 #import <UAAppReviewManager.h>
 #import <GAI.h>
 #import <GAIDictionaryBuilder.h>
+#import <SKNotificationManager.h>
 
 #import "PAColors.h"
 #import "PWPicasaAPI.h"
@@ -40,6 +41,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     // OAuth
     [PWOAuthManager refreshKeychain];
     
+    
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
@@ -64,6 +66,22 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     [GAI sharedInstance].dispatchInterval = 30;
     [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
     [[[GAI sharedInstance] defaultTracker] setAllowIDFACollection:YES];
+    
+    // SKNotification
+    NSString *lang = [[NSUserDefaults standardUserDefaults] arrayForKey:@"AppleLanguages"].firstObject;
+    NSString *jsonURL = [NSString stringWithFormat:@"http://54.64.82.148/%@/gioqulo.json", lang];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:jsonURL]];
+    [SKNotificationManager setJSONRequest:request];
+    [SKNotificationManager appLaunched];
+    
+    NSString *idfaURL = @"http://54.64.82.148/";
+    NSNumber *appID = @(APPID.longLongValue);
+    [SKNotificationManager sharedManager].notificationViewTappedAction = ^(SKNotification *notification) {
+        NSNumber *appID = @(notification.appid.integerValue);
+        [SKNotificationIDFAManager tappedAdsenceWithAppID:appID serverURL:idfaURL];
+    };
+    [SKNotificationIDFAManager appLaunched:appID serverURL:idfaURL];
+    
     
     UIViewController *rootViewController = nil;
     if ([PWCoreDataAPI shouldPerformCoreDataMigration] || [PDCoreDataAPI shouldPerformCoreDataMigration]) {
@@ -104,9 +122,6 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
         && ![PWOAuthManager isLogined]) {
         initialTabPageIndex = 1;
     }
-    
-//    NSArray *viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
-//    NSArray *colors = @[[PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor], [PAColors getColor:PAColorsTypeTintUploadColor]];
     
     NSArray *viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
     NSArray *colors = @[[PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor], [PAColors getColor:PAColorsTypeTintUploadColor]];
