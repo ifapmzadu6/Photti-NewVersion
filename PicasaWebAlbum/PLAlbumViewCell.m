@@ -90,7 +90,7 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
     
     _overrayView = [UIView new];
     _overrayView.alpha = 0.0f;
-    _overrayView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.1f];
+    _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:1.0f];
     [self.contentView addSubview:_overrayView];
     
     UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressGestureRecognizerAction:)];
