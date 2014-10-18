@@ -35,10 +35,10 @@
     }
     else {
         if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            return CGSizeMake(192.0f, ceilf(192.0f * 3.0f / 4.0f) + 40.0f);
+            return CGSizeMake(192.0f, 226.0f);
         }
         else {
-            return CGSizeMake(181.0f, ceilf(181.0f * 3.0f / 4.0f) + 40.0f);
+            return CGSizeMake(181.0f, 226.0f);
         }
     }
 }

@@ -68,7 +68,7 @@
     [_collectionView registerClass:[PLFullAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
     _collectionView.alwaysBounceHorizontal = YES;
     _collectionView.showsHorizontalScrollIndicator = NO;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.clipsToBounds = NO;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _collectionView.contentInset = UIEdgeInsetsMake(0.0f, 80.0f, 0.0f, 80.0f);

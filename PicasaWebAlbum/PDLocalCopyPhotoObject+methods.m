@@ -17,12 +17,12 @@
 @implementation PDLocalCopyPhotoObject (methods)
 
 - (void)copyToLocalAlbum {
-    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-        [self newCopyToLocalAlbum];
-    }
-    else {
+//    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+//        [self newCopyToLocalAlbum];
+//    }
+//    else {
         [self oldCopyToLocalAlbum];
-    }
+//    }
 }
 
 - (void)newCopyToLocalAlbum {

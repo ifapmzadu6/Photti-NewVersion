@@ -68,11 +68,13 @@
     _imageView = [UIImageView new];
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _imageView.hidden = YES;
     [self.contentView addSubview:_imageView];
     
     _animatedImageView = [FLAnimatedImageView new];
     _animatedImageView.clipsToBounds = YES;
     _animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
+    _animatedImageView.hidden = YES;
     [self.contentView insertSubview:_animatedImageView belowSubview:_imageView];
     
     _videoBackgroundView = [UIImageView new];

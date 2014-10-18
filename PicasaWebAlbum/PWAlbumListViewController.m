@@ -260,7 +260,6 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
         cell.actionButtonActionBlock = ^(PWAlbumObject *album) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            
             [sself showAlbumActionSheet:album];
         };
         
@@ -270,7 +269,6 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
         PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(PWPhotoViewCell.class) forIndexPath:indexPath];
         
         cell.photo = [_recentlyUploadedFetchedResultsController objectAtIndexPath:indexPath];
-        cell.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
         
         return cell;
     }
@@ -312,12 +310,24 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     if (collectionView == _collectionView) {
         return [PAAlbumCollectionViewFlowLayout itemSize];
     }
-    return CGSizeMake(90.0f, 90.0f);
+    else {
+        if (self.isPhone) {
+            return CGSizeMake(90.0f, 90.0f);
+        }
+        else {
+            return CGSizeMake(150.0f, 150.0f);
+        }
+    }
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
     if (collectionView == _collectionView) {
-        return CGSizeMake(0.0f, 216.0f);
+        if (self.isPhone) {
+            return CGSizeMake(0.0f, 216.0f);
+        }
+        else {
+            return CGSizeMake(0.0f, 300.0f);
+        }
     }
     else if (collectionView == _recentlyUploadedCollectionView) {
         return CGSizeZero;
@@ -348,7 +358,7 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
         if (photos.count > kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded) {
             NSMutableArray *tmpPhotos = @[].mutableCopy;
             for (int i=0; i<kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded; i++) {
-                PWPhotoObject *photo = tmpPhotos[i];
+                PWPhotoObject *photo = photos[i];
                 [tmpPhotos addObject:photo];
             }
             photos = tmpPhotos;
@@ -559,7 +569,7 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     }
     else if (controller == _recentlyUploadedFetchedResultsController) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [_recentlyUploadedCollectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
+            [_collectionView reloadData];
         });
     }
 }
