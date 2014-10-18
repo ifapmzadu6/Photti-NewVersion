@@ -108,12 +108,12 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 
 - (UIViewController *)tabBarController {
     UIViewController *localNavigationController = nil;
-//    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-//        localNavigationController = [PENavigationController new];;
-//    }
-//    else {
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        localNavigationController = [PENavigationController new];;
+    }
+    else {
         localNavigationController = [PLNavigationController new];
-//    }
+    }
     PWNavigationController *webNavigationViewController = [PWNavigationController new];
     PDNavigationController *taskNavigationController = [PDNavigationController new];
     
