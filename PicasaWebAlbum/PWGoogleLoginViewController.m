@@ -152,8 +152,8 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
             if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-568.0f)/2.0f;
-                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-320.0f)/2.0f;
+                CGFloat deltaX = (CGRectGetWidth(rect)-568.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight(rect)-320.0f)/2.0f;
                 _iconImageView.frame = CGRectMake(deltaX+64.0f, deltaY+80.0f, 180.0f, 180.0f);
                 if (!_skipButton) {
                     _titleLabel.frame = CGRectMake(deltaX+250.0f, deltaY+286.0f-190.0f, 320.0f, 36.0f);
@@ -168,8 +168,8 @@
                 }
             }
             else {
-                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-320.0f)/2.0f;
-                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-568.0f)/2.0f;
+                CGFloat deltaX = (CGRectGetWidth(rect)-320.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight(rect)-568.0f)/2.0f;
                 _iconImageView.frame = CGRectMake(deltaX+70.0f, deltaY+90.0f, 180.0f, 180.0f);
                 _titleLabel.frame = CGRectMake(deltaX, deltaY+286.0f, 320.0f, 36.0f);
                 _descriptionLabel.frame = CGRectMake(deltaX+40.0f, deltaY+316.0f, 240.0f, 100.0f);

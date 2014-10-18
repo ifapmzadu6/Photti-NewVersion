@@ -203,8 +203,8 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
             if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-568.0f)/2.0f;
-                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-320.0f)/2.0f;
+                CGFloat deltaX = (CGRectGetWidth(rect)-568.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight(rect)-320.0f)/2.0f;
                 _iconImageView.frame = CGRectMake(deltaX+46.0f, deltaY+80.0f, 170.0f, 170.0f);
                 _uploadSettingLabel.frame = CGRectMake(deltaX+244.0f, deltaY+272.0f-210.0f, 320.0f, 20.0f);
                 _unlimitedLabel.frame = CGRectMake(deltaX+244.0f+15.0f, deltaY+310.0f-220.0f, 140.0f, 20.0f);
@@ -219,8 +219,8 @@ static NSString * const kPDGoogleDriveURL = @"https://www.google.com/settings/st
                 _highResolutionButton.frame = CGRectMake(deltaX+244.0f+180.0f, deltaY+458.0f-220.0f, 110.0, 30.0f);
             }
             else {
-                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-320.0f)/2.0f;
-                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-568.0f)/2.0f;
+                CGFloat deltaX = (CGRectGetWidth(rect)-320.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight(rect)-568.0f)/2.0f;
                 _iconImageView.frame = CGRectMake(deltaX+70.0f, deltaY+86.0f, 170.0f, 170.0f);
                 _uploadSettingLabel.frame = CGRectMake(deltaX, deltaY+272.0f, 320.0f, 20.0f);
                 _unlimitedLabel.frame = CGRectMake(deltaX+15.0f, deltaY+304.0f, 140.0f, 20.0f);

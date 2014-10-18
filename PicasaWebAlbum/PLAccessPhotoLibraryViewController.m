@@ -122,16 +122,16 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
             if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-568.0f)/2.0f;
-                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-320.0f)/2.0f;
+                CGFloat deltaX = (CGRectGetWidth(rect)-568.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight(rect)-320.0f)/2.0f;
                 _iconImageView.frame = CGRectMake(deltaX+70.0f, deltaY+80.0f, 180.0f, 180.0f);
                 _titleLabel.frame = CGRectMake(deltaX+250.0f, deltaY+286.0f-192.0f, 320.0f, 36.0f);
                 _descriptionLabel.frame = CGRectMake(deltaX+250.0f+40.0f, deltaY+326.0f-212.0f, 240.0f, 100.0f);
                 _accessButton.frame = CGRectMake(deltaX+250.0f+110.0f, deltaY+444.0f-227.0f, 100.0f, 30.0f);
             }
             else {
-                CGFloat deltaX = (CGRectGetWidth([UIScreen mainScreen].bounds)-320.0f)/2.0f;
-                CGFloat deltaY = (CGRectGetHeight([UIScreen mainScreen].bounds)-568.0f)/2.0f;
+                CGFloat deltaX = (CGRectGetWidth(rect)-320.0f)/2.0f;
+                CGFloat deltaY = (CGRectGetHeight(rect)-568.0f)/2.0f;
                 _iconImageView.frame = CGRectMake(deltaX+70.0f, deltaY+92.0f, 180.0f, 180.0f);
                 _titleLabel.frame = CGRectMake(deltaX+0.0f, deltaY+286.0f, 320.0f, 36.0f);
                 _descriptionLabel.frame = CGRectMake(deltaX+40.0f, deltaY+326.0f, 240.0f, 100.0f);

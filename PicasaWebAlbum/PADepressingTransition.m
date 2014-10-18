@@ -108,10 +108,17 @@ static CGFloat kPADepressingTransitionDepressedFrameRate = 0.9f;
 }
 
 - (CGRect)depressedFrameWithContainerView:(UIView *)containerView {
-    CGFloat width = CGRectGetWidth(containerView.frame) * kPADepressingTransitionDepressedFrameRate;
-    CGFloat height = CGRectGetHeight(containerView.frame) * kPADepressingTransitionDepressedFrameRate;
-    CGFloat x = (CGRectGetWidth(containerView.frame) - width) / 2.f;
-    CGFloat y = (CGRectGetHeight(containerView.frame) - height) / 2.f;
+    CGFloat originalWidth = MIN(CGRectGetWidth(containerView.frame), CGRectGetHeight(containerView.frame));
+    CGFloat originalHeight = MAX(CGRectGetWidth(containerView.frame), CGRectGetHeight(containerView.frame));
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        CGFloat tmp = originalHeight;
+        originalHeight = originalWidth;
+        originalWidth = tmp;
+    }
+    CGFloat width = originalWidth * kPADepressingTransitionDepressedFrameRate;
+    CGFloat height = originalHeight * kPADepressingTransitionDepressedFrameRate;
+    CGFloat x = (originalWidth - width) / 2.f;
+    CGFloat y = (originalHeight - height) / 2.f;
     return CGRectMake(x, y, width, height);
 }
 
