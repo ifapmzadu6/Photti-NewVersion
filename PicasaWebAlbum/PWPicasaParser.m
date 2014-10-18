@@ -310,7 +310,7 @@ static NSString * const PWXMLNode = @"text";
     if (photo.media) {
         PWPhotoMediaContentObject *content = photo.media.content.firstObject;
         photo.tag_screenimage_url = content.url;
-        photo.tag_originalimage_url = content.url;
+        photo.tag_originalimage_url = photo.content_src;
         
         if ([content.type isEqualToString:@"image/gif"]) {
             photo.tag_thumbnail_url = content.url;

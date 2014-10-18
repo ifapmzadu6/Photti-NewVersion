@@ -11,6 +11,7 @@
 #import "PXSettingsTableViewController.h"
 
 #import <KKStaticTableView.h>
+#import <SDImageCache.h>
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PWPicasaAPI.h"
@@ -74,6 +75,7 @@
 //    }
     [self setUpTaskManagerSection];
     [self setUpInAppPurchaseSection];
+    [self setUpCacheSection];
     [self setUpAboutSection];
     
     [self setInAppPurchaseBlocks];
@@ -331,6 +333,23 @@
     } cellHeight:CGFLOAT_MIN didSelect:nil];
 }
 
+#pragma mark Delete Cache
+- (void)setUpCacheSection {
+    NSString *sectionTitle = NSLocalizedString(@"Cache", nil);
+    [_tableView addSectionWithTitle:sectionTitle description:nil];
+    
+    UIColor *tintColor = self.navigationController.navigationBar.tintColor;
+    
+    __weak typeof(self) wself = self;
+    [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeDefault cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.textLabel.text = NSLocalizedString(@"Clear Cache", nil);
+        cell.accessoryView = [sself roundedButtonWithTitle:NSLocalizedString(@"Clear", nil) tintColor:tintColor action:@selector(clearCache)];
+    } cellHeight:CGFLOAT_MIN didSelect:nil];
+}
+
 
 #pragma mark AboutSection
 - (void)setUpAboutSection {
@@ -352,21 +371,17 @@
     [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeDefault cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = NSLocalizedString(@"Review on iTunes Store", nil);
         cell.accessoryView = [sself roundedButtonWithTitle:NSLocalizedString(@"OPEN", nil) tintColor:tintColor action:@selector(openReviewOniTunesStore)];
-        
     } cellHeight:CGFLOAT_MIN didSelect:nil];
     
     [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeDefault cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = @"Twitter";
         cell.accessoryView = [sself roundedButtonWithTitle:@"@Photti_dev" tintColor:tintColor action:@selector(openTwitterButtonAction)];
-        
     } cellHeight:CGFLOAT_MIN didSelect:nil];
     
     [_tableView addCellAtSection:sectionTitle staticCellType:KKStaticTableViewCellTypeDefault cell:^(UITableViewCell *cell, NSIndexPath *indexPath) {
@@ -375,7 +390,6 @@
     } cellHeight:CGFLOAT_MIN didSelect:^(KKStaticTableView *tableView, NSIndexPath* indexPath){
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         PXSettingHTMLViewController *viewController = [[PXSettingHTMLViewController alloc]init];
         viewController.fileName = @"thirdpartycopyright";
         viewController.title = NSLocalizedString(@"Open Source License", nil);
@@ -440,7 +454,6 @@
 - (void)cancelBarButtonAction {
     UIViewController *viewController = _authViewTouchNavigationController;
     if (!viewController) return;
-    
     [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -479,10 +492,8 @@
         if (!isPurchased) {
             SKPayment *payment = [SKPayment paymentWithProduct:_product];
             [[SKPaymentQueue defaultQueue] addPayment:payment];
-            
             button.enabled = NO;
             button.alpha = 0.5f;
-            
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 button.enabled = YES;
                 button.alpha = 1.0f;
@@ -497,10 +508,8 @@
     }
     else {
         [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
-        
         button.enabled = NO;
         button.alpha = 0.5f;
-        
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             button.enabled = YES;
             button.alpha = 1.0f;
@@ -536,10 +545,8 @@
         if (!success) {
             return;
         }
-        
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
-        
         dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;
@@ -552,10 +559,8 @@
         if (!success) {
             return;
         }
-        
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
-        
         dispatch_async(dispatch_get_main_queue(), ^{
             typeof(wself) sself = wself;
             if (!sself) return;
@@ -571,6 +576,34 @@
 
 - (void)openPixittiiTunesStore {
     [self openItunesStoreWithAppID:@(PIXITTIAPPID.longLongValue)];
+}
+
+- (void)clearCache {
+    [[SDImageCache sharedImageCache] clearDisk];
+    [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+        NSFetchRequest *albumRequest = [NSFetchRequest new];
+        albumRequest.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+        NSError *albumRequestError = nil;
+        NSArray *albums = [context executeFetchRequest:albumRequest error:&albumRequestError];
+        for (PWAlbumObject *album in albums) {
+            [context deleteObject:album];
+        }
+        
+        NSFetchRequest *photoRequest = [NSFetchRequest new];
+        photoRequest.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        NSError *photoRequestError = nil;
+        NSArray *photos = [context executeFetchRequest:photoRequest error:&photoRequestError];
+        for (PWPhotoObject *photo in photos) {
+            [context deleteObject:photo];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Cleared", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil];
+            [alertView show];
+            
+            [PWPicasaAPI getListOfAlbumsWithIndex:0 completion:nil];
+        });
+    }];
 }
 
 #pragma mark UIActionSheetDelegate

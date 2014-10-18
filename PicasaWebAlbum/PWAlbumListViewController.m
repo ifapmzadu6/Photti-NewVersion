@@ -165,6 +165,8 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
         [_recentlyUploadedCollectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
     
+    [_collectionView reloadData];
+    
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
