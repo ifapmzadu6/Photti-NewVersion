@@ -769,9 +769,43 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (void)showAlbumActionSheet:(PWAlbumObject *)album sender:(id)sender {
     _actionSheetItem = album;
     
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:album.title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:NSLocalizedString(@"Edit", nil), NSLocalizedString(@"Share", nil), NSLocalizedString(@"Download", nil), nil];
-    actionSheet.tag = 1003;
-    [actionSheet showFromBarButtonItem:sender animated:YES];
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        __weak typeof(self) wself = self;
+        UIAlertAction *editAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Edit", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself editActionSheetAction:album];
+        }];
+        UIAlertAction *shareAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Share", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself shareActionSheetAction:album];
+        }];
+        UIAlertAction *downloadAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Download", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself downloadActionSheetAction:album];
+        }];
+        UIAlertAction *deleteAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Delete", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself deleteActionSheetAction:album];
+        }];
+        UIAlertAction *cancelAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:album.title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        [alertController addAction:editAlertAction];
+        [alertController addAction:shareAlertAction];
+        [alertController addAction:downloadAlertAction];
+        [alertController addAction:deleteAlertAction];
+        [alertController addAction:cancelAlertAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+    else {
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:album.title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:NSLocalizedString(@"Edit", nil), NSLocalizedString(@"Share", nil), NSLocalizedString(@"Download", nil), nil];
+        actionSheet.tag = 1003;
+        [actionSheet showFromBarButtonItem:sender animated:YES];
+    }
 }
 
 - (void)editActionSheetAction:(PWAlbumObject *)album {
