@@ -161,6 +161,7 @@
 		71BD235C19779E450034CD3B /* ALAsset+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235B19779E450034CD3B /* ALAsset+methods.m */; };
 		71BD235F1977AE100034CD3B /* PDCopyPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235E1977AE100034CD3B /* PDCopyPhotoObject+methods.m */; };
 		71BDE3A61998FC2100853E85 /* NSMutableAttributedString+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDE3A51998FC2100853E85 /* NSMutableAttributedString+methods.m */; };
+		71BE585A19F413D3002A85AB /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 715A31A0198E902C002A0A37 /* AdSupport.framework */; };
 		71BE92F419E663500088AEFE /* PEPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BE92F319E663500088AEFE /* PEPhotoEditViewController.m */; };
 		71C0784B194ABBD70071702D /* PDTaskTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C0784A194ABBD70071702D /* PDTaskTableViewCell.m */; };
 		71C477A3192CE8C100A60177 /* PLAllPhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C477A2192CE8C100A60177 /* PLAllPhotosViewController.m */; };
@@ -574,6 +575,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71BE585A19F413D3002A85AB /* AdSupport.framework in Frameworks */,
 				71DD7CFA19F1E8EF00115D88 /* libc++.dylib in Frameworks */,
 				712F194719CC660F00C184B5 /* Photos.framework in Frameworks */,
 				71E8850419115C7E005A78E0 /* CoreGraphics.framework in Frameworks */,

@@ -32,7 +32,6 @@
 #import "PEPhotoListViewController.h"
 #import "PEPhotoPageViewController.h"
 
-
 @interface PEHomeViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
@@ -778,7 +777,7 @@
 }
 
 
-- (PEBannerContentView *)makeBannerViewWithTitle:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate {
+- (UIView *)makeBannerViewWithTitle:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate {
     PHFetchOptions *options = [PHFetchOptions new];
     options.predicate = [NSPredicate predicateWithFormat:@"(creationDate > %@) AND (creationDate < %@)", startDate, endDate];
     options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
@@ -806,7 +805,7 @@
     return contentView;
 }
 
-- (PEBannerContentView *)noContentBannerView {
+- (UIView *)noContentBannerView {
     PEBannerContentView *bannerView = [PEBannerContentView new];
     bannerView.titleLabel.text = NSLocalizedString(@"Let's take a picture.", nil);
     bannerView.titleLabel.font = [UIFont systemFontOfSize:30.0f];

@@ -67,12 +67,12 @@
     
     // TableView
     [self setUpWebAlbumSection];
-//    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-//        [self setUpCameraRollEditDisplayItemSection];
-//    }
-//    else {
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        [self setUpCameraRollEditDisplayItemSection];
+    }
+    else {
         [self setUpCameraRollAutoCreateSection];
-//    }
+    }
     [self setUpTaskManagerSection];
     [self setUpInAppPurchaseSection];
     [self setUpCacheSection];

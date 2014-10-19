@@ -39,6 +39,10 @@
 #import "PAActivityIndicatorView.h"
 #import "PAActivityIndicatorView.h"
 
+typedef NS_ENUM(NSUInteger, kPWAlbumListViewControllerActionSheetType) {
+    kPWAlbumListViewControllerActionSheetType_
+};
+
 @interface PWAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
@@ -89,9 +93,9 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
     self.navigationItem.rightBarButtonItems = @[addBarButtonItem, searchBarButtonItem];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
-//    UIBarButtonItem *editBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editBarButtonItem:)];
-//    self.navigationItem.leftBarButtonItem = editBarButtonItem;
+    UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
+    settingsBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
+    self.navigationItem.leftBarButtonItem = settingsBarButtonItem;
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
@@ -258,12 +262,6 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
         
         PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
         cell.album = album;
-        __weak typeof(self) wself = self;
-        cell.actionButtonActionBlock = ^(PWAlbumObject *album) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            [sself showAlbumActionSheet:album];
-        };
         
         return cell;
     }
@@ -324,11 +322,16 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
     if (collectionView == _collectionView) {
-        if (self.isPhone) {
-            return CGSizeMake(0.0f, 216.0f);
+        if (_isSelectMode) {
+            return CGSizeZero;
         }
         else {
-            return CGSizeMake(0.0f, 300.0f);
+            if (self.isPhone) {
+                return CGSizeMake(0.0f, 216.0f);
+            }
+            else {
+                return CGSizeMake(0.0f, 300.0f);
+            }
         }
     }
     else if (collectionView == _recentlyUploadedCollectionView) {
@@ -350,9 +353,14 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (collectionView == _collectionView) {
-        PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
-        PWPhotoListViewController *viewController = [[PWPhotoListViewController alloc] initWithAlbum:album];
-        [self.navigationController pushViewController:viewController animated:YES];
+        if (_isSelectMode) {
+            
+        }
+        else {
+            PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
+            PWPhotoListViewController *viewController = [[PWPhotoListViewController alloc] initWithAlbum:album];
+            [self.navigationController pushViewController:viewController animated:YES];
+        }
     }
     else if (collectionView == _recentlyUploadedCollectionView) {
         PWPhotoViewCell *cell = (PWPhotoViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
@@ -424,26 +432,6 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 - (void)settingsBarButtonAction {
     PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeWeb];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
-}
-
-- (void)editBarButtonItem:(id)sender {
-    [self enableSelectMode];
-}
-
-- (void)selectActionBarButtonAction:(id)sender {
-    
-}
-
-- (void)selectTrashBarButtonAction:(id)sender {
-    
-}
-
-- (void)selectOrganizeBarButtonAction:(id)sender {
-    
-}
-
-- (void)selectCancelBarButtonAction:(id)sender {
-    [self disableSelectMode];
 }
 
 #pragma mark LoadData
@@ -574,241 +562,6 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
             [_collectionView reloadData];
         });
     }
-}
-
-#pragma mark UIActionSheet
-- (void)showAlbumActionSheet:(PWAlbumObject *)album {
-    _actionSheetItem = album;
-    
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:album.title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:NSLocalizedString(@"Edit", nil), NSLocalizedString(@"Share", nil), NSLocalizedString(@"Download", nil), nil];
-    actionSheet.tag = 1001;
-    [actionSheet showFromTabBar:self.tabBarController.tabBar];
-}
-
-- (void)editActionSheetAction:(PWAlbumObject *)album {
-    PWAlbumEditViewController *viewController = [[PWAlbumEditViewController alloc] initWithAlbum:album];
-    __weak typeof(self) wself = self;
-    viewController.successBlock = ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [sself loadRecentlyUploadedPhotos];
-        [sself loadDataWithStartIndex:0];
-    };
-    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-    if (self.isPhone) {
-        navigationController.transitioningDelegate = (id)navigationController;
-    }
-    else {
-        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    }
-    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)shareActionSheetAction:(PWAlbumObject *)album {
-    PWAlbumShareViewController *viewController = [[PWAlbumShareViewController alloc] initWithAlbum:album];
-    __weak typeof(self) wself = self;
-    viewController.changedAlbumBlock = ^{
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.collectionView reloadItemsAtIndexPaths:sself.collectionView.indexPathsForVisibleItems];
-        });
-    };
-    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-    if (self.isPhone) {
-        navigationController.transitioningDelegate = (id)navigationController;
-    }
-    else {
-        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    }
-    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)downloadActionSheetAction:(PWAlbumObject *)album {
-    if (![Reachability reachabilityForInternetConnection].isReachable) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-        [alertView show];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [alertView dismissWithClickedButtonIndex:0 animated:YES];
-        });
-        return;
-    }
-    
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
-    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
-    indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
-    [indicator startAnimating];
-    [alertView setValue:indicator forKey:@"accessoryView"];
-    [alertView show];
-    [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:album.id_str index:0 completion:^(NSUInteger nextIndex, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [alertView dismissWithClickedButtonIndex:0 animated:YES];
-        });
-        if (error) {
-#ifdef DEBUG
-            NSLog(@"%@", error);
-#endif
-            return;
-        }
-        
-        [[PDTaskManager sharedManager] addTaskFromWebAlbum:album toLocalAlbum:nil completion:^(NSError *error) {
-            if (error) {
-#ifdef DEBUG
-                NSLog(@"%@", error);
-#endif
-                return;
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-            });
-        }];
-    }];
-}
-
-- (void)deleteActionSheetAction:(PWAlbumObject *)album {
-    if (![Reachability reachabilityForInternetConnection].isReachable) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-        [alertView show];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [alertView dismissWithClickedButtonIndex:0 animated:YES];
-        });
-        return;
-    }
-    
-    _actionSheetItem = album;
-    
-    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete the album \"%@\"?", nil), album.title];
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:nil];
-    actionSheet.tag = 1002;
-    [actionSheet showFromTabBar:self.tabBarController.tabBar];
-}
-
-- (void)deleteAlbum:(PWAlbumObject *)album {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
-    indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
-    [indicator startAnimating];
-    [alertView setValue:indicator forKey:@"accessoryView"];
-    [alertView show];
-    
-    __weak typeof(self) wself = self;
-    [PWPicasaAPI deleteAlbum:album completion:^(NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if (error) {
-#ifdef DEBUG
-            NSLog(@"%@", error);
-#endif
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [alertView dismissWithClickedButtonIndex:0 animated:YES];
-            [sself loadRecentlyUploadedPhotos];
-            [sself loadDataWithStartIndex:0];
-        });
-    }];
-}
-
-#pragma mark UIActionSheetDelegate
-- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
-    
-    if (actionSheet.tag == 1001) {
-        if ([buttonTitle isEqualToString:NSLocalizedString(@"Edit", nil)]) {
-            [self editActionSheetAction:_actionSheetItem];
-        }
-        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Share", nil)]) {
-            [self shareActionSheetAction:_actionSheetItem];
-        }
-        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Download", nil)]) {
-            [self downloadActionSheetAction:_actionSheetItem];
-        }
-        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
-            [self deleteActionSheetAction:_actionSheetItem];
-        }
-        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
-        }
-    }
-    else if (actionSheet.tag == 1002) {
-        if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
-            [self deleteAlbum:_actionSheetItem];
-        }
-        else if ([buttonTitle isEqualToString:NSLocalizedString(@"Cancel", nil)]) {
-        }
-    }
-}
-
-#pragma mark SelectMode
-- (void)enableSelectMode {
-    if (_isSelectMode) {
-        return;
-    }
-    _isSelectMode = YES;
-//    _selectedPhotoIDs = @[].mutableCopy;
-    
-    _collectionView.allowsMultipleSelection = YES;
-    for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
-        cell.isSelectWithCheckMark = YES;
-    }
-    
-    _selectActionBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction:)];
-    _selectActionBarButton.enabled = NO;
-    _trashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction:)];
-    _trashBarButtonItem.enabled = NO;
-    _organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(selectOrganizeBarButtonAction:)];
-    _organizeBarButtonItem.enabled = NO;
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, _trashBarButtonItem];
-    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
-    [tabBarController setActionToolbarItems:toolbarItems animated:NO];
-    [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
-    __weak typeof(self) wself = self;
-    [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
-        [tabBarController setToolbarHidden:YES animated:NO completion:nil];
-    }];
-    
-    UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(selectCancelBarButtonAction:)];
-    UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
-    [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
-    [tabBarController setActionNavigationItem:navigationItem animated:NO];
-    [tabBarController setActionNavigationTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
-    [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        sself.navigationController.navigationBar.alpha = 0.0f;
-    }];
-    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
-    
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
-}
-
-- (void)disableSelectMode {
-    if (!_isSelectMode) {
-        return;
-    }
-    _isSelectMode = NO;
-//    _selectedPhotoIDs = @[].mutableCopy;
-    
-    _collectionView.allowsMultipleSelection = YES;
-    for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
-        cell.isSelectWithCheckMark = NO;
-    }
-    NSArray *indexPaths = _collectionView.indexPathsForSelectedItems;
-    for (NSIndexPath *indexPath in indexPaths) {
-        [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
-    }
-    
-    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
-    [tabBarController setToolbarHidden:NO animated:NO completion:nil];
-    [tabBarController setActionToolbarHidden:YES animated:YES completion:nil];
-    [tabBarController setActionNavigationBarHidden:YES animated:YES completion:nil];
-    self.navigationController.navigationBar.alpha = 1.0f;
-    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-    
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }
 
 #pragma mark NoItem

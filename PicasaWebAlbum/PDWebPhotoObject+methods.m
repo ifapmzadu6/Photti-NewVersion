@@ -73,16 +73,115 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 };
 
 - (void)finishDownloadWithLocation:(NSURL *)location completion:(void (^)(NSError *))completion {
-//    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-//        [self newFinishDownloadWithLocation:location completion:completion];
-//    }
-//    else {
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        [self newFinishDownloadWithLocation:location completion:completion];
+    }
+    else {
         [self oldFinishDownloadWithLocation:location completion:completion];
-//    }
+    }
 }
 
 - (void)newFinishDownloadWithLocation:(NSURL *)location completion:(void (^)(NSError *))completion {
+    PDTaskObject *taskObject = self.task;
+    NSManagedObjectID *taskObjectID = taskObject.objectID;
+    NSString *local_album_id_str = taskObject.to_album_id_str;
+    NSString *web_album_id_str = taskObject.from_album_id_str;
+    NSString *web_photo_id_str = self.photo_object_id_str;
+    NSManagedObjectID *selfObjectID = self.objectID;
     
+    __block BOOL isVideo = NO;
+    [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+        PWPhotoObject *photoObject = [PDWebPhotoObject getWebPhotoObjectWithID:web_photo_id_str context:context];
+        isVideo = (photoObject.gphoto.originalvideo_duration) ? YES : NO;
+    }];
+    __block NSString *albumTitle = nil;
+    [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        PWAlbumObject *albumObject = [PDWebPhotoObject getWebAlbumWithID:web_album_id_str context:context];
+        albumTitle = albumObject.title;
+    }];
+    
+    PHAssetCollection *assetCollection = [self getAssetCollectionWithIdentifier:local_album_id_str];
+    if (!assetCollection) {
+        __block NSString *assetCollectionIdentifier = nil;
+        NSError *error = nil;
+        [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
+            PHAssetCollectionChangeRequest *changeRequest = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:albumTitle];
+            PHObjectPlaceholder *placeholder = changeRequest.placeholderForCreatedAssetCollection;
+            assetCollectionIdentifier = placeholder.localIdentifier;
+        } error:&error];
+        if (error) {
+            completion ? completion(error) : 0;
+        }
+        PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[assetCollectionIdentifier] options:nil];
+        assetCollection = fetchResult.firstObject;
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PDTaskObject *tmpTaskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
+            tmpTaskObject.to_album_id_str = assetCollectionIdentifier;
+        }];
+    }
+    
+    NSURL *fileURL = nil;
+    NSString *filePath = nil;
+    if (isVideo) {
+        filePath = [location.absoluteString stringByAppendingPathExtension:@"mp4"];
+    }
+    else {
+        filePath = [location.absoluteString stringByAppendingPathExtension:@"jpg"];
+    }
+    fileURL = [NSURL URLWithString:filePath];
+    NSError *error = nil;
+    if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:fileURL error:&error]) {
+        completion ? completion([NSError errorWithDomain:kPDWebPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
+    }
+    
+    __block NSString *assetIdentifier = nil;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
+        PHAssetChangeRequest *assetRequest = nil;
+        if (isVideo) {
+            assetRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:fileURL];
+        }
+        else {
+            assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:fileURL];
+        }
+        PHObjectPlaceholder *asset = assetRequest.placeholderForCreatedAsset;
+        assetIdentifier = asset.localIdentifier;
+    } error:&error];
+    if (error) {
+        completion ? completion(error) : 0;
+        return;
+    }
+    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetIdentifier] options:nil];
+    if (result.count == 0) {
+        completion ? completion([NSError errorWithDomain:kPDWebPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+    }
+    PHAsset *asset = result.firstObject;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
+        PHAssetCollectionChangeRequest *assetCollectionRequest = nil;
+        if (assetCollection) {
+            assetCollectionRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+        }
+        else {
+            assetCollectionRequest = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:albumTitle];
+        }
+        [assetCollectionRequest addAssets:@[asset]];
+    } error:&error];
+    if (error) {
+        completion ? completion(error) : 0;
+        return;
+    }
+    
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        PDWebPhotoObject *webObject = (PDWebPhotoObject *)[context objectWithID:selfObjectID];
+        webObject.is_done = @(YES);
+    }];
+    
+    if (![[NSFileManager defaultManager] removeItemAtURL:fileURL error:&error]) {
+        completion ? completion(error) : 0;
+        return;
+    }
+    
+    completion ? completion(nil) : 0;
 }
 
 - (void)oldFinishDownloadWithLocation:(NSURL *)location completion:(void (^)(NSError *))completion {
@@ -91,42 +190,18 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     
     NSString *local_album_id_str = taskObject.to_album_id_str;
     NSString *web_album_id_str = taskObject.from_album_id_str;
-    NSManagedObjectID *objectID = self.objectID;
+    NSManagedObjectID *selfObjectID = self.objectID;
     
     NSManagedObjectContext *plContext = [PLCoreDataAPI writeContext];
     
-    __block PLAlbumObject *localAlbumObject = [PDWebPhotoObject getLocalAlbumWithID:local_album_id_str context:plContext];
-    __block NSString *id_str = nil;
-    __block NSUInteger localAlbumObjectTagType = NSUIntegerMax;
-    __block NSString *localAlbumObjectURL = nil;
-    __block NSManagedObjectID *localAlbumObjectID = nil;
-    if (!localAlbumObject) {
-        //アルバムがないので新しく作る
-        [plContext performBlockAndWait:^{
-            PWAlbumObject *webAlbumObject = [PDWebPhotoObject getWebAlbumWithID:web_album_id_str context:[PWCoreDataAPI readContext]];
-            
-            localAlbumObject = [PDWebPhotoObject makeNewLocalAlbumWithWebAlbum:webAlbumObject context:plContext];
-            id_str = localAlbumObject.id_str;
-            localAlbumObjectTagType = localAlbumObject.tag_type.integerValue;
-            localAlbumObjectURL = localAlbumObject.url;
-            localAlbumObjectID = localAlbumObject.objectID;
-        }];
-        
-        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDTaskObject *task = (PDTaskObject *)[context objectWithID:taskObjectID];
-            task.to_album_id_str = id_str;
-        }];
-    }
-    else {
-        id_str = localAlbumObject.id_str;
-        localAlbumObjectTagType = localAlbumObject.tag_type.integerValue;
-        localAlbumObjectURL = localAlbumObject.url;
-        localAlbumObjectID = localAlbumObject.objectID;
-    }
+    __block PLAlbumObject *localAlbumObject = [PDWebPhotoObject getLocalAlbumIfNeededMakeNewOneAlbumID:local_album_id_str webAlbumID:web_album_id_str taskObjectID:taskObjectID context:plContext];
     if (!localAlbumObject) {
         completion ? completion([NSError errorWithDomain:kPDWebPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
         return;
     }
+    __block NSUInteger localAlbumObjectTagType = localAlbumObject.tag_type.integerValue;
+    __block NSString *localAlbumObjectURL = localAlbumObject.url;
+    __block NSManagedObjectID *localAlbumObjectID = localAlbumObject.objectID;
     
     if (localAlbumObjectTagType == PLAlbumObjectTagTypeImported) {
         [plContext performBlockAndWait:^{
@@ -135,24 +210,17 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
                 abort();
             }
         }];
-        
         [PLCoreDataAPI writeContextFinish:plContext];
     }
     
     void (^completionBlock)(NSURL *, NSError *) = ^(NSURL *assetURL, NSError *error){
         if (error || !assetURL) {
-#ifdef DEBUG
-            NSLog(@"%@", error);
-#endif
             [PLCoreDataAPI writeContextFinish:plContext];
             return;
         }
         
         [[PLAssetsManager sharedLibrary] assetForURL:assetURL resultBlock:^(ALAsset *asset) {
             if (!asset) {
-#ifdef DEBUG
-                NSLog(@"%@", error);
-#endif
                 [PLCoreDataAPI writeContextFinish:plContext];
                 return;
             }
@@ -160,9 +228,6 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
             if (localAlbumObjectTagType == PLAlbumObjectTagTypeImported) {
                 [[PLAssetsManager sharedLibrary] groupForURL:[NSURL URLWithString:localAlbumObjectURL] resultBlock:^(ALAssetsGroup *group) {
                     if (!group) {
-#ifdef DEBUG
-                        NSLog(@"%@", error);
-#endif
                         [PLCoreDataAPI writeContextFinish:plContext];
                         return;
                     }
@@ -170,7 +235,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
                     [group addAsset:asset];
                     
                     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                        PDWebPhotoObject *webObject = (PDWebPhotoObject *)[context objectWithID:objectID];
+                        PDWebPhotoObject *webObject = (PDWebPhotoObject *)[context objectWithID:selfObjectID];
                         webObject.is_done = @(YES);
                     }];
                     
@@ -210,7 +275,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
                 [PLCoreDataAPI writeContextFinish:plContext];
                 
                 [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                    PDWebPhotoObject *webObject = (PDWebPhotoObject *)[context objectWithID:objectID];
+                    PDWebPhotoObject *webObject = (PDWebPhotoObject *)[context objectWithID:selfObjectID];
                     if (webObject) {
                         webObject.is_done = @(YES);
                     }
@@ -240,9 +305,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         NSURL *newLocation = [location URLByAppendingPathExtension:@"mp4"];
         NSError *error = nil;
         if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:newLocation error:&error]) {
-#ifdef DEBUG
-            NSLog(@"%@", error);
-#endif
+            return;
         }
         if ([[PLAssetsManager sharedLibrary] videoAtPathIsCompatibleWithSavedPhotosAlbum:newLocation]) {
             [[PLAssetsManager sharedLibrary] writeVideoAtPathToSavedPhotosAlbum:newLocation completionBlock:completionBlock];
@@ -256,6 +319,10 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 
 #pragma mark Photo
 - (PHAssetCollection *)getAssetCollectionWithIdentifier:(NSString *)identifier {
+    if (!identifier) {
+        return nil;
+    }
+    
     PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[identifier] options:nil];
     if (fetchResult.count == 0) {
         fetchResult = [PHAssetCollection fetchAssetCollectionsWithALAssetGroupURLs:@[identifier] options:nil];
@@ -287,6 +354,26 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         return albums.firstObject;
     }
     return nil;
+}
+
++ (PLAlbumObject *)getLocalAlbumIfNeededMakeNewOneAlbumID:(NSString *)id_str webAlbumID:(NSString *)web_album_id_str taskObjectID:(NSManagedObjectID *)taskObjectID context:(NSManagedObjectContext *)plContext {
+    __block PLAlbumObject *localAlbumObject = [PDWebPhotoObject getLocalAlbumWithID:id_str context:plContext];
+    __block NSString *newLocalAlbumID = nil;
+    if (!localAlbumObject) {
+        //アルバムがないので新しく作る
+        [plContext performBlockAndWait:^{
+            PWAlbumObject *webAlbumObject = [PDWebPhotoObject getWebAlbumWithID:web_album_id_str context:[PWCoreDataAPI readContext]];
+            
+            localAlbumObject = [PDWebPhotoObject makeNewLocalAlbumWithWebAlbum:webAlbumObject context:plContext];
+            newLocalAlbumID = localAlbumObject.id_str;
+        }];
+        
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PDTaskObject *task = (PDTaskObject *)[context objectWithID:taskObjectID];
+            task.to_album_id_str = newLocalAlbumID;
+        }];
+    }
+    return localAlbumObject;
 }
 
 + (PWAlbumObject *)getWebAlbumWithID:(NSString *)id_str context:(NSManagedObjectContext *)context {

@@ -108,24 +108,18 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 
 - (UIViewController *)tabBarController {
     UIViewController *localNavigationController = nil;
-//    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-//        localNavigationController = [PENavigationController new];;
-//    }
-//    else {
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        localNavigationController = [PENavigationController new];;
+    }
+    else {
         localNavigationController = [PLNavigationController new];
-//    }
+    }
     PWNavigationController *webNavigationViewController = [PWNavigationController new];
     PDNavigationController *taskNavigationController = [PDNavigationController new];
     
-    NSUInteger initialTabPageIndex = 1;
-    if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized
-        && ![PWOAuthManager isLogined]) {
-        initialTabPageIndex = 1;
-    }
-    
+    NSUInteger initialTabPageIndex = 0;
     NSArray *viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
     NSArray *colors = @[[PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor], [PAColors getColor:PAColorsTypeTintUploadColor]];
-
     
     PATabBarAdsController *tabBarController = [[PATabBarAdsController alloc] initWithIndex:initialTabPageIndex viewControllers:viewControllers colors:colors];
     tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];

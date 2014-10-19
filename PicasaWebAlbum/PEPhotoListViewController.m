@@ -110,12 +110,13 @@
         }
         _photoListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
         _photoListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            if (count == 0) {
-                [sself disableSelectMode];
-                [sself.navigationController popViewControllerAnimated:YES];
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                if (count == 0) {
+                    [sself disableSelectMode];
+                }
+            });
         };
         _photoListDataSource.didChangeSelectedItemCountBlock = ^(NSUInteger count){
             typeof(wself) sself = wself;

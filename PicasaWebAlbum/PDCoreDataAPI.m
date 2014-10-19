@@ -118,10 +118,11 @@
 #pragma mark Block
 + (void)writeWithBlock:(void (^)(NSManagedObjectContext *))block {
     if (!block) return;
+    void (^cBlock)(NSManagedObjectContext *) = [block copy];
     
     NSManagedObjectContext *context = [self writeContext];
     [context performBlock:^{
-        block(context);
+        cBlock(context);
         
         NSError *error = nil;
         if (![context save:&error]) {
@@ -134,10 +135,11 @@
 
 + (void)writeWithBlockAndWait:(void (^)(NSManagedObjectContext *))block {
     if (!block) return;
+    void (^cBlock)(NSManagedObjectContext *) = [block copy];
     
     NSManagedObjectContext *context = [self writeContext];
     [context performBlockAndWait:^{
-        block(context);
+        cBlock(context);
         
         NSError *error = nil;
         if (![context save:&error]) {
@@ -150,19 +152,21 @@
 
 + (void)readWithBlock:(void (^)(NSManagedObjectContext *))block {
     if (!block) return;
+    void (^cBlock)(NSManagedObjectContext *) = [block copy];
     
     NSManagedObjectContext *context = [self readContext];
     [context performBlock:^{
-        block(context);
+        cBlock(context);
     }];
 }
 
 + (void)readWithBlockAndWait:(void (^)(NSManagedObjectContext *))block {
     if (!block) return;
+    void (^cBlock)(NSManagedObjectContext *) = [block copy];
     
     NSManagedObjectContext *context = [self readContext];
     [context performBlockAndWait:^{
-        block(context);
+        cBlock(context);
     }];
 }
 
