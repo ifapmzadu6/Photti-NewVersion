@@ -54,7 +54,7 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
 
 + (void)refreshKeychain {
     void (^block)() = ^{
-    [self.class sharedManager].auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
+        [self.class sharedManager].auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
     };
     if ([NSThread isMainThread]) {
         block();

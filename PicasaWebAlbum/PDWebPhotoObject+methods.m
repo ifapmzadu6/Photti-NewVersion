@@ -120,29 +120,15 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         }];
     }
     
-    NSURL *fileURL = nil;
-    NSString *filePath = nil;
-    if (isVideo) {
-        filePath = [location.absoluteString stringByAppendingPathExtension:@"mp4"];
-    }
-    else {
-        filePath = [location.absoluteString stringByAppendingPathExtension:@"jpg"];
-    }
-    fileURL = [NSURL URLWithString:filePath];
-    NSError *error = nil;
-    if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:fileURL error:&error]) {
-        completion ? completion([NSError errorWithDomain:kPDWebPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
-        return;
-    }
-    
     __block NSString *assetIdentifier = nil;
+    NSError *error = nil;
     [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
         PHAssetChangeRequest *assetRequest = nil;
         if (isVideo) {
-            assetRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:fileURL];
+            assetRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:location];
         }
         else {
-            assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:fileURL];
+            assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:location];
         }
         PHObjectPlaceholder *asset = assetRequest.placeholderForCreatedAsset;
         assetIdentifier = asset.localIdentifier;
@@ -176,7 +162,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         webObject.is_done = @(YES);
     }];
     
-    if (![[NSFileManager defaultManager] removeItemAtURL:fileURL error:&error]) {
+    if (![[NSFileManager defaultManager] removeItemAtURL:location error:&error]) {
         completion ? completion(error) : 0;
         return;
     }

@@ -161,7 +161,8 @@
 		71BD235C19779E450034CD3B /* ALAsset+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235B19779E450034CD3B /* ALAsset+methods.m */; };
 		71BD235F1977AE100034CD3B /* PDCopyPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235E1977AE100034CD3B /* PDCopyPhotoObject+methods.m */; };
 		71BDE3A61998FC2100853E85 /* NSMutableAttributedString+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDE3A51998FC2100853E85 /* NSMutableAttributedString+methods.m */; };
-		71BE585A19F413D3002A85AB /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 715A31A0198E902C002A0A37 /* AdSupport.framework */; };
+		71BE586119F41EB1002A85AB /* libAdIdAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE585F19F41EB1002A85AB /* libAdIdAccess.a */; };
+		71BE586319F41EF9002A85AB /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE586019F41EB1002A85AB /* libGoogleAnalyticsServices.a */; };
 		71BE92F419E663500088AEFE /* PEPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BE92F319E663500088AEFE /* PEPhotoEditViewController.m */; };
 		71C0784B194ABBD70071702D /* PDTaskTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C0784A194ABBD70071702D /* PDTaskTableViewCell.m */; };
 		71C477A3192CE8C100A60177 /* PLAllPhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C477A2192CE8C100A60177 /* PLAllPhotosViewController.m */; };
@@ -511,6 +512,9 @@
 		71BD235E1977AE100034CD3B /* PDCopyPhotoObject+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PDCopyPhotoObject+methods.m"; sourceTree = "<group>"; };
 		71BDE3A41998FC2100853E85 /* NSMutableAttributedString+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+methods.h"; sourceTree = "<group>"; };
 		71BDE3A51998FC2100853E85 /* NSMutableAttributedString+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+methods.m"; sourceTree = "<group>"; };
+		71BE585B19F41D6D002A85AB /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGoogleAnalyticsServices.a; path = "Pods/GoogleAnalytics-iOS-SDK/libGoogleAnalyticsServices.a"; sourceTree = "<group>"; };
+		71BE585F19F41EB1002A85AB /* libAdIdAccess.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libAdIdAccess.a; sourceTree = "<group>"; };
+		71BE586019F41EB1002A85AB /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAnalyticsServices.a; sourceTree = "<group>"; };
 		71BE92F219E663500088AEFE /* PEPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoEditViewController.h; sourceTree = "<group>"; };
 		71BE92F319E663500088AEFE /* PEPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoEditViewController.m; sourceTree = "<group>"; };
 		71C07849194ABBD70071702D /* PDTaskTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskTableViewCell.h; sourceTree = "<group>"; };
@@ -575,7 +579,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				71BE585A19F413D3002A85AB /* AdSupport.framework in Frameworks */,
+				71BE586319F41EF9002A85AB /* libGoogleAnalyticsServices.a in Frameworks */,
 				71DD7CFA19F1E8EF00115D88 /* libc++.dylib in Frameworks */,
 				712F194719CC660F00C184B5 /* Photos.framework in Frameworks */,
 				71E8850419115C7E005A78E0 /* CoreGraphics.framework in Frameworks */,
@@ -585,6 +589,7 @@
 				713300B4194043EB0061DBA3 /* ImageIO.framework in Frameworks */,
 				713746D1193DD6C40097470A /* Security.framework in Frameworks */,
 				7195525E192B14C6003EA9AF /* MapKit.framework in Frameworks */,
+				71BE586119F41EB1002A85AB /* libAdIdAccess.a in Frameworks */,
 				712E03AC191F60E40035D9E0 /* AssetsLibrary.framework in Frameworks */,
 				71958C4B191B4AA400CFC15F /* QuartzCore.framework in Frameworks */,
 				71958C45191B4A8F00CFC15F /* CoreVideo.framework in Frameworks */,
@@ -1985,6 +1990,15 @@
 			name = "NSAttributedString+methods";
 			sourceTree = "<group>";
 		};
+		71BE585E19F41E9A002A85AB /* Google Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				71BE585F19F41EB1002A85AB /* libAdIdAccess.a */,
+				71BE586019F41EB1002A85AB /* libGoogleAnalyticsServices.a */,
+			);
+			name = "Google Analytics";
+			sourceTree = "<group>";
+		};
 		71BE92F119E663260088AEFE /* PEPhotoEditViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -2315,6 +2329,7 @@
 		71E8850019115C7E005A78E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				71BE585B19F41D6D002A85AB /* libGoogleAnalyticsServices.a */,
 				71DD7CF919F1E8EF00115D88 /* libc++.dylib */,
 				71DD7CF719F1E89F00115D88 /* CFNetwork.framework */,
 				712F194619CC660F00C184B5 /* Photos.framework */,
@@ -2365,6 +2380,7 @@
 		71E8850819115C7E005A78E0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				71BE585E19F41E9A002A85AB /* Google Analytics */,
 				7194EC7019A23AFE00FD90BB /* images */,
 				713746D0193DD6500097470A /* PicasaWebAlbum.entitlements */,
 				715A31AD198F5876002A0A37 /* Localizable.strings */,
@@ -2931,6 +2947,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PicasaWebAlbum/Photti-Prefix.pch";
 				INFOPLIST_FILE = "PicasaWebAlbum/Photti-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/GoogleAnalytics-iOS-SDK",
+					"$(PROJECT_DIR)/PicasaWebAlbum",
+				);
 				PRODUCT_NAME = Photti;
 				WRAPPER_EXTENSION = app;
 			};
@@ -2951,6 +2972,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PicasaWebAlbum/Photti-Prefix.pch";
 				INFOPLIST_FILE = "PicasaWebAlbum/Photti-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/GoogleAnalytics-iOS-SDK",
+					"$(PROJECT_DIR)/PicasaWebAlbum",
+				);
 				PRODUCT_NAME = Photti;
 				WRAPPER_EXTENSION = app;
 			};
