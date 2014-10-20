@@ -164,6 +164,7 @@
 		71BE586119F41EB1002A85AB /* libAdIdAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE585F19F41EB1002A85AB /* libAdIdAccess.a */; };
 		71BE586319F41EF9002A85AB /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE586019F41EB1002A85AB /* libGoogleAnalyticsServices.a */; };
 		71BE586919F4A03B002A85AB /* PAKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BE586819F4A03A002A85AB /* PAKit.m */; };
+		71BE587119F4AAA6002A85AB /* PAResizeData.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BE587019F4AAA6002A85AB /* PAResizeData.m */; };
 		71BE92F419E663500088AEFE /* PEPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BE92F319E663500088AEFE /* PEPhotoEditViewController.m */; };
 		71C0784B194ABBD70071702D /* PDTaskTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C0784A194ABBD70071702D /* PDTaskTableViewCell.m */; };
 		71C477A3192CE8C100A60177 /* PLAllPhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C477A2192CE8C100A60177 /* PLAllPhotosViewController.m */; };
@@ -519,6 +520,8 @@
 		71BE586519F495CE002A85AB /* HTTPDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTTPDefine.h; sourceTree = "<group>"; };
 		71BE586719F4A03A002A85AB /* PAKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAKit.h; sourceTree = "<group>"; };
 		71BE586819F4A03A002A85AB /* PAKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAKit.m; sourceTree = "<group>"; };
+		71BE586F19F4AAA6002A85AB /* PAResizeData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAResizeData.h; sourceTree = "<group>"; };
+		71BE587019F4AAA6002A85AB /* PAResizeData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAResizeData.m; sourceTree = "<group>"; };
 		71BE92F219E663500088AEFE /* PEPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoEditViewController.h; sourceTree = "<group>"; };
 		71BE92F319E663500088AEFE /* PEPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoEditViewController.m; sourceTree = "<group>"; };
 		71C07849194ABBD70071702D /* PDTaskTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskTableViewCell.h; sourceTree = "<group>"; };
@@ -1910,6 +1913,7 @@
 				71BE586619F4A024002A85AB /* PAKit */,
 				71737EB719A318F800CBE68A /* PANetworkActivityIndicator */,
 				711AF6201993ACBF00640D2D /* PAPhotoCollectionViewFloyLayout */,
+				71BE586E19F4AA91002A85AB /* PAResizeData */,
 				71CD06141931779D00BECF6B /* PASnowFlake */,
 				712E03B11920B53D0035D9E0 /* PAString */,
 			);
@@ -1923,6 +1927,7 @@
 				7177479C1936F572005179B6 /* PDModelObject */,
 				71BD233D197683C80034CD3B /* PDModelObject+methods */,
 				714318C5193DF6DB0066A1F8 /* PDTaskManager */,
+				71D52EE3197F806D005CFF30 /* PDTaskObjectFactoryMethods */,
 			);
 			name = D;
 			sourceTree = "<group>";
@@ -1968,7 +1973,6 @@
 		71BD233D197683C80034CD3B /* PDModelObject+methods */ = {
 			isa = PBXGroup;
 			children = (
-				71D52EE3197F806D005CFF30 /* PDTaskObjectFactoryMethods */,
 				71D52EE4197F8076005CFF30 /* PDBasePhotoObject+methods */,
 				71D52EE5197F807E005CFF30 /* PDLocalPhotoObject+methods */,
 				71D52EE6197F8084005CFF30 /* PDWebPhotoObject+methods */,
@@ -2012,6 +2016,15 @@
 				71BE586819F4A03A002A85AB /* PAKit.m */,
 			);
 			name = PAKit;
+			sourceTree = "<group>";
+		};
+		71BE586E19F4AA91002A85AB /* PAResizeData */ = {
+			isa = PBXGroup;
+			children = (
+				71BE586F19F4AAA6002A85AB /* PAResizeData.h */,
+				71BE587019F4AAA6002A85AB /* PAResizeData.m */,
+			);
+			name = PAResizeData;
 			sourceTree = "<group>";
 		};
 		71BE92F119E663260088AEFE /* PEPhotoEditViewController */ = {
@@ -2699,6 +2712,7 @@
 				71D52EE2197F49F2005CFF30 /* PDBasePhotoObject+methods.m in Sources */,
 				711183A619D0326900548730 /* PAGradientView.m in Sources */,
 				7195529B192C862D003EA9AF /* PLAlbumObject.m in Sources */,
+				71BE587119F4AAA6002A85AB /* PAResizeData.m in Sources */,
 				7195525519290E16003EA9AF /* PLCoreDataAPI.m in Sources */,
 				7124F13F19B6F85E00DFE49E /* PAMigrationViewController.m in Sources */,
 				71BE586919F4A03B002A85AB /* PAKit.m in Sources */,

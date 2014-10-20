@@ -14,12 +14,14 @@
 #import "PDLocalPhotoObject+methods.h"
 
 #import "PAKit.h"
+#import "PAResizeData.h"
 #import "PDCoreDataAPI.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
 #import "PASnowFlake.h"
 #import "PADateFormatter.h"
+#import "PADateTimestamp.h"
 #import "PDModelObject.h"
 #import "PWPicasaAPI.h"
 #import "PWPicasaParser.h"
@@ -55,11 +57,55 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     
     NSString *title = [[PADateFormatter fullStringFormatter] stringFromDate:asset.creationDate];
     NSString *filePath = [PAKit makeUniquePathInTmpDir];
+    NSManagedObjectID *selfObjectID = self.objectID;
     if (asset.mediaType == PHAssetMediaTypeImage) {
-        
+        PHImageRequestOptions *options = [PHImageRequestOptions new];
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+            NSError *error = nil;
+            
+            NSData *resizedData = nil;
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
+                resizedData = [PAResizeData resizedDataWithImageData:imageData maxPixelSize:2048];
+            }
+            else {
+                resizedData = [PAResizeData resizedDataWithImageData:imageData maxPixelSize:NSUIntegerMax];
+            }
+            
+            [resizedData writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error];
+            
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PDLocalPhotoObject *selfObject = (PDLocalPhotoObject *)[context objectWithID:selfObjectID];
+                selfObject.prepared_body_filepath = filePath;
+            }];
+            
+            completion ? completion(error) : 0;
+        }];
     }
     else if (asset.mediaType == PHAssetMediaTypeVideo) {
-        
+        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+        options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+        NSString *exportPreset = nil;
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
+            exportPreset = AVAssetExportPreset640x480;
+        }
+        else {
+            exportPreset = AVAssetExportPreset1280x720;
+        }
+        [[PHImageManager defaultManager] requestExportSessionForVideo:asset options:options exportPreset:exportPreset resultHandler:^(AVAssetExportSession *exportSession, NSDictionary *info) {
+            [PDLocalPhotoObject expotrtVideo:exportSession title:title filePath:filePath completion:^(NSError *error) {
+                if (error) {
+                    completion ? completion(error) : 0;
+                    return;
+                }
+                [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                    PDLocalPhotoObject *selfObject = (PDLocalPhotoObject *)[context objectWithID:selfObjectID];
+                    selfObject.prepared_body_filepath = filePath;
+                }];
+                
+                completion ? completion(nil) : 0;
+            }];
+        }];
     }
 }
 
@@ -73,13 +119,16 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     NSString *assetUrlString = photoObject.url;
     NSString *title = photoObject.filename;
     NSString *filePath = [PAKit makeUniquePathInTmpDir];
-    self.prepared_body_filepath = filePath;
+    NSManagedObjectID *selfObjectID = self.objectID;
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        PDLocalPhotoObject *selfObject = (PDLocalPhotoObject *)[context objectWithID:selfObjectID];
+        selfObject.prepared_body_filepath = filePath;
+    }];
     [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:assetUrlString] resultBlock:^(ALAsset *asset) {
         if (!asset) {
             completion ? completion([NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
             return;
         }
-        
         NSString *type = [asset valueForProperty:ALAssetPropertyType];
         if ([type isEqualToString:ALAssetTypePhoto]) {
             NSData *imageData = nil;
@@ -95,7 +144,6 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
             completion ? completion(error) : 0;
         }
         else if ([type isEqualToString:ALAssetTypeVideo]) {
-            NSString *tmpFilePath = [PAKit makeUniquePathInTmpDir];
             AVAsset *urlAsset = [AVURLAsset URLAssetWithURL:asset.defaultRepresentation.url options:nil];
             AVAssetExportSession *exportSession = nil;
             if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
@@ -104,48 +152,106 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
             else {
                 exportSession = [AVAssetExportSession exportSessionWithAsset:urlAsset presetName:AVAssetExportPreset1280x720];
             }
-            exportSession.outputFileType = AVFileTypeMPEG4;
-            exportSession.shouldOptimizeForNetworkUse = YES;
-            exportSession.outputURL = [NSURL fileURLWithPath:tmpFilePath];
-            __weak typeof(exportSession) wExportSession = exportSession;
-            [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                typeof(wExportSession) sExportSession = wExportSession;
-                if (!sExportSession) return;
-                
-                if (sExportSession.status != AVAssetExportSessionStatusCompleted){
-                    completion ? completion(sExportSession.error) : 0;
-                    return;
-                }
-                
-                NSData *body = [PDLocalPhotoObject makeBodyFromFilePath:tmpFilePath title:title];
-                if (!body) {
-                    completion ? completion([NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
-                    return;
-                }
-                
-                NSError *error = nil;
-                if (![body writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
-                    completion ? completion(error) : 0;
-                    return;
-                }
-                [[NSFileManager defaultManager] removeItemAtPath:tmpFilePath error:&error];
-                
-                completion ? completion(error) : 0;
-            }];
+            [PDLocalPhotoObject expotrtVideo:exportSession title:title filePath:filePath completion:completion];
         }
     } failureBlock:^(NSError *error) {
         completion ? completion(error) : 0;
     }];
 }
 
++ (void)expotrtVideo:(AVAssetExportSession *)exportSession title:(NSString *)title filePath:(NSString *)filePath completion:(void (^)(NSError *))completion {
+    NSString *tmpFilePath = [PAKit makeUniquePathInTmpDir];
+    exportSession.outputFileType = AVFileTypeMPEG4;
+    exportSession.shouldOptimizeForNetworkUse = YES;
+    exportSession.outputURL = [NSURL fileURLWithPath:tmpFilePath];
+    __weak typeof(exportSession) wExportSession = exportSession;
+    [exportSession exportAsynchronouslyWithCompletionHandler:^{
+        typeof(wExportSession) sExportSession = wExportSession;
+        if (!sExportSession) return;
+        if (sExportSession.status != AVAssetExportSessionStatusCompleted){
+            completion ? completion(sExportSession.error) : 0;
+            return;
+        }
+        
+        NSData *body = [PDLocalPhotoObject makeBodyFromFilePath:tmpFilePath title:title];
+        if (!body) {
+            completion ? completion([NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+            return;
+        }
+        NSError *error = nil;
+        if (![body writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
+            completion ? completion(error) : 0;
+            return;
+        }
+        [[NSFileManager defaultManager] removeItemAtPath:tmpFilePath error:&error];
+        
+        completion ? completion(error) : 0;
+    }];
+}
+
 - (void)makeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
-    PDTaskObject *taskObject = self.task;
-    NSString *webAlbumID = taskObject.to_album_id_str;
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        [self newMakeSessionTaskWithSession:session completion:completion];
+    }
+    else {
+        [self oldMakeSessionTaskWithSession:session completion:completion];
+    }
+}
+
+- (void)newMakeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
+    NSString *webAlbumID = self.task.to_album_id_str;
     if (!webAlbumID) {
         [self makeNewAlbumSessionTaskWithSession:session completion:completion];
         return;
     };
+    NSString *requestUrlString = [NSString stringWithFormat:@"%@/%@", kPDLocalPhotoObjectPostURL, webAlbumID];
     
+    PHAsset *asset = [self getAssetWithIdentifier:self.photo_object_id_str];
+    if (!asset) {
+        completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
+    }
+    BOOL isVideo = (asset.mediaType == PHAssetMediaTypeVideo) ? YES : NO;
+    NSString *filePath = self.prepared_body_filepath;
+    if (!filePath) {
+        __weak typeof(self) wself = self;
+        [self setUploadTaskToWebAlbumID:webAlbumID completion:^(NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself makeSessionTaskWithSession:session completion:completion];
+        }];
+        return;
+    }
+    if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
+    }
+    [NSFileManager cancelProtect:filePath];
+    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+    NSUInteger bodySize = [fileAttributes[NSFileSize] unsignedLongValue];
+    
+    NSManagedObjectID *selfObjectID = self.objectID;
+    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:requestUrlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+        if (error) {
+            completion ? completion(nil, error) : 0;
+            return;
+        }
+        NSURLSessionTask *sessionTask = [PDLocalPhotoObject getSessionTaskWithRequest:request session:session filePath:filePath bodySize:bodySize isVideo:isVideo];
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PDLocalPhotoObject *selfObject = (PDLocalPhotoObject *)[context objectWithID:selfObjectID];
+            selfObject.session_task_identifier = @(sessionTask.taskIdentifier);
+        }];
+        
+        completion ? completion(sessionTask, nil) : 0;
+    }];
+}
+
+- (void)oldMakeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
+    NSString *webAlbumID = self.task.to_album_id_str;
+    if (!webAlbumID) {
+        [self makeNewAlbumSessionTaskWithSession:session completion:completion];
+        return;
+    };
     NSString *requestUrlString = [NSString stringWithFormat:@"%@/%@", kPDLocalPhotoObjectPostURL, webAlbumID];
     
     PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
@@ -153,60 +259,54 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
         completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
         return;
     };
-    
-    NSManagedObjectID *selfObjectID = self.objectID;
-    void (^block)() = ^{
+    BOOL isVideo = [photoObject.type isEqualToString:ALAssetTypeVideo];
+    NSString *filePath = self.prepared_body_filepath;
+    if (!filePath) {
         __weak typeof(self) wself = self;
-        [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:requestUrlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+        [self setUploadTaskToWebAlbumID:webAlbumID completion:^(NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            if (error) {
-                completion ? completion(nil, error) : 0;
-                return;
-            }
-            
-            request.HTTPMethod = @"POST";
-            NSString *filePath = sself.prepared_body_filepath;
-            if (!filePath) {
-                completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
-                return;
-            }
-            
-            [NSFileManager cancelProtect:filePath];
-            NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-            if ([photoObject.type isEqualToString:ALAssetTypePhoto]) {
-                [request addValue:kPWPhotoObjectContentType_jpeg forHTTPHeaderField:kHTTPHeaderFieldContentType];
-            }
-            else if ([photoObject.type isEqualToString:ALAssetTypeVideo]) {
-                [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:kHTTPHeaderFieldContentType];
-                [request addValue:@"1.0" forHTTPHeaderField:kHTTPHeaderFieldMIMEVersion];
-            }
-            [request addValue:[NSString stringWithFormat:@"%lu", [fileAttributes[NSFileSize] unsignedLongValue]] forHTTPHeaderField:kHTTPHeaderFieldContentLength];
-            
-            if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-                completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
-                return;
-            }
-            
-            NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
-            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                PDLocalPhotoObject *selfObject = (PDLocalPhotoObject *)[context objectWithID:selfObjectID];
-                selfObject.session_task_identifier = @(sessionTask.taskIdentifier);
-            }];
-            
-            completion ? completion(sessionTask, nil) : 0;
+            [sself makeSessionTaskWithSession:session completion:completion];
         }];
-    };
+        return;
+    }
+    if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
+    }
+    [NSFileManager cancelProtect:filePath];
+    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+    NSUInteger bodySize = [fileAttributes[NSFileSize] unsignedLongValue];
     
-    NSString *filePath = self.prepared_body_filepath;
-    if (!filePath || ![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-        [self setUploadTaskToWebAlbumID:taskObject.to_album_id_str completion:^(NSError *error) {
-            block();
+    NSManagedObjectID *selfObjectID = self.objectID;
+    [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:requestUrlString] completion:^(NSMutableURLRequest *request, NSError *error) {
+        if (error) {
+            completion ? completion(nil, error) : 0;
+            return;
+        }
+        NSURLSessionTask *sessionTask = [PDLocalPhotoObject getSessionTaskWithRequest:request session:session filePath:filePath bodySize:bodySize isVideo:isVideo];
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+            PDLocalPhotoObject *selfObject = (PDLocalPhotoObject *)[context objectWithID:selfObjectID];
+            selfObject.session_task_identifier = @(sessionTask.taskIdentifier);
         }];
+        
+        completion ? completion(sessionTask, nil) : 0;
+    }];
+}
+
++ (NSURLSessionTask *)getSessionTaskWithRequest:(NSMutableURLRequest *)request session:(NSURLSession *)session filePath:(NSString *)filePath bodySize:(NSUInteger)bodySize isVideo:(BOOL)isVideo {
+    request.HTTPMethod = @"POST";
+    if (isVideo) {
+        [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:kHTTPHeaderFieldContentType];
+        [request addValue:@"1.0" forHTTPHeaderField:kHTTPHeaderFieldMIMEVersion];
     }
     else {
-        block();
+        [request addValue:kPWPhotoObjectContentType_jpeg forHTTPHeaderField:kHTTPHeaderFieldContentType];
     }
+    [request addValue:[NSString stringWithFormat:@"%lu", (unsigned long)bodySize] forHTTPHeaderField:kHTTPHeaderFieldContentLength];
+    
+    NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
+    return sessionTask;
 }
 
 - (void)makeNewAlbumSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
@@ -221,11 +321,22 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
         return;
     }
     
-    PLAlbumObject *albumObject = [self getAlbumObjectWithID:from_album_id_str];
-    if (!albumObject) {
-        completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
-        return;
-    };
+    NSString *title = nil;
+    NSString *timestamp = nil;
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        PHAssetCollection *assetCollection = [self getAssetCollectionWithIdentifier:from_album_id_str];
+        title = assetCollection.localizedTitle;
+        timestamp = [PADateTimestamp timestampForDate:assetCollection.startDate];
+    }
+    else {
+        PLAlbumObject *albumObject = [self getAlbumObjectWithID:from_album_id_str];
+        if (!albumObject) {
+            completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+            return;
+        };
+        title = albumObject.name;
+        timestamp = albumObject.timestamp.stringValue;
+    }
     
     NSURL *url = [NSURL URLWithString:kPDLocalPHotoObjectPostNewAlbumURL];
     [PWPicasaAPI getAuthorizedURLRequest:url completion:^(NSMutableURLRequest *request, NSError *error) {
@@ -234,7 +345,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
             return;
         }
         
-        NSString *body = [PWPicasaPOSTRequest makeBodyWithGPhotoID:nil Title:albumObject.name summary:nil location:nil access:nil timestamp:albumObject.timestamp.stringValue keywords:nil];
+        NSString *body = [PWPicasaPOSTRequest makeBodyWithGPhotoID:nil Title:title summary:nil location:nil access:nil timestamp:timestamp keywords:nil];
         NSData *bodyData = [body dataUsingEncoding:NSUTF8StringEncoding];
         NSString *filePath = [PAKit makeUniquePathInTmpDir];
         if (![bodyData writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
@@ -343,6 +454,19 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     return asset;
 }
 
+- (PHAssetCollection *)getAssetCollectionWithIdentifier:(NSString *)identifier {
+    if (!identifier) {
+        return nil;
+    }
+    
+    PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[identifier] options:nil];
+    if (fetchResult.count == 0) {
+        fetchResult = [PHAssetCollection fetchAssetCollectionsWithALAssetGroupURLs:@[identifier] options:nil];
+    }
+    PHAssetCollection *assetCollection = fetchResult.firstObject;
+    NSAssert(assetCollection, nil);
+    return assetCollection;
+}
 
 #pragma mark Data
 - (PLPhotoObject *)getPhotoObjectWithID:(NSString *)id_str {

@@ -137,6 +137,41 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     }];
 }
 
+- (void)addTaskFromAssetCollection:(PHAssetCollection *)assetCollection toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *))completion {
+    if (assetCollection.estimatedAssetCount == 0) {
+        if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
+        return;
+    }
+    if (![self checkOKAddTask]) return;
+    
+    // Google Analytics
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"PDTaskManager" action:@"addTasks" label:@"FromAssetCollection_ToWebAlbum" value:@(assetCollection.estimatedAssetCount)] build]];
+    
+    __weak typeof(self) wself = self;
+    [PDTaskObjectFactoryMethods makeTaskFromAssetCollection:assetCollection toWebAlbum:toWebAlbum completion:^(NSManagedObjectID *taskObjectID, NSError *error) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (error) {
+#ifdef DEBUG
+            NSLog(@"%@", error);
+#endif
+        }
+        [PDTaskManager getCountOfTasksWithCompletion:^(NSUInteger count, NSError *error) {
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PDTaskObject *taskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
+                taskObject.sort_index = @(count);
+            }];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion ? completion(nil) : 0;
+            });
+            
+            [sself start];
+        }];
+    }];
+}
+
 - (void)addTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSError *))completion {
     if (fromLocalAlbum.photos.count == 0) {
         if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
@@ -164,11 +199,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
                 taskObject.sort_index = @(count);
             }];
             
-            if (completion) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(nil);
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion ? completion(nil) : 0;
+            });
             
             [sself start];
         }];
@@ -202,11 +235,9 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
                 taskObject.sort_index = @(count);
             }];
             
-            if (completion) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(nil);
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion ? completion(nil) : 0;
+            });
             
             [sself start];
         }];
@@ -240,19 +271,13 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
                 taskObject.sort_index = @(count);
             }];
             
-            if (completion) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(nil);
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion ? completion(nil) : 0;
+            });
             
             [sself start];
         }];
     }];
-}
-
-- (void)addTaskFromAssetCollection:(PHAssetCollection *)assetCollection toWebAlbum:(PWAlbumObject *)webAlbum completion:(void (^)(NSError *))completion {
-    
 }
 
 - (void)countOfAllPhotosInTaskWithCompletion:(void (^)(NSUInteger count, NSError *error))completion {
@@ -385,7 +410,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 #endif
                     return;
                 }
-                                
+                
                 [sself taskIsDoneAndStartNext:[PDTaskManager getFirstTaskObject]];
             }];
         }

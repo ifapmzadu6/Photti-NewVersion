@@ -105,9 +105,36 @@
         }
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            if (completion) {
-                completion(taskObjectID, nil);
-            }
+            completion ? completion(taskObjectID, nil) : 0;
+        });
+    }];
+}
+
++ (void)makeTaskFromAssetCollection:(PHAssetCollection *)assetCollection toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSManagedObjectID *, NSError *))completion {
+    NSString *localIdentifier = assetCollection.localIdentifier;
+    NSString *toWebAlbumID = toWebAlbum.id_str;
+    NSMutableArray *assetIdentifiers = @[].mutableCopy;
+    PHFetchResult *fetchResults = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+    for (PHAsset *asset in fetchResults) {
+        [assetIdentifiers addObject:asset.localIdentifier];
+    }
+    
+    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:@"PDTaskObject" inManagedObjectContext:context];
+        taskObject.type = @(PDTaskObjectTypeLocalAlbumToWebAlbum);
+        taskObject.from_album_id_str = localIdentifier;
+        taskObject.to_album_id_str = toWebAlbumID;
+        NSManagedObjectID *taskObjectID = taskObject.objectID;
+        
+        for (NSString *id_str in assetIdentifiers) {
+            PDLocalPhotoObject *localPhoto = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDLocalPhotoObject class]) inManagedObjectContext:context];
+            localPhoto.photo_object_id_str = id_str;
+            localPhoto.task = taskObject;
+            [taskObject addPhotosObject:localPhoto];
+        }
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            completion ? completion(taskObjectID, nil) : 0;
         });
     }];
 }
@@ -140,9 +167,7 @@
         }
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            if (completion) {
-                completion(taskObjectID, nil);
-            }
+            completion ? completion(taskObjectID, nil): 0;
         });
     }];
 }
@@ -176,9 +201,7 @@
         }
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            if (completion) {
-                completion(taskObjectID, nil);
-            }
+            completion ? completion(taskObjectID, nil) : 0;
         });
     }];
 }

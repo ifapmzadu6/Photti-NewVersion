@@ -16,6 +16,7 @@
 #import "PEPhotoListDataSource.h"
 #import "PEPhotoPageViewController.h"
 #import "PWSearchNavigationController.h"
+#import "PDTaskManager.h"
 
 // test
 #import "PWImagePickerController.h"
@@ -232,7 +233,6 @@
 }
 
 - (void)selectUploadBarButtonAction:(id)sender {
-    
 }
 
 - (void)selectTrashBarButtonAction:(id)sender {
@@ -348,7 +348,19 @@
         
     }];
     UIAlertAction *uploadAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Upload", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        [[PDTaskManager sharedManager] addTaskFromAssetCollection:sself.photoListDataSource.assetCollection toWebAlbum:nil completion:^(NSError *error) {
+            if (error) {
+#ifdef DEBUG
+                NSLog(@"%@", error);
+#endif
+                return;
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+            });
+        }];
     }];
     UIAlertAction *deleteAlertAction = nil;
     if (_type == PHPhotoListViewControllerType_Album) {
