@@ -33,21 +33,27 @@
             NSError *error = nil;
             NSArray *photos = [context executeFetchRequest:request error:&error];
             if (error) {
-                if (completion) {
-                    completion(nil, error);
-                }
+                completion ? completion(nil, error) : 0;
                 return;
             }
             if (photos.count == 0) {
-                if (completion) {
-                    completion(nil, [NSError errorWithDomain:@"PDTaskObject (methods)" code:0 userInfo:nil]);
-                }
+                completion ? completion(nil, [NSError errorWithDomain:@"PDTaskObject (methods)" code:0 userInfo:nil]) : 0;
                 return;
             }
             
+            BOOL isContainGif = NO;
             for (PWPhotoObject *photoObject in photos) {
-                [photoObjectIDs addObject:photoObject.id_str];
-                [photoObjectSortIndexs setObject:photoObject.sortIndex forKey:photoObject.id_str];
+                NSOrderedSet *filterdContent = [photoObject.media.content filteredOrderedSetUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", kPWPhotoObjectContentType_mp4]];
+                if ((filterdContent.count == 0) && [photoObject.content_type isEqualToString:kPWPhotoObjectContentType_gif]) {
+                    isContainGif = YES;
+                }
+                else {
+                    [photoObjectIDs addObject:photoObject.id_str];
+                    [photoObjectSortIndexs setObject:photoObject.sortIndex forKey:photoObject.id_str];
+                }
+            }
+            if (isContainGif) {
+                [PDTaskObjectFactoryMethods showNotSupportGifSkipAlertView];
             }
         }];
         
@@ -68,9 +74,7 @@
             taskObjectID = taskObject.objectID;
         }];
         
-        if (completion) {
-            completion(taskObjectID, nil);
-        }
+        completion ? completion(taskObjectID, nil) : 0;
     });
 }
 
@@ -177,6 +181,16 @@
             }
         });
     }];
+}
+
+#pragma mark UIAlertView
++ (void)showNotSupportGifSkipAlertView {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *title = NSLocalizedString(@"Not Support Gif Image", nil);
+        NSString *message = NSLocalizedString(@"Will be skipped.", nil);
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil];
+        [alertView show];
+    });
 }
 
 @end

@@ -119,17 +119,30 @@
         NSUInteger count = changeDetails.fetchResultAfterChanges.count;
         _fetchResult = changeDetails.fetchResultAfterChanges;
         
-        [_collectionView performBatchUpdates:^{
-            if (deleteIndexPaths) {
-                [_collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
-            }
-            if (insertIndexPaths) {
-                [_collectionView insertItemsAtIndexPaths:insertIndexPaths];
-            }
-            if (reloadIndexPaths) {
-                [_collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
-            }
-        } completion:^(BOOL finished) {
+        UICollectionView *collectionView = _collectionView;
+        if (collectionView) {
+            [collectionView performBatchUpdates:^{
+                if (deleteIndexPaths) {
+                    [collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
+                }
+                if (insertIndexPaths) {
+                    [collectionView insertItemsAtIndexPaths:insertIndexPaths];
+                }
+                if (reloadIndexPaths) {
+                    [collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
+                }
+            } completion:^(BOOL finished) {
+                if (_didChangeItemCountBlock) {
+                    _didChangeItemCountBlock(count);
+                }
+                PLCollectionFooterView *footerView = _footerView;
+                if (footerView) {
+                    NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Photos -", nil), (unsigned long)_fetchResult.count];
+                    [footerView setText:albumCountString];
+                }
+            }];
+        }
+        else {
             if (_didChangeItemCountBlock) {
                 _didChangeItemCountBlock(count);
             }
@@ -138,7 +151,7 @@
                 NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Photos -", nil), (unsigned long)_fetchResult.count];
                 [footerView setText:albumCountString];
             }
-        }];
+        }
     });
 }
 

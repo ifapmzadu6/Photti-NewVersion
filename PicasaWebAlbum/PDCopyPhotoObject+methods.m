@@ -93,7 +93,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
         [NSFileManager cancelProtect:filePath];
         NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
         if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
-            [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
+            [request addValue:kPWPhotoObjectContentType_jpeg forHTTPHeaderField:@"Content-Type"];
         }
         else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
             [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
@@ -177,7 +177,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
     [body appendData:[firstBodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableString *secondHeaderString = [NSMutableString string];
-    [secondHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", @"video/mp4"]];
+    [secondHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", kPWPhotoObjectContentType_mp4]];
     [secondHeaderString appendString:@"\n\n"];
     [body appendData:[secondHeaderString dataUsingEncoding:NSUTF8StringEncoding]];
     

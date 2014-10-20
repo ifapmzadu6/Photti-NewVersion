@@ -54,6 +54,9 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     }
     else if (tag_type == PWPhotoManagedObjectTypeVideo) {
         NSArray *mp4contents = [contents filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @"video/mpeg4"]];
+        mp4contents = [mp4contents sortedArrayUsingComparator:^NSComparisonResult(PWPhotoMediaContentObject * obj1, PWPhotoMediaContentObject * obj2) {
+            return MAX(obj1.width.integerValue, obj1.height.integerValue) > MAX(obj2.width.integerValue, obj2.height.integerValue);
+        }];
         if (mp4contents.count > 0) {
             PWPhotoMediaContentObject *content = mp4contents.lastObject;
             url = [NSURL URLWithString:content.url];
@@ -89,10 +92,10 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     NSString *web_photo_id_str = self.photo_object_id_str;
     NSManagedObjectID *selfObjectID = self.objectID;
     
-    __block BOOL isVideo = NO;
+    __block NSString *contentType = nil;
     [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         PWPhotoObject *photoObject = [PDWebPhotoObject getWebPhotoObjectWithID:web_photo_id_str context:context];
-        isVideo = (photoObject.gphoto.originalvideo_duration) ? YES : NO;
+        contentType = photoObject.content_type;
     }];
     __block NSString *albumTitle = nil;
     [PWCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
@@ -120,11 +123,35 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         }];
     }
     
-    __block NSString *assetIdentifier = nil;
+    NSString *filePath = nil;
+    if ([contentType isEqualToString:kPWPhotoObjectContentType_mp4]) {
+        filePath = [location.absoluteString stringByAppendingPathExtension:@"mp4"];
+    }
+    else if ([contentType isEqualToString:kPWPhotoObjectContentType_jpeg]) {
+        filePath = [location.absoluteString stringByAppendingPathExtension:@"jpeg"];
+    }
+    else if ([contentType isEqualToString:kPWPhotoObjectContentType_png]) {
+        filePath = [location.absoluteString stringByAppendingPathExtension:@"png"];
+    }
+    if (filePath) {
+        NSURL *newLocation = [NSURL URLWithString:filePath];
+        NSError *error = nil;
+        if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:newLocation error:&error]) {
+            completion ? completion(error) : 0;
+            return;
+        }
+        location = newLocation;
+    }
+    else {
+        completion ? completion([NSError errorWithDomain:kPDWebPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
+    }
+    
     NSError *error = nil;
+    __block NSString *assetIdentifier = nil;
     [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
         PHAssetChangeRequest *assetRequest = nil;
-        if (isVideo) {
+        if ([contentType isEqualToString:kPWPhotoObjectContentType_mp4]) {
             assetRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:location];
         }
         else {

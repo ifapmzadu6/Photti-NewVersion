@@ -127,6 +127,9 @@ static NSString * const kPECategoryViewCellSettingsKey = @"kPECategoryViewCellSe
     
     UIEdgeInsets contentInsets = _horizontalScrollView.collectionView.contentInset;
     _horizontalScrollView.collectionView.contentOffset = CGPointMake(-contentInsets.left, 0.0f);
+    
+    _horizontalScrollView.delegate = nil;
+    _horizontalScrollView.dataSource = nil;
 }
 
 - (void)moreButtonAction {

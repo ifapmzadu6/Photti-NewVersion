@@ -496,8 +496,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
 //    NSLog(@"%s", __func__);
     
-    NSString *tmpFilePath = [PDTaskManager makeUniquePathInTmpDir];
-    NSString *filePath = [tmpFilePath stringByAppendingPathExtension:downloadTask.originalRequest.URL.pathExtension];
+    NSString *filePath = [PDTaskManager makeUniquePathInTmpDir];
     NSURL *fileURL = [NSURL fileURLWithPath:filePath];
     
     NSError *error = nil;

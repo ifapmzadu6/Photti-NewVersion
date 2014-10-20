@@ -297,7 +297,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     [body appendData:[firstBodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableString *secondHeaderString = [NSMutableString string];
-    [secondHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", @"video/mp4"]];
+    [secondHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", kPWPhotoObjectContentType_mp4]];
     [secondHeaderString appendString:@"\n\n"];
     [body appendData:[secondHeaderString dataUsingEncoding:NSUTF8StringEncoding]];
     

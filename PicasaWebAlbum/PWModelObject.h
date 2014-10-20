@@ -39,4 +39,9 @@ typedef enum _PWPhotoManagedObjectType {
     PWPhotoManagedObjectTypeVideo
 } PWPhotoManagedObjectType;
 
+static NSString * const kPWPhotoObjectContentType_mp4 = @"video/mp4";
+static NSString * const kPWPhotoObjectContentType_jpeg = @"image/jpeg";
+static NSString * const kPWPhotoObjectContentType_gif = @"image/gif";
+static NSString * const kPWPhotoObjectContentType_png = @"image/png";
+
 #endif
