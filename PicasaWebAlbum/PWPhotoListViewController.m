@@ -8,6 +8,7 @@
 
 #import "PWPhotoListViewController.h"
 
+#import "PAKit.h"
 #import "PWPicasaAPI.h"
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -407,10 +408,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             if (!error) {
                 NSString *filePath = nil;
                 if (photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
-                    filePath = [[PWPhotoListViewController makeUniquePathInTmpDir] stringByAppendingPathExtension:@"jpg"];
+                    filePath = [[PAKit makeUniquePathInTmpDir] stringByAppendingPathExtension:@"jpg"];
                 }
                 else {
-                    filePath = [[PWPhotoListViewController makeUniquePathInTmpDir] stringByAppendingPathExtension:@"mp4"];
+                    filePath = [[PAKit makeUniquePathInTmpDir] stringByAppendingPathExtension:@"mp4"];
                 }
                 NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
                 NSError *fileManagerError = nil;
@@ -941,20 +942,12 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                 return;
             }
             
-            NSString *filePath = [PWPhotoListViewController makeUniquePathInTmpDir];
+            NSString *filePath = [PAKit makeUniquePathInTmpDir];
             [data writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error];
             
             completion(filePath, error);
         }];
     }];
-}
-
-+ (NSString *)makeUniquePathInTmpDir {
-    NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
-    NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
-    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PASnowFlake generateUniqueIDString]];
-    
-    return filePath;
 }
 
 #pragma mark UIActionSheetDelegate

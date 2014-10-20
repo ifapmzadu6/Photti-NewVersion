@@ -16,7 +16,7 @@
 #import "PLAssetsManager.h"
 #import "PEAssetsManager.h"
 #import "PLCoreDataAPI.h"
-
+#import "PAKit.h"
 #import "PWPicasaAPI.h"
 #import "PWModelObject.h"
 #import "PWCoreDataAPI.h"
@@ -496,7 +496,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
 //    NSLog(@"%s", __func__);
     
-    NSString *filePath = [PDTaskManager makeUniquePathInTmpDir];
+    NSString *filePath = [PAKit makeUniquePathInTmpDir];
     NSURL *fileURL = [NSURL fileURLWithPath:filePath];
     
     NSError *error = nil;
@@ -564,14 +564,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
             completion(count, error);
         });
     }];
-}
-
-#pragma mark FilePath
-+ (NSString *)makeUniquePathInTmpDir {
-    NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
-    NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
-    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PASnowFlake generateUniqueIDString]];
-    return filePath;
 }
 
 @end

@@ -8,6 +8,7 @@
 
 #import "PDCopyPhotoObject+methods.h"
 
+#import "PAKit.h"
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
 #import "PWPicasaAPI.h"
@@ -119,7 +120,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
     PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) return;
     
-    NSString *filePath = [PDCopyPhotoObject makeUniquePathInTmpDir];
+    NSString *filePath = [PAKit makeUniquePathInTmpDir];
     NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
     
     if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
@@ -211,14 +212,5 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
     }];
     return photoObject;
 }
-
-#pragma mark FilePath
-+ (NSString *)makeUniquePathInTmpDir {
-    NSString *homeDirectory = [NSString stringWithString:NSHomeDirectory()];
-    NSString *tmpDirectory = [homeDirectory stringByAppendingPathComponent:@"/tmp"];
-    NSString *filePath = [tmpDirectory stringByAppendingFormat:@"/%@", [PASnowFlake generateUniqueIDString]];
-    return filePath;
-}
-
 
 @end

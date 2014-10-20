@@ -163,6 +163,7 @@
 		71BDE3A61998FC2100853E85 /* NSMutableAttributedString+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDE3A51998FC2100853E85 /* NSMutableAttributedString+methods.m */; };
 		71BE586119F41EB1002A85AB /* libAdIdAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE585F19F41EB1002A85AB /* libAdIdAccess.a */; };
 		71BE586319F41EF9002A85AB /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE586019F41EB1002A85AB /* libGoogleAnalyticsServices.a */; };
+		71BE586919F4A03B002A85AB /* PAKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BE586819F4A03A002A85AB /* PAKit.m */; };
 		71BE92F419E663500088AEFE /* PEPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BE92F319E663500088AEFE /* PEPhotoEditViewController.m */; };
 		71C0784B194ABBD70071702D /* PDTaskTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C0784A194ABBD70071702D /* PDTaskTableViewCell.m */; };
 		71C477A3192CE8C100A60177 /* PLAllPhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C477A2192CE8C100A60177 /* PLAllPhotosViewController.m */; };
@@ -516,6 +517,8 @@
 		71BE585F19F41EB1002A85AB /* libAdIdAccess.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libAdIdAccess.a; sourceTree = "<group>"; };
 		71BE586019F41EB1002A85AB /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAnalyticsServices.a; sourceTree = "<group>"; };
 		71BE586519F495CE002A85AB /* HTTPDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTTPDefine.h; sourceTree = "<group>"; };
+		71BE586719F4A03A002A85AB /* PAKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAKit.h; sourceTree = "<group>"; };
+		71BE586819F4A03A002A85AB /* PAKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAKit.m; sourceTree = "<group>"; };
 		71BE92F219E663500088AEFE /* PEPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoEditViewController.h; sourceTree = "<group>"; };
 		71BE92F319E663500088AEFE /* PEPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoEditViewController.m; sourceTree = "<group>"; };
 		71C07849194ABBD70071702D /* PDTaskTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskTableViewCell.h; sourceTree = "<group>"; };
@@ -1896,6 +1899,7 @@
 		71B72FF919DDABF300D105EA /* A */ = {
 			isa = PBXGroup;
 			children = (
+				71BE586519F495CE002A85AB /* HTTPDefine.h */,
 				711AF61C1993AA4400640D2D /* PAAlbumCollectionViewFlowLayout */,
 				71A2542219190EBD009914F7 /* PAColors */,
 				71955277192C27D2003EA9AF /* PADateFormatter */,
@@ -1903,11 +1907,11 @@
 				712FB5FF19DF141A00E3B0F3 /* PADepressingTransition */,
 				71A25475191B3222009914F7 /* PAIcons */,
 				71649BF2195907AB00009C1F /* PAInAppPurchase */,
+				71BE586619F4A024002A85AB /* PAKit */,
 				71737EB719A318F800CBE68A /* PANetworkActivityIndicator */,
 				711AF6201993ACBF00640D2D /* PAPhotoCollectionViewFloyLayout */,
 				71CD06141931779D00BECF6B /* PASnowFlake */,
 				712E03B11920B53D0035D9E0 /* PAString */,
-				71BE586519F495CE002A85AB /* HTTPDefine.h */,
 			);
 			name = A;
 			sourceTree = "<group>";
@@ -1999,6 +2003,15 @@
 				71BE586019F41EB1002A85AB /* libGoogleAnalyticsServices.a */,
 			);
 			name = "Google Analytics";
+			sourceTree = "<group>";
+		};
+		71BE586619F4A024002A85AB /* PAKit */ = {
+			isa = PBXGroup;
+			children = (
+				71BE586719F4A03A002A85AB /* PAKit.h */,
+				71BE586819F4A03A002A85AB /* PAKit.m */,
+			);
+			name = PAKit;
 			sourceTree = "<group>";
 		};
 		71BE92F119E663260088AEFE /* PEPhotoEditViewController */ = {
@@ -2688,6 +2701,7 @@
 				7195529B192C862D003EA9AF /* PLAlbumObject.m in Sources */,
 				7195525519290E16003EA9AF /* PLCoreDataAPI.m in Sources */,
 				7124F13F19B6F85E00DFE49E /* PAMigrationViewController.m in Sources */,
+				71BE586919F4A03B002A85AB /* PAKit.m in Sources */,
 				7191705E19D1223E003BFFC3 /* PEAlbumViewCell.m in Sources */,
 				71A2546819195259009914F7 /* PWPhotoViewCell.m in Sources */,
 				7149D2D319DC2CFE004BD7A7 /* NSIndexSet+methods.m in Sources */,
