@@ -38,7 +38,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) {
         if (completion) {
-            completion([NSError errorWithDomain:@"PDLocalPhotoObject" code:0 userInfo:nil]);
+            completion([NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]);
         }
         return;
     };
@@ -50,7 +50,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:assetUrlString] resultBlock:^(ALAsset *asset) {
         if (!asset) {
             if (completion) {
-                completion([NSError errorWithDomain:@"PDLocalPhotoObject" code:0 userInfo:nil]);
+                completion([NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]);
             }
             return;
         }
@@ -96,7 +96,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
                 NSData *body = [PDLocalPhotoObject makeBodyFromFilePath:tmpFilePath title:title];
                 if (!body) {
                     if (completion) {
-                        completion([NSError errorWithDomain:@"PDLocalPhotoObject" code:0 userInfo:nil]);
+                        completion([NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]);
                     }
                     return;
                 }
@@ -162,7 +162,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
             }
             else if ([photoObject.type isEqualToString:ALAssetTypeVideo]) {
                 [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:kHTTPHeaderFieldContentType];
-                [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
+                [request addValue:@"1.0" forHTTPHeaderField:kHTTPHeaderFieldMIMEVersion];
             }
             [request addValue:[NSString stringWithFormat:@"%lu", [fileAttributes[NSFileSize] unsignedLongValue]] forHTTPHeaderField:kHTTPHeaderFieldContentLength];
             

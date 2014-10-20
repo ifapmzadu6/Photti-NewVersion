@@ -13,5 +13,6 @@ static NSString * const kHTTPHeaderFieldContentLength = @"Content-Length";
 static NSString * const kHTTPHeaderFieldContentType = @"Content-Type";
 static NSString * const kHTTPHeaderFieldContentTypeValue_AtomXml = @"application/atom+xml";
 static NSString * const kHTTPHeaderFieldIfMatch = @"If-Match";
+static NSString * const kHTTPHeaderFieldMIMEVersion = @"MIME-version";
 
 #endif

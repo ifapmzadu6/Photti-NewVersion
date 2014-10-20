@@ -98,7 +98,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
         }
         else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
             [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:kHTTPHeaderFieldContentType];
-            [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
+            [request addValue:@"1.0" forHTTPHeaderField:kHTTPHeaderFieldMIMEVersion];
         }
         [request addValue:[NSString stringWithFormat:@"%lu", [fileAttributes[NSFileSize] unsignedLongValue]] forHTTPHeaderField:kHTTPHeaderFieldContentLength];
         NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
