@@ -9,6 +9,7 @@
 #import "PWPicasaGETRequest.h"
 
 #import "PWOAuthManager.h"
+#import "PWPicasaAPI.h"
 
 @interface PWPicasaGETRequest ()
 
@@ -59,7 +60,7 @@ static NSString * const kPWPicasaGETRequestNumberOfRecentlyUploadedPhotos = @"50
         else {
             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
             request.allHTTPHeaderFields = headerFields;
-            [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
+            [request addValue:@"2" forHTTPHeaderField:kPWPicasaAPIGDataVersionKey];
             if (completion) {
                 completion(request, nil);
             }
@@ -77,7 +78,7 @@ static NSString * const kPWPicasaGETRequestNumberOfRecentlyUploadedPhotos = @"50
         else {
             NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
             request.allHTTPHeaderFields = headerFields;
-            [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
+            [request addValue:@"2" forHTTPHeaderField:kPWPicasaAPIGDataVersionKey];
             NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
             [task resume];            
         }

@@ -12,6 +12,8 @@
 #import "PWOAuthManager.h"
 #import "PWCoreDataAPI.h"
 
+static NSString * const kPWPicasaAPIGDataVersionKey = @"GData-Version";
+
 static NSString * const kPWPicasaAPIGphotoAccessPrivate = @"private";
 static NSString * const kPWPicasaAPIGphotoAccessPublic = @"public";
 static NSString * const kPWPicasaAPIGphotoAccessProtected = @"protected";

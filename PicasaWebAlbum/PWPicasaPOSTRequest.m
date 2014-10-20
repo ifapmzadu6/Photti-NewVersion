@@ -9,6 +9,8 @@
 #import "PWPicasaPOSTRequest.h"
 
 #import "PWOAuthManager.h"
+#import "HTTPDefine.h"
+#import "PWPicasaAPI.h"
 
 static NSString * const PWPostURL = @"https://picasaweb.google.com/data/feed/api/user/default";
 static NSString * const PWPutAlbumURL = @"https://picasaweb.google.com/data/entry/api/user/default/albumid";
@@ -29,9 +31,9 @@ static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/e
         NSData *bodyData = [body dataUsingEncoding:NSUTF8StringEncoding];
         request.HTTPBody = bodyData;
         request.allHTTPHeaderFields = headerFields;
-        [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
-        [request addValue:[NSString stringWithFormat:@"%ld", (long)bodyData.length] forHTTPHeaderField:@"Content-Length"];
-        [request addValue:@"application/atom+xml" forHTTPHeaderField:@"Content-Type"];
+        [request addValue:@"2" forHTTPHeaderField:kPWPicasaAPIGDataVersionKey];
+        [request addValue:[NSString stringWithFormat:@"%ld", (long)bodyData.length] forHTTPHeaderField:kHTTPHeaderFieldContentLength];
+        [request addValue:kHTTPHeaderFieldContentTypeValue_AtomXml forHTTPHeaderField:kHTTPHeaderFieldContentType];
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
         [task resume];
     }];
@@ -46,12 +48,12 @@ static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/e
         NSData *bodyData = [body dataUsingEncoding:NSUTF8StringEncoding];
         request.HTTPBody = bodyData;
         request.allHTTPHeaderFields = headerFields;
-        [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
-        [request addValue:[NSString stringWithFormat:@"%ld", (long)bodyData.length] forHTTPHeaderField:@"Content-Length"];
+        [request addValue:@"2" forHTTPHeaderField:kPWPicasaAPIGDataVersionKey];
+        [request addValue:[NSString stringWithFormat:@"%ld", (long)bodyData.length] forHTTPHeaderField:kHTTPHeaderFieldContentLength];
         [request addValue:@"keep-alive" forHTTPHeaderField:@"Connection"];
         [request addValue:@"no-cache" forHTTPHeaderField:@"Cache-Control"];
-        [request addValue:@"*" forHTTPHeaderField:@"If-Match"];
-        [request addValue:@"application/xml; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+        [request addValue:@"*" forHTTPHeaderField:kHTTPHeaderFieldIfMatch];
+        [request addValue:@"application/xml; charset=utf-8" forHTTPHeaderField:kHTTPHeaderFieldContentType];
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
         [task resume];
     }];
@@ -63,8 +65,8 @@ static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/e
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
         request.HTTPMethod = @"DELETE";
         request.allHTTPHeaderFields = headerFields;
-        [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
-        [request addValue:@"*" forHTTPHeaderField:@"If-Match"];
+        [request addValue:@"2" forHTTPHeaderField:kPWPicasaAPIGDataVersionKey];
+        [request addValue:@"*" forHTTPHeaderField:kHTTPHeaderFieldIfMatch];
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
         [task resume];
     }];
@@ -76,8 +78,8 @@ static NSString * const PWDeletePhotoURL = @"https://picasaweb.google.com/data/e
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
         request.HTTPMethod = @"DELETE";
         request.allHTTPHeaderFields = headerFields;
-        [request addValue:@"2" forHTTPHeaderField:@"GData-Version"];
-        [request addValue:@"*" forHTTPHeaderField:@"If-Match"];
+        [request addValue:@"2" forHTTPHeaderField:kPWPicasaAPIGDataVersionKey];
+        [request addValue:@"*" forHTTPHeaderField:kHTTPHeaderFieldIfMatch];
         NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
         [task resume];
     }];

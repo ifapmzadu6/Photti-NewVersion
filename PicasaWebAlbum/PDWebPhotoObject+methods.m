@@ -114,6 +114,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         } error:&error];
         if (error) {
             completion ? completion(error) : 0;
+            return;
         }
         PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[assetCollectionIdentifier] options:nil];
         assetCollection = fetchResult.firstObject;
@@ -167,6 +168,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetIdentifier] options:nil];
     if (result.count == 0) {
         completion ? completion([NSError errorWithDomain:kPDWebPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+        return;
     }
     PHAsset *asset = result.firstObject;
     [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{

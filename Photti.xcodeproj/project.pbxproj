@@ -515,6 +515,7 @@
 		71BE585B19F41D6D002A85AB /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGoogleAnalyticsServices.a; path = "Pods/GoogleAnalytics-iOS-SDK/libGoogleAnalyticsServices.a"; sourceTree = "<group>"; };
 		71BE585F19F41EB1002A85AB /* libAdIdAccess.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libAdIdAccess.a; sourceTree = "<group>"; };
 		71BE586019F41EB1002A85AB /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAnalyticsServices.a; sourceTree = "<group>"; };
+		71BE586519F495CE002A85AB /* HTTPDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HTTPDefine.h; sourceTree = "<group>"; };
 		71BE92F219E663500088AEFE /* PEPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPhotoEditViewController.h; sourceTree = "<group>"; };
 		71BE92F319E663500088AEFE /* PEPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPhotoEditViewController.m; sourceTree = "<group>"; };
 		71C07849194ABBD70071702D /* PDTaskTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskTableViewCell.h; sourceTree = "<group>"; };
@@ -1906,6 +1907,7 @@
 				711AF6201993ACBF00640D2D /* PAPhotoCollectionViewFloyLayout */,
 				71CD06141931779D00BECF6B /* PASnowFlake */,
 				712E03B11920B53D0035D9E0 /* PAString */,
+				71BE586519F495CE002A85AB /* HTTPDefine.h */,
 			);
 			name = A;
 			sourceTree = "<group>";

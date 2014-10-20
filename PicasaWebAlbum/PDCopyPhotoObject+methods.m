@@ -14,6 +14,7 @@
 #import "PWCoreDataAPI.h"
 #import "PWModelObject.h"
 #import "PASnowFlake.h"
+#import "HTTPDefine.h"
 #import "NSFileManager+methods.h"
 
 static NSString * const kPDCopyPhotoObjectMethodsErrorDomain = @"com.photti.PDCopyPhotoObjectMethods";
@@ -93,13 +94,13 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
         [NSFileManager cancelProtect:filePath];
         NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
         if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
-            [request addValue:kPWPhotoObjectContentType_jpeg forHTTPHeaderField:@"Content-Type"];
+            [request addValue:kPWPhotoObjectContentType_jpeg forHTTPHeaderField:kHTTPHeaderFieldContentType];
         }
         else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-            [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
+            [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:kHTTPHeaderFieldContentType];
             [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
         }
-        [request addValue:[NSString stringWithFormat:@"%lu", [fileAttributes[NSFileSize] unsignedLongValue]] forHTTPHeaderField:@"Content-Length"];
+        [request addValue:[NSString stringWithFormat:@"%lu", [fileAttributes[NSFileSize] unsignedLongValue]] forHTTPHeaderField:kHTTPHeaderFieldContentLength];
         NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
         NSURLSessionTask *sessionTask = nil;
         if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
@@ -164,7 +165,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
     [body appendData:[bodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableString *firstHeaderString = [NSMutableString string];
-    [firstHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", @"application/atom+xml"]];
+    [firstHeaderString appendString:[NSString stringWithFormat:@"%@: %@", kHTTPHeaderFieldContentType, kHTTPHeaderFieldContentTypeValue_AtomXml]];
     [firstHeaderString appendString:@"\n\n"];
     [body appendData:[firstHeaderString dataUsingEncoding:NSUTF8StringEncoding]];
     
@@ -177,7 +178,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
     [body appendData:[firstBodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableString *secondHeaderString = [NSMutableString string];
-    [secondHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", kPWPhotoObjectContentType_mp4]];
+    [secondHeaderString appendString:[NSString stringWithFormat:@"%@: %@", kHTTPHeaderFieldContentType, kPWPhotoObjectContentType_mp4]];
     [secondHeaderString appendString:@"\n\n"];
     [body appendData:[secondHeaderString dataUsingEncoding:NSUTF8StringEncoding]];
     

@@ -26,6 +26,7 @@
 #import "NSURLResponse+methods.h"
 #import "NSFileManager+methods.h"
 #import "PDTaskManager.h"
+#import "HTTPDefine.h"
 
 static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDLocalPhotoObjectMethods";
 static NSString * const kPDLocalPhotoObjectPostURL = @"https://picasaweb.google.com/data/feed/api/user/default/albumid";
@@ -157,13 +158,13 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
             [NSFileManager cancelProtect:filePath];
             NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
             if ([photoObject.type isEqualToString:ALAssetTypePhoto]) {
-                [request addValue:@"image/jpeg" forHTTPHeaderField:@"Content-Type"];
+                [request addValue:kPWPhotoObjectContentType_jpeg forHTTPHeaderField:kHTTPHeaderFieldContentType];
             }
             else if ([photoObject.type isEqualToString:ALAssetTypeVideo]) {
-                [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:@"Content-Type"];
+                [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:kHTTPHeaderFieldContentType];
                 [request addValue:@"1.0" forHTTPHeaderField:@"MIME-version"];
             }
-            [request addValue:[NSString stringWithFormat:@"%lu", [fileAttributes[NSFileSize] unsignedLongValue]] forHTTPHeaderField:@"Content-Length"];
+            [request addValue:[NSString stringWithFormat:@"%lu", [fileAttributes[NSFileSize] unsignedLongValue]] forHTTPHeaderField:kHTTPHeaderFieldContentLength];
             
             if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
                 completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
@@ -224,8 +225,8 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
         }
         
         request.HTTPMethod = @"POST";
-        [request addValue:@"application/atom+xml" forHTTPHeaderField:@"Content-Type"];
-        [request addValue:[NSString stringWithFormat:@"%ld", (long)bodyData.length] forHTTPHeaderField:@"Content-Length"];
+        [request addValue:kHTTPHeaderFieldContentTypeValue_AtomXml forHTTPHeaderField:kHTTPHeaderFieldContentType];
+        [request addValue:[NSString stringWithFormat:@"%ld", (long)bodyData.length] forHTTPHeaderField:kHTTPHeaderFieldContentLength];
         NSURLSessionTask *sessionTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:filePath]];
         
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
@@ -284,7 +285,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     [body appendData:[bodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableString *firstHeaderString = [NSMutableString string];
-    [firstHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", @"application/atom+xml"]];
+    [firstHeaderString appendString:[NSString stringWithFormat:@"%@: %@", kHTTPHeaderFieldContentType, kHTTPHeaderFieldContentTypeValue_AtomXml]];
     [firstHeaderString appendString:@"\n\n"];
     [body appendData:[firstHeaderString dataUsingEncoding:NSUTF8StringEncoding]];
     
@@ -297,7 +298,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     [body appendData:[firstBodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableString *secondHeaderString = [NSMutableString string];
-    [secondHeaderString appendString:[NSString stringWithFormat:@"%@: %@", @"Content-Type", kPWPhotoObjectContentType_mp4]];
+    [secondHeaderString appendString:[NSString stringWithFormat:@"%@: %@", kHTTPHeaderFieldContentType, kPWPhotoObjectContentType_mp4]];
     [secondHeaderString appendString:@"\n\n"];
     [body appendData:[secondHeaderString dataUsingEncoding:NSUTF8StringEncoding]];
     
