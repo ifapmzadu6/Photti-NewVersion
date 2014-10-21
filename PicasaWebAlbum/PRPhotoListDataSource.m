@@ -90,6 +90,8 @@
 - (void)setIsSelectMode:(BOOL)isSelectMode {
     _isSelectMode = isSelectMode;
     
+    _selectedPhotoIDs = @[].mutableCopy;
+    
     for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
         cell.isSelectWithCheckMark = isSelectMode;
     }
@@ -99,8 +101,6 @@
             [collectionView deselectItemAtIndexPath:indexPath animated:YES];
         }
     }
-    
-    _selectedPhotoIDs = @[].mutableCopy;
 }
 
 #pragma mark LoadData
@@ -194,6 +194,11 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_isSelectMode) {
+        PWPhotoObject *photo = [_fetchedResultsController objectAtIndexPath:indexPath];
+        if (![_selectedPhotoIDs containsObject:photo.id_str]) {
+            [_selectedPhotoIDs addObject:photo.id_str];
+        }
+        
         if (_didChangeSelectedItemCountBlock) {
             _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
         }
@@ -210,6 +215,11 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (_isSelectMode) {
+        PWPhotoObject *photo = [_fetchedResultsController objectAtIndexPath:indexPath];
+        if ([_selectedPhotoIDs containsObject:photo.id_str]) {
+            [_selectedPhotoIDs removeObject:photo.id_str];
+        }
+        
         if (_didChangeSelectedItemCountBlock) {
             _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
         }

@@ -145,6 +145,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     _collectionView.delegate = _photoListDataSource;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.alwaysBounceVertical = YES;
+    _collectionView.allowsMultipleSelection = YES;
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
