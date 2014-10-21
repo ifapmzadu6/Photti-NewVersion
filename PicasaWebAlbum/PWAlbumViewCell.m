@@ -32,7 +32,6 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
 @property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UILabel *numPhotosLabel;
-@property (strong, nonatomic) UIButton *actionButton;
 @property (strong, nonatomic) UIView *overrayView;
 
 @property (nonatomic) NSUInteger albumHash;
@@ -90,13 +89,6 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
     _numPhotosLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
     [self.contentView addSubview:_numPhotosLabel];
     
-    _actionButton = [UIButton new];
-    [_actionButton addTarget:self action:@selector(actionButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    _actionButton.hitEdgeInsets = UIEdgeInsetsMake(-4.0f, -10.0f, -4.0f, 0.0f);
-    [_actionButton setImage:[PAIcons albumActionButtonIconWithColor:[PAColors getColor:PAColorsTypeTintWebColor]] forState:UIControlStateNormal];
-    [_actionButton setBackgroundImage:[PAIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.05f]] forState:UIControlStateHighlighted];
-    [self.contentView addSubview:_actionButton];
-    
     _overrayView = [UIView new];
     _overrayView.alpha = 0.0f;
     _overrayView.backgroundColor = self.backgroundColor;
@@ -109,8 +101,7 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
 - (void)setSelected:(BOOL)selected {
     [super setSelected:selected];
     
-    _overrayView.alpha = (selected && _isSelectWithCheckmark) ? 0.5f : 0.0f;
-//    _checkMarkImageView.alpha = (selected && _isSelectWithCheckmark) ? 1.0f : 0.0f;
+    _overrayView.alpha = (selected) ? 0.5f : 0.0f;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -185,7 +176,8 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
     NSUInteger numPhotos = _album.gphoto.numphotos.integerValue;
     if (numPhotos > 0) {
         NSUInteger fetchedCount = _fetchedResultsController.fetchedObjects.count;
-        if (fetchedCount > 0) {
+        PWPhotoObject *firstPhotoObject = _fetchedResultsController.fetchedObjects.firstObject;
+        if ((fetchedCount > 0) && (firstPhotoObject.sortIndex.integerValue == 1)) {
             for (int i=0; i<MIN(MIN(3, numPhotos), fetchedCount); i++) {
                 PWPhotoObject *photoObject = _fetchedResultsController.fetchedObjects[i];
                 if (photoObject.sortIndex.integerValue == i+1) {
@@ -305,12 +297,6 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
         [_activityIndicatorView stopAnimating];
         imageView.image = image;
     });
-}
-
-- (void)setIsDisableActionButton:(BOOL)isDisableActionButton {
-    _isDisableActionButton = isDisableActionButton;
-    
-    _actionButton.hidden = isDisableActionButton;
 }
 
 #pragma mark Action

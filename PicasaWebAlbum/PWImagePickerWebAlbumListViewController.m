@@ -187,7 +187,6 @@
     PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
     cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    cell.isDisableActionButton = YES;
     
     return cell;
 }

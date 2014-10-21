@@ -197,7 +197,6 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
-    cell.isDisableActionButton = YES;
     cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
     
     return cell;
