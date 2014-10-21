@@ -93,9 +93,6 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
     _overrayView.alpha = 0.0f;
     _overrayView.backgroundColor = self.backgroundColor;
     [self.contentView addSubview:_overrayView];
-    
-    UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressGestureRecognizerAction:)];
-    [self addGestureRecognizer:gestureRecognizer];
 }
 
 - (void)setSelected:(BOOL)selected {
@@ -297,21 +294,6 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
         [_activityIndicatorView stopAnimating];
         imageView.image = image;
     });
-}
-
-#pragma mark Action
-- (void)actionButtonAction {
-    if (_actionButtonActionBlock) {
-        _actionButtonActionBlock(_album);
-    }
-}
-
-- (void)longPressGestureRecognizerAction:(UILongPressGestureRecognizer *)sender {
-    if([sender state] == UIGestureRecognizerStateBegan){
-        if (_actionButtonActionBlock) {
-            _actionButtonActionBlock(_album);
-        }
-    }
 }
 
 #pragma mark DiscCache

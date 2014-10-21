@@ -165,13 +165,6 @@
     PLAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
     cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    __weak typeof(self) wself = self;
-    cell.actionButtonActionBlock = ^(PLAlbumObject *album) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        [sself showAlbumActionSheet:album];
-    };
     
     return cell;
 }

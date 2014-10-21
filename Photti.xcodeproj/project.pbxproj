@@ -63,9 +63,8 @@
 		713320331921E4AF00A27B3C /* PWDatePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 713320321921E4AF00A27B3C /* PWDatePickerView.m */; };
 		7133203A1921F98900A27B3C /* PXSelectItemFromArrayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 713320391921F98900A27B3C /* PXSelectItemFromArrayViewController.m */; };
 		7133203E19225E9F00A27B3C /* PWAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7133203D19225E9F00A27B3C /* PWAlbumEditViewController.m */; };
-		71342FE11941F76C002331F6 /* PWAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71342FE01941F76C002331F6 /* PWAlbumPickerController.m */; };
-		71342FE51941F7B2002331F6 /* PWAlbumPickerNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71342FE41941F7B2002331F6 /* PWAlbumPickerNavigationController.m */; };
-		71342FE91941F7F0002331F6 /* PWAlbumPickerWebAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71342FE81941F7F0002331F6 /* PWAlbumPickerWebAlbumListViewController.m */; };
+		71342FE11941F76C002331F6 /* PTAlbumPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71342FE01941F76C002331F6 /* PTAlbumPickerController.m */; };
+		71342FE91941F7F0002331F6 /* PTAlbumPickerWebAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71342FE81941F7F0002331F6 /* PTAlbumPickerWebAlbumListViewController.m */; };
 		71349CA9192CF338003CC2AA /* PLParallelNavigationTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71349CA8192CF338003CC2AA /* PLParallelNavigationTitleView.m */; };
 		71349CB1192DF7A8003CC2AA /* PLPhotoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71349CB0192DF7A8003CC2AA /* PLPhotoViewCell.m */; };
 		71349CBC192F0ADD003CC2AA /* PLPhotoViewHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71349CBB192F0ADD003CC2AA /* PLPhotoViewHeaderView.m */; };
@@ -160,6 +159,7 @@
 		71BD235819779D010034CD3B /* PDCopyPhotoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235719779D010034CD3B /* PDCopyPhotoObject.m */; };
 		71BD235C19779E450034CD3B /* ALAsset+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235B19779E450034CD3B /* ALAsset+methods.m */; };
 		71BD235F1977AE100034CD3B /* PDCopyPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD235E1977AE100034CD3B /* PDCopyPhotoObject+methods.m */; };
+		71BDCF5619F6354C001135FB /* PTAlbumPickerHomeAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF5519F6354C001135FB /* PTAlbumPickerHomeAlbumListViewController.m */; };
 		71BDE3A61998FC2100853E85 /* NSMutableAttributedString+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDE3A51998FC2100853E85 /* NSMutableAttributedString+methods.m */; };
 		71BE586119F41EB1002A85AB /* libAdIdAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE585F19F41EB1002A85AB /* libAdIdAccess.a */; };
 		71BE586319F41EF9002A85AB /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE586019F41EB1002A85AB /* libGoogleAnalyticsServices.a */; };
@@ -172,7 +172,7 @@
 		71C54F4419CD235D00BCD9CF /* PENavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C54F4319CD235D00BCD9CF /* PENavigationController.m */; };
 		71C54F4819CD2B0100BCD9CF /* PEScrollBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C54F4719CD2B0100BCD9CF /* PEScrollBannerView.m */; };
 		71C5D71C19E14C9D00F77652 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 71C5D71B19E14C9D00F77652 /* Images.xcassets */; };
-		71C8C1E21942AA360002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C8C1E11942AA350002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m */; };
+		71C8C1E21942AA360002BDF9 /* PTAlbumPickerLocalAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C8C1E11942AA350002BDF9 /* PTAlbumPickerLocalAlbumListViewController.m */; };
 		71CD060F1930E68500BECF6B /* PWSearchTableViewWebAlbumCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71CD060E1930E68500BECF6B /* PWSearchTableViewWebAlbumCell.m */; };
 		71CD06131930EDD200BECF6B /* PWSearchTableViewLocalAlbumCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71CD06121930EDD200BECF6B /* PWSearchTableViewLocalAlbumCell.m */; };
 		71CD06171931799D00BECF6B /* PASnowFlake.m in Sources */ = {isa = PBXBuildFile; fileRef = 71CD06161931799D00BECF6B /* PASnowFlake.m */; };
@@ -319,12 +319,10 @@
 		713320391921F98900A27B3C /* PXSelectItemFromArrayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PXSelectItemFromArrayViewController.m; sourceTree = "<group>"; };
 		7133203C19225E9F00A27B3C /* PWAlbumEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumEditViewController.h; sourceTree = "<group>"; };
 		7133203D19225E9F00A27B3C /* PWAlbumEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlbumEditViewController.m; sourceTree = "<group>"; };
-		71342FDF1941F76C002331F6 /* PWAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumPickerController.h; sourceTree = "<group>"; };
-		71342FE01941F76C002331F6 /* PWAlbumPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlbumPickerController.m; sourceTree = "<group>"; };
-		71342FE31941F7B2002331F6 /* PWAlbumPickerNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumPickerNavigationController.h; sourceTree = "<group>"; };
-		71342FE41941F7B2002331F6 /* PWAlbumPickerNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlbumPickerNavigationController.m; sourceTree = "<group>"; };
-		71342FE71941F7F0002331F6 /* PWAlbumPickerWebAlbumListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumPickerWebAlbumListViewController.h; sourceTree = "<group>"; };
-		71342FE81941F7F0002331F6 /* PWAlbumPickerWebAlbumListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlbumPickerWebAlbumListViewController.m; sourceTree = "<group>"; };
+		71342FDF1941F76C002331F6 /* PTAlbumPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTAlbumPickerController.h; sourceTree = "<group>"; };
+		71342FE01941F76C002331F6 /* PTAlbumPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTAlbumPickerController.m; sourceTree = "<group>"; };
+		71342FE71941F7F0002331F6 /* PTAlbumPickerWebAlbumListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTAlbumPickerWebAlbumListViewController.h; sourceTree = "<group>"; };
+		71342FE81941F7F0002331F6 /* PTAlbumPickerWebAlbumListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTAlbumPickerWebAlbumListViewController.m; sourceTree = "<group>"; };
 		71349CA7192CF338003CC2AA /* PLParallelNavigationTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLParallelNavigationTitleView.h; sourceTree = "<group>"; };
 		71349CA8192CF338003CC2AA /* PLParallelNavigationTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLParallelNavigationTitleView.m; sourceTree = "<group>"; };
 		71349CAF192DF7A8003CC2AA /* PLPhotoViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPhotoViewCell.h; sourceTree = "<group>"; };
@@ -512,6 +510,8 @@
 		71BD235B19779E450034CD3B /* ALAsset+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALAsset+methods.m"; sourceTree = "<group>"; };
 		71BD235D1977AE100034CD3B /* PDCopyPhotoObject+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PDCopyPhotoObject+methods.h"; sourceTree = "<group>"; };
 		71BD235E1977AE100034CD3B /* PDCopyPhotoObject+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PDCopyPhotoObject+methods.m"; sourceTree = "<group>"; };
+		71BDCF5419F6354C001135FB /* PTAlbumPickerHomeAlbumListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTAlbumPickerHomeAlbumListViewController.h; sourceTree = "<group>"; };
+		71BDCF5519F6354C001135FB /* PTAlbumPickerHomeAlbumListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTAlbumPickerHomeAlbumListViewController.m; sourceTree = "<group>"; };
 		71BDE3A41998FC2100853E85 /* NSMutableAttributedString+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+methods.h"; sourceTree = "<group>"; };
 		71BDE3A51998FC2100853E85 /* NSMutableAttributedString+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+methods.m"; sourceTree = "<group>"; };
 		71BE585B19F41D6D002A85AB /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGoogleAnalyticsServices.a; path = "Pods/GoogleAnalytics-iOS-SDK/libGoogleAnalyticsServices.a"; sourceTree = "<group>"; };
@@ -535,8 +535,8 @@
 		71C54F4619CD2B0100BCD9CF /* PEScrollBannerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEScrollBannerView.h; sourceTree = "<group>"; };
 		71C54F4719CD2B0100BCD9CF /* PEScrollBannerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEScrollBannerView.m; sourceTree = "<group>"; };
 		71C5D71B19E14C9D00F77652 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = PicasaWebAlbum/Images.xcassets; sourceTree = "<group>"; };
-		71C8C1E01942AA350002BDF9 /* PWAlbumPickerLocalAlbumListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWAlbumPickerLocalAlbumListViewController.h; sourceTree = "<group>"; };
-		71C8C1E11942AA350002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWAlbumPickerLocalAlbumListViewController.m; sourceTree = "<group>"; };
+		71C8C1E01942AA350002BDF9 /* PTAlbumPickerLocalAlbumListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTAlbumPickerLocalAlbumListViewController.h; sourceTree = "<group>"; };
+		71C8C1E11942AA350002BDF9 /* PTAlbumPickerLocalAlbumListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTAlbumPickerLocalAlbumListViewController.m; sourceTree = "<group>"; };
 		71CD060D1930E68500BECF6B /* PWSearchTableViewWebAlbumCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSearchTableViewWebAlbumCell.h; sourceTree = "<group>"; };
 		71CD060E1930E68500BECF6B /* PWSearchTableViewWebAlbumCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSearchTableViewWebAlbumCell.m; sourceTree = "<group>"; };
 		71CD06111930EDD200BECF6B /* PWSearchTableViewLocalAlbumCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSearchTableViewLocalAlbumCell.h; sourceTree = "<group>"; };
@@ -1126,42 +1126,33 @@
 			name = PWAlbumEditViewController;
 			sourceTree = "<group>";
 		};
-		71342FCD1941F614002331F6 /* PWAlbumPickerController */ = {
+		71342FCD1941F614002331F6 /* T */ = {
 			isa = PBXGroup;
 			children = (
-				71342FDE1941F73E002331F6 /* PWAlbumPickerController */,
-				71342FE21941F79B002331F6 /* PWAlbumPickerNavigationController */,
-				71342FE61941F7CC002331F6 /* PWAlbumPickerWebAlbumListViewController */,
-				71C8C1CF1942AA160002BDF9 /* PWAlbumPickerLocalAlbumListViewController */,
+				71342FDE1941F73E002331F6 /* PTAlbumPickerController */,
+				71BDCF5319F63517001135FB /* PTAlbumPickerHomeAlbumListViewController */,
+				71C8C1CF1942AA160002BDF9 /* PTAlbumPickerLocalAlbumListViewController */,
+				71342FE61941F7CC002331F6 /* PTAlbumPickerWebAlbumListViewController */,
 			);
-			name = PWAlbumPickerController;
+			name = T;
 			sourceTree = "<group>";
 		};
-		71342FDE1941F73E002331F6 /* PWAlbumPickerController */ = {
+		71342FDE1941F73E002331F6 /* PTAlbumPickerController */ = {
 			isa = PBXGroup;
 			children = (
-				71342FDF1941F76C002331F6 /* PWAlbumPickerController.h */,
-				71342FE01941F76C002331F6 /* PWAlbumPickerController.m */,
+				71342FDF1941F76C002331F6 /* PTAlbumPickerController.h */,
+				71342FE01941F76C002331F6 /* PTAlbumPickerController.m */,
 			);
-			name = PWAlbumPickerController;
+			name = PTAlbumPickerController;
 			sourceTree = "<group>";
 		};
-		71342FE21941F79B002331F6 /* PWAlbumPickerNavigationController */ = {
+		71342FE61941F7CC002331F6 /* PTAlbumPickerWebAlbumListViewController */ = {
 			isa = PBXGroup;
 			children = (
-				71342FE31941F7B2002331F6 /* PWAlbumPickerNavigationController.h */,
-				71342FE41941F7B2002331F6 /* PWAlbumPickerNavigationController.m */,
+				71342FE71941F7F0002331F6 /* PTAlbumPickerWebAlbumListViewController.h */,
+				71342FE81941F7F0002331F6 /* PTAlbumPickerWebAlbumListViewController.m */,
 			);
-			name = PWAlbumPickerNavigationController;
-			sourceTree = "<group>";
-		};
-		71342FE61941F7CC002331F6 /* PWAlbumPickerWebAlbumListViewController */ = {
-			isa = PBXGroup;
-			children = (
-				71342FE71941F7F0002331F6 /* PWAlbumPickerWebAlbumListViewController.h */,
-				71342FE81941F7F0002331F6 /* PWAlbumPickerWebAlbumListViewController.m */,
-			);
-			name = PWAlbumPickerWebAlbumListViewController;
+			name = PTAlbumPickerWebAlbumListViewController;
 			sourceTree = "<group>";
 		};
 		71349C98192CF2D8003CC2AA /* PLParallelNavigationTitleView */ = {
@@ -1797,7 +1788,6 @@
 			children = (
 				7133203B19225E8100A27B3C /* PWAlbumEditViewController */,
 				719D924A1918039500B75D8B /* PWAlbumListViewController */,
-				71342FCD1941F614002331F6 /* PWAlbumPickerController */,
 				7195523319273112003EA9AF /* PWAlbumShareViewController */,
 				719CFE4E19598B64008B4308 /* PWGoogleLoginViewController */,
 				712E03A7191F5DB50035D9E0 /* PWImagePickerController */,
@@ -1991,6 +1981,15 @@
 			name = "ALAsset+methods";
 			sourceTree = "<group>";
 		};
+		71BDCF5319F63517001135FB /* PTAlbumPickerHomeAlbumListViewController */ = {
+			isa = PBXGroup;
+			children = (
+				71BDCF5419F6354C001135FB /* PTAlbumPickerHomeAlbumListViewController.h */,
+				71BDCF5519F6354C001135FB /* PTAlbumPickerHomeAlbumListViewController.m */,
+			);
+			name = PTAlbumPickerHomeAlbumListViewController;
+			sourceTree = "<group>";
+		};
 		71BDE39D1998FA8100853E85 /* NSAttributedString+methods */ = {
 			isa = PBXGroup;
 			children = (
@@ -2081,13 +2080,13 @@
 			name = PEScrollBannerView;
 			sourceTree = "<group>";
 		};
-		71C8C1CF1942AA160002BDF9 /* PWAlbumPickerLocalAlbumListViewController */ = {
+		71C8C1CF1942AA160002BDF9 /* PTAlbumPickerLocalAlbumListViewController */ = {
 			isa = PBXGroup;
 			children = (
-				71C8C1E01942AA350002BDF9 /* PWAlbumPickerLocalAlbumListViewController.h */,
-				71C8C1E11942AA350002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m */,
+				71C8C1E01942AA350002BDF9 /* PTAlbumPickerLocalAlbumListViewController.h */,
+				71C8C1E11942AA350002BDF9 /* PTAlbumPickerLocalAlbumListViewController.m */,
 			);
-			name = PWAlbumPickerLocalAlbumListViewController;
+			name = PTAlbumPickerLocalAlbumListViewController;
 			sourceTree = "<group>";
 		};
 		71CD060C1930E65D00BECF6B /* PWSearchTableViewWebAlbumCell */ = {
@@ -2472,6 +2471,7 @@
 				71B72FED19DD705500D105EA /* D */,
 				71B72FEE19DD705F00D105EA /* E */,
 				71B72FEF19DD706700D105EA /* L */,
+				71342FCD1941F614002331F6 /* T */,
 				71B72FF019DD707100D105EA /* W */,
 				71B11D8219E8E50000263124 /* X */,
 			);
@@ -2687,7 +2687,7 @@
 				7191705A19D10610003BFFC3 /* PEAlbumListDataSource.m in Sources */,
 				711FE8F5195F2F6B00AF296B /* PABaseNavigationController.m in Sources */,
 				71BD235C19779E450034CD3B /* ALAsset+methods.m in Sources */,
-				71342FE91941F7F0002331F6 /* PWAlbumPickerWebAlbumListViewController.m in Sources */,
+				71342FE91941F7F0002331F6 /* PTAlbumPickerWebAlbumListViewController.m in Sources */,
 				71A2541C19190EB6009914F7 /* PAColors.m in Sources */,
 				717456E6196AB4F5003D2436 /* XmlReader.m in Sources */,
 				71BD235819779D010034CD3B /* PDCopyPhotoObject.m in Sources */,
@@ -2723,7 +2723,8 @@
 				7118F88F19335B630016697E /* PWImagePickerLocalAllPhotoViewController.m in Sources */,
 				71BD235219778C020034CD3B /* PDBasePhotoObject.m in Sources */,
 				719552411928FD4C003EA9AF /* PLAssetsManager.m in Sources */,
-				71C8C1E21942AA360002BDF9 /* PWAlbumPickerLocalAlbumListViewController.m in Sources */,
+				71C8C1E21942AA360002BDF9 /* PTAlbumPickerLocalAlbumListViewController.m in Sources */,
+				71BDCF5619F6354C001135FB /* PTAlbumPickerHomeAlbumListViewController.m in Sources */,
 				719D924D1918C3DF00B75D8B /* PWPicasaAPI.m in Sources */,
 				71197E7519862EFD009DB4D3 /* PDLocalCopyPhotoObject+methods.m in Sources */,
 				719D923C1917848A00B75D8B /* PWPhotoLinkObject.m in Sources */,
@@ -2770,9 +2771,8 @@
 				71C54F4019CD232500BCD9CF /* PEHomeViewController.m in Sources */,
 				7118F86B193318F40016697E /* PLPhotoListViewController.m in Sources */,
 				715943C91957E573009315E5 /* PDUploadDescriptionViewController.m in Sources */,
-				71342FE51941F7B2002331F6 /* PWAlbumPickerNavigationController.m in Sources */,
 				71109BD51973C90000EEDAAE /* PLAlbumEditViewController.m in Sources */,
-				71342FE11941F76C002331F6 /* PWAlbumPickerController.m in Sources */,
+				71342FE11941F76C002331F6 /* PTAlbumPickerController.m in Sources */,
 				71349CB1192DF7A8003CC2AA /* PLPhotoViewCell.m in Sources */,
 				711183AF19D0466B00548730 /* PECategoryViewCell.m in Sources */,
 				719CFE5119598B85008B4308 /* PWGoogleLoginViewController.m in Sources */,

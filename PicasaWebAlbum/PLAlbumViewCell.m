@@ -23,7 +23,6 @@
 @property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UILabel *numPhotosLabel;
-@property (strong, nonatomic) UIButton *actionButton;
 @property (strong, nonatomic) UIView *overrayView;
 
 @property (nonatomic) NSUInteger albumHash;
@@ -80,27 +79,17 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
     _numPhotosLabel.font = [UIFont systemFontOfSize:10.0f];
     _numPhotosLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
     [self.contentView addSubview:_numPhotosLabel];
-    
-    _actionButton = [UIButton new];
-    [_actionButton addTarget:self action:@selector(actionButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    _actionButton.hitEdgeInsets = UIEdgeInsetsMake(-4.0f, -10.0f, -4.0f, 0.0f);
-    [_actionButton setImage:[PAIcons albumActionButtonIconWithColor:[PAColors getColor:PAColorsTypeTintLocalColor]] forState:UIControlStateNormal];
-    [_actionButton setBackgroundImage:[PAIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.05f]] forState:UIControlStateHighlighted];
-    [self.contentView addSubview:_actionButton];
-    
+        
     _overrayView = [UIView new];
     _overrayView.alpha = 0.0f;
     _overrayView.backgroundColor = [UIColor colorWithWhite:1.0f alpha:1.0f];
     [self.contentView addSubview:_overrayView];
-    
-    UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressGestureRecognizerAction:)];
-    [self addGestureRecognizer:gestureRecognizer];
 }
 
 - (void)setSelected:(BOOL)selected {
     [super setSelected:selected];
     
-    _overrayView.alpha = (selected && _isSelectWithCheckmark) ? 0.5f : 0.0f;
+    _overrayView.alpha = (selected) ? 0.5f : 0.0f;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -128,7 +117,6 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
     _numPhotosLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 12.0f, CGRectGetWidth(rect), 12.0f);
     
     _overrayView.frame = CGRectMake(0.0f, 0.0f, CGRectGetWidth(rect), CGRectGetMaxY(imageView.frame));
-//    _checkMarkImageView.frame = CGRectMake(CGRectGetWidth(rect) - 32.0f, CGRectGetWidth(rect) - 32.0f, 28.0f, 28.0f);
 }
 
 - (void)prepareForReuse {
@@ -198,27 +186,6 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
         UIImage *noPhotoImage = [UIImage imageNamed:@"icon_240"];
         UIImageView *imageView = self.imageViews.firstObject;
         imageView.image = noPhotoImage;
-    }
-}
-
-- (void)setIsDisableActionButton:(BOOL)isDisableActionButton {
-    _isDisableActionButton = isDisableActionButton;
-    
-    _actionButton.hidden = isDisableActionButton;
-}
-
-#pragma mark Action
-- (void)actionButtonAction {
-    if (_actionButtonActionBlock) {
-        _actionButtonActionBlock(_album);
-    }
-}
-
-- (void)longPressGestureRecognizerAction:(UILongPressGestureRecognizer *)sender {
-    if([sender state] == UIGestureRecognizerStateBegan){
-        if (_actionButtonActionBlock) {
-            _actionButtonActionBlock(_album);
-        }
     }
 }
 

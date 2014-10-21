@@ -12,8 +12,6 @@
 
 @interface PWAlbumViewCell : UICollectionViewCell
 
-@property (copy, nonatomic) void (^actionButtonActionBlock)(PWAlbumObject *album);
-
 @property (strong, nonatomic) PWAlbumObject *album;
 
 @end

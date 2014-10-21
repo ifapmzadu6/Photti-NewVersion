@@ -8,7 +8,7 @@
 
 @import UIKit;
 
-@interface PWAlbumPickerController : UITabBarController <UITabBarControllerDelegate>
+@interface PTAlbumPickerController : UITabBarController <UITabBarControllerDelegate>
 
 - (id)initWithCompletion:(void (^)(id album, BOOL isWebAlbum))completion;
 

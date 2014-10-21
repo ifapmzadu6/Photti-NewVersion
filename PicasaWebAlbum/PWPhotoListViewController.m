@@ -30,7 +30,7 @@
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
 #import "PWImagePickerController.h"
-#import "PWAlbumPickerController.h"
+#import "PTAlbumPickerController.h"
 #import "PAActivityIndicatorView.h"
 #import "PAActivityIndicatorView.h"
 
@@ -449,7 +449,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 
 - (void)copyPhoto {
     __weak typeof(self) wself = self;
-    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+    PTAlbumPickerController *albumPickerController = [[PTAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
         typeof(wself) sself = wself;
         if (!sself) return;
         

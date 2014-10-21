@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWAlbumPickerWebAlbumListViewController.h"
+#import "PTAlbumPickerWebAlbumListViewController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -15,14 +15,14 @@
 #import "PWAlbumViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PAAlbumCollectionViewFlowLayout.h"
-#import "PWAlbumPickerController.h"
-#import "PWNavigationController.h"
+#import "PTAlbumPickerController.h"
+#import "PABaseNavigationController.h"
 #import "PWNewAlbumEditViewController.h"
 #import <Reachability.h>
 #import <SDImageCache.h>
 #import "PAActivityIndicatorView.h"
 
-@interface PWAlbumPickerWebAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PTAlbumPickerWebAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
@@ -36,13 +36,12 @@
 
 @end
 
-@implementation PWAlbumPickerWebAlbumListViewController
+@implementation PTAlbumPickerWebAlbumListViewController
 
 - (id)init {
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"Web Album", nil);
-        self.tabBarItem = [[UITabBarItem alloc] initWithTitle:self.title image:[UIImage imageNamed:@"Picasa"] selectedImage:[UIImage imageNamed:@"PicasaSelected"]];
     }
     return self;
 }
@@ -60,7 +59,7 @@
         view.exclusiveTouch = YES;
     }
     
-    PAAlbumCollectionViewFlowLayout *collectionViewLayout = [[PAAlbumCollectionViewFlowLayout alloc] init];
+    PAAlbumCollectionViewFlowLayout *collectionViewLayout = [PAAlbumCollectionViewFlowLayout new];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
@@ -72,7 +71,7 @@
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
-    _refreshControl = [[PWRefreshControl alloc] init];
+    _refreshControl = [PWRefreshControl new];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
     _refreshControl.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
@@ -148,18 +147,6 @@
     }
 }
 
-#pragma mark UITabBarItem
-- (void)updateTabBarItem {
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        self.tabBarItem.image = [PAIcons imageWithImage:[UIImage imageNamed:@"Picasa"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-        self.tabBarItem.selectedImage = [PAIcons imageWithImage:[UIImage imageNamed:@"PicasaSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-    }
-    else {
-        self.tabBarItem.image = [UIImage imageNamed:@"Picasa"];
-        self.tabBarItem.selectedImage = [UIImage imageNamed:@"PicasaSelected"];
-    }
-}
-
 #pragma mark UIBarButtonAction
 - (void)cancelBarButtonAction {
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -171,10 +158,9 @@
     [viewController setSuccessBlock:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         [sself loadDataWithStartIndex:0];
     }];
-    PWNavigationController *navigationController = [[PWNavigationController alloc] initWithRootViewController:viewController];
+    PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     if (self.isPhone) {
         navigationController.transitioningDelegate = (id)navigationController;
     }
@@ -225,7 +211,7 @@
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    PWAlbumPickerController *tabBarController = (PWAlbumPickerController *)self.tabBarController;
+    PTAlbumPickerController *tabBarController = (PTAlbumPickerController *)self.tabBarController;
     [tabBarController doneBarButtonActionWithSelectedAlbum:album isWebAlbum:YES];
 }
 

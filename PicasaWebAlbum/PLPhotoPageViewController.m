@@ -19,7 +19,7 @@
 #import "PABaseNavigationController.h"
 #import "PWMapViewController.h"
 #import "PLPhotoEditViewController.h"
-#import "PWAlbumPickerController.h"
+#import "PTAlbumPickerController.h"
 #import "PLCoreDataAPI.h"
 #import "PDTaskManager.h"
 #import "UIView+ScreenCapture.h"
@@ -138,7 +138,7 @@
 - (void)copyPhoto {
     PLPhotoObject *photo = _photos[_index];
     __weak typeof(self) wself = self;
-    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+    PTAlbumPickerController *albumPickerController = [[PTAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
         typeof(wself) sself = wself;
         if (!sself) return;
         if (isWebAlbum) {

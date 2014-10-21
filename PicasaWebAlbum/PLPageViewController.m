@@ -17,7 +17,7 @@
 #import "PATabBarAdsController.h"
 #import "PWSearchNavigationController.h"
 #import "PXSettingsViewController.h"
-#import "PWAlbumPickerController.h"
+#import "PTAlbumPickerController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -468,7 +468,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     PLAllPhotosViewController *viewController = (PLAllPhotosViewController *)self.viewControllers.firstObject;
     NSArray *selectedPhotos = viewController.selectedPhotos;
     
-    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+    PTAlbumPickerController *albumPickerController = [[PTAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
         typeof(wself) sself = wself;
         if (!sself) return;
         

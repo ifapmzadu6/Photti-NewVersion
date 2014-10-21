@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWAlbumPickerLocalAlbumListViewController.h"
+#import "PTAlbumPickerLocalAlbumListViewController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -19,12 +19,12 @@
 #import "PADateTimestamp.h"
 #import "PLCollectionFooterView.h"
 #import "PLModelObject.h"
-#import "PWAlbumPickerController.h"
+#import "PTAlbumPickerController.h"
 #import "PABaseNavigationController.h"
 #import "PLNewAlbumEditViewController.h"
 #import "PAActivityIndicatorView.h"
 
-@interface PWAlbumPickerLocalAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
+@interface PTAlbumPickerLocalAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PAActivityIndicatorView *indicatorView;
@@ -34,7 +34,7 @@
 
 @end
 
-@implementation PWAlbumPickerLocalAlbumListViewController
+@implementation PTAlbumPickerLocalAlbumListViewController
 
 - (id)init {
     self = [super init];
@@ -126,18 +126,6 @@
     [self layoutNoItem];
 }
 
-#pragma mark UITabBarItem
-- (void)updateTabBarItem {
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        self.tabBarItem.image = [PAIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-        self.tabBarItem.selectedImage = [PAIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-    }
-    else {
-        self.tabBarItem.image = [UIImage imageNamed:@"Picture"];
-        self.tabBarItem.selectedImage = [UIImage imageNamed:@"PictureSelected"];
-    }
-}
-
 #pragma mark UIBarButtonAction
 - (void)cancelBarButtonAction {
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -175,7 +163,6 @@
     PLAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
     
     cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    cell.isDisableActionButton = YES;
     
     return cell;
 }
@@ -208,7 +195,7 @@
 #pragma mark UIcollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PLAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    PWAlbumPickerController *tabBarController = (PWAlbumPickerController *)self.tabBarController;
+    PTAlbumPickerController *tabBarController = (PTAlbumPickerController *)self.tabBarController;
     [tabBarController doneBarButtonActionWithSelectedAlbum:album isWebAlbum:NO];
 }
 

@@ -11,6 +11,6 @@
 
 #import "PABaseViewController.h"
 
-@interface PWAlbumPickerLocalAlbumListViewController : PABaseViewController
+@interface PTAlbumPickerLocalAlbumListViewController : PABaseViewController
 
 @end

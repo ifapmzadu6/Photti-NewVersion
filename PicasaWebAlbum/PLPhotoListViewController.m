@@ -24,7 +24,7 @@
 #import "PLAlbumEditViewController.h"
 #import "PDTaskManager.h"
 #import "PWImagePickerController.h"
-#import "PWAlbumPickerController.h"
+#import "PTAlbumPickerController.h"
 #import "PWSearchNavigationController.h"
 #import "PWModelObject.h"
 #import "PDTaskManager.h"
@@ -299,7 +299,7 @@
 
 - (void)copyPhoto {
     __weak typeof(self) wself = self;
-    PWAlbumPickerController *albumPickerController = [[PWAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+    PTAlbumPickerController *albumPickerController = [[PTAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
         typeof(wself) sself = wself;
         if (!sself) return;
         
