@@ -11,13 +11,11 @@
 #import "PWPicasaAPI.h"
 #import "PAColors.h"
 #import "PAIcons.h"
-#import "PAString.h"
 #import "PWRefreshControl.h"
 #import <Reachability.h>
 #import <SDImageCache.h>
 
-#import "PWPhotoViewCell.h"
-#import "PLCollectionFooterView.h"
+#import "PRPhotoListDataSource.h"
 #import "PAPhotoCollectionViewFlowLayout.h"
 #import "PATabBarController.h"
 #import "PWNavigationController.h"
@@ -29,7 +27,7 @@
 #import "PAViewControllerKit.h"
 #import "PAAlertControllerKit.h"
 
-@interface PSWebPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PSWebPhotoListViewController () <UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) PWAlbumObject *album;
 
@@ -41,8 +39,7 @@
 @property (nonatomic) BOOL isRequesting;
 @property (nonatomic) BOOL isRefreshControlAnimating;
 
-@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-@property (strong, nonatomic) NSMutableArray *selectedPhotoIDs;
+@property (strong, nonatomic) PRPhotoListDataSource *photoListDataSource;
 
 @end
 
@@ -53,9 +50,39 @@
     if (self) {
         _album = album;
         
-        _selectedPhotoIDs = @[].mutableCopy;
-        
         self.title = album.title;
+        
+        NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+        NSFetchRequest *request = [NSFetchRequest new];
+        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        
+        _photoListDataSource = [[PRPhotoListDataSource alloc] initWithFetchRequest:request albumID:_album.id_str];
+        _photoListDataSource.delegate = self;
+        _photoListDataSource.isSelectMode = YES;
+        __weak typeof(self) wself = self;
+        _photoListDataSource.didChangeItemCountBlock = ^(NSUInteger count) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself refreshNoItemWithNumberOfItem:count];
+        };
+        _photoListDataSource.didRefresh = ^() {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself.refreshControl endRefreshing];
+            [sself.activityIndicatorView stopAnimating];
+        };
+        _photoListDataSource.didChangeSelectedItemCountBlock = ^(NSUInteger count) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (count == sself.collectionView.indexPathsForSelectedItems.count) {
+                [sself setRightNavigationItemDeselectButton];
+            }
+            else {
+                [sself setRightNavigationItemSelectButton];
+            }
+        };
     }
     return self;
 }
@@ -65,10 +92,9 @@
     
     PAPhotoCollectionViewFlowLayout *collectionViewLayout = [[PAPhotoCollectionViewFlowLayout alloc] init];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
-    _collectionView.dataSource = self;
-    _collectionView.delegate = self;
-    [_collectionView registerClass:[PWPhotoViewCell class] forCellWithReuseIdentifier:@"Cell"];
-    [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
+    _photoListDataSource.collectionView = _collectionView;
+    _collectionView.dataSource = _photoListDataSource;
+    _collectionView.delegate = _photoListDataSource;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.allowsMultipleSelection = YES;
@@ -87,38 +113,24 @@
     [self setRightNavigationItemSelectButton];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
-    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
-    NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
-    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-    _fetchedResultsController.delegate = self;
-    
-    [_fetchedResultsController performFetch:nil];
-    
-    if (_fetchedResultsController.fetchedObjects.count > 0) {
-        [_activityIndicatorView stopAnimating];
-        
-        [_collectionView reloadData];
-        
+    if (_photoListDataSource.numberOfPhotos > 0) {
         PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
         for (NSString *id_str in tabBarController.selectedPhotoIDs) {
-            NSArray *filteredPhotos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
+            NSArray *filteredPhotos = [_photoListDataSource.photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
             if (filteredPhotos.count > 0) {
                 PWPhotoObject *photo = filteredPhotos.firstObject;
-                NSIndexPath *indexPath = [_fetchedResultsController indexPathForObject:photo];
+                NSUInteger index = [_photoListDataSource.photos indexOfObject:photo];
+                NSIndexPath *indexPath = [NSIndexPath indexPathForItem:index inSection:0];
                 [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
             }
         }
         
-        if (_fetchedResultsController.fetchedObjects.count == _collectionView.indexPathsForSelectedItems.count) {
+        if (_photoListDataSource.numberOfPhotos == _collectionView.indexPathsForSelectedItems.count) {
             [self setRightNavigationItemDeselectButton];
         }
         else {
             [self setRightNavigationItemSelectButton];
         }
-        self.navigationItem.rightBarButtonItem.enabled = YES;
     }
     else {
         [_activityIndicatorView startAnimating];
@@ -126,9 +138,8 @@
         self.navigationItem.rightBarButtonItem.enabled = NO;
     }
     
-    [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
-    
-    [self loadDataWithStartIndex:0];
+    self.navigationItem.rightBarButtonItem.enabled = (_photoListDataSource.numberOfPhotos > 0) ? YES : NO;
+    [self refreshNoItemWithNumberOfItem:_photoListDataSource.numberOfPhotos];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -187,11 +198,12 @@
 #pragma mark UIBarButtonAction
 - (void)selectBarButtonAction {
     PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
-    for (size_t i=0; i<_fetchedResultsController.fetchedObjects.count; i++) {
+    for (size_t i=0; i<_photoListDataSource.numberOfPhotos; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
         
-        [tabBarController addSelectedPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
+        PWPhotoObject *photo = [_photoListDataSource.photos objectAtIndex:i];
+        [tabBarController addSelectedPhoto:photo];
     }
     
     [self setRightNavigationItemDeselectButton];
@@ -199,11 +211,12 @@
 
 - (void)deselectBarButtonAction {
     PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
-    for (size_t i=0; i<_fetchedResultsController.fetchedObjects.count; i++) {
+    for (size_t i=0; i<_photoListDataSource.numberOfPhotos; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         [_collectionView deselectItemAtIndexPath:indexPath animated:NO];
         
-        [tabBarController removeSelectedPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
+        PWPhotoObject *photo = [_photoListDataSource.photos objectAtIndex:i];
+        [tabBarController removeSelectedPhoto:photo];
     }
     
     [self setRightNavigationItemSelectButton];
@@ -216,162 +229,28 @@
         return;
     }
     
-    [self loadDataWithStartIndex:0];
-}
-
-#pragma mark UICollectionViewDataSource
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return _fetchedResultsController.sections.count;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
-    return [sectionInfo numberOfObjects];
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-    cell.isSelectWithCheckMark = YES;
-    [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];;
-    
-    return cell;
-}
-
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
-        return nil;
-    }
-    
-    PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
-    
-    if (_fetchedResultsController.fetchedObjects.count > 0) {
-        NSArray *photos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypePhoto)]];
-        NSArray *videos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypeVideo)]];
-        
-        NSString *albumCountString = [PAString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
-        [footerView setText:albumCountString];
-    }
-    
-    return footerView;
-}
-
-#pragma mark UICollectionViewFlowLayout
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    return CGSizeMake(0.0f, 50.0f);
+    [_photoListDataSource loadDataWithStartIndex:0];
 }
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    PWPhotoObject *photo = _photoListDataSource.photos[indexPath.item];
     PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
-    [tabBarController addSelectedPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
+    [tabBarController addSelectedPhoto:photo];
     
-    if (_fetchedResultsController.fetchedObjects.count == _collectionView.indexPathsForSelectedItems.count) {
+    if (_photoListDataSource.numberOfPhotos == _collectionView.indexPathsForSelectedItems.count) {
         [self setRightNavigationItemDeselectButton];
     }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
+    PWPhotoObject *photo = _photoListDataSource.photos[indexPath.item];
     PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
-    [tabBarController removeSelectedPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
+    [tabBarController removeSelectedPhoto:photo];
     
-    if (_fetchedResultsController.fetchedObjects.count != _collectionView.indexPathsForSelectedItems.count) {
+    if (_photoListDataSource.numberOfPhotos != _collectionView.indexPathsForSelectedItems.count) {
         [self setRightNavigationItemSelectButton];
     }
-}
-
-#pragma mark LoadData
-- (void)loadDataWithStartIndex:(NSUInteger)index {
-    if (![Reachability reachabilityForInternetConnection].isReachable) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [_refreshControl endRefreshing];
-        });
-        return;
-    };
-    
-    if (_isRequesting) {
-        return;
-    }
-    _isRequesting = YES;
-    
-    __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:0 completion:^(NSUInteger nextIndex, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        sself.isRequesting = NO;
-        
-        if (error) {
-#ifdef DEBUG
-            NSLog(@"%@", error);
-#endif
-            if (error.code == 401) {
-                [sself openLoginViewController];
-            }
-        }
-        else {
-            sself.requestIndex = nextIndex;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself.refreshControl endRefreshing];
-            [sself.activityIndicatorView stopAnimating];
-        });
-    }];
-}
-
-- (void)openLoginViewController {
-    __weak typeof(self) wself = self;
-    [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself.refreshControl endRefreshing];
-            [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
-        });
-        
-    } finish:^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself loadDataWithStartIndex:0];
-        });
-    }];
-}
-
-#pragma mark NSFetchedResultsControllerDelegate
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [_collectionView reloadData];
-        
-        PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
-        for (NSString *id_str in tabBarController.selectedPhotoIDs) {
-            NSArray *filteredPhotos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
-            if (filteredPhotos.count > 0) {
-                PWPhotoObject *photo = filteredPhotos.firstObject;
-                NSIndexPath *indexPath = [_fetchedResultsController indexPathForObject:photo];
-                [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
-            }
-        }
-        
-        if (_fetchedResultsController.fetchedObjects.count > 0) {
-            if (_fetchedResultsController.fetchedObjects.count == _collectionView.indexPathsForSelectedItems.count) {
-                [self setRightNavigationItemDeselectButton];
-            }
-            else {
-                [self setRightNavigationItemSelectButton];
-            }
-            self.navigationItem.rightBarButtonItem.enabled = YES;
-        }
-        else {
-            self.navigationItem.rightBarButtonItem.enabled = NO;
-        }
-        
-        [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
-    });
 }
 
 @end
