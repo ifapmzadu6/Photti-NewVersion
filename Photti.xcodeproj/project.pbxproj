@@ -163,6 +163,7 @@
 		71BDCF5F19F659E4001135FB /* PRAlbumListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF5E19F659E4001135FB /* PRAlbumListDataSource.m */; };
 		71BDCF6419F66116001135FB /* PAAlertControllerKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF6319F66116001135FB /* PAAlertControllerKit.m */; };
 		71BDCF6B19F67331001135FB /* PACollectionViewDaisyChain.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF6A19F67331001135FB /* PACollectionViewDaisyChain.m */; };
+		71BDCF7019F679B6001135FB /* PRPhotoListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF6F19F679B6001135FB /* PRPhotoListDataSource.m */; };
 		71BDE3A61998FC2100853E85 /* NSMutableAttributedString+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDE3A51998FC2100853E85 /* NSMutableAttributedString+methods.m */; };
 		71BE586119F41EB1002A85AB /* libAdIdAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE585F19F41EB1002A85AB /* libAdIdAccess.a */; };
 		71BE586319F41EF9002A85AB /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE586019F41EB1002A85AB /* libGoogleAnalyticsServices.a */; };
@@ -521,6 +522,8 @@
 		71BDCF6319F66116001135FB /* PAAlertControllerKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAAlertControllerKit.m; sourceTree = "<group>"; };
 		71BDCF6919F67331001135FB /* PACollectionViewDaisyChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PACollectionViewDaisyChain.h; sourceTree = "<group>"; };
 		71BDCF6A19F67331001135FB /* PACollectionViewDaisyChain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PACollectionViewDaisyChain.m; sourceTree = "<group>"; };
+		71BDCF6E19F679B6001135FB /* PRPhotoListDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PRPhotoListDataSource.h; sourceTree = "<group>"; };
+		71BDCF6F19F679B6001135FB /* PRPhotoListDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PRPhotoListDataSource.m; sourceTree = "<group>"; };
 		71BDE3A41998FC2100853E85 /* NSMutableAttributedString+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+methods.h"; sourceTree = "<group>"; };
 		71BDE3A51998FC2100853E85 /* NSMutableAttributedString+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+methods.m"; sourceTree = "<group>"; };
 		71BE585B19F41D6D002A85AB /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGoogleAnalyticsServices.a; path = "Pods/GoogleAnalytics-iOS-SDK/libGoogleAnalyticsServices.a"; sourceTree = "<group>"; };
@@ -2003,6 +2006,7 @@
 		71BDCF5B19F659B2001135FB /* R    - Web */ = {
 			isa = PBXGroup;
 			children = (
+				71BDCF6D19F679A3001135FB /* PRPhotoListDataSource */,
 				71BDCF5C19F659C4001135FB /* PRAlbumListDataSource */,
 			);
 			name = "R    - Web";
@@ -2033,6 +2037,15 @@
 				71BDCF6A19F67331001135FB /* PACollectionViewDaisyChain.m */,
 			);
 			name = PACollectionViewDaisyChain;
+			sourceTree = "<group>";
+		};
+		71BDCF6D19F679A3001135FB /* PRPhotoListDataSource */ = {
+			isa = PBXGroup;
+			children = (
+				71BDCF6E19F679B6001135FB /* PRPhotoListDataSource.h */,
+				71BDCF6F19F679B6001135FB /* PRPhotoListDataSource.m */,
+			);
+			name = PRPhotoListDataSource;
 			sourceTree = "<group>";
 		};
 		71BDE39D1998FA8100853E85 /* NSAttributedString+methods */ = {
@@ -2757,6 +2770,7 @@
 				713EE07819E2F4F900983301 /* PWHorizontalScrollHeaderView.m in Sources */,
 				7133203A1921F98900A27B3C /* PXSelectItemFromArrayViewController.m in Sources */,
 				718F271519AACCB100156D88 /* PADateTimestamp.m in Sources */,
+				71BDCF7019F679B6001135FB /* PRPhotoListDataSource.m in Sources */,
 				71C0784B194ABBD70071702D /* PDTaskTableViewCell.m in Sources */,
 				71D52EE2197F49F2005CFF30 /* PDBasePhotoObject+methods.m in Sources */,
 				711183A619D0326900548730 /* PAGradientView.m in Sources */,
