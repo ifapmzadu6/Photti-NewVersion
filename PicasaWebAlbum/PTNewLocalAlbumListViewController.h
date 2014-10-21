@@ -8,6 +8,6 @@
 
 #import "PABaseViewController.h"
 
-@interface PTAlbumPickerHomeAlbumListViewController : PABaseViewController
+@interface PTNewLocalAlbumListViewController : PABaseViewController
 
 @end

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PTAlbumPickerLocalAlbumListViewController.h"
+#import "PTLocalAlbumListViewController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -19,12 +19,13 @@
 #import "PADateTimestamp.h"
 #import "PLCollectionFooterView.h"
 #import "PLModelObject.h"
+#import "PAViewControllerKit.h"
 #import "PTAlbumPickerController.h"
 #import "PABaseNavigationController.h"
 #import "PLNewAlbumEditViewController.h"
 #import "PAActivityIndicatorView.h"
 
-@interface PTAlbumPickerLocalAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
+@interface PTLocalAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PAActivityIndicatorView *indicatorView;
@@ -34,7 +35,7 @@
 
 @end
 
-@implementation PTAlbumPickerLocalAlbumListViewController
+@implementation PTLocalAlbumListViewController
 
 - (id)init {
     self = [super init];
@@ -104,22 +105,7 @@
     
     CGRect rect = self.view.bounds;
     
-    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
-    NSIndexPath *indexPath = nil;
-    if (indexPaths.count > 0) {
-        NSIndexPath *firstIndexPath = indexPaths.firstObject;
-        if (!(firstIndexPath.item == 0 && firstIndexPath.section == 0)) {
-            indexPath = indexPaths[indexPaths.count / 2];
-        }
-    }
-    
-    _collectionView.frame = rect;
-    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
-    [collectionViewLayout invalidateLayout];
-    
-    if (indexPath) {
-        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-    }
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect];
     
     _indicatorView.center = self.view.center;
     

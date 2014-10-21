@@ -27,6 +27,7 @@
 #import <Reachability.h>
 #import <SDImageCache.h>
 
+#import "PAViewControllerKit.h"
 #import "PWPhotoListViewController.h"
 #import "PWPhotoPageViewController.h"
 #import "PWSearchNavigationController.h"
@@ -195,26 +196,11 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     
     CGRect rect = self.view.bounds;
     
-    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
-    NSIndexPath *indexPath = nil;
-    if (indexPaths.count > 0) {
-        NSIndexPath *firstIndexPath = indexPaths.firstObject;
-        if (!(firstIndexPath.item == 0 && firstIndexPath.section == 0)) {
-            indexPath = indexPaths[indexPaths.count / 2];
-        }
-    }
-    
     PATabBarController *tabBarViewController = (PATabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
-    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top, 15.0f, viewInsets.bottom + 15.0f, 15.0f);
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
-    _collectionView.frame = rect;
-    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
-    [collectionViewLayout invalidateLayout];
-    
-    if (indexPath) {
-        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-    }
+    UIEdgeInsets contentInset = UIEdgeInsetsMake(viewInsets.top, 15.0f, viewInsets.bottom + 15.0f, 15.0f);
+    UIEdgeInsets scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
     
     _activityIndicatorView.center = self.view.center;
     

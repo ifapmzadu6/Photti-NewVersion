@@ -19,6 +19,7 @@
 #import "PADateFormatter.h"
 #import "PAString.h"
 #import "PLCoreDataAPI.h"
+#import "PAViewControllerKit.h"
 #import "PLPhotoPageViewController.h"
 
 @interface PLiCloudViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
@@ -110,31 +111,17 @@
     
     CGRect rect = self.view.bounds;
     
-    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
-    NSIndexPath *indexPath = nil;
-    if (indexPaths.count > 0) {
-        NSIndexPath *firstIndexPath = indexPaths.firstObject;
-        if (!(firstIndexPath.item == 0 && firstIndexPath.section == 0)) {
-            indexPath = indexPaths[indexPaths.count / 2];
-        }
-    }
-    
     PATabBarController *tabBarViewController = (PATabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
+    UIEdgeInsets contentInset = UIEdgeInsetsZero;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+        contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
     }
     else {
-        _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top, 20.0f, viewInsets.bottom, 20.0f);
+        contentInset = UIEdgeInsetsMake(viewInsets.top, 20.0f, viewInsets.bottom, 20.0f);
     }
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
-    _collectionView.frame = rect;
-    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
-    [collectionViewLayout invalidateLayout];
-    
-    if (indexPath) {
-        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-    }
+    UIEdgeInsets scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
     
     [self layoutNoItem];
 }

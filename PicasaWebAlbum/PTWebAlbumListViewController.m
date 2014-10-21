@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PTAlbumPickerWebAlbumListViewController.h"
+#import "PTWebAlbumListViewController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -22,7 +22,7 @@
 #import <SDImageCache.h>
 #import "PAActivityIndicatorView.h"
 
-@interface PTAlbumPickerWebAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PTWebAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
@@ -36,7 +36,7 @@
 
 @end
 
-@implementation PTAlbumPickerWebAlbumListViewController
+@implementation PTWebAlbumListViewController
 
 - (id)init {
     self = [super init];

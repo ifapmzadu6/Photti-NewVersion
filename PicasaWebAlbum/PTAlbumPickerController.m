@@ -17,9 +17,9 @@
 #import "PADepressingTransition.h"
 
 #import "PABaseNavigationController.h"
-#import "PTAlbumPickerWebAlbumListViewController.h"
-#import "PTAlbumPickerLocalAlbumListViewController.h"
-#import "PTAlbumPickerHomeAlbumListViewController.h"
+#import "PTWebAlbumListViewController.h"
+#import "PTLocalAlbumListViewController.h"
+#import "PTNewLocalAlbumListViewController.h"
 
 @interface PTAlbumPickerController ()
 
@@ -44,10 +44,10 @@
         UINavigationController *localNavigationController = nil;
         if ([PEAssetsManager isStatusAuthorized]) {
             if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-                _localAlbumPickerController = [PTAlbumPickerHomeAlbumListViewController new];
+                _localAlbumPickerController = [PTNewLocalAlbumListViewController new];
             }
             else {
-                _localAlbumPickerController = [PTAlbumPickerLocalAlbumListViewController new];
+                _localAlbumPickerController = [PTLocalAlbumListViewController new];
             }
             
             localNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:_localAlbumPickerController];
@@ -57,7 +57,7 @@
         
         UINavigationController *webNavigationController = nil;
         if ([PWOAuthManager isLogined]) {
-            _webAlbumPickerController = [PTAlbumPickerWebAlbumListViewController new];
+            _webAlbumPickerController = [PTWebAlbumListViewController new];
             webNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:_webAlbumPickerController];
             webNavigationController.navigationBar.barTintColor = [UIColor blackColor];
             webNavigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [PAColors getColor:PAColorsTypeBackgroundColor]};
