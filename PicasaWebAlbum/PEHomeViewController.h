@@ -10,6 +10,8 @@
 
 #import "PABaseViewController.h"
 
+@class PEAlbumListDataSource, PEMomentListDataSource, PEPhotoListDataSource;
+
 static NSString * const kPEHomeViewControllerUserDefaultsEnabledItemKey = @"kPEHomeViewControllerUserDefaultsEnabledItemKey";
 static NSString * const kPEHomeViewControllerUserDefaultsDisabledItemKey = @"kPEHomeViewControllerUserDefaultsDisabledItemKey";
 
@@ -29,5 +31,24 @@ static NSString * const kPEHomeViewControllerRowType_AllPhotos = @"kPEHomeViewCo
 + (NSArray *)defaultEnabledItems;
 + (NSString *)localizedStringFromRowType:(NSString *)rowType;
 + (NSString *)rowTypeFromLocalizedString:(NSString *)rowType;
+
+@property (strong, nonatomic, readonly) UITableView *tableView;
+@property (strong, nonatomic, readonly) UIImageView *todayImageView;
+@property (strong, nonatomic, readonly) UIImageView *yesterdayImageView;
+@property (strong, nonatomic, readonly) UIImageView *thisWeekImageView;
+@property (strong, nonatomic, readonly) UIImageView *lastWeekImageView;
+
+@property (strong, nonatomic, readonly) NSArray *enabledItems;
+
+@property (strong, nonatomic) PEAlbumListDataSource *albumListDataSource;
+@property (strong, nonatomic) PEMomentListDataSource *momentListDataSource;
+@property (strong, nonatomic) PEPhotoListDataSource *panoramaListDataSource;
+@property (strong, nonatomic) PEPhotoListDataSource *videoListDataSource;
+@property (strong, nonatomic) PEPhotoListDataSource *favoriteListDataSource;
+@property (strong, nonatomic) PEPhotoListDataSource *timelapseListDataSource;
+@property (strong, nonatomic) PEPhotoListDataSource *cloudListDataSource;
+@property (strong, nonatomic) PEPhotoListDataSource *burstsListDataSource;
+@property (strong, nonatomic) PEPhotoListDataSource *slomoVideosListDataSource;
+@property (strong, nonatomic) PEPhotoListDataSource *allPhotoListDataSource;
 
 @end

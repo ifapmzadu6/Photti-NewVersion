@@ -42,17 +42,6 @@
 
 @property (strong, nonatomic) NSArray *enabledItems;
 
-@property (strong, nonatomic) PEAlbumListDataSource *albumListDataSource;
-@property (strong, nonatomic) PEMomentListDataSource *momentListDataSource;
-@property (strong, nonatomic) PEPhotoListDataSource *panoramaListDataSource;
-@property (strong, nonatomic) PEPhotoListDataSource *videoListDataSource;
-@property (strong, nonatomic) PEPhotoListDataSource *favoriteListDataSource;
-@property (strong, nonatomic) PEPhotoListDataSource *timelapseListDataSource;
-@property (strong, nonatomic) PEPhotoListDataSource *cloudListDataSource;
-@property (strong, nonatomic) PEPhotoListDataSource *burstsListDataSource;
-@property (strong, nonatomic) PEPhotoListDataSource *slomoVideosListDataSource;
-@property (strong, nonatomic) PEPhotoListDataSource *allPhotoListDataSource;
-
 @end
 
 @implementation PEHomeViewController

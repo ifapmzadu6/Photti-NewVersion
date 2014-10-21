@@ -164,6 +164,10 @@
 		71BDCF6419F66116001135FB /* PAAlertControllerKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF6319F66116001135FB /* PAAlertControllerKit.m */; };
 		71BDCF6B19F67331001135FB /* PACollectionViewDaisyChain.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF6A19F67331001135FB /* PACollectionViewDaisyChain.m */; };
 		71BDCF7019F679B6001135FB /* PRPhotoListDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF6F19F679B6001135FB /* PRPhotoListDataSource.m */; };
+		71BDCF7619F696B3001135FB /* PSNewLocalHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF7519F696B3001135FB /* PSNewLocalHomeViewController.m */; };
+		71BDCF7D19F6973D001135FB /* PSNewLocalAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF7C19F6973D001135FB /* PSNewLocalAlbumListViewController.m */; };
+		71BDCF8519F69792001135FB /* PSNewLocalPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF8419F69792001135FB /* PSNewLocalPhotoListViewController.m */; };
+		71BDCF8819F697B5001135FB /* PSNewLocalMomentListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDCF8719F697B5001135FB /* PSNewLocalMomentListViewController.m */; };
 		71BDE3A61998FC2100853E85 /* NSMutableAttributedString+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BDE3A51998FC2100853E85 /* NSMutableAttributedString+methods.m */; };
 		71BE586119F41EB1002A85AB /* libAdIdAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE585F19F41EB1002A85AB /* libAdIdAccess.a */; };
 		71BE586319F41EF9002A85AB /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BE586019F41EB1002A85AB /* libGoogleAnalyticsServices.a */; };
@@ -524,6 +528,14 @@
 		71BDCF6A19F67331001135FB /* PACollectionViewDaisyChain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PACollectionViewDaisyChain.m; sourceTree = "<group>"; };
 		71BDCF6E19F679B6001135FB /* PRPhotoListDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PRPhotoListDataSource.h; sourceTree = "<group>"; };
 		71BDCF6F19F679B6001135FB /* PRPhotoListDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PRPhotoListDataSource.m; sourceTree = "<group>"; };
+		71BDCF7419F696B3001135FB /* PSNewLocalHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSNewLocalHomeViewController.h; sourceTree = "<group>"; };
+		71BDCF7519F696B3001135FB /* PSNewLocalHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSNewLocalHomeViewController.m; sourceTree = "<group>"; };
+		71BDCF7B19F6973D001135FB /* PSNewLocalAlbumListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSNewLocalAlbumListViewController.h; sourceTree = "<group>"; };
+		71BDCF7C19F6973D001135FB /* PSNewLocalAlbumListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSNewLocalAlbumListViewController.m; sourceTree = "<group>"; };
+		71BDCF8319F69792001135FB /* PSNewLocalPhotoListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSNewLocalPhotoListViewController.h; sourceTree = "<group>"; };
+		71BDCF8419F69792001135FB /* PSNewLocalPhotoListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSNewLocalPhotoListViewController.m; sourceTree = "<group>"; };
+		71BDCF8619F697B5001135FB /* PSNewLocalMomentListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSNewLocalMomentListViewController.h; sourceTree = "<group>"; };
+		71BDCF8719F697B5001135FB /* PSNewLocalMomentListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSNewLocalMomentListViewController.m; sourceTree = "<group>"; };
 		71BDE3A41998FC2100853E85 /* NSMutableAttributedString+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+methods.h"; sourceTree = "<group>"; };
 		71BDE3A51998FC2100853E85 /* NSMutableAttributedString+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+methods.m"; sourceTree = "<group>"; };
 		71BE585B19F41D6D002A85AB /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGoogleAnalyticsServices.a; path = "Pods/GoogleAnalytics-iOS-SDK/libGoogleAnalyticsServices.a"; sourceTree = "<group>"; };
@@ -888,13 +900,13 @@
 			name = PEPhotoViewCell;
 			sourceTree = "<group>";
 		};
-		711C19A219D3CEAC00FE3536 /* PEAlbumViewController */ = {
+		711C19A219D3CEAC00FE3536 /* PEAlbumListViewController */ = {
 			isa = PBXGroup;
 			children = (
 				711C19A319D3D22400FE3536 /* PEAlbumListViewController.h */,
 				711C19A419D3D22400FE3536 /* PEAlbumListViewController.m */,
 			);
-			name = PEAlbumViewController;
+			name = PEAlbumListViewController;
 			sourceTree = "<group>";
 		};
 		711C19AE19D3DD4700FE3536 /* PEPhotoDataSourceFactoryMethod */ = {
@@ -1018,11 +1030,15 @@
 			isa = PBXGroup;
 			children = (
 				7118F883193355920016697E /* PSImagePickerController */,
-				7118F885193355B50016697E /* PSLocalPageViewController */,
-				7118F88A19335B0F0016697E /* PSLocalAllPhotoViewController */,
 				7118F88B19335B270016697E /* PSLocalAlbumListViewController */,
-				71502EFD19349E610006979B /* PSLocalPhotoListViewController */,
+				7118F88A19335B0F0016697E /* PSLocalAllPhotoViewController */,
 				7118F88C19335B390016697E /* PSLocaliCloudViewController */,
+				7118F885193355B50016697E /* PSLocalPageViewController */,
+				71502EFD19349E610006979B /* PSLocalPhotoListViewController */,
+				71BDCF7719F696BC001135FB /* PSNewLocalAlbumListViewController */,
+				71BDCF7319F6968A001135FB /* PSNewLocalHomeViewController */,
+				71BDCF7E19F69749001135FB /* PSNewLocalMomentListViewController */,
+				71BDCF8219F6976E001135FB /* PSNewLocalPhotoListViewController */,
 				7118F89719335BCA0016697E /* PSWebAlbumListViewController */,
 				7118F89819335BE90016697E /* PSWebPhotoListViewController */,
 			);
@@ -1753,7 +1769,7 @@
 		71B72FEE19DD705F00D105EA /* E    - New Local */ = {
 			isa = PBXGroup;
 			children = (
-				711C19A219D3CEAC00FE3536 /* PEAlbumViewController */,
+				711C19A219D3CEAC00FE3536 /* PEAlbumListViewController */,
 				71C54F3D19CD228100BCD9CF /* PEHomeViewController */,
 				7165408419D8FEFB00960F70 /* PEMomentListViewController */,
 				71C54F4119CD233900BCD9CF /* PENavigationController */,
@@ -2046,6 +2062,42 @@
 				71BDCF6F19F679B6001135FB /* PRPhotoListDataSource.m */,
 			);
 			name = PRPhotoListDataSource;
+			sourceTree = "<group>";
+		};
+		71BDCF7319F6968A001135FB /* PSNewLocalHomeViewController */ = {
+			isa = PBXGroup;
+			children = (
+				71BDCF7419F696B3001135FB /* PSNewLocalHomeViewController.h */,
+				71BDCF7519F696B3001135FB /* PSNewLocalHomeViewController.m */,
+			);
+			name = PSNewLocalHomeViewController;
+			sourceTree = "<group>";
+		};
+		71BDCF7719F696BC001135FB /* PSNewLocalAlbumListViewController */ = {
+			isa = PBXGroup;
+			children = (
+				71BDCF7B19F6973D001135FB /* PSNewLocalAlbumListViewController.h */,
+				71BDCF7C19F6973D001135FB /* PSNewLocalAlbumListViewController.m */,
+			);
+			name = PSNewLocalAlbumListViewController;
+			sourceTree = "<group>";
+		};
+		71BDCF7E19F69749001135FB /* PSNewLocalMomentListViewController */ = {
+			isa = PBXGroup;
+			children = (
+				71BDCF8619F697B5001135FB /* PSNewLocalMomentListViewController.h */,
+				71BDCF8719F697B5001135FB /* PSNewLocalMomentListViewController.m */,
+			);
+			name = PSNewLocalMomentListViewController;
+			sourceTree = "<group>";
+		};
+		71BDCF8219F6976E001135FB /* PSNewLocalPhotoListViewController */ = {
+			isa = PBXGroup;
+			children = (
+				71BDCF8319F69792001135FB /* PSNewLocalPhotoListViewController.h */,
+				71BDCF8419F69792001135FB /* PSNewLocalPhotoListViewController.m */,
+			);
+			name = PSNewLocalPhotoListViewController;
 			sourceTree = "<group>";
 		};
 		71BDE39D1998FA8100853E85 /* NSAttributedString+methods */ = {
@@ -2826,6 +2878,7 @@
 				71A254701919CFF5009914F7 /* PWSearchNavigationController.m in Sources */,
 				718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */,
 				71BD234C19778C020034CD3B /* PDWebPhotoObject.m in Sources */,
+				71BDCF8519F69792001135FB /* PSNewLocalPhotoListViewController.m in Sources */,
 				71CD06171931799D00BECF6B /* PASnowFlake.m in Sources */,
 				7118F89519335B790016697E /* PSLocaliCloudViewController.m in Sources */,
 				719D92541918D84700B75D8B /* PWAlbumViewCell.m in Sources */,
@@ -2854,12 +2907,15 @@
 				711FE8E5195E99F500AF296B /* PXSettingHTMLViewController.m in Sources */,
 				7195527A192C27E6003EA9AF /* PADateFormatter.m in Sources */,
 				719CFE591959A55B008B4308 /* PLAccessPhotoLibraryViewController.m in Sources */,
+				71BDCF7619F696B3001135FB /* PSNewLocalHomeViewController.m in Sources */,
 				716243331952090300168825 /* PLPhotoObject.m in Sources */,
 				712F39B119398EAA005CF60B /* PWAlbumObject.m in Sources */,
 				71E8850E19115C7E005A78E0 /* main.m in Sources */,
 				7191706619D15F9D003BFFC3 /* PACenterTextTableViewCell.m in Sources */,
 				71BD234319768D0E0034CD3B /* PDWebPhotoObject+methods.m in Sources */,
 				712F39AE1938D011005CF60B /* PWPhotoObject.m in Sources */,
+				71BDCF8819F697B5001135FB /* PSNewLocalMomentListViewController.m in Sources */,
+				71BDCF7D19F6973D001135FB /* PSNewLocalAlbumListViewController.m in Sources */,
 				71737EBA19A3193100CBE68A /* PANetworkActivityIndicator.m in Sources */,
 				71BD234619778C010034CD3B /* PDLocalPhotoObject.m in Sources */,
 				71E885A219120E7A005A78E0 /* PWOAuthManager.m in Sources */,

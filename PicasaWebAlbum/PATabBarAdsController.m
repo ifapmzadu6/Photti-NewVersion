@@ -55,7 +55,7 @@
 }
 
 - (CGFloat)adViewHeight {
-    if (_isRemoveAdsAddonPurchased) {
+    if (_isRemoveAdsAddonPurchased || _isAdsHidden) {
         return 0.0f;
     }
     

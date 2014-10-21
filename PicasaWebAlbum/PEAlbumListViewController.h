@@ -10,6 +10,10 @@
 
 #import "PABaseViewController.h"
 
+@class PEAlbumListDataSource;
+
 @interface PEAlbumListViewController : PABaseViewController
+
+@property (strong, nonatomic) PEAlbumListDataSource *albumListDataSource;
 
 @end

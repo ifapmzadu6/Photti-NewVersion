@@ -24,8 +24,6 @@
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
-@property (strong, nonatomic) PEAlbumListDataSource *albumListDataSource;
-
 @property (strong, nonatomic) UIBarButtonItem *selectTrashBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectUploadBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButtonItem;

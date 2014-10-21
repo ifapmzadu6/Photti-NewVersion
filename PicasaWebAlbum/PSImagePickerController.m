@@ -19,9 +19,9 @@
 #import "PADepressingTransition.h"
 
 #import "PABaseNavigationController.h"
+#import "PSNewLocalHomeViewController.h"
 #import "PSLocalPageViewController.h"
 #import "PSWebAlbumListViewController.h"
-#import "PEHomeViewController.h"
 
 @interface PSImagePickerController () <UITabBarControllerDelegate>
 
@@ -51,7 +51,7 @@
         UINavigationController *localNavigationController = nil;
         if ([PEAssetsManager isStatusAuthorized]) {
             if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-                _localPageViewController = [PEHomeViewController new];
+                _localPageViewController = [PSNewLocalHomeViewController new];
             }
             else {
                 _localPageViewController = [PSLocalPageViewController new];
