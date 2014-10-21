@@ -11,7 +11,7 @@
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PLModelObject.h"
-#import "PLAssetsManager.h"
+#import "PEAssetsManager.h"
 #import "PLCoreDataAPI.h"
 #import "PWModelObject.h"
 #import "PWCoreDataAPI.h"
@@ -50,17 +50,19 @@
         _prompt = [NSString stringWithFormat:NSLocalizedString(@"Select items to add to \"%@\".", nil), albumTitle];
         
         UINavigationController *localNavigationController = nil;
-        if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized && [PLAssetsManager sharedManager].autoCreateAlbumType != PLAssetsManagerAutoCreateAlbumTypeUnknown) {
-            PSLocalPageViewController *localPageViewController = [PSLocalPageViewController new];
-            _localPageViewController = localPageViewController;
-            localNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:localPageViewController];
+        if ([PEAssetsManager isStatusAuthorized]) {
+            _localPageViewController = [PSLocalPageViewController new];
+            localNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:_localPageViewController];
+            localNavigationController.navigationBar.barTintColor = [UIColor blackColor];
+            localNavigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [PAColors getColor:PAColorsTypeBackgroundColor]};
         }
         
         UINavigationController *webNavigationController = nil;
         if ([PWOAuthManager isLogined]) {
-            PSWebAlbumListViewController *webAlbumViewController = [[PSWebAlbumListViewController alloc] init];
-            _webAlbumViewController = webAlbumViewController;
+            _webAlbumViewController = [[PSWebAlbumListViewController alloc] init];
             webNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:_webAlbumViewController];
+            webNavigationController.navigationBar.barTintColor = [UIColor blackColor];
+            webNavigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [PAColors getColor:PAColorsTypeBackgroundColor]};
         }
         
         self.delegate = self;
@@ -113,7 +115,7 @@
     
     CGRect rect = self.view.bounds;
     
-    CGFloat tHeight = [self tabBarHeight];
+    CGFloat tHeight = [self viewInsets].bottom;
     _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
     
     UINavigationController *webNavigationController = _webAlbumViewController.navigationController;

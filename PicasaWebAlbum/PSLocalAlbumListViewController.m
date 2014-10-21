@@ -17,6 +17,7 @@
 #import "PSImagePickerController.h"
 #import "PLModelObject.h"
 #import "PAActivityIndicatorView.h"
+#import "PAViewControllerKit.h"
 
 #import "PSLocalPhotoListViewController.h"
 
@@ -112,30 +113,13 @@
     
     CGRect rect = self.view.bounds;
     
-    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
-    NSIndexPath *indexPath = nil;
-    if (indexPaths.count > 0) {
-        NSIndexPath *firstIndexPath = indexPaths.firstObject;
-        if (!(firstIndexPath.item == 0 && firstIndexPath.section == 0)) {
-            indexPath = indexPaths[indexPaths.count / 2];
-        }
-    }
-    
     PSImagePickerController *tabBarViewController = (PSImagePickerController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
-    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 10.0f, viewInsets.bottom, 10.0f);
-    _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
-    _collectionView.frame = rect;
-    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
-    [collectionViewLayout invalidateLayout];
-    
-    if (indexPath) {
-        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-    }
+    UIEdgeInsets contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 10.0f, viewInsets.bottom, 10.0f);
+    UIEdgeInsets scrollIndicatorInsets = viewInsets;
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
     
     _indicatorView.center = self.view.center;
-    
-    [self layoutNoItem];
 }
 
 #pragma mark UICollectionViewDataSource
@@ -194,42 +178,6 @@
         
         [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
     });
-}
-
-#pragma mark NoItem
-- (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
-    if (numberOfItem == 0) {
-        [self showNoItem];
-    }
-    else {
-        [self hideNoItem];
-    }
-}
-
-- (void)showNoItem {
-    if (!_noItemImageView) {
-        _noItemImageView = [UIImageView new];
-        _noItemImageView.image = [UIImage imageNamed:@"icon_240"];
-        _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
-        [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
-    }
-}
-
-- (void)hideNoItem {
-    if (_noItemImageView) {
-        [_noItemImageView removeFromSuperview];
-        _noItemImageView = nil;
-    }
-}
-
-- (void)layoutNoItem {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 240.0f, 240.0f);
-    }
-    else {
-        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 440.0f, 440.0f);
-    }
-    _noItemImageView.center = self.view.center;
 }
 
 @end

@@ -18,6 +18,7 @@
 #import "PLCollectionFooterView.h"
 #import "PAPhotoCollectionViewFlowLayout.h"
 #import "PSImagePickerController.h"
+#import "PAViewControllerKit.h"
 
 @interface PSLocalPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
@@ -90,24 +91,14 @@
     
     CGRect rect = self.view.bounds;
     
-    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
-    NSIndexPath *indexPath = nil;
-    if (indexPaths.count > 0) {
-        NSIndexPath *firstIndexPath = indexPaths.firstObject;
-        if (!(firstIndexPath.item == 0 && firstIndexPath.section == 0)) {
-            indexPath = indexPaths[indexPaths.count / 2];
-        }
+    PATabBarController *tabBarController = (PATabBarController *)self.tabBarController;
+    UIEdgeInsets viewInsets = tabBarController.viewInsets;
+    UIEdgeInsets contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        contentInset = UIEdgeInsetsMake(viewInsets.top + 20.0f, 20.0f, viewInsets.bottom + 20.0f, 20.0f);
     }
-    
-    _collectionView.frame = rect;
-    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
-    [collectionViewLayout invalidateLayout];
-    
-    if (indexPath) {
-        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-    }
-    
-    [self layoutNoItem];
+    UIEdgeInsets scrollIndicatorInsets = viewInsets;
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
 }
 
 - (void)dealloc {
@@ -218,42 +209,6 @@
         
         [self refreshNoItemWithNumberOfItem:_album.photos.count];
     });
-}
-
-#pragma mark NoItem
-- (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
-    if (numberOfItem == 0) {
-        [self showNoItem];
-    }
-    else {
-        [self hideNoItem];
-    }
-}
-
-- (void)showNoItem {
-    if (!_noItemImageView) {
-        _noItemImageView = [UIImageView new];
-        _noItemImageView.image = [UIImage imageNamed:@"icon_240"];
-        _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
-        [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
-    }
-}
-
-- (void)hideNoItem {
-    if (_noItemImageView) {
-        [_noItemImageView removeFromSuperview];
-        _noItemImageView = nil;
-    }
-}
-
-- (void)layoutNoItem {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 240.0f, 240.0f);
-    }
-    else {
-        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 440.0f, 440.0f);
-    }
-    _noItemImageView.center = self.view.center;
 }
 
 @end

@@ -17,6 +17,7 @@
 #import "PSWebPhotoListViewController.h"
 #import "PSImagePickerController.h"
 #import "PAActivityIndicatorView.h"
+#import "PAViewControllerKit.h"
 #import <Reachability.h>
 #import <SDImageCache.h>
 
@@ -55,7 +56,6 @@
     [_collectionView registerClass:[PWAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 10.0f, 0.0f, 10.0f);
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
@@ -119,26 +119,13 @@
     
     CGRect rect = self.view.bounds;
     
-    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
-    NSIndexPath *indexPath = nil;
-    if (indexPaths.count > 0) {
-        NSIndexPath *firstIndexPath = indexPaths.firstObject;
-        if (!(firstIndexPath.item == 0 && firstIndexPath.section == 0)) {
-            indexPath = indexPaths[indexPaths.count / 2];
-        }
-    }
-    
-    _collectionView.frame = rect;
-    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
-    [collectionViewLayout invalidateLayout];
-    
-    if (indexPath) {
-        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-    }
+    PATabBarController *tabBarController = (PATabBarController *)self.tabBarController;
+    UIEdgeInsets viewInsets = tabBarController.viewInsets;
+    UIEdgeInsets contentInset = UIEdgeInsetsMake(viewInsets.top + 15.0f, 15.0f, viewInsets.bottom + 15.0f, 15.0f);
+    UIEdgeInsets scrollIndicatorInsets = viewInsets;
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
     
     _activityIndicatorView.center = self.view.center;
-    
-    [self layoutNoItem];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -146,20 +133,6 @@
     
     if (_isRequesting && _isRefreshControlAnimating) {
         [_refreshControl beginRefreshing];
-    }
-}
-
-#pragma mark UITabBarItem
-- (void)updateTabBarItem {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            self.tabBarItem.image = [PAIcons imageWithImage:[UIImage imageNamed:@"Picasa"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-            self.tabBarItem.selectedImage = [PAIcons imageWithImage:[UIImage imageNamed:@"PicasaSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-        }
-        else {
-            self.tabBarItem.image = [UIImage imageNamed:@"Picasa"];
-            self.tabBarItem.selectedImage = [UIImage imageNamed:@"PicasaSelected"];
-        }
     }
 }
 
@@ -215,6 +188,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
     PSWebPhotoListViewController *viewController = [[PSWebPhotoListViewController alloc] initWithAlbum:album];
+    viewController.navigationItem.prompt = self.navigationItem.prompt;
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
@@ -298,42 +272,6 @@
         
         [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
     });
-}
-
-#pragma mark NoItem
-- (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
-    if (numberOfItem == 0) {
-        [self showNoItem];
-    }
-    else {
-        [self hideNoItem];
-    }
-}
-
-- (void)showNoItem {
-    if (!_noItemImageView) {
-        _noItemImageView = [UIImageView new];
-        _noItemImageView.image = [UIImage imageNamed:@"icon_240"];
-        _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
-        [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
-    }
-}
-
-- (void)hideNoItem {
-    if (_noItemImageView) {
-        [_noItemImageView removeFromSuperview];
-        _noItemImageView = nil;
-    }
-}
-
-- (void)layoutNoItem {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 240.0f, 240.0f);
-    }
-    else {
-        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 440.0f, 440.0f);
-    }
-    _noItemImageView.center = self.view.center;
 }
 
 @end

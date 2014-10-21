@@ -112,7 +112,7 @@
     
     CGRect rect = self.view.bounds;
     
-    CGFloat tHeight = [self tabBarHeight];
+    CGFloat tHeight = [self viewInsets].bottom;
     
     for (UIView *view in self.view.subviews) {
         if([view isKindOfClass:[UITabBar class]]) {
@@ -141,20 +141,6 @@
         localNavigationController.tabBarItem.image = [UIImage imageNamed:@"Picture"];
         localNavigationController.tabBarItem.selectedImage = [UIImage imageNamed:@"PictureSelected"];
     }
-}
-
-#pragma mark TabBar
-- (CGFloat)tabBarHeight {
-    CGFloat height = 44.0f;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            height = 32.0f;
-        }
-    }
-    else {
-        height = 56.0f;
-    }
-    return height;
 }
 
 #pragma mark UIBarButtonAction

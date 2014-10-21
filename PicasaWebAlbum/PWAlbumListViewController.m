@@ -203,8 +203,6 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
     
     _activityIndicatorView.center = self.view.center;
-    
-    [self layoutNoItem];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -548,42 +546,6 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
             [_collectionView reloadData];
         });
     }
-}
-
-#pragma mark NoItem
-- (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem {
-    if (numberOfItem == 0) {
-        [self showNoItem];
-    }
-    else {
-        [self hideNoItem];
-    }
-}
-
-- (void)showNoItem {
-    if (!_noItemImageView) {
-        _noItemImageView = [UIImageView new];
-        _noItemImageView.image = [UIImage imageNamed:@"icon_240"];
-        _noItemImageView.contentMode = UIViewContentModeScaleAspectFit;
-        [self.view insertSubview:_noItemImageView aboveSubview:_collectionView];
-    }
-}
-
-- (void)hideNoItem {
-    if (_noItemImageView) {
-        [_noItemImageView removeFromSuperview];
-        _noItemImageView = nil;
-    }
-}
-
-- (void)layoutNoItem {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 240.0f, 240.0f);
-    }
-    else {
-        _noItemImageView.frame = CGRectMake(0.0f, 0.0f, 440.0f, 440.0f);
-    }
-    _noItemImageView.center = self.view.center;
 }
 
 @end

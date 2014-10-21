@@ -15,4 +15,9 @@
 @property (nonatomic, readonly) BOOL isPhone;
 @property (nonatomic, readonly) BOOL isLandscape;
 
+- (void)refreshNoItemWithNumberOfItem:(NSUInteger)numberOfItem;
+- (void)showNoItem;
+- (void)hideNoItem;
+- (void)layoutNoItem;
+
 @end

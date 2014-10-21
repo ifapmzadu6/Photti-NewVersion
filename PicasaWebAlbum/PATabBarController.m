@@ -31,7 +31,7 @@
 @implementation PATabBarController
 
 - (id)initWithIndex:(NSUInteger)index viewControllers:(NSArray *)viewControllers colors:(NSArray *)colors {
-    self = [super init];
+    self = [self init];
     if (self) {
         if (viewControllers.count != colors.count) {
             return self;
@@ -39,9 +39,17 @@
         
         self.viewControllers = viewControllers;
         self.selectedIndex = index;
-        self.delegate = self;
         
         _colors = colors;
+    }
+    return self;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.delegate = self;
+        
         _isPhone = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone);
     }
     return self;
