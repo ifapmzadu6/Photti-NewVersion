@@ -8,31 +8,30 @@
 
 #import "PTWebAlbumListViewController.h"
 
+#import <Reachability.h>
+#import <SDImageCache.h>
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PAString.h"
 #import "PWRefreshControl.h"
-#import "PWAlbumViewCell.h"
-#import "PLCollectionFooterView.h"
 #import "PAAlbumCollectionViewFlowLayout.h"
 #import "PTAlbumPickerController.h"
 #import "PABaseNavigationController.h"
 #import "PWNewAlbumEditViewController.h"
-#import <Reachability.h>
-#import <SDImageCache.h>
 #import "PAActivityIndicatorView.h"
 #import "PAViewControllerKit.h"
+#import "PAAlertControllerKit.h"
+#import "PRAlbumListDataSource.h"
+#import "PWCoreDataAPI.h"
+#import "PWPicasaAPI.h"
 
-@interface PTWebAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PTWebAlbumListViewController ()
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
 @property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
-@property (strong, nonatomic) UIImageView *noItemImageView;
 
-@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-@property (nonatomic) NSUInteger requestIndex;
-@property (nonatomic) BOOL isRequesting;
+@property (strong, nonatomic) PRAlbumListDataSource *albumListDataSource;
 @property (nonatomic) BOOL isRefreshControlAnimating;
 
 @end
@@ -43,6 +42,47 @@
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"Web Album", nil);
+        
+        NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+        NSFetchRequest *request = [NSFetchRequest new];
+        request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        
+        _albumListDataSource = [[PRAlbumListDataSource alloc] initWithFetchRequest:request];
+        __weak typeof(self) wself = self;
+        _albumListDataSource.didChangeItemCountBlock = ^(NSUInteger count) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself refreshNoItemWithNumberOfItem:count];
+        };
+        _albumListDataSource.didSelectAlbumBlock = ^(PWAlbumObject *album, NSUInteger index) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PTAlbumPickerController *tabBarController = (PTAlbumPickerController *)sself.tabBarController;
+            [tabBarController doneBarButtonActionWithSelectedAlbum:album isWebAlbum:YES];
+        };
+        _albumListDataSource.didRefresh = ^() {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself.refreshControl endRefreshing];
+            [sself.activityIndicatorView stopAnimating];
+        };
+        _albumListDataSource.openLoginViewController = ^() {
+            [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    [sself.refreshControl endRefreshing];
+                    [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+                });
+            } finish:^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    [sself.albumListDataSource loadDataWithStartIndex:0];
+                });
+            }];
+        };
     }
     return self;
 }
@@ -62,10 +102,9 @@
     
     PAAlbumCollectionViewFlowLayout *collectionViewLayout = [PAAlbumCollectionViewFlowLayout new];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
-    _collectionView.dataSource = self;
-    _collectionView.delegate = self;
-    [_collectionView registerClass:[PWAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
-    [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
+    _albumListDataSource.collectionView = _collectionView;
+    _collectionView.dataSource = _albumListDataSource;
+    _collectionView.delegate = _albumListDataSource;
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
@@ -80,27 +119,9 @@
     _activityIndicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_activityIndicatorView];
     
-    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
-    NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
-    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-    _fetchedResultsController.delegate = self;
-    NSError *error = nil;
-    if (![_fetchedResultsController performFetch:&error]) {
-#ifdef DEBUG
-        NSLog(@"%@", error);
-#endif
-        return;
-    }
-    
-    if (_fetchedResultsController.fetchedObjects.count == 0) {
+    if (_albumListDataSource.numberOfAlbums == 0) {
         [_activityIndicatorView startAnimating];
     }
-    
-    [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
-    
-    [self loadDataWithStartIndex:0];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -129,7 +150,7 @@
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
-    if (_isRequesting && _isRefreshControlAnimating) {
+    if (_albumListDataSource.isRequesting && _isRefreshControlAnimating) {
         [_refreshControl beginRefreshing];
     }
 }
@@ -145,7 +166,7 @@
     [viewController setSuccessBlock:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        [sself loadDataWithStartIndex:0];
+        [sself.albumListDataSource loadDataWithStartIndex:0];
     }];
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     if (self.isPhone) {
@@ -157,130 +178,14 @@
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
-#pragma mark UICollectionViewDataSource
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return _fetchedResultsController.sections.count;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
-    return [sectionInfo numberOfObjects];
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-    
-    cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    
-    return cell;
-}
-
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
-        return nil;
-    }
-    
-    PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
-    
-    if (_fetchedResultsController.fetchedObjects.count > 0) {
-        NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Albums -", nil), (unsigned long)_fetchedResultsController.fetchedObjects.count];
-        [footerView setText:albumCountString];
-    }
-    
-    return footerView;
-}
-
-#pragma mark UICollectionViewFlowLayout
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    return CGSizeMake(0.0f, 50.0f);
-}
-
-#pragma mark UICollectionViewDelegate
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    PTAlbumPickerController *tabBarController = (PTAlbumPickerController *)self.tabBarController;
-    [tabBarController doneBarButtonActionWithSelectedAlbum:album isWebAlbum:YES];
-}
-
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
     if (![Reachability reachabilityForInternetConnection].isReachable) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-        [alertView show];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [alertView dismissWithClickedButtonIndex:0 animated:YES];
-        });
-    }
-    
-    [self loadDataWithStartIndex:0];
-}
-
-#pragma mark LoadData
-- (void)loadDataWithStartIndex:(NSUInteger)index {
-    if (![Reachability reachabilityForInternetConnection].isReachable) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [_refreshControl endRefreshing];
-        });
-        return;
-    };
-    
-    if (_isRequesting) {
+        [PAAlertControllerKit showNotCollectedToNetwork];
         return;
     }
-    _isRequesting = YES;
     
-    __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSUInteger nextIndex, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        sself.isRequesting = NO;
-        
-        if (error) {
-#ifdef DEBUG
-            NSLog(@"%@", error);
-#endif
-            if (error.code == 401) {
-                [sself openLoginViewController];
-            }
-        }
-        else {
-            sself.requestIndex = nextIndex;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.refreshControl endRefreshing];
-            [sself.activityIndicatorView stopAnimating];
-        });
-    }];
-}
-
-- (void)openLoginViewController {
-    __weak typeof(self) wself = self;
-    [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself.refreshControl endRefreshing];
-            [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
-        });
-    } finish:^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself loadDataWithStartIndex:0];
-        });
-    }];
-}
-
-#pragma mark NSFetchedResultsControllerDelegate
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [_collectionView reloadData];
-        
-        [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
-    });
+    [_albumListDataSource loadDataWithStartIndex:0];
 }
 
 @end

@@ -13,7 +13,6 @@
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PWPicasaAPI.h"
-#import "PWAlbumViewCell.h"
 #import "PWPhotoViewCell.h"
 #import "PWRefreshControl.h"
 #import "PAHorizontalScrollView.h"
@@ -24,6 +23,8 @@
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
 #import "PASnowFlake.h"
+#import "PAAlertControllerKit.h"
+#import "PRAlbumListDataSource.h"
 #import <Reachability.h>
 #import <SDImageCache.h>
 
@@ -38,7 +39,7 @@
 #import "PWAlbumShareViewController.h"
 #import "PXSettingsViewController.h"
 #import "PAActivityIndicatorView.h"
-#import "PAActivityIndicatorView.h"
+
 
 typedef NS_ENUM(NSUInteger, kPWAlbumListViewControllerActionSheetType) {
     kPWAlbumListViewControllerActionSheetType_
@@ -50,19 +51,11 @@ typedef NS_ENUM(NSUInteger, kPWAlbumListViewControllerActionSheetType) {
 @property (strong, nonatomic) UICollectionView *recentlyUploadedCollectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
 @property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
-@property (strong, nonatomic) UIImageView *noItemImageView;
 
-@property (nonatomic) NSUInteger requestIndex;
-@property (nonatomic) BOOL isRequesting;
+@property (strong, nonatomic) PRAlbumListDataSource *albumListDataSource;
 @property (nonatomic) BOOL isRecentlyUploadedRequesting;
 @property (nonatomic) BOOL isRefreshControlAnimating;
 
-@property (nonatomic) BOOL isSelectMode;
-@property (strong, nonatomic) UIBarButtonItem *selectActionBarButton;
-@property (strong, nonatomic) UIBarButtonItem *trashBarButtonItem;
-@property (strong, nonatomic) UIBarButtonItem *organizeBarButtonItem;
-
-@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSFetchedResultsController *recentlyUploadedFetchedResultsController;
 
 @property (strong, nonatomic) id actionSheetItem;
@@ -81,6 +74,50 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
         
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
+        
+        NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+        NSFetchRequest *request = [NSFetchRequest new];
+        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+        __weak typeof(self) wself = self;
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        _albumListDataSource = [[PRAlbumListDataSource alloc] initWithFetchRequest:request];
+        _albumListDataSource.dataSource = self;
+        _albumListDataSource.delegate = self;
+        _albumListDataSource.didChangeItemCountBlock = ^(NSUInteger count) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself refreshNoItemWithNumberOfItem:count];
+        };
+        _albumListDataSource.didSelectAlbumBlock = ^(PWAlbumObject *album, NSUInteger index) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PWPhotoListViewController *viewController = [[PWPhotoListViewController alloc] initWithAlbum:album];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        };
+        _albumListDataSource.didRefresh = ^() {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (!sself.isRecentlyUploadedRequesting) {
+                [sself.refreshControl endRefreshing];
+                [sself.activityIndicatorView stopAnimating];
+            }
+        };
+        _albumListDataSource.openLoginViewController = ^() {
+            [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    [sself.refreshControl endRefreshing];
+                    [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
+                });
+            } finish:^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    typeof(wself) sself = wself;
+                    if (!sself) return;
+                    [sself.albumListDataSource loadDataWithStartIndex:0];
+                });
+            }];
+        };
     }
     return self;
 }
@@ -104,13 +141,11 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     
     PAAlbumCollectionViewFlowLayout *collectionViewLayout = [PAAlbumCollectionViewFlowLayout new];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
-    _collectionView.dataSource = self;
-    _collectionView.delegate = self;
-    [_collectionView registerClass:[PWAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
+    _albumListDataSource.collectionView = _collectionView;
+    _collectionView.dataSource = _albumListDataSource;
+    _collectionView.delegate = _albumListDataSource;
     [_collectionView registerClass:[PWHorizontalScrollHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"Header"];
-    [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 10.0f, 0.0f, 10.0f);
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
@@ -125,24 +160,13 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
     [self.view addSubview:_activityIndicatorView];
     
     NSManagedObjectContext *context = [PWCoreDataAPI readContext];
-    NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
-    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-    _fetchedResultsController.delegate = self;
-    NSError *error = nil;
-    if (![_fetchedResultsController performFetch:&error]) {
-#ifdef DEBUG
-        NSLog(@"%@", error);
-#endif
-        abort();
-    }
     NSFetchRequest *recentlyUploadedRequest = [NSFetchRequest new];
     recentlyUploadedRequest.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
     recentlyUploadedRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"published" ascending:NO]];
     recentlyUploadedRequest.fetchLimit = kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded;
     _recentlyUploadedFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:recentlyUploadedRequest managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
     _recentlyUploadedFetchedResultsController.delegate = self;
+    NSError *error = nil;
     if (![_recentlyUploadedFetchedResultsController performFetch:&error]) {
 #ifdef DEBUG
         NSLog(@"%@", error);
@@ -150,14 +174,13 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
         abort();
     }
     
-    if (_fetchedResultsController.fetchedObjects.count == 0) {
+    if (_albumListDataSource.numberOfAlbums == 0) {
         [_activityIndicatorView startAnimating];
     }
     
-    [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
+    [self refreshNoItemWithNumberOfItem:_albumListDataSource.numberOfAlbums];
     
     [self loadRecentlyUploadedPhotos];
-    [self loadDataWithStartIndex:0];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -208,55 +231,31 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
-    if ((_isRequesting || _isRecentlyUploadedRequesting) && _isRefreshControlAnimating) {
+    if ((_albumListDataSource.isRequesting || _isRecentlyUploadedRequesting) && _isRefreshControlAnimating) {
         [_refreshControl beginRefreshing];
     }
 }
 
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    if (collectionView == _collectionView) {
-        return _fetchedResultsController.sections.count;
-    }
-    else if (collectionView == _recentlyUploadedCollectionView) {
-        return _recentlyUploadedFetchedResultsController.sections.count;
-    }
-    return 0;
+    return _recentlyUploadedFetchedResultsController.sections.count;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if (collectionView == _collectionView) {
-        id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
-        return [sectionInfo numberOfObjects];
+    id<NSFetchedResultsSectionInfo> sectionInfo = _recentlyUploadedFetchedResultsController.sections[section];
+    NSUInteger numberObItems = [sectionInfo numberOfObjects];
+    if (numberObItems > kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded) {
+        numberObItems = kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded;
     }
-    else if (collectionView == _recentlyUploadedCollectionView) {
-        id<NSFetchedResultsSectionInfo> sectionInfo = _recentlyUploadedFetchedResultsController.sections[section];
-        NSUInteger numberObItems = [sectionInfo numberOfObjects];
-        if (numberObItems > kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded) {
-            numberObItems = kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded;
-        }
-        return numberObItems;
-    }
-    return 0;
+    return numberObItems;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (collectionView == _collectionView) {
-        PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-        
-        PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
-        cell.album = album;
-        
-        return cell;
-    }
-    else if (collectionView == _recentlyUploadedCollectionView) {
-        PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(PWPhotoViewCell.class) forIndexPath:indexPath];
-        
-        cell.photo = [_recentlyUploadedFetchedResultsController objectAtIndexPath:indexPath];
-        
-        return cell;
-    }
-    return nil;
+    PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(PWPhotoViewCell.class) forIndexPath:indexPath];
+    
+    cell.photo = [_recentlyUploadedFetchedResultsController objectAtIndexPath:indexPath];
+    
+    return cell;
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
@@ -272,19 +271,6 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
             
             return headerView;
         }
-        else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
-            PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
-            
-            if (_fetchedResultsController.fetchedObjects.count > 0) {
-                NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Albums -", nil), (unsigned long)_fetchedResultsController.fetchedObjects.count];
-                [footerView setText:albumCountString];
-            }
-            
-            return footerView;
-        }
-    }
-    else if (collectionView == _recentlyUploadedCollectionView) {
-        return nil;
     }
     return nil;
 }
@@ -306,27 +292,12 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
     if (collectionView == _collectionView) {
-        if (_isSelectMode) {
-            return CGSizeZero;
+        if (self.isPhone) {
+            return CGSizeMake(0.0f, 216.0f);
         }
         else {
-            if (self.isPhone) {
-                return CGSizeMake(0.0f, 216.0f);
-            }
-            else {
-                return CGSizeMake(0.0f, 300.0f);
-            }
+            return CGSizeMake(0.0f, 300.0f);
         }
-    }
-    else if (collectionView == _recentlyUploadedCollectionView) {
-        return CGSizeZero;
-    }
-    return CGSizeZero;
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    if (collectionView == _collectionView) {
-        return CGSizeMake(0.0f, 50.0f);
     }
     else if (collectionView == _recentlyUploadedCollectionView) {
         return CGSizeZero;
@@ -336,17 +307,7 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (collectionView == _collectionView) {
-        if (_isSelectMode) {
-            
-        }
-        else {
-            PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
-            PWPhotoListViewController *viewController = [[PWPhotoListViewController alloc] initWithAlbum:album];
-            [self.navigationController pushViewController:viewController animated:YES];
-        }
-    }
-    else if (collectionView == _recentlyUploadedCollectionView) {
+    if (collectionView == _recentlyUploadedCollectionView) {
         PWPhotoViewCell *cell = (PWPhotoViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
         NSArray *photos = _recentlyUploadedFetchedResultsController.fetchedObjects;
         if (photos.count > kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded) {
@@ -365,15 +326,12 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
     if (![Reachability reachabilityForInternetConnection].isReachable) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-        [alertView show];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [alertView dismissWithClickedButtonIndex:0 animated:YES];
-        });
+        [PAAlertControllerKit showNotCollectedToNetwork];
+        return;
     }
     
     [self loadRecentlyUploadedPhotos];
-    [self loadDataWithStartIndex:0];
+    [_albumListDataSource loadDataWithStartIndex:0];
 }
 
 #pragma mark BarButtonAction
@@ -401,7 +359,7 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
         typeof(wself) sself = wself;
         if (!sself) return;
         [sself loadRecentlyUploadedPhotos];
-        [sself loadDataWithStartIndex:0];
+        [sself.albumListDataSource loadDataWithStartIndex:0];
     };
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     if (self.isPhone) {
@@ -444,7 +402,7 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
 #endif
                 if (error.code == 401) {
                     if ([PWOAuthManager shouldOpenLoginViewController]) {
-                        [sself openLoginViewController];
+//                        [sself openLoginViewController];
                     }
                     else {
                         [PWOAuthManager incrementCountOfLoginError];
@@ -455,93 +413,18 @@ static NSUInteger const kPWAlbumListViewControllerMaxNumberOfRecentlyUploaded = 
             [PWOAuthManager resetCountOfLoginError];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (!sself.isRequesting) {
+                if (!sself.albumListDataSource.isRequesting) {
                     [sself.refreshControl endRefreshing];
                     [sself.activityIndicatorView stopAnimating];
                 }
             });
         }];
     });
-}
-
-- (void)loadDataWithStartIndex:(NSUInteger)index {
-    if (![Reachability reachabilityForInternetConnection].isReachable) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [_refreshControl endRefreshing];
-        });
-        return;
-    };
-    
-    if (_isRequesting) {
-        return;
-    }
-    _isRequesting = YES;
-    
-    __weak typeof(self) wself = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSUInteger nextIndex, NSError *error) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            sself.isRequesting = NO;
-            if (error) {
-#ifdef DEBUG
-                NSLog(@"%@", error);
-#endif
-                if (error.code == 401) {
-                    if ([PWOAuthManager shouldOpenLoginViewController]) {
-                        [sself openLoginViewController];
-                    }
-                    else {
-                        [PWOAuthManager incrementCountOfLoginError];
-                        [sself loadDataWithStartIndex:index];
-                    }
-                }
-            }
-            else {
-                sself.requestIndex = nextIndex;
-            }
-            [PWOAuthManager resetCountOfLoginError];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (!sself.isRecentlyUploadedRequesting) {
-                    [sself.refreshControl endRefreshing];
-                    [sself.activityIndicatorView stopAnimating];
-                }
-            });
-        }];
-    });
-}
-
-- (void)openLoginViewController {
-    __weak typeof(self) wself = self;
-    [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself.refreshControl endRefreshing];
-            [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
-        });
-    } finish:^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            [sself loadRecentlyUploadedPhotos];
-            [sself loadDataWithStartIndex:0];
-        });
-    }];
 }
 
 #pragma mark NSFetchedResultsControllerDelegate
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    if (controller == _fetchedResultsController) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [_collectionView reloadData];
-            
-            [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
-        });
-    }
-    else if (controller == _recentlyUploadedFetchedResultsController) {
+    if (controller == _recentlyUploadedFetchedResultsController) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [_collectionView reloadData];
         });

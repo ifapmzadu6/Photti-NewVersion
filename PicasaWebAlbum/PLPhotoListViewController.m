@@ -33,7 +33,6 @@
 @interface PLPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
-@property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButton;
 @property (strong, nonatomic) UIBarButtonItem *organizeBarButtonItem;

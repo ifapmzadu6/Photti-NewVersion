@@ -25,6 +25,7 @@
 #import "PDTaskManager.h"
 #import "UIView+ScreenCapture.h"
 #import "PAActivityIndicatorView.h"
+#import "PAAlertControllerKit.h"
 
 @interface PWPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
@@ -141,11 +142,7 @@
         }
         else {
             if (![Reachability reachabilityForInternetConnection].isReachable) {
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-                [alertView show];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                });
+                [PAAlertControllerKit showNotCollectedToNetwork];
                 return;
             }
             

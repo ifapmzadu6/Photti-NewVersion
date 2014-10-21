@@ -27,6 +27,7 @@
 #import "PSImagePickerController.h"
 #import "PAActivityIndicatorView.h"
 #import "PAViewControllerKit.h"
+#import "PAAlertControllerKit.h"
 
 @interface PSWebPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
@@ -35,7 +36,6 @@
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
 @property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
-@property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (nonatomic) NSUInteger requestIndex;
 @property (nonatomic) BOOL isRequesting;
@@ -212,11 +212,8 @@
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
     if (![Reachability reachabilityForInternetConnection].isReachable) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-        [alertView show];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [alertView dismissWithClickedButtonIndex:0 animated:YES];
-        });
+        [PAAlertControllerKit showNotCollectedToNetwork];
+        return;
     }
     
     [self loadDataWithStartIndex:0];

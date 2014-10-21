@@ -18,6 +18,7 @@
 #import "PSImagePickerController.h"
 #import "PAActivityIndicatorView.h"
 #import "PAViewControllerKit.h"
+#import "PAAlertControllerKit.h"
 #import <Reachability.h>
 #import <SDImageCache.h>
 
@@ -26,11 +27,9 @@
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
 @property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
-@property (strong, nonatomic) UIImageView *noItemImageView;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic) NSUInteger requestIndex;
-@property (nonatomic) BOOL isRequesting;
 @property (nonatomic) BOOL isRefreshControlAnimating;
 
 @end
@@ -96,8 +95,6 @@
     }
     
     [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
-    
-    [self loadDataWithStartIndex:0];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -131,9 +128,9 @@
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
-    if (_isRequesting && _isRefreshControlAnimating) {
-        [_refreshControl beginRefreshing];
-    }
+//    if (_isRequesting && _isRefreshControlAnimating) {
+//        [_refreshControl beginRefreshing];
+//    }
 }
 
 #pragma mark UIBarButtonAction
@@ -195,74 +192,11 @@
 #pragma mark UIRefreshControl
 - (void)refreshControlAction {
     if (![Reachability reachabilityForInternetConnection].isReachable) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Not connected to network", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-        [alertView show];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [alertView dismissWithClickedButtonIndex:0 animated:YES];
-        });
-    }
-    
-    [self loadDataWithStartIndex:0];
-}
-
-#pragma mark LoadData
-- (void)loadDataWithStartIndex:(NSUInteger)index {
-    if (![Reachability reachabilityForInternetConnection].isReachable) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [_refreshControl endRefreshing];
-        });
-        return;
-    };
-    
-    if (_isRequesting) {
+        [PAAlertControllerKit showNotCollectedToNetwork];
         return;
     }
-    _isRequesting = YES;
     
-    __weak typeof(self) wself = self;
-    [PWPicasaAPI getListOfAlbumsWithIndex:index completion:^(NSUInteger nextIndex, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        sself.isRequesting = NO;
-        
-        if (error) {
-#ifdef DEBUG
-            NSLog(@"%@", error);
-#endif
-            if (error.code == 401) {
-                [sself openLoginViewController];
-            }
-        }
-        else {
-            sself.requestIndex = nextIndex;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sself.refreshControl endRefreshing];
-            [sself.activityIndicatorView stopAnimating];
-        });
-    }];
-}
-
-- (void)openLoginViewController {
-    __weak typeof(self) wself = self;
-    [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself.refreshControl endRefreshing];
-            [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
-        });
-        
-    } finish:^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself loadDataWithStartIndex:0];
-        });
-    }];
+//    [self loadDataWithStartIndex:0];
 }
 
 #pragma mark NSFetchedResultsControllerDelegate

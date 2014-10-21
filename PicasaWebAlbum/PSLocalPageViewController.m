@@ -58,7 +58,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     self.navigationItem.leftBarButtonItem = cancelBarButtonitem;
     UIBarButtonItem *doneBarButtonitem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
     self.navigationItem.rightBarButtonItem = doneBarButtonitem;
-    
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
@@ -66,7 +65,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     //ScrollViewDelegate
     [self.view.subviews.firstObject setDelegate:(id)self];
     
-    _titleView = [[PLParallelNavigationTitleView alloc] init];
+    _titleView = [PLParallelNavigationTitleView new];
     _titleView.frame = CGRectMake(0.0f, 0.0f, 200.0f, 44.0f);
     __weak typeof(self) wself = self;
     [_titleView setTitleBeforeCurrentTitle:^NSString *(NSString *presentTitle) {
@@ -125,10 +124,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [_titleView setNeedsLayout];
 }
 
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
-}
-
 #pragma mark UIBarButtonAction
 - (void)doneBarButtonAction {
     PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
@@ -172,7 +167,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [allPhotosViewController setViewDidAppearBlock:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         [sself.titleView setCurrentIndex:0];
         [sself.titleView setCurrentTitle:allPhotosViewControllerTitle];
     }];
@@ -181,7 +175,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [albumListViewController setViewDidAppearBlock:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         [sself.titleView setCurrentIndex:1];
         [sself.titleView setCurrentTitle:albumListViewControllerTitle];
     }];
@@ -190,7 +183,6 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [iCloudViewController setViewDidAppearBlock:^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         [sself.titleView setCurrentIndex:2];
         [sself.titleView setCurrentTitle:iCloudViewControllerTitle];
     }];
