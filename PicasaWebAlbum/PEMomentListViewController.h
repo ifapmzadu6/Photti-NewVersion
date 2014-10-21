@@ -10,6 +10,10 @@
 
 #import "PABaseViewController.h"
 
+@class PEMomentListDataSource;
+
 @interface PEMomentListViewController : PABaseViewController
+
+@property (strong, nonatomic) PEMomentListDataSource *dataSource;
 
 @end

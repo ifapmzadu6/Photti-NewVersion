@@ -18,7 +18,9 @@
 #import "PSNewLocalAlbumListViewController.h"
 #import "PSNewLocalMomentListViewController.h"
 
-#import "PEPhotoListViewController.h"
+#import "PSNewLocalPhotoListViewController.h"
+#import "PECategoryViewCell.h"
+#import "PACenterTextTableViewCell.h"
 
 @implementation PSNewLocalHomeViewController
 
@@ -143,6 +145,105 @@
     self.allPhotoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     self.allPhotoListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0) {
+        PECategoryViewCell *cell = (PECategoryViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
+        
+        NSString *rowType = self.enabledItems[indexPath.row];
+        __weak typeof(self) wself = self;
+        if ([rowType isEqualToString:kPEHomeViewControllerRowType_Albums]) {
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PSNewLocalAlbumListViewController *viewController = [PSNewLocalAlbumListViewController new];
+                viewController.navigationItem.prompt = sself.navigationItem.prompt;
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments]) {
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PSNewLocalMomentListViewController *viewController = [PSNewLocalMomentListViewController new];
+                viewController.navigationItem.prompt = sself.navigationItem.prompt;
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas]) {
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection type:PHPhotoListViewControllerType_Panorama];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos]) {
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection type:PHPhotoListViewControllerType_Video];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites]) {
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection type:PHPhotoListViewControllerType_Favorite];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse]) {
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection type:PHPhotoListViewControllerType_Timelapse];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud]) {
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection type:PHPhotoListViewControllerType_iCloud];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Bursts]) {
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection type:PHPhotoListViewControllerType_Bursts];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_SlomoVideos]) {
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection type:PHPhotoListViewControllerType_SlomoVideo];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos]) {
+            cell.moreButtonActionBlock = ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_AllPhotos];
+                [sself.navigationController pushViewController:viewController animated:YES];
+            };
+        }
+        
+        return cell;
+    }
+    else {
+        PACenterTextTableViewCell *cell = (PACenterTextTableViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
+        
+        return cell;
+    }
 }
 
 @end

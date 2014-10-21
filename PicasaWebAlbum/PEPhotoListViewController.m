@@ -24,7 +24,6 @@
 @property (strong, nonatomic) UICollectionView *collectionView;
 
 @property (nonatomic) PHPhotoListViewControllerType type;
-@property (strong, nonatomic) PEPhotoListDataSource *photoListDataSource;
 @property (nonatomic) BOOL isSelectMode;
 @property (strong, nonatomic) UIBarButtonItem *selectTrashBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectUploadBarButtonItem;

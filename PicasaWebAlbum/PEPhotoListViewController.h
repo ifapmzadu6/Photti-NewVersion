@@ -11,6 +11,8 @@
 
 #import "PABaseViewController.h"
 
+@class PEPhotoListDataSource;
+
 typedef NS_ENUM(NSUInteger, PHPhotoListViewControllerType){
     PHPhotoListViewControllerType_Album,
     PHPhotoListViewControllerType_Moment,
@@ -30,5 +32,7 @@ typedef NS_ENUM(NSUInteger, PHPhotoListViewControllerType){
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type;
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type title:(NSString *)title;
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type title:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate;
+
+@property (strong, nonatomic) PEPhotoListDataSource *photoListDataSource;
 
 @end

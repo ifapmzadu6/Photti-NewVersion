@@ -32,7 +32,7 @@
 #import "PEPhotoListViewController.h"
 #import "PEPhotoPageViewController.h"
 
-@interface PEHomeViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface PEHomeViewController () <UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIImageView *todayImageView;

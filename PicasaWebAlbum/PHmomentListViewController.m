@@ -19,7 +19,6 @@
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
-@property (strong, nonatomic) PEMomentListDataSource *dataSource;
 @property (nonatomic) BOOL isSelectMode;
 @property (strong, nonatomic) UIBarButtonItem *selectTrashBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectUploadBarButtonItem;

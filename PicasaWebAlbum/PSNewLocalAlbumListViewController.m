@@ -10,14 +10,31 @@
 
 #import "PEAlbumListDataSource.h"
 
+#import "PATabBarAdsController.h"
+#import "PSNewLocalPhotoListViewController.h"
+
 @implementation PSNewLocalAlbumListViewController
 
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.albumListDataSource.isSelectMode = YES;
+        __weak typeof(self) wself = self;
+        self.albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
+            viewController.navigationItem.prompt = sself.navigationItem.prompt;
+            [sself.navigationController pushViewController:viewController animated:YES];
+        };
     }
     return self;
+}
+
+- (void)viewWillAppear:(BOOL)animated {    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:NO];
+    
+    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    [tabBarController setToolbarHidden:YES animated:NO completion:nil];
 }
 
 @end

@@ -26,7 +26,7 @@ static NSString * const kPEHomeViewControllerRowType_Bursts = @"kPEHomeViewContr
 static NSString * const kPEHomeViewControllerRowType_SlomoVideos = @"kPEHomeViewControllerRowType_SlomoVideos";
 static NSString * const kPEHomeViewControllerRowType_AllPhotos = @"kPEHomeViewControllerRowType_AllPhotos";
 
-@interface PEHomeViewController : PABaseViewController
+@interface PEHomeViewController : PABaseViewController <UITableViewDataSource>
 
 + (NSArray *)defaultEnabledItems;
 + (NSString *)localizedStringFromRowType:(NSString *)rowType;
