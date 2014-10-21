@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWImagePickerWebPhotoListViewController.h"
+#import "PSWebPhotoListViewController.h"
 
 #import "PWPicasaAPI.h"
 #import "PAColors.h"
@@ -27,7 +27,7 @@
 #import "PSImagePickerController.h"
 #import "PAActivityIndicatorView.h"
 
-@interface PWImagePickerWebPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PSWebPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) PWAlbumObject *album;
 
@@ -45,7 +45,7 @@
 
 @end
 
-@implementation PWImagePickerWebPhotoListViewController
+@implementation PSWebPhotoListViewController
 
 - (id)initWithAlbum:(PWAlbumObject *)album {
     self = [super init];

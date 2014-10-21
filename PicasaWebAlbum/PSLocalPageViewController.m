@@ -6,18 +6,18 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWImagePickerLocalPageViewController.h"
+#import "PSLocalPageViewController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PLParallelNavigationTitleView.h"
 #import "PSImagePickerController.h"
 
-#import "PWImagePickerLocalAllPhotoViewController.h"
-#import "PWImagePickerLocalAlbumListViewController.h"
-#import "PWImagePickerLocaliCloudViewController.h"
+#import "PSLocalAllPhotoViewController.h"
+#import "PSLocalAlbumListViewController.h"
+#import "PSLocaliCloudViewController.h"
 
-@interface PWImagePickerLocalPageViewController ()
+@interface PSLocalPageViewController ()
 
 @property (strong, nonatomic) NSArray *myViewControllers;
 
@@ -25,7 +25,7 @@
 
 @end
 
-@implementation PWImagePickerLocalPageViewController
+@implementation PSLocalPageViewController
 
 static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 
@@ -182,7 +182,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 - (NSArray *)makeViewControllers {
     __weak typeof(self) wself = self;
     
-    PWImagePickerLocalAllPhotoViewController *allPhotosViewController = [[PWImagePickerLocalAllPhotoViewController alloc] init];
+    PSLocalAllPhotoViewController *allPhotosViewController = [PSLocalAllPhotoViewController new];
     NSString *allPhotosViewControllerTitle = allPhotosViewController.title;
     [allPhotosViewController setViewDidAppearBlock:^{
         typeof(wself) sself = wself;
@@ -191,7 +191,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         [sself.titleView setCurrentIndex:0];
         [sself.titleView setCurrentTitle:allPhotosViewControllerTitle];
     }];
-    PWImagePickerLocalAlbumListViewController *albumListViewController = [[PWImagePickerLocalAlbumListViewController alloc] init];
+    PSLocalAlbumListViewController *albumListViewController = [PSLocalAlbumListViewController new];
     NSString *albumListViewControllerTitle = albumListViewController.title;
     [albumListViewController setViewDidAppearBlock:^{
         typeof(wself) sself = wself;
@@ -200,7 +200,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         [sself.titleView setCurrentIndex:1];
         [sself.titleView setCurrentTitle:albumListViewControllerTitle];
     }];
-    PWImagePickerLocaliCloudViewController *iCloudViewController = [[PWImagePickerLocaliCloudViewController alloc] init];
+    PSLocaliCloudViewController *iCloudViewController = [PSLocaliCloudViewController new];
     NSString *iCloudViewControllerTitle = iCloudViewController.title;
     [iCloudViewController setViewDidAppearBlock:^{
         typeof(wself) sself = wself;

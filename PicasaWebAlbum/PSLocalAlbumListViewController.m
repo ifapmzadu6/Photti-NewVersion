@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWImagePickerLocalAlbumListViewController.h"
+#import "PSLocalAlbumListViewController.h"
 
 #import "PAColors.h"
 #import "PLAssetsManager.h"
@@ -18,9 +18,9 @@
 #import "PLModelObject.h"
 #import "PAActivityIndicatorView.h"
 
-#import "PWImagePickerLocalPhotoListViewController.h"
+#import "PSLocalPhotoListViewController.h"
 
-@interface PWImagePickerLocalAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
+@interface PSLocalAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PAActivityIndicatorView *indicatorView;
@@ -30,7 +30,7 @@
 
 @end
 
-@implementation PWImagePickerLocalAlbumListViewController
+@implementation PSLocalAlbumListViewController
 
 - (id)init {
     self = [super init];
@@ -183,7 +183,7 @@
 
 #pragma mark UIcollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWImagePickerLocalPhotoListViewController *viewController = [[PWImagePickerLocalPhotoListViewController alloc] initWithAlbum:[_fetchedResultsController objectAtIndexPath:indexPath]];
+    PSLocalPhotoListViewController *viewController = [[PSLocalPhotoListViewController alloc] initWithAlbum:[_fetchedResultsController objectAtIndexPath:indexPath]];
     [self.navigationController pushViewController:viewController animated:YES];
 }
 

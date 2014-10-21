@@ -12,7 +12,7 @@
 
 @class PLAlbumObject;
 
-@interface PWImagePickerLocalPhotoListViewController : PABaseViewController
+@interface PSLocalPhotoListViewController : PABaseViewController
 
 - (id)initWithAlbum:(PLAlbumObject *)album;
 

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWImagePickerLocalPhotoListViewController.h"
+#import "PSLocalPhotoListViewController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -19,7 +19,7 @@
 #import "PAPhotoCollectionViewFlowLayout.h"
 #import "PSImagePickerController.h"
 
-@interface PWImagePickerLocalPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface PSLocalPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UIImageView *noItemImageView;
@@ -32,7 +32,7 @@
 
 @end
 
-@implementation PWImagePickerLocalPhotoListViewController
+@implementation PSLocalPhotoListViewController
 
 - (id)initWithAlbum:(PLAlbumObject *)album {
     self = [super init];

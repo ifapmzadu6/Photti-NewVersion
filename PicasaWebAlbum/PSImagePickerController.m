@@ -19,8 +19,8 @@
 #import "PADepressingTransition.h"
 
 #import "PABaseNavigationController.h"
-#import "PWImagePickerLocalPageViewController.h"
-#import "PWImagePickerWebAlbumListViewController.h"
+#import "PSLocalPageViewController.h"
+#import "PSWebAlbumListViewController.h"
 
 @interface PSImagePickerController () <UITabBarControllerDelegate>
 
@@ -51,14 +51,14 @@
         
         UINavigationController *localNavigationController = nil;
         if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized && [PLAssetsManager sharedManager].autoCreateAlbumType != PLAssetsManagerAutoCreateAlbumTypeUnknown) {
-            PWImagePickerLocalPageViewController *localPageViewController = [PWImagePickerLocalPageViewController new];
+            PSLocalPageViewController *localPageViewController = [PSLocalPageViewController new];
             _localPageViewController = localPageViewController;
             localNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:localPageViewController];
         }
         
         UINavigationController *webNavigationController = nil;
         if ([PWOAuthManager isLogined]) {
-            PWImagePickerWebAlbumListViewController *webAlbumViewController = [[PWImagePickerWebAlbumListViewController alloc] init];
+            PSWebAlbumListViewController *webAlbumViewController = [[PSWebAlbumListViewController alloc] init];
             _webAlbumViewController = webAlbumViewController;
             webNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:_webAlbumViewController];
         }

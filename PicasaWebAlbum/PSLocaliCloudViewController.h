@@ -1,5 +1,5 @@
 //
-//  PWImagePickerLocalAllPhotoViewController.h
+//  PWImagePickerLocaliCloudViewController.h
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/05/26.
@@ -10,7 +10,7 @@
 
 #import "PABaseViewController.h"
 
-@interface PWImagePickerLocalAllPhotoViewController : PABaseViewController
+@interface PSLocaliCloudViewController : PABaseViewController
 
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 

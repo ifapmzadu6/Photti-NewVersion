@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWImagePickerWebAlbumListViewController.h"
+#import "PSWebAlbumListViewController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -14,13 +14,13 @@
 #import "PWAlbumViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PAAlbumCollectionViewFlowLayout.h"
-#import "PWImagePickerWebPhotoListViewController.h"
+#import "PSWebPhotoListViewController.h"
 #import "PSImagePickerController.h"
 #import "PAActivityIndicatorView.h"
 #import <Reachability.h>
 #import <SDImageCache.h>
 
-@interface PWImagePickerWebAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface PSWebAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
@@ -34,7 +34,7 @@
 
 @end
 
-@implementation PWImagePickerWebAlbumListViewController
+@implementation PSWebAlbumListViewController
 
 - (id)init {
     self = [super init];
@@ -214,7 +214,7 @@
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PWAlbumObject *album = [_fetchedResultsController objectAtIndexPath:indexPath];
-    PWImagePickerWebPhotoListViewController *viewController = [[PWImagePickerWebPhotoListViewController alloc] initWithAlbum:album];
+    PSWebPhotoListViewController *viewController = [[PSWebPhotoListViewController alloc] initWithAlbum:album];
     [self.navigationController pushViewController:viewController animated:YES];
 }
 

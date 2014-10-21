@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWImagePickerLocaliCloudViewController.h"
+#import "PSLocaliCloudViewController.h"
 
 #import "PAColors.h"
 #import "PLPhotoViewCell.h"
@@ -21,7 +21,7 @@
 #import "PLCoreDataAPI.h"
 #import "PLPhotoPageViewController.h"
 
-@interface PWImagePickerLocaliCloudViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
+@interface PSLocaliCloudViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSMutableDictionary *headerViews;
@@ -31,7 +31,7 @@
 
 @end
 
-@implementation PWImagePickerLocaliCloudViewController
+@implementation PSLocaliCloudViewController
 
 - (id)init {
     self = [super init];

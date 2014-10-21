@@ -1,5 +1,5 @@
 //
-//  PWImagePickerWebAlbumListViewController.h
+//  PWImagePickerWebPhotoListViewController.h
 //  PicasaWebAlbum
 //
 //  Created by Keisuke Karijuku on 2014/05/26.
@@ -10,6 +10,10 @@
 
 #import "PABaseViewController.h"
 
-@interface PWImagePickerWebAlbumListViewController : PABaseViewController
+@class PWAlbumObject;
+
+@interface PSWebPhotoListViewController : PABaseViewController
+
+- (id)initWithAlbum:(PWAlbumObject *)album;
 
 @end
