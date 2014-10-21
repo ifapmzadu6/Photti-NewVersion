@@ -13,7 +13,7 @@
 #import "PLPhotoViewHeaderView.h"
 #import "PLCollectionFooterView.h"
 #import "PAPhotoCollectionViewFlowLayout.h"
-#import "PWImagePickerController.h"
+#import "PSImagePickerController.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
 #import "PADateFormatter.h"
@@ -109,7 +109,7 @@
         }
     }
     
-    PWImagePickerController *tabBarViewController = (PWImagePickerController *)self.tabBarController;
+    PSImagePickerController *tabBarViewController = (PSImagePickerController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
     _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
@@ -161,7 +161,7 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            PWImagePickerController *tabBarController = (PWImagePickerController *)sself.tabBarController;
+            PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
             for (size_t i=0; i<sectionInfo.numberOfObjects; i++) {
                 NSIndexPath *selectIndexPath = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
                 [sself.collectionView selectItemAtIndexPath:selectIndexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
@@ -173,7 +173,7 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             
-            PWImagePickerController *tabBarController = (PWImagePickerController *)sself.tabBarController;
+            PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
             for (size_t i=0; i<sectionInfo.numberOfObjects; i++) {
                 NSIndexPath *selectIndexPath = [NSIndexPath indexPathForRow:i inSection:indexPath.section];
                 [sself.collectionView deselectItemAtIndexPath:selectIndexPath animated:NO];
@@ -239,7 +239,7 @@
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+    PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
     [tabBarController addSelectedPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
     
     NSUInteger count = 0;
@@ -260,7 +260,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+    PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
     [tabBarController removeSelectedPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
     
     NSUInteger count = 0;

@@ -11,7 +11,7 @@
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PLParallelNavigationTitleView.h"
-#import "PWImagePickerController.h"
+#import "PSImagePickerController.h"
 
 #import "PWImagePickerLocalAllPhotoViewController.h"
 #import "PWImagePickerLocalAlbumListViewController.h"
@@ -146,7 +146,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 
 #pragma mark UIBarButtonAction
 - (void)doneBarButtonAction {
-    PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+    PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
     [tabBarController doneBarButtonAction];
 }
 

@@ -6,9 +6,10 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWImagePickerController.h"
+#import "PSImagePickerController.h"
 
 #import "PAColors.h"
+#import "PAIcons.h"
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
 #import "PLCoreDataAPI.h"
@@ -17,51 +18,49 @@
 #import "PWOAuthManager.h"
 #import "PADepressingTransition.h"
 
-#import "PWImagePickerNavigationController.h"
+#import "PABaseNavigationController.h"
 #import "PWImagePickerLocalPageViewController.h"
 #import "PWImagePickerWebAlbumListViewController.h"
 
-@interface PWImagePickerController ()
+@interface PSImagePickerController () <UITabBarControllerDelegate>
 
 @property (strong, nonatomic) UIToolbar *toolbar;
 
-@property (strong, nonatomic) PWImagePickerLocalPageViewController *localPageViewController;
-@property (strong, nonatomic) PWImagePickerNavigationController *localNavigationcontroller;
-@property (strong, nonatomic) PWImagePickerWebAlbumListViewController *webAlbumViewController;
-@property (strong, nonatomic) PWImagePickerNavigationController *webNavigationController;
+@property (strong, nonatomic) UIViewController *localPageViewController;
+@property (strong, nonatomic) UIViewController *webAlbumViewController;
 
 @property (nonatomic) NSUInteger countOfSelectedWebPhoto;
 @property (nonatomic) NSUInteger countOfSelectedLocalPhoto;
 
 @property (copy, nonatomic) void (^completion)();
 
+@property (strong, nonatomic) NSString *prompt;
+
 @property (strong, nonatomic) PADepressingTransition *transition;
 
 @end
 
-@implementation PWImagePickerController
+@implementation PSImagePickerController
 
 - (id)initWithAlbumTitle:(NSString *)albumTitle completion:(void (^)(NSArray *))completion {
     self = [super init];
     if (self) {
         _completion = completion;
         
-        NSString *titleOnNavigationBarString = [NSString stringWithFormat:NSLocalizedString(@"Select items to add to \"%@\".", nil), albumTitle];
+        _prompt = [NSString stringWithFormat:NSLocalizedString(@"Select items to add to \"%@\".", nil), albumTitle];
         
+        UINavigationController *localNavigationController = nil;
         if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized && [PLAssetsManager sharedManager].autoCreateAlbumType != PLAssetsManagerAutoCreateAlbumTypeUnknown) {
-            PWImagePickerLocalPageViewController *localPageViewController = [[PWImagePickerLocalPageViewController alloc] init];
+            PWImagePickerLocalPageViewController *localPageViewController = [PWImagePickerLocalPageViewController new];
             _localPageViewController = localPageViewController;
-            PWImagePickerNavigationController *localNavigationcontroller = [[PWImagePickerNavigationController alloc] initWithRootViewController:localPageViewController];
-            localNavigationcontroller.titleOnNavigationBar = titleOnNavigationBarString;
-            _localNavigationcontroller = localNavigationcontroller;
+            localNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:localPageViewController];
         }
         
+        UINavigationController *webNavigationController = nil;
         if ([PWOAuthManager isLogined]) {
             PWImagePickerWebAlbumListViewController *webAlbumViewController = [[PWImagePickerWebAlbumListViewController alloc] init];
             _webAlbumViewController = webAlbumViewController;
-            PWImagePickerNavigationController *webNavigationController = [[PWImagePickerNavigationController alloc] initWithRootViewController:_webAlbumViewController];
-            webNavigationController.titleOnNavigationBar = titleOnNavigationBarString;
-            _webNavigationController = webNavigationController;
+            webNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:_webAlbumViewController];
         }
         
         self.delegate = self;
@@ -70,17 +69,17 @@
             self.transitioningDelegate = (id)self;
         }
         
-        if (_localNavigationcontroller && _webAlbumViewController) {
-            self.viewControllers = @[_localNavigationcontroller, _webNavigationController];
-            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+        if (localNavigationController && webNavigationController) {
+            self.viewControllers = @[localNavigationController, webNavigationController];
+            self.colors = @[[PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor]];
         }
-        else if (_localNavigationcontroller) {
-            self.viewControllers = @[_localNavigationcontroller];
-            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+        else if (localNavigationController) {
+            self.viewControllers = @[localNavigationController];
+            self.colors = @[[PAColors getColor:PAColorsTypeTintLocalColor]];
         }
         else if (_webAlbumViewController) {
-            self.viewControllers = @[_webNavigationController];
-            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+            self.viewControllers = @[webNavigationController];
+            self.colors = @[[PAColors getColor:PAColorsTypeTintWebColor]];
         }
         
         _selectedPhotoIDs = @[];
@@ -105,6 +104,8 @@
     [super viewWillAppear:animated];
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+    
+    [self setPrompt:_prompt];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -112,36 +113,43 @@
     
     CGRect rect = self.view.bounds;
     
-    CGFloat tHeight = 44.0f;
-    BOOL isLandscape = UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if(isLandscape) {
-            tHeight = 32.0f;
-        }
-    }
-    else {
-        tHeight = 56.0f;
-    }
-    for(UIView *view in self.view.subviews) {
-        if([view isKindOfClass:[UITabBar class]]) {
-            [view setFrame:CGRectMake(view.frame.origin.x, rect.size.height - tHeight, view.frame.size.width, tHeight)];
-        }
-    }
-    
+    CGFloat tHeight = [self tabBarHeight];
     _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
     
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wundeclared-selector"
-    for (UIViewController *viewController in self.viewControllers) {
-        if ([viewController respondsToSelector:@selector(updateTabBarItem)]) {
-            [viewController performSelector:@selector(updateTabBarItem)];
-        }
+    UINavigationController *webNavigationController = _webAlbumViewController.navigationController;
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        webNavigationController.tabBarItem.image = [PAIcons imageWithImage:[UIImage imageNamed:@"Picasa"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        webNavigationController.tabBarItem.selectedImage = [PAIcons imageWithImage:[UIImage imageNamed:@"PicasaSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
     }
-#pragma clang diagnostic pop
+    else {
+        webNavigationController.tabBarItem.image = [UIImage imageNamed:@"Picasa"];
+        webNavigationController.tabBarItem.selectedImage = [UIImage imageNamed:@"PicasaSelected"];
+    }
+    
+    UINavigationController *localNavigationController = _localPageViewController.navigationController;
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        localNavigationController.tabBarItem.image = [PAIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+        localNavigationController.tabBarItem.selectedImage = [PAIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+    }
+    else {
+        localNavigationController.tabBarItem.image = [UIImage imageNamed:@"Picture"];
+        localNavigationController.tabBarItem.selectedImage = [UIImage imageNamed:@"PictureSelected"];
+    }
 }
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+}
+
+#pragma methods
+- (void)setPrompt:(NSString *)prompt {
+    _prompt = prompt;
+    
+    for (UINavigationController *navigationController in self.viewControllers) {
+        for (UIViewController *viewController in navigationController.viewControllers) {
+            viewController.navigationItem.prompt = prompt;
+        }
+    }
 }
 
 #pragma mark UIBarButtonAction
@@ -163,42 +171,7 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark UITabBarControllerDelegate
-- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
-    [viewController viewWillAppear:NO];
-    
-    return YES;
-}
-
-- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
-    [viewController viewDidAppear:NO];
-    
-    if (viewController == _webNavigationController) {
-        self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
-    }
-    else if (viewController == _localNavigationcontroller) {
-        self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
-    }    
-}
-
-#pragma methods
-- (UIEdgeInsets)viewInsets {
-    CGFloat nHeight = 44.0f + 30.0f;
-    CGFloat tHeight = 44.0f;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if(UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            nHeight = 32.0f + 22.0f;
-            tHeight = 32.0f;
-        }
-    }
-    else {
-        tHeight = 56.0f;
-        nHeight = 79.0f;
-    }
-    
-    return UIEdgeInsetsMake(nHeight + 20.0f, 0.0f, tHeight, 0.0f);
-}
-
+#pragma mark Methods
 - (void)addSelectedPhoto:(id)photo {
     if (!photo) {
         return;

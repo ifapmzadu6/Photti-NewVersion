@@ -17,9 +17,7 @@
 #import "PEPhotoPageViewController.h"
 #import "PWSearchNavigationController.h"
 #import "PDTaskManager.h"
-
-// test
-#import "PWImagePickerController.h"
+#import "PSImagePickerController.h"
 
 @interface PEPhotoListViewController () <UITextFieldDelegate>
 
@@ -393,7 +391,7 @@
 
 - (void)showImagePicker:(id)sender {
     __weak typeof(self) wself = self;
-    PWImagePickerController *imagePickerController = [[PWImagePickerController alloc] initWithAlbumTitle:_photoListDataSource.assetCollection.localizedTitle completion:^(NSArray *selectedPhotos) {
+    PSImagePickerController *imagePickerController = [[PSImagePickerController alloc] initWithAlbumTitle:_photoListDataSource.assetCollection.localizedTitle completion:^(NSArray *selectedPhotos) {
         typeof(wself) sself = wself;
         if (!sself) return;
     }];

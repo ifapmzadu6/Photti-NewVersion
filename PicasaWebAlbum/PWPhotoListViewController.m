@@ -31,7 +31,7 @@
 #import "PWAlbumEditViewController.h"
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
-#import "PWImagePickerController.h"
+#import "PSImagePickerController.h"
 #import "PTAlbumPickerController.h"
 #import "PAActivityIndicatorView.h"
 #import "PAActivityIndicatorView.h"
@@ -267,7 +267,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 
 - (void)addBarButtonAction {
     __weak typeof(self) wself = self;
-    PWImagePickerController *viewController = [[PWImagePickerController alloc] initWithAlbumTitle:_album.title completion:^(NSArray *selectedPhotos) {
+    PSImagePickerController *viewController = [[PSImagePickerController alloc] initWithAlbumTitle:_album.title completion:^(NSArray *selectedPhotos) {
         typeof(wself) sself = wself;
         if (!sself) return;
         [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toWebAlbum:sself.album completion:^(NSError *error) {

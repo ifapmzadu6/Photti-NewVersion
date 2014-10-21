@@ -6,7 +6,9 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-@interface PWImagePickerController : UITabBarController <UITabBarControllerDelegate>
+#import "PATabBarController.h"
+
+@interface PSImagePickerController : PATabBarController
 
 @property (strong, nonatomic) NSArray *selectedPhotoIDs;
 
@@ -16,7 +18,5 @@
 - (void)removeSelectedPhoto:(id)photo;
 
 - (void)doneBarButtonAction;
-
-- (UIEdgeInsets)viewInsets;
 
 @end

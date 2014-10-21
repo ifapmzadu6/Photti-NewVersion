@@ -14,7 +14,7 @@
 #import "PLAlbumViewCell.h"
 #import "PLCollectionFooterView.h"
 #import "PAAlbumCollectionViewFlowLayout.h"
-#import "PWImagePickerController.h"
+#import "PSImagePickerController.h"
 #import "PLModelObject.h"
 #import "PAActivityIndicatorView.h"
 
@@ -121,7 +121,7 @@
         }
     }
     
-    PWImagePickerController *tabBarViewController = (PWImagePickerController *)self.tabBarController;
+    PSImagePickerController *tabBarViewController = (PSImagePickerController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
     _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 10.0f, 10.0f, viewInsets.bottom, 10.0f);
     _collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);

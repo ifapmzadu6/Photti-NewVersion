@@ -24,7 +24,7 @@
 #import "PLAlbumEditViewController.h"
 #import "PDTaskManager.h"
 #import "PAViewControllerKit.h"
-#import "PWImagePickerController.h"
+#import "PSImagePickerController.h"
 #import "PTAlbumPickerController.h"
 #import "PWSearchNavigationController.h"
 #import "PWModelObject.h"
@@ -176,7 +176,7 @@
 
 - (void)addBarButtonAction {
     __weak typeof(self) wself = self;
-    PWImagePickerController *imagePickerController = [[PWImagePickerController alloc] initWithAlbumTitle:_album.name completion:^(NSArray *selectedPhotos) {
+    PSImagePickerController *imagePickerController = [[PSImagePickerController alloc] initWithAlbumTitle:_album.name completion:^(NSArray *selectedPhotos) {
         typeof(wself) sself = wself;
         if (!sself) return;
         

@@ -15,7 +15,7 @@
 #import "PLCollectionFooterView.h"
 #import "PAAlbumCollectionViewFlowLayout.h"
 #import "PWImagePickerWebPhotoListViewController.h"
-#import "PWImagePickerController.h"
+#import "PSImagePickerController.h"
 #import "PAActivityIndicatorView.h"
 #import <Reachability.h>
 #import <SDImageCache.h>
@@ -165,7 +165,7 @@
 
 #pragma mark UIBarButtonAction
 - (void)doneBarButtonAction {
-    PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+    PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
     [tabBarController doneBarButtonAction];
 }
 

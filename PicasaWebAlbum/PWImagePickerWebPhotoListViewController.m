@@ -24,7 +24,7 @@
 #import "PWAlbumEditViewController.h"
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
-#import "PWImagePickerController.h"
+#import "PSImagePickerController.h"
 #import "PAActivityIndicatorView.h"
 
 @interface PWImagePickerWebPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
@@ -104,7 +104,7 @@
         
         [_collectionView reloadData];
         
-        PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
         for (NSString *id_str in tabBarController.selectedPhotoIDs) {
             NSArray *filteredPhotos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
             if (filteredPhotos.count > 0) {
@@ -198,7 +198,7 @@
 
 #pragma mark UIBarButtonAction
 - (void)selectBarButtonAction {
-    PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+    PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
     for (size_t i=0; i<_fetchedResultsController.fetchedObjects.count; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
@@ -210,7 +210,7 @@
 }
 
 - (void)deselectBarButtonAction {
-    PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+    PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
     for (size_t i=0; i<_fetchedResultsController.fetchedObjects.count; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         [_collectionView deselectItemAtIndexPath:indexPath animated:NO];
@@ -277,7 +277,7 @@
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+    PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
     [tabBarController addSelectedPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
     
     if (_fetchedResultsController.fetchedObjects.count == _collectionView.indexPathsForSelectedItems.count) {
@@ -286,7 +286,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+    PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
     [tabBarController removeSelectedPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
     
     if (_fetchedResultsController.fetchedObjects.count != _collectionView.indexPathsForSelectedItems.count) {
@@ -362,7 +362,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
         
-        PWImagePickerController *tabBarController = (PWImagePickerController *)self.tabBarController;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
         for (NSString *id_str in tabBarController.selectedPhotoIDs) {
             NSArray *filteredPhotos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
             if (filteredPhotos.count > 0) {
