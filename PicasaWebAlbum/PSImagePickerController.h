@@ -6,9 +6,9 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PATabBarController.h"
+#import "PATabBarAdsController.h"
 
-@interface PSImagePickerController : PATabBarController
+@interface PSImagePickerController : PATabBarAdsController
 
 @property (strong, nonatomic) NSArray *selectedPhotoIDs;
 

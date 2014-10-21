@@ -21,10 +21,9 @@
 #import "PABaseNavigationController.h"
 #import "PSLocalPageViewController.h"
 #import "PSWebAlbumListViewController.h"
+#import "PEHomeViewController.h"
 
 @interface PSImagePickerController () <UITabBarControllerDelegate>
-
-@property (strong, nonatomic) UIToolbar *toolbar;
 
 @property (strong, nonatomic) UIViewController *localPageViewController;
 @property (strong, nonatomic) UIViewController *webAlbumViewController;
@@ -51,7 +50,12 @@
         
         UINavigationController *localNavigationController = nil;
         if ([PEAssetsManager isStatusAuthorized]) {
-            _localPageViewController = [PSLocalPageViewController new];
+            if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+                _localPageViewController = [PEHomeViewController new];
+            }
+            else {
+                _localPageViewController = [PSLocalPageViewController new];
+            }
             localNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:_localPageViewController];
             localNavigationController.navigationBar.barTintColor = [UIColor blackColor];
             localNavigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [PAColors getColor:PAColorsTypeBackgroundColor]};
@@ -96,10 +100,6 @@
     
     self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
     self.tabBar.barTintColor = [UIColor blackColor];
-    
-    _toolbar = [[UIToolbar alloc] init];
-    _toolbar.barTintColor = [UIColor blackColor];
-    [self.view insertSubview:_toolbar belowSubview:self.tabBar];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -112,11 +112,6 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-    
-    CGRect rect = self.view.bounds;
-    
-    CGFloat tHeight = [self viewInsets].bottom;
-    _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
     
     UINavigationController *webNavigationController = _webAlbumViewController.navigationController;
     if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {

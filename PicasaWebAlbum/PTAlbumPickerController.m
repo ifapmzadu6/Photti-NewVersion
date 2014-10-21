@@ -26,8 +26,6 @@
 @property (strong, nonatomic) UIViewController *localAlbumPickerController;
 @property (strong, nonatomic) UIViewController *webAlbumPickerController;
 
-@property (strong, nonatomic) UIToolbar *toolbar;
-
 @property (copy, nonatomic) void (^completion)(id, BOOL);
 
 @property (strong, nonatomic) PADepressingTransition *transition;
@@ -93,10 +91,6 @@
     
     self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     self.tabBar.barTintColor = [UIColor blackColor];
-    
-    _toolbar = [[UIToolbar alloc] init];
-    _toolbar.barTintColor = [UIColor blackColor];
-    [self.view insertSubview:_toolbar belowSubview:self.tabBar];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -119,8 +113,6 @@
             [view setFrame:CGRectMake(view.frame.origin.x, rect.size.height - tHeight, view.frame.size.width, tHeight)];
         }
     }
-    
-    _toolbar.frame = CGRectMake(0.0f, rect.size.height - tHeight, rect.size.width, tHeight);
     
     UINavigationController *webNavigationController = _webAlbumPickerController.navigationController;
     if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {

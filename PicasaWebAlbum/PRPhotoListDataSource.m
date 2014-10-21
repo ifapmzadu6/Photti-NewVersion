@@ -193,6 +193,8 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    [super collectionView:collectionView didSelectItemAtIndexPath:indexPath];
+    
     if (_isSelectMode) {
         PWPhotoObject *photo = [_fetchedResultsController objectAtIndexPath:indexPath];
         if (![_selectedPhotoIDs containsObject:photo.id_str]) {
@@ -214,6 +216,8 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
+    [super collectionView:collectionView didDeselectItemAtIndexPath:indexPath];
+    
     if (_isSelectMode) {
         PWPhotoObject *photo = [_fetchedResultsController objectAtIndexPath:indexPath];
         if ([_selectedPhotoIDs containsObject:photo.id_str]) {
