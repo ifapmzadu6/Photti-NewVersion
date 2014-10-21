@@ -11,7 +11,9 @@
 #import "PAColors.h"
 #import "PEAlbumListDataSource.h"
 #import "PAAlbumCollectionViewFlowLayout.h"
+#import "PAViewControllerKit.h"
 #import "PATabBarController.h"
+#import "PTAlbumPickerController.h"
 
 @interface PTNewLocalAlbumListViewController () <UITextFieldDelegate>
 
@@ -37,11 +39,8 @@
         _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
             typeof(wself) sself = wself;
             if (!sself) return;
-            
-        };
-        _albumListDataSource.didChangeSelectedItemCountBlock = ^(NSUInteger count){
-            typeof(wself) sself = wself;
-            if (!sself) return;
+            PTAlbumPickerController *tabBarController = (PTAlbumPickerController *)sself.tabBarController;
+            [tabBarController doneBarButtonActionWithSelectedAlbum:assetCollection isWebAlbum:NO];
         };
     }
     return self;
@@ -52,6 +51,8 @@
     
     self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
     
+    UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction:)];
     self.navigationItem.rightBarButtonItem = addBarButtonItem;
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -77,12 +78,16 @@
     
     PATabBarController *tabBarController = (PATabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = tabBarController.viewInsets;
-    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 15.0f, 15.0f, viewInsets.bottom + 15.0f, 15.0f);
-    _collectionView.scrollIndicatorInsets = viewInsets;
-    _collectionView.frame = rect;
+    UIEdgeInsets contentInset = UIEdgeInsetsMake(viewInsets.top + 15.0f, 15.0f, viewInsets.bottom + 15.0f, 15.0f);
+    UIEdgeInsets scrollIndicatorInsets = viewInsets;
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
 }
 
 #pragma mark UIBarButtonItem
+- (void)cancelBarButtonAction {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)addBarButtonAction:(id)sender {
     NSString *title = NSLocalizedString(@"New Album", nil);
     NSString *message = NSLocalizedString(@"Enter a name for this album.", nil);

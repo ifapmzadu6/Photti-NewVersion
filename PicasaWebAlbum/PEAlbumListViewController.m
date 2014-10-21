@@ -14,6 +14,7 @@
 #import "PAIcons.h"
 #import "PEPhotoViewCell.h"
 #import "PEAlbumListDataSource.h"
+#import "PAViewControllerKit.h"
 #import "PATabBarAdsController.h"
 #import "PEPhotoListViewController.h"
 #import "PWSearchNavigationController.h"
@@ -129,9 +130,9 @@
     
     PATabBarController *tabBarController = (PATabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = tabBarController.viewInsets;
-    _collectionView.contentInset = UIEdgeInsetsMake(viewInsets.top + 15.0f, 15.0f, viewInsets.bottom + 15.0f, 15.0f);
-    _collectionView.scrollIndicatorInsets = viewInsets;
-    _collectionView.frame = rect;
+    UIEdgeInsets contentInset = UIEdgeInsetsMake(viewInsets.top + 15.0f, 15.0f, viewInsets.bottom + 15.0f, 15.0f);
+    UIEdgeInsets scrollIndicatorInsets = viewInsets;
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
 }
 
 #pragma mark UIBarButtonAction

@@ -116,7 +116,7 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
     
     for (int i=0; i<kPWAlbumViewCellNumberOfImageView; i++) {
         UIImageView *imageView = _imageViews[i];
-        imageView.frame = CGRectMake(delta*i, delta*(kPWAlbumViewCellNumberOfImageView-i), imageSize, imageSize);
+        imageView.frame = CGRectMake(delta*i, delta*((kPWAlbumViewCellNumberOfImageView-1)-i), imageSize, imageSize);
     }
     
     UIImageView *imageView = _imageViews.firstObject;
@@ -126,7 +126,6 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
     _numPhotosLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 12.0f, CGRectGetWidth(rect), 12.0f);
     
     _overrayView.frame = CGRectMake(0.0f, 0.0f, CGRectGetWidth(rect), CGRectGetMaxY(imageView.frame));
-//    _checkMarkImageView.frame = CGRectMake(CGRectGetWidth(rect) - 32.0f, CGRectGetWidth(rect) - 32.0f, 28.0f, 28.0f);
 }
 
 - (void)prepareForReuse {

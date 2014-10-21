@@ -72,7 +72,6 @@
     _collectionView.clipsToBounds = NO;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
-    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 10.0f, 0.0f, 10.0f);
     [self.view addSubview:_collectionView];
     
     _indicatorView = [PAActivityIndicatorView new];
@@ -105,7 +104,11 @@
     
     CGRect rect = self.view.bounds;
     
-    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect];
+    PATabBarController *tabBarController = (PATabBarController *)self.tabBarController;
+    UIEdgeInsets viewInsets = tabBarController.viewInsets;
+    UIEdgeInsets contentInset = UIEdgeInsetsMake(viewInsets.top + 15.0f, 15.0f, viewInsets.bottom + 15.0f, 15.0f);
+    UIEdgeInsets scrollIndicatorInsets = viewInsets;
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
     
     _indicatorView.center = self.view.center;
     

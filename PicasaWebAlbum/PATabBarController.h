@@ -12,6 +12,8 @@ static const CGFloat animationDuration = 0.25f;
 
 @interface PATabBarController : UITabBarController
 
+@property (strong, nonatomic) NSArray *colors;
+
 @property (nonatomic, readonly) BOOL isStatusBarHidden;
 @property (nonatomic, readonly) BOOL isTabBarHidden;
 @property (nonatomic, readonly) BOOL isToolbarHideen;

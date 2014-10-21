@@ -26,8 +26,6 @@
 @property (nonatomic, readwrite) BOOL isPhone;
 @property (nonatomic, readwrite) BOOL isLandscape;
 
-@property (strong, nonatomic) NSArray *colors;
-
 @end
 
 @implementation PATabBarController

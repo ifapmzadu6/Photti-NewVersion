@@ -6,9 +6,9 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-@import UIKit;
+#import "PATabBarController.h"
 
-@interface PTAlbumPickerController : UITabBarController <UITabBarControllerDelegate>
+@interface PTAlbumPickerController : PATabBarController
 
 - (id)initWithCompletion:(void (^)(id album, BOOL isWebAlbum))completion;
 

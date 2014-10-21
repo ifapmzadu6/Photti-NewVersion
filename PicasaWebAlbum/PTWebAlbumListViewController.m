@@ -21,6 +21,7 @@
 #import <Reachability.h>
 #import <SDImageCache.h>
 #import "PAActivityIndicatorView.h"
+#import "PAViewControllerKit.h"
 
 @interface PTWebAlbumListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
@@ -66,7 +67,6 @@
     [_collectionView registerClass:[PWAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.contentInset = UIEdgeInsetsMake(10.0f, 10.0f, 0.0f, 10.0f);
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
@@ -117,22 +117,11 @@
     
     CGRect rect = self.view.bounds;
     
-    NSArray *indexPaths = [_collectionView.indexPathsForVisibleItems sortedArrayUsingComparator:^NSComparisonResult(NSIndexPath *obj1, NSIndexPath *obj2) {return [obj1 compare:obj2];}];
-    NSIndexPath *indexPath = nil;
-    if (indexPaths.count > 0) {
-        NSIndexPath *firstIndexPath = indexPaths.firstObject;
-        if (!(firstIndexPath.item == 0 && firstIndexPath.section == 0)) {
-            indexPath = indexPaths[indexPaths.count / 2];
-        }
-    }
-    
-    _collectionView.frame = rect;
-    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
-    [collectionViewLayout invalidateLayout];
-    
-    if (indexPath) {
-        [_collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-    }
+    PATabBarController *tabBarController = (PATabBarController *)self.tabBarController;
+    UIEdgeInsets viewInsets = tabBarController.viewInsets;
+    UIEdgeInsets contentInset = UIEdgeInsetsMake(viewInsets.top + 15.0f, 15.0f, viewInsets.bottom + 15.0f, 15.0f);
+    UIEdgeInsets scrollIndicatorInsets = viewInsets;
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
     
     _activityIndicatorView.center = self.view.center;
     

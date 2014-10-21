@@ -21,7 +21,7 @@
 #import "PTLocalAlbumListViewController.h"
 #import "PTNewLocalAlbumListViewController.h"
 
-@interface PTAlbumPickerController ()
+@interface PTAlbumPickerController () <UITabBarControllerDelegate>
 
 @property (strong, nonatomic) UIViewController *localAlbumPickerController;
 @property (strong, nonatomic) UIViewController *webAlbumPickerController;
@@ -72,15 +72,17 @@
         if (localNavigationController && webNavigationController) {
             self.viewControllers = @[localNavigationController, webNavigationController];
             self.selectedIndex = 1;
-            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+            self.colors = @[[PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor]];
         }
         else if (localNavigationController) {
             self.viewControllers = @[localNavigationController];
             self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+            self.colors = @[[PAColors getColor:PAColorsTypeTintLocalColor]];
         }
         else if (webNavigationController) {
             self.viewControllers = @[webNavigationController];
             self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+            self.colors = @[[PAColors getColor:PAColorsTypeTintWebColor]];
         }
     }
     return self;
@@ -162,19 +164,6 @@
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark UITabBarControllerDelegate
-- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
-    UINavigationController *navigationController = (UINavigationController *)viewController;
-    UIViewController *topViewController = navigationController.topViewController;
-    
-    if (topViewController == _localAlbumPickerController) {
-        self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
-    }
-    else if (topViewController == _webAlbumPickerController) {
-        self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
-    }
 }
 
 #pragma methods

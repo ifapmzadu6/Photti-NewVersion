@@ -107,7 +107,7 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
     
     for (int i=0; i<kPLAlbumViewCellNumberOfImageView; i++) {
         UIImageView *imageView = _imageViews[i];
-        imageView.frame = CGRectMake(delta*i, delta*(kPLAlbumViewCellNumberOfImageView-i), imageSize, imageSize);
+        imageView.frame = CGRectMake(delta*i, delta*((kPLAlbumViewCellNumberOfImageView-1)-i), imageSize, imageSize);
     }
     
     UIImageView *imageView = _imageViews.firstObject;
