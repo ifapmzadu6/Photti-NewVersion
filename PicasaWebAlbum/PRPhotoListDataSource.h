@@ -14,22 +14,26 @@
 
 @interface PRPhotoListDataSource : PACollectionViewDaisyChain
 
-@property (copy, nonatomic) void (^didSelectAlbumBlock)(PWPhotoObject *photo, NSUInteger index);
+@property (copy, nonatomic) void (^didSelectPhotoBlock)(PWPhotoObject *photo, id placeholder, NSUInteger index);
 @property (copy, nonatomic) void (^didChangeItemCountBlock)(NSUInteger count);
 @property (copy, nonatomic) void (^didChangeSelectedItemCountBlock)(NSUInteger count);
 
 @property (copy, nonatomic) void (^didRefresh)();
 @property (copy, nonatomic) void (^openLoginViewController)();
-
 @property (nonatomic, readonly) NSUInteger requestIndex;
 @property (nonatomic, readonly) BOOL isRequesting;
 
 @property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UICollectionViewFlowLayout *flowLayout;
 
-@property (nonatomic, readonly) NSUInteger numberOfAlbums;
+@property (nonatomic, readonly) NSUInteger numberOfPhotos;
+@property (nonatomic, readonly) NSArray *photos;
 
-- (instancetype)initWithFetchRequest:(NSFetchRequest *)fetchRequest;
+@property (nonatomic) BOOL isSelectMode;
+@property (nonatomic, readonly) NSMutableArray *selectedPhotoIDs;
+@property (nonatomic, readonly) NSArray *selectedPhotos;
+
+- (instancetype)initWithFetchRequest:(NSFetchRequest *)fetchRequest albumID:(NSString *)albumID;
 
 - (void)loadDataWithStartIndex:(NSUInteger)startIndex;
 

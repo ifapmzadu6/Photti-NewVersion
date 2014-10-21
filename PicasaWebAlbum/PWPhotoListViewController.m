@@ -20,7 +20,7 @@
 #import <SDImageCache.h>
 #import <Reachability.h>
 
-#import "PWPhotoViewCell.h"
+#import "PRPhotoListDataSource.h"
 #import "PLCollectionFooterView.h"
 #import "PAPhotoCollectionViewFlowLayout.h"
 
@@ -39,7 +39,7 @@
 
 static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 
-@interface PWPhotoListViewController () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
+@interface PWPhotoListViewController () <NSFetchedResultsControllerDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 
 @property (strong, nonatomic) PWAlbumObject *album;
 
@@ -47,23 +47,18 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 @property (strong, nonatomic) PWRefreshControl *refreshControl;
 @property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 
+@property (strong, nonatomic) PRPhotoListDataSource *photoListDataSource;
+
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButton;
 @property (strong, nonatomic) UIBarButtonItem *trashBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *organizeBarButtonItem;
 
-@property (nonatomic) NSUInteger requestIndex;
-@property (nonatomic) BOOL isRequesting;
 @property (nonatomic) BOOL isRefreshControlAnimating;
-@property (nonatomic) BOOL isSelectMode;
 
-@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-
-@property (strong, nonatomic) NSMutableArray *selectedPhotoIDs;
 @property (nonatomic) BOOL isActionLoadingCancel;
 @property (nonatomic) NSUInteger actionLoadingVideoQuality;
 @property (strong, nonatomic) id actionSheetItem;
 
-@property (weak, nonatomic) PWPhotoPageViewController *photoPageViewController;
 @property (strong, nonatomic) NSCache *photoViewCache;
 
 @end
@@ -76,6 +71,44 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         _album = album;
         
         self.title = album.title;
+        
+        NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+        NSFetchRequest *request = [NSFetchRequest new];
+        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        if (_album) {
+            request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
+            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+        }
+        else {
+            request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"published" ascending:NO]];
+        }
+        
+        _photoListDataSource = [[PRPhotoListDataSource alloc] initWithFetchRequest:request albumID:_album.id_str];
+        __weak typeof(self) wself = self;
+        _photoListDataSource.didChangeItemCountBlock = ^(NSUInteger count) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself refreshNoItemWithNumberOfItem:count];
+        };
+        _photoListDataSource.didRefresh = ^() {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself.refreshControl endRefreshing];
+            [sself.activityIndicatorView stopAnimating];
+        };
+        _photoListDataSource.didChangeSelectedItemCountBlock = ^(NSUInteger count) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            sself.selectActionBarButton.enabled = (count > 0) ? YES : NO;
+            sself.trashBarButtonItem.enabled = (count > 0) ? YES : NO;
+            sself.organizeBarButtonItem.enabled = (count > 0) ? YES : NO;
+        };
+        _photoListDataSource.didSelectPhotoBlock = ^(PWPhotoObject *photo, id placeholder, NSUInteger index) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:sself.photoListDataSource.photos index:index placeholder:placeholder cache:sself.photoViewCache];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        };
     }
     return self;
 }
@@ -83,7 +116,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _selectedPhotoIDs = @[].mutableCopy;
         _photoViewCache = [NSCache new];
         _photoViewCache.countLimit = 10;
         
@@ -106,12 +138,11 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
     
-    PAPhotoCollectionViewFlowLayout *collectionViewLayout = [[PAPhotoCollectionViewFlowLayout alloc] init];
+    PAPhotoCollectionViewFlowLayout *collectionViewLayout = [PAPhotoCollectionViewFlowLayout new];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
-    _collectionView.dataSource = self;
-    _collectionView.delegate = self;
-    [_collectionView registerClass:[PWPhotoViewCell class] forCellWithReuseIdentifier:@"Cell"];
-    [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
+    _photoListDataSource.collectionView = _collectionView;
+    _collectionView.dataSource = _photoListDataSource;
+    _collectionView.delegate = _photoListDataSource;
     _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.exclusiveTouch = YES;
@@ -126,38 +157,11 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     _activityIndicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_activityIndicatorView];
     
-    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
-    NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
-    if (_album) {
-        request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-    }
-    else {
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"published" ascending:NO]];
-    }
-    NSString *cacheName = [kPWPhotoListViewControllerName stringByAppendingString:_album.id_str];
-    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:cacheName];
-    _fetchedResultsController.delegate = self;
-    NSError *error = nil;
-    if (![_fetchedResultsController performFetch:&error]) {
-#ifdef DEBUG
-        NSLog(@"%@", error);
-#endif
-        abort();
-    }
-    
-    if (_fetchedResultsController.fetchedObjects.count == 0) {
+    if (_photoListDataSource.numberOfPhotos == 0) {
         [_activityIndicatorView startAnimating];
     }
-    else {
-        [_activityIndicatorView stopAnimating];
-        [_collectionView reloadData];
-    }
     
-    [self refreshNoItemWithNumberOfItem:_fetchedResultsController.fetchedObjects.count];
-    
-    [self loadDataWithStartIndex:0];
+    [self refreshNoItemWithNumberOfItem:_photoListDataSource.numberOfPhotos];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -188,7 +192,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
-    if (_isRequesting && _isRefreshControlAnimating) {
+    if (_photoListDataSource.isRequesting && _isRefreshControlAnimating) {
         [_refreshControl beginRefreshing];
     }
 }
@@ -196,7 +200,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    if (!_isSelectMode) {
+    if (!_photoListDataSource.isSelectMode) {
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
         
         for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
@@ -292,24 +296,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 }
 
 - (void)selectActionBarButtonAction {
-    if (_selectedPhotoIDs.count == 0) {
-        return;
-    }
-    
-    BOOL isContainVideo = NO;
-    NSArray *photos = _fetchedResultsController.fetchedObjects;
-    NSMutableArray *selectedPhotos = @[].mutableCopy;
-    for (NSString *id_str in _selectedPhotoIDs) {
-        NSArray *results = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
-        if (results.count > 0) {
-            PWPhotoObject *photo = results.firstObject;
-            [selectedPhotos addObject:photo];
-            if (photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
-                isContainVideo = YES;
-            }
-        }
-    }
+    NSArray *selectedPhotos = _photoListDataSource.selectedPhotos;
+    NSArray *videos = [selectedPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypeVideo)]];
     if (selectedPhotos.count == 0) return;
+    BOOL isContainVideo = (videos.count > 0) ? YES : NO;
     
     _isActionLoadingCancel = NO;
     _actionLoadingVideoQuality = 0;
@@ -326,15 +316,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 }
 
 - (void)loadAndSavePhotos {
-    NSArray *photos = _fetchedResultsController.fetchedObjects;
-    NSMutableArray *selectedPhotos = @[].mutableCopy;
-    for (NSString *id_str in _selectedPhotoIDs) {
-        NSArray *results = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
-        if (results.count > 0) {
-            PWPhotoObject *photo = results.firstObject;
-            [selectedPhotos addObject:photo];
-        }
-    }
+    NSArray *selectedPhotos = _photoListDataSource.selectedPhotos;
     if (selectedPhotos.count == 0) return;
     
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
@@ -346,7 +328,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     [alertView show];
     
     __weak typeof(self) wself = self;
-    [self loadAndSaveWithPhotos:selectedPhotos savedLocations:@[].mutableCopy alertView:alertView completion:^(NSArray *savedLocations) {
+    [self loadAndSaveWithPhotos:selectedPhotos.mutableCopy savedLocations:@[].mutableCopy alertView:alertView completion:^(NSArray *savedLocations) {
         typeof(wself) sself = wself;
         if (!sself) return;
         if (sself.isActionLoadingCancel) return;
@@ -428,9 +410,16 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 }
 
 - (void)organizeBarButtonAction:(id)sender {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Copy", nil), nil];
-    actionSheet.tag = 1002;
-    [actionSheet showFromBarButtonItem:sender animated:YES];
+    __weak typeof(self) wself = self;
+    NSArray *selectedPhotos = _photoListDataSource.selectedPhotos;
+    [PWPhotoObject getCountFromPhotoObjects:selectedPhotos completion:^(NSUInteger countOfPhoto, NSUInteger countOfVideo) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        NSString *title = [PAString photoAndVideoStringWithPhotoCount:countOfPhoto videoCount:countOfVideo];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Copy", nil), nil];
+        actionSheet.tag = 1002;
+        [actionSheet showFromBarButtonItem:sender animated:YES];
+    }];
 }
 
 - (void)copyPhoto {
@@ -440,8 +429,8 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         if (!sself) return;
         
         NSMutableArray *selectedPhotos = @[].mutableCopy;
-        NSArray *photos = _fetchedResultsController.fetchedObjects;
-        for (NSString *id_str in _selectedPhotoIDs) {
+        NSArray *photos = sself.photoListDataSource.photos;
+        for (NSString *id_str in sself.photoListDataSource.selectedPhotoIDs) {
             NSArray *searched = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
             if (searched.count > 0) {
                 [selectedPhotos addObject:searched.firstObject];
@@ -490,104 +479,15 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         return;
     }
     
-    [self loadDataWithStartIndex:0];
-}
-
-#pragma mark UICollectionViewDataSource
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return _fetchedResultsController.sections.count;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
-    return [sectionInfo numberOfObjects];
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-    
-    cell.isSelectWithCheckMark = _isSelectMode;
-    [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
-    
-    return cell;
-}
-
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
-        return nil;
-    }
-    
-    PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
-    
-    if (_fetchedResultsController.fetchedObjects.count > 0) {
-        NSArray *photos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypePhoto)]];
-        NSArray *videos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypeVideo)]];
-        NSString *albumCountString = [PAString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
-        NSString *footerString =[NSString stringWithFormat:@"- %@ -", albumCountString];
-        [footerView setText:footerString];
-    }
-    
-    return footerView;
-}
-
-#pragma mark UICollectionViewFlowLayout
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    return CGSizeMake(0.0f, 50.0f);
-}
-
-#pragma mark UICollectionViewDelegate
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (_isSelectMode) {
-        _selectActionBarButton.enabled = YES;
-        _trashBarButtonItem.enabled = YES;
-        _organizeBarButtonItem.enabled = YES;
-        
-        PWPhotoObject *photo = [_fetchedResultsController objectAtIndexPath:indexPath];
-        [_selectedPhotoIDs addObject:photo.id_str];
-    }
-    else {
-        PWPhotoViewCell *cell = (PWPhotoViewCell *)[_collectionView cellForItemAtIndexPath:indexPath];
-        id placeholder = nil;
-        if (cell.animatedImage) {
-            placeholder = cell.animatedImage;
-        }
-        else {
-            placeholder = cell.image;
-        }
-        
-        NSArray *photos = [_fetchedResultsController fetchedObjects];
-        PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:indexPath.row placeholder:placeholder cache:_photoViewCache];
-        [self.navigationController pushViewController:viewController animated:YES];
-        
-        _photoPageViewController = viewController;
-    }
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (_isSelectMode) {
-        if (_collectionView.indexPathsForSelectedItems.count == 0) {
-            _selectActionBarButton.enabled = NO;
-            _trashBarButtonItem.enabled = NO;
-            _organizeBarButtonItem.enabled = NO;
-        }
-        
-        PWPhotoObject *photo = [_fetchedResultsController objectAtIndexPath:indexPath];
-        [_selectedPhotoIDs removeObject:photo.id_str];
-    }
+    [_photoListDataSource loadDataWithStartIndex:0];
 }
 
 #pragma mark SelectMode
 - (void)enableSelectMode {
-    if (_isSelectMode) {
+    if (_photoListDataSource.isSelectMode) {
         return;
     }
-    _isSelectMode = YES;
-    _selectedPhotoIDs = @[].mutableCopy;
-    
-    _collectionView.allowsMultipleSelection = YES;
-    for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
-        cell.isSelectWithCheckMark = YES;
-    }
+    _photoListDataSource.isSelectMode = YES;
     
     _selectActionBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction)];
     _selectActionBarButton.enabled = NO;
@@ -625,20 +525,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 }
 
 - (void)disableSelectMode {
-    if (!_isSelectMode) {
+    if (!_photoListDataSource.isSelectMode) {
         return;
     }
-    _isSelectMode = NO;
-    _selectedPhotoIDs = @[].mutableCopy;
-    
-    _collectionView.allowsMultipleSelection = YES;
-    for (PWPhotoViewCell *cell in _collectionView.visibleCells) {
-        cell.isSelectWithCheckMark = NO;
-    }
-    NSArray *indexPaths = _collectionView.indexPathsForSelectedItems;
-    for (NSIndexPath *indexPath in indexPaths) {
-        [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
-    }
+    _photoListDataSource.isSelectMode = NO;
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setToolbarHidden:NO animated:NO completion:nil];
@@ -648,105 +538,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-}
-
-#pragma mark LoadData
-- (void)loadDataWithStartIndex:(NSUInteger)index {
-    if (![Reachability reachabilityForInternetConnection].isReachable) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [_refreshControl endRefreshing];
-        });
-        return;
-    };
-    
-    if (_isRequesting) {
-        return;
-    }
-    _isRequesting = YES;
-    
-    __weak typeof(self) wself = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [PWPicasaAPI getListOfPhotosInAlbumWithAlbumID:_album.id_str index:index completion:^(NSUInteger nextIndex, NSError *error) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            sself.isRequesting = NO;
-            
-            if (error) {
-#ifdef DEBUG
-                NSLog(@"%@", error);
-#endif
-                if (error.code == 401) {
-                    if ([PWOAuthManager shouldOpenLoginViewController]) {
-                        [sself openLoginViewController];
-                    }
-                    else {
-                        [PWOAuthManager incrementCountOfLoginError];
-                        [sself loadDataWithStartIndex:index];
-                    }
-                }
-            }
-            else {
-                sself.requestIndex = nextIndex;
-            }
-            [PWOAuthManager resetCountOfLoginError];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                [sself.refreshControl endRefreshing];
-                [sself.activityIndicatorView stopAnimating];
-            });
-        }];
-    });
-}
-
-- (void)openLoginViewController {
-    __weak typeof(self) wself = self;
-    [PWOAuthManager loginViewControllerWithCompletion:^(UINavigationController *navigationController) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            
-            [sself.refreshControl endRefreshing];
-            [sself.tabBarController presentViewController:navigationController animated:YES completion:nil];
-        });
-        
-    } finish:^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            [sself loadDataWithStartIndex:0];
-        });
-    }];
-}
-
-#pragma mark NSFetchedResultsControllerDelegate
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _collectionView.userInteractionEnabled = NO;
-        
-        [_collectionView reloadData];
-        
-        [self refreshNoItemWithNumberOfItem:controller.fetchedObjects.count];
-        
-        for (NSString *id_str in _selectedPhotoIDs) {
-            NSArray *selectedPhotos = [_fetchedResultsController.fetchedObjects filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id_str = %@", id_str]];
-            PWPhotoObject *photo = selectedPhotos.firstObject;
-            if (photo) {
-                NSUInteger index = [_fetchedResultsController.fetchedObjects indexOfObject:photo];
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-                [_collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
-            }
-        }
-        NSArray *selectedIndexPaths = _collectionView.indexPathsForSelectedItems;
-        if (selectedIndexPaths.count == 0) {
-            _selectActionBarButton.enabled = NO;
-            _trashBarButtonItem.enabled = NO;
-            _organizeBarButtonItem.enabled = NO;
-        }
-        
-        _collectionView.userInteractionEnabled = YES;
-    });
 }
 
 #pragma mark UIActionSheet
@@ -799,7 +590,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         typeof(wself) sself = wself;
         if (!sself) return;
         
-        [sself loadDataWithStartIndex:0];
+        [sself.photoListDataSource loadDataWithStartIndex:0];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             sself.navigationItem.title = album.title;
@@ -888,14 +679,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 #pragma mark Trash
 - (void)showTrashPhotosActionSheet:(id)sender {
     __weak typeof(self) wself = self;
-    NSMutableArray *selectedPhotos = @[].mutableCopy;
-    for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
-        [selectedPhotos addObject:[_fetchedResultsController objectAtIndexPath:indexPath]];
-    }
+    NSArray *selectedPhotos = _photoListDataSource.selectedPhotos;
     [PWPhotoObject getCountFromPhotoObjects:selectedPhotos completion:^(NSUInteger countOfPhoto, NSUInteger countOfVideo) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Are you sure you want to delete %@?", nil), [PAString photoAndVideoStringWithPhotoCount:countOfPhoto videoCount:countOfVideo]];
         UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:sself cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:nil];
         actionSheet.tag = 1005;
@@ -1003,11 +790,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             [alertView setValue:indicator forKey:@"accessoryView"];
             [alertView show];
             
-            NSArray *indexPaths = _collectionView.indexPathsForSelectedItems;
-            __block NSUInteger maxCount = indexPaths.count;
+            NSArray *selectedPhotos = _photoListDataSource.selectedPhotos;
+            __block NSUInteger maxCount = selectedPhotos.count;
             __block NSUInteger count = 0;
-            for (NSIndexPath *indexPath in indexPaths) {
-                PWPhotoObject *photo = [_fetchedResultsController objectAtIndexPath:indexPath];
+            for (PWPhotoObject *photo in selectedPhotos) {
                 __weak typeof(self) wself = self;
                 [PWPicasaAPI deletePhoto:photo completion:^(NSError *error) {
                     typeof(wself) sself = wself;
@@ -1024,7 +810,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                     if (count == maxCount) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [alertView dismissWithClickedButtonIndex:0 animated:YES];
-                            [sself loadDataWithStartIndex:0];
+                            [sself.photoListDataSource loadDataWithStartIndex:0];
                         });
                     }
                     else {
