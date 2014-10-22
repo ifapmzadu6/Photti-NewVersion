@@ -284,7 +284,7 @@
 - (void)setUpVideoDataSource {
     _videoListDataSource = [PEPhotoDataSourceFactoryMethod makeVideoListDataSource];
     _videoListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
-    _videoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _videoListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _videoListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
     _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
@@ -298,7 +298,7 @@
 - (void)setUpPanoramaDataSource {
     _panoramaListDataSource = [PEPhotoDataSourceFactoryMethod makePanoramaListDataSource];
     _panoramaListDataSource.cellSize = (self.isPhone) ? CGSizeMake(270.0f, 100.0f) : CGSizeMake(500.0f, 150.0f);
-    _panoramaListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
+    _panoramaListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(270.0f, 100.0f) : CGSizeMake(500.0f, 150.0f);
     _panoramaListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
     _panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
@@ -312,7 +312,7 @@
 - (void)setUpFavoriteDataSource {
     _favoriteListDataSource = [PEPhotoDataSourceFactoryMethod makeFavoriteListDataSource];
     _favoriteListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
-    _favoriteListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _favoriteListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _favoriteListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
     _favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
@@ -327,7 +327,7 @@
 - (void)setUpTimelapseDataSource {
     _timelapseListDataSource = [PEPhotoDataSourceFactoryMethod makeTimelapseListDataSource];
     _timelapseListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
-    _timelapseListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _timelapseListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _timelapseListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
     _timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
@@ -341,7 +341,7 @@
 - (void)setUpCloudDataSource {
     _cloudListDataSource = [PEPhotoDataSourceFactoryMethod makeCloudListDataSource];
     _cloudListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
-    _cloudListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _cloudListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _cloudListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
     _cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
@@ -355,7 +355,7 @@
 - (void)setUpBurstsDataSource {
     _burstsListDataSource = [PEPhotoDataSourceFactoryMethod makeBurstListDataSource];
     _burstsListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
-    _burstsListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _burstsListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _burstsListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
     _burstsListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
@@ -369,7 +369,7 @@
 - (void)setUpSlomoVideosDataSource {
     _slomoVideosListDataSource = [PEPhotoDataSourceFactoryMethod makeSlomoVideoListDataSource];
     _slomoVideosListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
-    _slomoVideosListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _slomoVideosListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _slomoVideosListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
     _slomoVideosListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
@@ -383,7 +383,7 @@
 - (void)setUpAllPhotosDataSource {
     _allPhotoListDataSource = [PEPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
     _allPhotoListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
-    _allPhotoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
+    _allPhotoListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _allPhotoListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
     _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){

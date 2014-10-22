@@ -29,6 +29,9 @@
 @property (strong, nonatomic) NSArray *photos;
 @property (nonatomic) NSUInteger index;
 
+@property (strong, nonatomic) UIPopoverController *tagPopoverController;
+@property (strong, nonatomic) UIPopoverController *mapPopoverController;
+
 @end
 
 @implementation PLPhotoPageViewController
@@ -57,9 +60,9 @@
     
     self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     
-    UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction)];
+    UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction:)];
     tagBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Tag"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
-    UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction)];
+    UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction:)];
     pinBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"PinIcon"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
     self.navigationItem.rightBarButtonItems = @[pinBarButtonItem, tagBarButtonItem];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -166,9 +169,12 @@
     [self.tabBarController presentViewController:albumPickerController animated:YES completion:nil];
 }
 
-- (void)tagBarButtonAction {
+- (void)tagBarButtonAction:(id)sender {
     PLPhotoObject *photo = _photos[_index];
-    UIImage *screenshot = [self.view screenCapture];
+    UIImage *screenshot = nil;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        screenshot = [self.view screenCapture];
+    }
     __weak typeof(self) wself = self;
     [[PLAssetsManager sharedLibrary] assetForURL:[NSURL URLWithString:photo.url] resultBlock:^(ALAsset *asset) {
         typeof(wself) sself = wself;
@@ -195,8 +201,15 @@
             PLPhotoEditViewController *viewController = [[PLPhotoEditViewController alloc] initWithPhoto:photo metadata:metadata backgroundScreenshot:screenshot];
             PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
             navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
-            navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-            [sself presentViewController:navigationController animated:YES completion:nil];
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+                navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+                [sself presentViewController:navigationController animated:YES completion:nil];
+            }
+            else {
+                navigationController.preferredContentSize = CGSizeMake(500.0f, 600.0f);
+                sself.tagPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
+                [sself.tagPopoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+            }
         });
     } failureBlock:^(NSError *error) {
 #ifdef DEBUG
@@ -205,7 +218,7 @@
     }];
 }
 
-- (void)pinBarButtonAction {
+- (void)pinBarButtonAction:(id)sender {
     PLPhotoObject *photo = _photos[_index];
     
     __weak typeof(self) wself = self;
@@ -217,8 +230,15 @@
             PAMapViewController *viewController = [[PAMapViewController alloc] initWithImage:image latitude:photo.latitude.doubleValue longitude:photo.longitude.doubleValue];
             PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
             navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
-            navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-            [sself presentViewController:navigationController animated:YES completion:nil];
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+                navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+                [sself presentViewController:navigationController animated:YES completion:nil];
+            }
+            else {
+                navigationController.preferredContentSize = CGSizeMake(600.0f, 600.0f);
+                sself.mapPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
+                [sself.mapPopoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+            }
         });
     } failureBlock:^(NSError *error) {
 #ifdef DEBUG

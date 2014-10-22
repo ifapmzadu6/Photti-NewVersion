@@ -38,6 +38,9 @@
 
 @property (weak, nonatomic) NSURLSessionDataTask *sessionDataTask;
 
+@property (strong, nonatomic) UIPopoverController *tagPopoverController;
+@property (strong, nonatomic) UIPopoverController *mapPopoverController;
+
 @end
 
 @implementation PWPhotoPageViewController
@@ -69,9 +72,9 @@
     //ScrollViewDelegate
     [self.view.subviews.firstObject setDelegate:(id)self];
     
-    UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction)];
+    UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction:)];
     tagBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Tag"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
-    UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction)];
+    UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction:)];
     pinBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"PinIcon"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
     self.navigationItem.rightBarButtonItems = @[pinBarButtonItem, tagBarButtonItem];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -138,6 +141,7 @@
         UIImage *cachedImage = [_photoViewCache objectForKey:urlString];
         if (cachedImage) {
             UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[cachedImage] applicationActivities:nil];
+            activityViewController.popoverPresentationController.barButtonItem = sender;
             [self presentViewController:activityViewController animated:YES completion:nil];
         }
         else {
@@ -176,6 +180,7 @@
                         if (!sself) return;
                         
                         UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[image] applicationActivities:nil];
+                        activityViewController.popoverPresentationController.barButtonItem = sender;
                         [sself presentViewController:activityViewController animated:YES completion:nil];
                     });
                 }];
@@ -218,15 +223,25 @@
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }
 
-- (void)tagBarButtonAction {
-    UIImage *screenshot = [self.view screenCapture];
+- (void)tagBarButtonAction:(id)sender {
+    UIImage *screenshot = nil;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        screenshot = [self.view screenCapture];
+    }
     PWPhotoEditViewController *viewController = [[PWPhotoEditViewController alloc] initWithPhoto:_photos[_index] backgroundScreenshot:screenshot];
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [self presentViewController:navigationController animated:YES completion:nil];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        [self presentViewController:navigationController animated:YES completion:nil];
+    }
+    else {
+        navigationController.preferredContentSize = CGSizeMake(500.0f, 600.0f);
+        _tagPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
+        [_tagPopoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    }
 }
 
-- (void)pinBarButtonAction {
+- (void)pinBarButtonAction:(id)sender {
     PWPhotoObject *photo = _photos[_index];
     NSArray *strings = [photo.pos componentsSeparatedByString:@" "];
     NSString *latitude = strings.firstObject;
@@ -234,8 +249,15 @@
     UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:photo.tag_thumbnail_url];
     PAMapViewController *viewController = [[PAMapViewController alloc] initWithImage:image latitude:latitude.doubleValue longitude:longitude.doubleValue];
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [self presentViewController:navigationController animated:YES completion:nil];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        [self presentViewController:navigationController animated:YES completion:nil];
+    }
+    else {
+        navigationController.preferredContentSize = CGSizeMake(600.0f, 600.0f);
+        _mapPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
+        [_mapPopoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    }
 }
 
 #pragma mark Methods

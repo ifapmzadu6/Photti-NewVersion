@@ -125,7 +125,6 @@
     else {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
     }
-    [tabBarController setAdsHidden:NO animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -133,6 +132,7 @@
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
+    [tabBarController setAdsHidden:NO animated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

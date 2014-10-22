@@ -147,12 +147,7 @@ typedef enum _PLPhotoEditViewControllerGPSType {
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    if (isBackgroundImageEnable) {
-        _tableView.backgroundColor = [UIColor clearColor];
-    }
-    else {
-        _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
-    }
+    _tableView.backgroundColor = [[PAColors getColor:PAColorsTypeTextColor] colorWithAlphaComponent:0.1f];
     _tableView.separatorColor = [UIColor colorWithWhite:0.0f alpha:0.15f];
     CGFloat navigationBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
     CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;

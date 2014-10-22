@@ -9,7 +9,9 @@
 @import UIKit;
 @import Photos;
 
-@interface PEPhotoEditViewController : UIViewController
+#import "PABaseViewController.h"
+
+@interface PEPhotoEditViewController : PABaseViewController
 
 - (instancetype)initWithAsset:(PHAsset *)asset metadata:(NSDictionary *)metadata;
 - (instancetype)initWithAsset:(PHAsset *)asset metadata:(NSDictionary *)metadata backgroundScreenShot:(UIImage *)backgroundScreenshot;

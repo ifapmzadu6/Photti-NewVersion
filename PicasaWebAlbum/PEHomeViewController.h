@@ -40,6 +40,8 @@ static NSString * const kPEHomeViewControllerRowType_AllPhotos = @"kPEHomeViewCo
 
 @property (strong, nonatomic, readonly) NSArray *enabledItems;
 
+
+// For overrride
 @property (strong, nonatomic) PEAlbumListDataSource *albumListDataSource;
 @property (strong, nonatomic) PEMomentListDataSource *momentListDataSource;
 @property (strong, nonatomic) PEPhotoListDataSource *panoramaListDataSource;
@@ -50,5 +52,16 @@ static NSString * const kPEHomeViewControllerRowType_AllPhotos = @"kPEHomeViewCo
 @property (strong, nonatomic) PEPhotoListDataSource *burstsListDataSource;
 @property (strong, nonatomic) PEPhotoListDataSource *slomoVideosListDataSource;
 @property (strong, nonatomic) PEPhotoListDataSource *allPhotoListDataSource;
+
+- (void)setUpAlbumDataSource;
+- (void)setUpMomentsDataSource;
+- (void)setUpVideoDataSource;
+- (void)setUpPanoramaDataSource;
+- (void)setUpFavoriteDataSource;
+- (void)setUpTimelapseDataSource;
+- (void)setUpCloudDataSource;
+- (void)setUpBurstsDataSource;
+- (void)setUpSlomoVideosDataSource;
+- (void)setUpAllPhotosDataSource;
 
 @end

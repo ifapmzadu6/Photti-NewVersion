@@ -54,9 +54,8 @@
 
 #pragma mark SetUpDaraSource
 - (void)setUpAlbumDataSource {
-    self.albumListDataSource = [PEAlbumListDataSource new];
-    self.albumListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
-    self.albumListDataSource.minimumLineSpacing = 15.0f;
+    [super setUpAlbumDataSource];
+    
     __weak typeof(self) wself = self;
     self.albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
         typeof(wself) sself = wself;
@@ -68,9 +67,8 @@
 }
 
 - (void)setUpMomentsDataSource {
-    self.momentListDataSource = [PEMomentListDataSource new];
-    self.momentListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
-    self.momentListDataSource.minimumLineSpacing = 15.0f;
+    [super setUpMomentsDataSource];
+    
     __weak typeof(self) wself = self;
     self.momentListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
         typeof(wself) sself = wself;
@@ -83,59 +81,36 @@
 }
 
 - (void)setUpVideoDataSource {
-    self.videoListDataSource = [PEPhotoDataSourceFactoryMethod makeVideoListDataSource];
-    self.videoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-    self.videoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-    self.videoListDataSource.minimumLineSpacing = 15.0f;
+    [super setUpVideoDataSource];
+    
 }
 
 - (void)setUpPanoramaDataSource {
-    self.panoramaListDataSource = [PEPhotoDataSourceFactoryMethod makePanoramaListDataSource];
-    self.panoramaListDataSource.cellSize = CGSizeMake(270.0f, 100.0f);
-    self.panoramaListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
-    self.panoramaListDataSource.minimumLineSpacing = 15.0f;
+    [super setUpPanoramaDataSource];
 }
 
 - (void)setUpFavoriteDataSource {
-    self.favoriteListDataSource = [PEPhotoDataSourceFactoryMethod makeFavoriteListDataSource];
-    self.favoriteListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-    self.favoriteListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-    self.favoriteListDataSource.minimumLineSpacing = 15.0f;
+    [super setUpFavoriteDataSource];
 }
 
 - (void)setUpTimelapseDataSource {
-    self.timelapseListDataSource = [PEPhotoDataSourceFactoryMethod makeTimelapseListDataSource];
-    self.timelapseListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-    self.timelapseListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-    self.timelapseListDataSource.minimumLineSpacing = 15.0f;
+    [super setUpTimelapseDataSource];
 }
 
 - (void)setUpCloudDataSource {
-    self.cloudListDataSource = [PEPhotoDataSourceFactoryMethod makeCloudListDataSource];
-    self.cloudListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-    self.cloudListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-    self.cloudListDataSource.minimumLineSpacing = 15.0f;
+    [super setUpCloudDataSource];
 }
 
 - (void)setUpBurstsDataSource {
-    self.burstsListDataSource = [PEPhotoDataSourceFactoryMethod makeBurstListDataSource];
-    self.burstsListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-    self.burstsListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-    self.burstsListDataSource.minimumLineSpacing = 15.0f;
+    [super setUpBurstsDataSource];
 }
 
 - (void)setUpSlomoVideosDataSource {
-    self.slomoVideosListDataSource = [PEPhotoDataSourceFactoryMethod makeSlomoVideoListDataSource];
-    self.slomoVideosListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-    self.slomoVideosListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-    self.slomoVideosListDataSource.minimumLineSpacing = 15.0f;
+    [super setUpSlomoVideosDataSource];
 }
 
 - (void)setUpAllPhotosDataSource {
-    self.allPhotoListDataSource = [PEPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
-    self.allPhotoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
-    self.allPhotoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
-    self.allPhotoListDataSource.minimumLineSpacing = 15.0f;
+    [super setUpAllPhotosDataSource];
 }
 
 

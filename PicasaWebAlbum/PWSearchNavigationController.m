@@ -191,18 +191,16 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     
     CGSize navigationBarSize = self.navigationBar.bounds.size;
     CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        statusBarSize = CGSizeMake(statusBarSize.height, statusBarSize.width);
-    }
-    _searchBarBackgroundView.frame = CGRectMake(0.0f, 0.0f, navigationBarSize.width, navigationBarSize.height + statusBarSize.height);
+    CGFloat statusBarHeight = MIN(statusBarSize.width, statusBarSize.height);
+    _searchBarBackgroundView.frame = CGRectMake(0.0f, 0.0f, navigationBarSize.width, navigationBarSize.height + statusBarHeight);
     CGSize cancelButtonSize = [_cancelButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-    _searchBar.frame = CGRectMake(0.0f, statusBarSize.height, navigationBarSize.width - (cancelButtonSize.width + 10.0f), navigationBarSize.height);
-    _cancelButton.frame = CGRectMake(navigationBarSize.width - (cancelButtonSize.width + 10.0f), statusBarSize.height, cancelButtonSize.width, navigationBarSize.height);
+    _searchBar.frame = CGRectMake(0.0f, statusBarHeight, navigationBarSize.width - (cancelButtonSize.width + 10.0f), navigationBarSize.height);
+    _cancelButton.frame = CGRectMake(navigationBarSize.width - (cancelButtonSize.width + 10.0f), statusBarHeight, cancelButtonSize.width, navigationBarSize.height);
     
     _backbroundView.frame = self.view.bounds;
     _tableView.frame = self.view.bounds;
     
-    _tableView.contentInset = UIEdgeInsetsMake(navigationBarSize.height + statusBarSize.height, 0.0f, _tableView.contentInset.bottom, 0.0f);
+    _tableView.contentInset = UIEdgeInsetsMake(navigationBarSize.height + statusBarHeight, 0.0f, _tableView.contentInset.bottom, 0.0f);
     _tableView.scrollIndicatorInsets = _tableView.contentInset;
 }
 

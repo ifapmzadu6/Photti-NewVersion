@@ -230,7 +230,6 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     else {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
     }
-    [tabBarController setAdsHidden:NO animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -238,6 +237,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
+    [tabBarController setAdsHidden:NO animated:YES];
     
     [_collectionView reloadData];
 }
@@ -570,6 +570,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         UIAlertAction *cancelAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:album.title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        alertController.popoverPresentationController.barButtonItem = sender;
         [alertController addAction:editAlertAction];
         [alertController addAction:shareAlertAction];
         [alertController addAction:downloadAlertAction];

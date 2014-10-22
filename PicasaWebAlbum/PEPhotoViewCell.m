@@ -46,6 +46,8 @@
 }
 
 - (void)initialization {
+    self.contentView.clipsToBounds = YES;
+    
     _imageView = [UIImageView new];
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
     _imageView.clipsToBounds = YES;

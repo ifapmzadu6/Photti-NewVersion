@@ -25,6 +25,9 @@
 @property (strong, nonatomic) PHFetchResult *fetchedResult;
 @property (nonatomic) NSUInteger index;
 
+@property (strong, nonatomic) UIPopoverController *mapPopoverController;
+@property (strong, nonatomic) UIPopoverController *tagPopoverController;
+
 @end
 
 @implementation PEPhotoPageViewController
@@ -93,9 +96,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction)];
+    UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction:)];
     tagBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Tag"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
-    UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction)];
+    UIBarButtonItem *pinBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PinIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(pinBarButtonAction:)];
     pinBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"PinIcon"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
     self.navigationItem.rightBarButtonItems = @[pinBarButtonItem, tagBarButtonItem];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -157,9 +160,12 @@
 }
 
 #pragma mark UIBarButtonAction
-- (void)tagBarButtonAction {
+- (void)tagBarButtonAction:(id)sender {
     PHAsset *asset = _fetchedResult[_index];
-    UIImage *screenshot = [self.view screenCapture];
+    UIImage *screenshot = nil;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        screenshot = [self.view screenCapture];
+    }
     PHImageRequestOptions *options = [PHImageRequestOptions new];
     options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     __weak typeof(self) wself = self;
@@ -173,13 +179,20 @@
             PEPhotoEditViewController *viewController = [[PEPhotoEditViewController alloc] initWithAsset:asset metadata:metadata backgroundScreenShot:screenshot];
             PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
             navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
-            navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-            [sself presentViewController:navigationController animated:YES completion:nil];
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+                navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+                [sself presentViewController:navigationController animated:YES completion:nil];
+            }
+            else {
+                navigationController.preferredContentSize = CGSizeMake(500.0f, 600.0f);
+                sself.tagPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
+                [sself.tagPopoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+            }
         });
     }];
 }
 
-- (void)pinBarButtonAction {
+- (void)pinBarButtonAction:(id)sender {
     PHAsset *asset = _fetchedResult[_index];
     CLLocation *location = asset.location;
     PHImageRequestOptions *options = [PHImageRequestOptions new];
@@ -191,8 +204,15 @@
         PAMapViewController *viewController = [[PAMapViewController alloc] initWithImage:result latitude:location.coordinate.latitude longitude:location.coordinate.longitude];
         PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
         navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
-        navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        [sself presentViewController:navigationController animated:YES completion:nil];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            [sself presentViewController:navigationController animated:YES completion:nil];
+        }
+        else {
+            navigationController.preferredContentSize = CGSizeMake(600.0f, 600.0f);
+            sself.mapPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
+            [sself.mapPopoverController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        }
     }];
 }
 
@@ -230,7 +250,7 @@
         
         UIImageView *favoriteLargeIcon = [UIImageView new];
         favoriteLargeIcon.image = [UIImage imageNamed:@"FavoriteLarge"];
-        CGFloat maxSize = MIN(CGRectGetWidth([UIScreen mainScreen].bounds), CGRectGetHeight([UIScreen mainScreen].bounds)) / 2.0f;
+        CGFloat maxSize = MIN(CGRectGetWidth([UIScreen mainScreen].bounds), CGRectGetHeight([UIScreen mainScreen].bounds)) / 2.5f;
         CGFloat minSize = maxSize - 20.0f;
         favoriteLargeIcon.frame = CGRectMake(0.0f, 0.0f, minSize, minSize);
         favoriteLargeIcon.center = sself.view.center;

@@ -100,8 +100,16 @@
         }
         if (type == PHPhotoListViewControllerType_Panorama) {
             CGRect rect = [UIScreen mainScreen].bounds;
-            _photoListDataSource.cellSize = CGSizeMake(CGRectGetWidth(rect), 100.0f);
-            _photoListDataSource.landscapeCellSize = CGSizeMake(CGRectGetHeight(rect), 100.0f);
+            CGFloat width = MAX(CGRectGetWidth(rect), CGRectGetHeight(rect));
+            CGFloat landscapeWidth = MIN(CGRectGetWidth(rect), CGRectGetHeight(rect));
+            if (self.isLandscape) {
+                CGFloat tmp = landscapeWidth;
+                landscapeWidth = width;
+                width = tmp;
+            }
+            CGFloat height = (self.isPhone) ? 100.0f : 200.0f;
+            _photoListDataSource.cellSize = CGSizeMake(width, height);
+            _photoListDataSource.landscapeCellSize = CGSizeMake(landscapeWidth, height);
             _photoListDataSource.minimumLineSpacing = 15.0f;
         }
         else {
@@ -185,7 +193,6 @@
     else {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
     }
-    [tabBarController setAdsHidden:NO animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -193,6 +200,7 @@
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
+    [tabBarController setAdsHidden:NO animated:YES];
 }
 
 - (void)viewWillLayoutSubviews {
