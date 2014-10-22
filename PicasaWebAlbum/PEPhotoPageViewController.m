@@ -15,7 +15,7 @@
 #import "PEPhotoViewController.h"
 #import "PEPhotoEditViewController.h"
 #import "PABaseNavigationController.h"
-#import "PWMapViewController.h"
+#import "PAMapViewController.h"
 #import "PATabBarAdsController.h"
 #import "UIView+ScreenCapture.h"
 
@@ -135,7 +135,7 @@
     [tabBarController setUserInteractionEnabled:YES];
 }
 
-- (NSArray *)toolbarItemsWithIsFavorite:(BOOL)isFavorite {
+- (NSArray *)toolbarItemsWithIsFavorite:(BOOL)isFavorite isTrashEnabled:(BOOL)isTrashEnabled {
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
     UIBarButtonItem *favoriteBarButtonItem = nil;
     if (isFavorite) {
@@ -146,6 +146,7 @@
     }
     UIBarButtonItem *organizeBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(organizeBarButtonAction:)];
     UIBarButtonItem *trashButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(trashBarButtonAction:)];
+    trashButtonItem.enabled = (isTrashEnabled) ? YES : NO;
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, favoriteBarButtonItem, flexibleSpace, organizeBarButtonItem, flexibleSpace, trashButtonItem];
     return toolbarItems;
@@ -187,7 +188,7 @@
     [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(200.0f, 200.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        PWMapViewController *viewController = [[PWMapViewController alloc] initWithImage:result latitude:location.coordinate.latitude longitude:location.coordinate.longitude];
+        PAMapViewController *viewController = [[PAMapViewController alloc] initWithImage:result latitude:location.coordinate.latitude longitude:location.coordinate.longitude];
         PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
         navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
         navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
@@ -206,6 +207,7 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:@[result] applicationActivities:nil];
+            viewController.popoverPresentationController.barButtonItem = sender;
             [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
         }];
     }
@@ -222,7 +224,8 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
-        NSArray *toolbarItems = [sself toolbarItemsWithIsFavorite:isFavorite];
+        BOOL isCanDelete = [asset canPerformEditOperation:PHAssetEditOperationDelete];
+        NSArray *toolbarItems = [sself toolbarItemsWithIsFavorite:isFavorite isTrashEnabled:isCanDelete];
         [tabBarController setToolbarItems:toolbarItems animated:YES];
         
         UIImageView *favoriteLargeIcon = [UIImageView new];
@@ -265,7 +268,8 @@
         }
         else {
             PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
-            NSArray *toolbarItems = [sself toolbarItemsWithIsFavorite:isFavorite];
+            BOOL isCanDelete = [asset canPerformEditOperation:PHAssetEditOperationDelete];
+            NSArray *toolbarItems = [sself toolbarItemsWithIsFavorite:isFavorite isTrashEnabled:isCanDelete];
             [tabBarController setToolbarItems:toolbarItems animated:YES];
         }
     }];
@@ -327,8 +331,9 @@
             
             PHAsset *tmpAsset = sself.fetchedResult[index];
             BOOL isFavorite = tmpAsset.favorite;
+            BOOL isCanDelete = [tmpAsset canPerformEditOperation:PHAssetEditOperationDelete];
             PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
-            NSArray *toolbarItems = [sself toolbarItemsWithIsFavorite:isFavorite];
+            NSArray *toolbarItems = [sself toolbarItemsWithIsFavorite:isFavorite isTrashEnabled:isCanDelete];
             [tabBarController setToolbarItems:toolbarItems animated:YES];
         });
     };

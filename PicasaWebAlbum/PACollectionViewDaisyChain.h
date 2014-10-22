@@ -11,6 +11,6 @@
 @interface PACollectionViewDaisyChain : NSObject <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (weak, nonatomic) id<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout> dataSource;
-@property (weak, nonatomic) id<UICollectionViewDelegate> delegate;
+@property (weak, nonatomic) id<UICollectionViewDelegate, UIScrollViewDelegate> delegate;
 
 @end

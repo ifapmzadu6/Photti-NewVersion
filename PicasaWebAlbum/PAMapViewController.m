@@ -8,7 +8,7 @@
 
 @import MapKit;
 
-#import "PWMapViewController.h"
+#import "PAMapViewController.h"
 #import "PANetworkActivityIndicator.h"
 
 static NSString * const kPWMapViewControllerAppleMapURL = @"http://maps.apple.com";
@@ -23,7 +23,7 @@ static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.c
 
 
 
-@interface PWMapViewController () <MKMapViewDelegate, UIActionSheetDelegate>
+@interface PAMapViewController () <MKMapViewDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) MKMapView *mapView;
 
@@ -32,7 +32,7 @@ static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.c
 
 @end
 
-@implementation PWMapViewController
+@implementation PAMapViewController
 
 - (id)initWithImage:(UIImage *)image latitude:(double)latitude longitude:(double)longitude {
     self = [super init];
@@ -88,19 +88,16 @@ static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.c
     imageView.clipsToBounds = YES;
     [self.view addSubview:imageView];
     CGPoint center = self.view.center;
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        CGFloat x = center.x;
-        center.x = center.y;
-        center.y = x;
-    }
     CGFloat startSize = 150.0f;
     CGFloat endSize = 60.0f;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         endSize = 100.0f;
     }
-    imageView.frame = CGRectMake(center.x - startSize/2.0f, center.y - startSize/2.0f, startSize, startSize);
+    imageView.frame = CGRectMake(0.0f, 0.0f, startSize, startSize);
+    imageView.center = center;
     [UIView animateWithDuration:0.5f animations:^{
-        imageView.frame = CGRectMake(center.x - endSize/2.0f, center.y - endSize/2.0f, endSize, endSize);
+        imageView.frame = CGRectMake(0.0f, 0.0f, endSize, endSize);
+        imageView.center = center;
     } completion:^(BOOL finished) {
         [imageView removeFromSuperview];
     }];
@@ -118,14 +115,40 @@ static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.c
 }
 
 - (void)actionBarButtonAction:(id)sender {
-    UIActionSheet *actionSheet = nil;
-    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:kPWMapViewControllerGMapURLSheme]]) {
-        actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open in Maps", nil), NSLocalizedString(@"Open in Google Maps", nil), nil];
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        NSString *param = [NSString stringWithFormat:@"q=%lf,%lf", _coordinate.latitude, _coordinate.longitude];
+        
+        UIAlertAction *openInMapsAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Open in Maps", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            NSString *url = [NSString stringWithFormat:@"%@/?%@", kPWMapViewControllerAppleMapURL, param];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+        }];
+        UIAlertAction *openInGoogleMapsAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Open in Google Maps", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            NSString *urlScheme = [NSString stringWithFormat:@"%@?%@", kPWMapViewControllerGMapURLSheme, param];
+            if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlScheme]]) {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlScheme]];
+            }
+            else {
+                NSString *url = [NSString stringWithFormat:@"%@?%@", kPWMapViewControllerGMapHTTPURL, param];
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+            }
+        }];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        alertController.popoverPresentationController.barButtonItem = sender;
+        [alertController addAction:openInGoogleMapsAction];
+        [alertController addAction:openInMapsAction];
+        [self presentViewController:alertController animated:YES completion:nil];
     }
     else {
-        actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open in Maps", nil), nil];
+        UIActionSheet *actionSheet = nil;
+        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:kPWMapViewControllerGMapURLSheme]]) {
+            actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open in Maps", nil), NSLocalizedString(@"Open in Google Maps", nil), nil];
+        }
+        else {
+            actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Open in Maps", nil), nil];
+        }
+        
+        [actionSheet showFromBarButtonItem:sender animated:YES];
     }
-    [actionSheet showInView:self.view];
 }
 
 #pragma mark UISegmentedControl

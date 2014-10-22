@@ -36,5 +36,6 @@
 - (instancetype)initWithFetchRequest:(NSFetchRequest *)fetchRequest albumID:(NSString *)albumID;
 
 - (void)loadDataWithStartIndex:(NSUInteger)startIndex;
+- (void)loadRecentlyUploadedPhotos;
 
 @end

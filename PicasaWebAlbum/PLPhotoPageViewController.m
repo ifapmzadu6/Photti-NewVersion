@@ -17,7 +17,7 @@
 #import "PLModelObject.h"
 #import "PLAssetsManager.h"
 #import "PABaseNavigationController.h"
-#import "PWMapViewController.h"
+#import "PAMapViewController.h"
 #import "PLPhotoEditViewController.h"
 #import "PTAlbumPickerController.h"
 #import "PLCoreDataAPI.h"
@@ -214,7 +214,7 @@
         if (!sself) return;
         UIImage *image = [UIImage imageWithCGImage:asset.aspectRatioThumbnail];
         dispatch_async(dispatch_get_main_queue(), ^{
-            PWMapViewController *viewController = [[PWMapViewController alloc] initWithImage:image latitude:photo.latitude.doubleValue longitude:photo.longitude.doubleValue];
+            PAMapViewController *viewController = [[PAMapViewController alloc] initWithImage:image latitude:photo.latitude.doubleValue longitude:photo.longitude.doubleValue];
             PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
             navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
             navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;

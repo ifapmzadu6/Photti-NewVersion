@@ -18,6 +18,7 @@
 #import "PWSearchNavigationController.h"
 #import "PDTaskManager.h"
 #import "PSImagePickerController.h"
+#import "PAViewControllerKit.h"
 
 @interface PEPhotoListViewController () <UITextFieldDelegate>
 
@@ -201,11 +202,12 @@
     
     PATabBarController *tabBarController = (PATabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = tabBarController.viewInsets;
-    _collectionView.contentInset = viewInsets;
-    _collectionView.scrollIndicatorInsets = viewInsets;
-    _collectionView.frame = rect;
-    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout *)_collectionView.collectionViewLayout;
-    [collectionViewLayout invalidateLayout];
+    UIEdgeInsets contentInset = viewInsets;
+    if (!self.isPhone) {
+        contentInset = UIEdgeInsetsMake(viewInsets.top + 20.0f, 20.0f, viewInsets.bottom + 20.0f, 20.0f);
+    }
+    UIEdgeInsets scrollIndicatorInsets = viewInsets;
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
 }
 
 #pragma mark UIBarButtonAction
@@ -376,6 +378,7 @@
     UIAlertAction *cancelAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    alertController.popoverPresentationController.barButtonItem = sender;
     if (editAlertAction) {
         [alertController addAction:editAlertAction];
     }

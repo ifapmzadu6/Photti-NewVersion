@@ -20,7 +20,6 @@
 
 #import "PSNewLocalPhotoListViewController.h"
 #import "PECategoryViewCell.h"
-#import "PACenterTextTableViewCell.h"
 
 @implementation PSNewLocalHomeViewController
 
@@ -88,7 +87,6 @@
     self.videoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
     self.videoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     self.videoListDataSource.minimumLineSpacing = 15.0f;
-    __weak typeof(self) wself = self;
 }
 
 - (void)setUpPanoramaDataSource {
@@ -96,7 +94,6 @@
     self.panoramaListDataSource.cellSize = CGSizeMake(270.0f, 100.0f);
     self.panoramaListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
     self.panoramaListDataSource.minimumLineSpacing = 15.0f;
-    __weak typeof(self) wself = self;
 }
 
 - (void)setUpFavoriteDataSource {
@@ -104,7 +101,6 @@
     self.favoriteListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
     self.favoriteListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     self.favoriteListDataSource.minimumLineSpacing = 15.0f;
-    __weak typeof(self) wself = self;
 }
 
 - (void)setUpTimelapseDataSource {
@@ -112,7 +108,6 @@
     self.timelapseListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
     self.timelapseListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     self.timelapseListDataSource.minimumLineSpacing = 15.0f;
-    __weak typeof(self) wself = self;
 }
 
 - (void)setUpCloudDataSource {
@@ -120,7 +115,6 @@
     self.cloudListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
     self.cloudListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     self.cloudListDataSource.minimumLineSpacing = 15.0f;
-    __weak typeof(self) wself = self;
 }
 
 - (void)setUpBurstsDataSource {
@@ -128,7 +122,6 @@
     self.burstsListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
     self.burstsListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     self.burstsListDataSource.minimumLineSpacing = 15.0f;
-    __weak typeof(self) wself = self;
 }
 
 - (void)setUpSlomoVideosDataSource {
@@ -136,7 +129,6 @@
     self.slomoVideosListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
     self.slomoVideosListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     self.slomoVideosListDataSource.minimumLineSpacing = 15.0f;
-    __weak typeof(self) wself = self;
 }
 
 - (void)setUpAllPhotosDataSource {
@@ -144,7 +136,6 @@
     self.allPhotoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
     self.allPhotoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     self.allPhotoListDataSource.minimumLineSpacing = 15.0f;
-    __weak typeof(self) wself = self;
 }
 
 
@@ -239,11 +230,8 @@
         
         return cell;
     }
-    else {
-        PACenterTextTableViewCell *cell = (PACenterTextTableViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
-        
-        return cell;
-    }
+    
+    return [super tableView:tableView cellForRowAtIndexPath:indexPath];
 }
 
 @end

@@ -78,7 +78,7 @@
 		714318DC193E04300066A1F8 /* PDTaskManagerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 714318DB193E04300066A1F8 /* PDTaskManagerViewController.m */; };
 		71433D9319B6C4950046F37C /* PWModel.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = 71433D9219B6C4950046F37C /* PWModel.xcmappingmodel */; };
 		7149D2D319DC2CFE004BD7A7 /* NSIndexSet+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 7149D2D219DC2CFE004BD7A7 /* NSIndexSet+methods.m */; };
-		714F53BC196ECEC500FB8992 /* PWMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 714F53BB196ECEC500FB8992 /* PWMapViewController.m */; };
+		714F53BC196ECEC500FB8992 /* PAMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 714F53BB196ECEC500FB8992 /* PAMapViewController.m */; };
 		71502F1019349E8A0006979B /* PSLocalPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71502F0F19349E8A0006979B /* PSLocalPhotoListViewController.m */; };
 		715943C11957C1F3009315E5 /* PLNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 715943C01957C1F3009315E5 /* PLNavigationController.m */; };
 		715943C51957C231009315E5 /* PDNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 715943C41957C231009315E5 /* PDNavigationController.m */; };
@@ -357,8 +357,8 @@
 		71433D9219B6C4950046F37C /* PWModel.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = PWModel.xcmappingmodel; sourceTree = "<group>"; };
 		7149D2D119DC2CFE004BD7A7 /* NSIndexSet+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSIndexSet+methods.h"; sourceTree = "<group>"; };
 		7149D2D219DC2CFE004BD7A7 /* NSIndexSet+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSIndexSet+methods.m"; sourceTree = "<group>"; };
-		714F53BA196ECEC500FB8992 /* PWMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWMapViewController.h; sourceTree = "<group>"; };
-		714F53BB196ECEC500FB8992 /* PWMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWMapViewController.m; sourceTree = "<group>"; };
+		714F53BA196ECEC500FB8992 /* PAMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAMapViewController.h; sourceTree = "<group>"; };
+		714F53BB196ECEC500FB8992 /* PAMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAMapViewController.m; sourceTree = "<group>"; };
 		71502F0E19349E8A0006979B /* PSLocalPhotoListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSLocalPhotoListViewController.h; sourceTree = "<group>"; };
 		71502F0F19349E8A0006979B /* PSLocalPhotoListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSLocalPhotoListViewController.m; sourceTree = "<group>"; };
 		715943BF1957C1F3009315E5 /* PLNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLNavigationController.h; sourceTree = "<group>"; };
@@ -1272,13 +1272,13 @@
 			name = "NSIndexSet+methods";
 			sourceTree = "<group>";
 		};
-		714F53B9196ECEAD00FB8992 /* PWMapViewController */ = {
+		714F53B9196ECEAD00FB8992 /* PAMapViewController */ = {
 			isa = PBXGroup;
 			children = (
-				714F53BA196ECEC500FB8992 /* PWMapViewController.h */,
-				714F53BB196ECEC500FB8992 /* PWMapViewController.m */,
+				714F53BA196ECEC500FB8992 /* PAMapViewController.h */,
+				714F53BB196ECEC500FB8992 /* PAMapViewController.m */,
 			);
-			name = PWMapViewController;
+			name = PAMapViewController;
 			sourceTree = "<group>";
 		};
 		71502EFD19349E610006979B /* PSLocalPhotoListViewController */ = {
@@ -1745,12 +1745,13 @@
 		71B72FEC19DD704C00D105EA /* A    - Common */ = {
 			isa = PBXGroup;
 			children = (
-				71BDCF5719F63ACD001135FB /* PAViewControllerKit */,
 				711FE8F2195F2F5100AF296B /* PABaseNavigationController */,
 				7137A84B19AD8F3A00C715CB /* PABaseViewController */,
+				714F53B9196ECEAD00FB8992 /* PAMapViewController */,
 				7124F13A19B6F81600DFE49E /* PAMigrationViewController */,
 				7187904019A58B3A005545E1 /* PATabBarAdsController */,
 				719D92551918E06A00B75D8B /* PATabBarController */,
+				71BDCF5719F63ACD001135FB /* PAViewControllerKit */,
 			);
 			name = "A    - Common";
 			sourceTree = "<group>";
@@ -1809,7 +1810,6 @@
 				719D924A1918039500B75D8B /* PWAlbumListViewController */,
 				7195523319273112003EA9AF /* PWAlbumShareViewController */,
 				719CFE4E19598B64008B4308 /* PWGoogleLoginViewController */,
-				714F53B9196ECEAD00FB8992 /* PWMapViewController */,
 				71A2546919195EB9009914F7 /* PWNavigationController */,
 				713320281921D26B00A27B3C /* PWNewAlbumEditViewController */,
 				718E9754196E8D6500638A86 /* PWPhotoEditViewController */,
@@ -2810,7 +2810,7 @@
 				713A16DA19551985004117F0 /* PDTaskViewController.m in Sources */,
 				71A25478191B3247009914F7 /* PAIcons.m in Sources */,
 				710461821917725200DF369D /* PWPicasaParser.m in Sources */,
-				714F53BC196ECEC500FB8992 /* PWMapViewController.m in Sources */,
+				714F53BC196ECEC500FB8992 /* PAMapViewController.m in Sources */,
 				71958C52191B8A2200CFC15F /* UIButton+HitEdgeInsets.m in Sources */,
 				71502F1019349E8A0006979B /* PSLocalPhotoListViewController.m in Sources */,
 				711183B519D06B3F00548730 /* PEScrollBannerHeaderView.m in Sources */,

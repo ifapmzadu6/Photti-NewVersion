@@ -20,7 +20,7 @@
 #import <SDImageCache.h>
 #import "PABaseNavigationController.h"
 #import "PWPhotoEditViewController.h"
-#import "PWMapViewController.h"
+#import "PAMapViewController.h"
 #import "PTAlbumPickerController.h"
 #import "PDTaskManager.h"
 #import "UIView+ScreenCapture.h"
@@ -232,7 +232,7 @@
     NSString *latitude = strings.firstObject;
     NSString *longitude = strings.lastObject;
     UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:photo.tag_thumbnail_url];
-    PWMapViewController *viewController = [[PWMapViewController alloc] initWithImage:image latitude:latitude.doubleValue longitude:longitude.doubleValue];
+    PAMapViewController *viewController = [[PAMapViewController alloc] initWithImage:image latitude:latitude.doubleValue longitude:longitude.doubleValue];
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self presentViewController:navigationController animated:YES completion:nil];

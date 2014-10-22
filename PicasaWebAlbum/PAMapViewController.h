@@ -10,7 +10,7 @@
 
 #import "PABaseViewController.h"
 
-@interface PWMapViewController : PABaseViewController
+@interface PAMapViewController : PABaseViewController
 
 - (id)initWithImage:(UIImage *)image latitude:(double)latitude longitude:(double)longitude;
 

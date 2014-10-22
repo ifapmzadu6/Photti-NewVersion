@@ -159,7 +159,12 @@
     [self.view addSubview:_tableView];
     
     PEScrollBannerHeaderView *headerView = [PEScrollBannerHeaderView new];
-    headerView.frame = CGRectMake(0.0f, 0.0f, 320.0f, 120.0f);
+    if (self.isPhone) {
+        headerView.frame = CGRectMake(0.0f, 0.0f, CGRectGetWidth(self.view.bounds), 120.0f);
+    }
+    else {
+        headerView.frame = CGRectMake(0.0f, 0.0f, CGRectGetWidth(self.view.bounds), 200.0f);
+    }
     headerView.shouldAnimate = NO;
     NSArray *headerContentViews = [self bannerContentViews];
     if (headerContentViews.count > 0) {
@@ -251,7 +256,7 @@
 #pragma mark SetUpDaraSource
 - (void)setUpAlbumDataSource {
     _albumListDataSource = [PEAlbumListDataSource new];
-    _albumListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
+    _albumListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 134.0f) : CGSizeMake(150.0f, 180.0f);
     _albumListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
     _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
@@ -264,7 +269,7 @@
 
 - (void)setUpMomentsDataSource {
     _momentListDataSource = [PEMomentListDataSource new];
-    _momentListDataSource.cellSize = CGSizeMake(100.0f, 134.0f);
+    _momentListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 134.0f) : CGSizeMake(150.0f, 184.0f);
     _momentListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
     _momentListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
@@ -278,7 +283,7 @@
 
 - (void)setUpVideoDataSource {
     _videoListDataSource = [PEPhotoDataSourceFactoryMethod makeVideoListDataSource];
-    _videoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _videoListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _videoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     _videoListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
@@ -292,7 +297,7 @@
 
 - (void)setUpPanoramaDataSource {
     _panoramaListDataSource = [PEPhotoDataSourceFactoryMethod makePanoramaListDataSource];
-    _panoramaListDataSource.cellSize = CGSizeMake(270.0f, 100.0f);
+    _panoramaListDataSource.cellSize = (self.isPhone) ? CGSizeMake(270.0f, 100.0f) : CGSizeMake(500.0f, 150.0f);
     _panoramaListDataSource.landscapeCellSize = CGSizeMake(270.0f, 100.0f);
     _panoramaListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
@@ -306,7 +311,7 @@
 
 - (void)setUpFavoriteDataSource {
     _favoriteListDataSource = [PEPhotoDataSourceFactoryMethod makeFavoriteListDataSource];
-    _favoriteListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _favoriteListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _favoriteListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     _favoriteListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
@@ -321,7 +326,7 @@
 
 - (void)setUpTimelapseDataSource {
     _timelapseListDataSource = [PEPhotoDataSourceFactoryMethod makeTimelapseListDataSource];
-    _timelapseListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _timelapseListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _timelapseListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     _timelapseListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
@@ -335,7 +340,7 @@
 
 - (void)setUpCloudDataSource {
     _cloudListDataSource = [PEPhotoDataSourceFactoryMethod makeCloudListDataSource];
-    _cloudListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _cloudListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _cloudListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     _cloudListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
@@ -349,7 +354,7 @@
 
 - (void)setUpBurstsDataSource {
     _burstsListDataSource = [PEPhotoDataSourceFactoryMethod makeBurstListDataSource];
-    _burstsListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _burstsListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _burstsListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     _burstsListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
@@ -363,7 +368,7 @@
 
 - (void)setUpSlomoVideosDataSource {
     _slomoVideosListDataSource = [PEPhotoDataSourceFactoryMethod makeSlomoVideoListDataSource];
-    _slomoVideosListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _slomoVideosListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _slomoVideosListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     _slomoVideosListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
@@ -377,7 +382,7 @@
 
 - (void)setUpAllPhotosDataSource {
     _allPhotoListDataSource = [PEPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
-    _allPhotoListDataSource.cellSize = CGSizeMake(100.0f, 100.0f);
+    _allPhotoListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _allPhotoListDataSource.landscapeCellSize = CGSizeMake(100.0f, 100.0f);
     _allPhotoListDataSource.minimumLineSpacing = 15.0f;
     __weak typeof(self) wself = self;
@@ -673,17 +678,14 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
-        if ([_enabledItems[indexPath.row] isEqualToString:kPEHomeViewControllerRowType_Albums]) {
-            return 200.0f;
+        NSString *enabledItems = _enabledItems[indexPath.row];
+        if ([enabledItems isEqualToString:kPEHomeViewControllerRowType_Albums] ||
+            [enabledItems isEqualToString:kPEHomeViewControllerRowType_Moments]) {
+            return (self.isPhone) ? 200.0f : 246.0f;
         }
-        else if ([_enabledItems[indexPath.row] isEqualToString:kPEHomeViewControllerRowType_Moments]) {
-            return 200.0f;
-        }
-        return 170.0f;
+        return (self.isPhone) ? 170.0f : 220.0f;
     }
-    else {
-        return 44.0f;
-    }
+    return 44.0f;
 }
 
 

@@ -15,6 +15,8 @@
 #import "PWPicasaAPI.h"
 #import "PLCollectionFooterView.h"
 
+static NSUInteger const kPRPhotoListMaxNumberOfRecentlyUploaded = 50;
+
 @interface PRPhotoListDataSource () <NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -52,7 +54,12 @@
             abort();
         }
         
-        [self loadDataWithStartIndex:0];
+        if (_albumID) {
+            [self loadDataWithStartIndex:0];
+        }
+        else {
+            [self loadRecentlyUploadedPhotos];
+        }
     }
     return self;
 }
@@ -150,6 +157,48 @@
     });
 }
 
+- (void)loadRecentlyUploadedPhotos {
+    if (![Reachability reachabilityForInternetConnection].isReachable) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            _didRefresh ? _didRefresh() : 0;
+        });
+        return;
+    };
+    
+    if (_isRequesting) {
+        return;
+    }
+    _isRequesting = YES;
+    
+    __weak typeof(self) wself = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        [PWPicasaAPI getListOfRecentlyUploadedPhotosWithCompletion:^(NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            sself.isRequesting = NO;
+            if (error) {
+#ifdef DEBUG
+                NSLog(@"%@", error);
+#endif
+                if (error.code == 401) {
+                    if ([PWOAuthManager shouldOpenLoginViewController]) {
+                        sself.openLoginViewController ? sself.openLoginViewController() : 0;
+                    }
+                    else {
+                        [PWOAuthManager incrementCountOfLoginError];
+                        sself.openLoginViewController ? sself.openLoginViewController() : 0;
+                    }
+                }
+            }
+            [PWOAuthManager resetCountOfLoginError];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                sself.didRefresh ? sself.didRefresh() : 0;
+            });
+        }];
+    });
+}
+
 #pragma mark UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return _fetchedResultsController.sections.count;
@@ -157,7 +206,12 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     id<NSFetchedResultsSectionInfo> sectionInfo = _fetchedResultsController.sections[section];
-    return [sectionInfo numberOfObjects];
+    if (_albumID) {
+        return [sectionInfo numberOfObjects];
+    }
+    else {
+        return MIN([sectionInfo numberOfObjects], kPRPhotoListMaxNumberOfRecentlyUploaded);
+    }
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {

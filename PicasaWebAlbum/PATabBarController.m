@@ -169,7 +169,12 @@
         }
     }
     else {
-        height = 56.0f;
+        if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+            height = 49.0f;
+        }
+        else {
+            height = 56.0f;
+        }
     }
     return height;
 }
