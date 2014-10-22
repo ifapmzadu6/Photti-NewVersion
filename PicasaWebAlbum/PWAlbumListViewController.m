@@ -204,7 +204,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
     [tabBarController setToolbarHidden:YES animated:YES completion:nil];
-    [tabBarController setAdsHidden:NO animated:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -212,6 +211,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
+    [tabBarController setAdsHidden:NO animated:YES];
 }
 
 - (void)viewWillLayoutSubviews {

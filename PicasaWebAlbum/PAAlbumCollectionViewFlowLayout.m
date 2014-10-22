@@ -38,7 +38,7 @@
             return CGSizeMake(192.0f, 226.0f);
         }
         else {
-            return CGSizeMake(181.0f, 226.0f);
+            return CGSizeMake(181.0f, 216.0f);
         }
     }
 }

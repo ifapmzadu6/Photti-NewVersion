@@ -107,7 +107,7 @@
                 landscapeWidth = width;
                 width = tmp;
             }
-            CGFloat height = (self.isPhone) ? 100.0f : 200.0f;
+            CGFloat height = (self.isPhone) ? 100.0f : 160.0f;
             _photoListDataSource.cellSize = CGSizeMake(width, height);
             _photoListDataSource.landscapeCellSize = CGSizeMake(landscapeWidth, height);
             _photoListDataSource.minimumLineSpacing = 15.0f;
