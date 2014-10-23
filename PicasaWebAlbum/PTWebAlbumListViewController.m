@@ -90,7 +90,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
@@ -106,14 +106,14 @@
     _collectionView.dataSource = _albumListDataSource;
     _collectionView.delegate = _albumListDataSource;
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     _refreshControl = [PWRefreshControl new];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
-    _refreshControl.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    _refreshControl.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
     _activityIndicatorView = [PAActivityIndicatorView new];

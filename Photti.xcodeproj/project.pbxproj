@@ -47,7 +47,6 @@
 		712E03AA191F5DCB0035D9E0 /* PSImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 712E03A9191F5DCB0035D9E0 /* PSImagePickerController.m */; };
 		712E03AC191F60E40035D9E0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 712E03AB191F60E40035D9E0 /* AssetsLibrary.framework */; };
 		712E03B41920B5570035D9E0 /* PAString.m in Sources */ = {isa = PBXBuildFile; fileRef = 712E03B31920B5570035D9E0 /* PAString.m */; };
-		712E03B81920BA360035D9E0 /* PWAlbumObject+Methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 712E03B71920BA360035D9E0 /* PWAlbumObject+Methods.m */; };
 		712E03BB1920BA6E0035D9E0 /* PWPhotoObject+Methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 712E03BA1920BA6E0035D9E0 /* PWPhotoObject+Methods.m */; };
 		712F121219DBDFE500ED6566 /* PEBannerContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 712F121119DBDFE500ED6566 /* PEBannerContentView.m */; };
 		712F194719CC660F00C184B5 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 712F194619CC660F00C184B5 /* Photos.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -295,8 +294,6 @@
 		712E03AB191F60E40035D9E0 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		712E03B21920B5570035D9E0 /* PAString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAString.h; sourceTree = "<group>"; };
 		712E03B31920B5570035D9E0 /* PAString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAString.m; sourceTree = "<group>"; };
-		712E03B61920BA360035D9E0 /* PWAlbumObject+Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PWAlbumObject+Methods.h"; sourceTree = "<group>"; };
-		712E03B71920BA360035D9E0 /* PWAlbumObject+Methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PWAlbumObject+Methods.m"; sourceTree = "<group>"; };
 		712E03B91920BA6E0035D9E0 /* PWPhotoObject+Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PWPhotoObject+Methods.h"; sourceTree = "<group>"; };
 		712E03BA1920BA6E0035D9E0 /* PWPhotoObject+Methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PWPhotoObject+Methods.m"; sourceTree = "<group>"; };
 		712F121019DBDFE500ED6566 /* PEBannerContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEBannerContentView.h; sourceTree = "<group>"; };
@@ -1062,7 +1059,6 @@
 		712E03B51920BA080035D9E0 /* PWModelObjectCategory */ = {
 			isa = PBXGroup;
 			children = (
-				71D52EEF197F812B005CFF30 /* PWAlbumObject+Methods */,
 				71D52EF0197F8131005CFF30 /* PWPhotoObject+Methods */,
 			);
 			name = PWModelObjectCategory;
@@ -1275,6 +1271,14 @@
 				714F53BB196ECEC500FB8992 /* PAMapViewController.m */,
 			);
 			name = PAMapViewController;
+			sourceTree = "<group>";
+		};
+		714F78B219F938F400BF3444 /* Define */ = {
+			isa = PBXGroup;
+			children = (
+				71BE586519F495CE002A85AB /* HTTPDefine.h */,
+			);
+			name = Define;
 			sourceTree = "<group>";
 		};
 		71502EFD19349E610006979B /* PSLocalPhotoListViewController */ = {
@@ -1898,7 +1902,7 @@
 		71B72FF919DDABF300D105EA /* A    - Common */ = {
 			isa = PBXGroup;
 			children = (
-				71BE586519F495CE002A85AB /* HTTPDefine.h */,
+				714F78B219F938F400BF3444 /* Define */,
 				711AF61C1993AA4400640D2D /* PAAlbumCollectionViewFlowLayout */,
 				71BDCF6C19F67633001135FB /* PACollectionViewDaisyChain */,
 				71A2542219190EBD009914F7 /* PAColors */,
@@ -2319,15 +2323,6 @@
 				716243321952090300168825 /* PLPhotoObject.m */,
 			);
 			name = PLPhotoObject;
-			sourceTree = "<group>";
-		};
-		71D52EEF197F812B005CFF30 /* PWAlbumObject+Methods */ = {
-			isa = PBXGroup;
-			children = (
-				712E03B61920BA360035D9E0 /* PWAlbumObject+Methods.h */,
-				712E03B71920BA360035D9E0 /* PWAlbumObject+Methods.m */,
-			);
-			name = "PWAlbumObject+Methods";
 			sourceTree = "<group>";
 		};
 		71D52EF0197F8131005CFF30 /* PWPhotoObject+Methods */ = {
@@ -2780,7 +2775,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				712E03B81920BA360035D9E0 /* PWAlbumObject+Methods.m in Sources */,
 				7118F88919335B070016697E /* PSLocalPageViewController.m in Sources */,
 				711C19A519D3D22400FE3536 /* PEAlbumListViewController.m in Sources */,
 				7191705A19D10610003BFFC3 /* PEAlbumListDataSource.m in Sources */,

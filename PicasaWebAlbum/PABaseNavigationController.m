@@ -22,8 +22,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
-    self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PAColorsTypeTextColor]};
+    self.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
+    self.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:kPAColorsTypeTextColor]};
     
     self.delegate = self;
 }

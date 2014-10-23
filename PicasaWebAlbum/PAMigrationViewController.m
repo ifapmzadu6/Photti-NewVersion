@@ -33,7 +33,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
     
     _indicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_indicatorView];
@@ -46,7 +46,7 @@
     else {
         _textLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _textLabel.textColor = [PAColors getColor:PAColorsTypeTextDarkColor];
+    _textLabel.textColor = [PAColors getColor:kPAColorsTypeTextDarkColor];
     _textLabel.textAlignment = NSTextAlignmentCenter;
     _textLabel.numberOfLines = 0;
     [self.view addSubview:_textLabel];
@@ -59,7 +59,7 @@
     else {
         _detailTextLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _detailTextLabel.textColor = [PAColors getColor:PAColorsTypeTextDarkColor];
+    _detailTextLabel.textColor = [PAColors getColor:kPAColorsTypeTextDarkColor];
     _detailTextLabel.textAlignment = NSTextAlignmentCenter;
     _detailTextLabel.numberOfLines = 0;
     [self.view addSubview:_detailTextLabel];

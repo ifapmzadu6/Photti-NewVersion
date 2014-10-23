@@ -48,27 +48,27 @@
     
     _beforeTitleLabel = [UILabel new];
     _beforeTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-    _beforeTitleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+    _beforeTitleLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
     _beforeTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_beforeTitleLabel];
     
     _currentTitleLabel = [UILabel new];
     _currentTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-    _currentTitleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+    _currentTitleLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
     _currentTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_currentTitleLabel];
     
     _afterTitleLabel = [UILabel new];
     _afterTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-    _afterTitleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+    _afterTitleLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
     _afterTitleLabel.textAlignment = NSTextAlignmentCenter;
     [_clipBackgroundView addSubview:_afterTitleLabel];
     
-    _titleTextColor = [PAColors getColor:PAColorsTypeTextColor];
+    _titleTextColor = [PAColors getColor:kPAColorsTypeTextColor];
     
     _pageControll = [UIPageControl new];
-    _pageControll.currentPageIndicatorTintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
-    _pageControll.pageIndicatorTintColor = [[PAColors getColor:PAColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
+    _pageControll.currentPageIndicatorTintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
+    _pageControll.pageIndicatorTintColor = [[PAColors getColor:kPAColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f];
     _pageControll.userInteractionEnabled = NO;
     [_clipBackgroundView addSubview:_pageControll];
 }

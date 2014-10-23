@@ -85,7 +85,7 @@
     
     _checkMarkImageView = [UIImageView new];
     _checkMarkImageView.image = [[UIImage imageNamed:@"CheckMark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _checkMarkImageView.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    _checkMarkImageView.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
     _checkMarkImageView.alpha = 0.0f;
     [self.contentView addSubview:_checkMarkImageView];
     

@@ -39,7 +39,7 @@
 - (void)initialization {
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:13.0f];
-    _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    _titleLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     [self addSubview:_titleLabel];
     
     _indicatorView = [PAActivityIndicatorView new];

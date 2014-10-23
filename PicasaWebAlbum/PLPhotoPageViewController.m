@@ -58,7 +58,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     
     UIBarButtonItem *tagBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Tag"] style:UIBarButtonItemStylePlain target:self action:@selector(tagBarButtonAction:)];
     tagBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Tag"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
@@ -85,7 +85,7 @@
     }
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
-    [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
+    [tabBarController setToolbarTintColor:[PAColors getColor:kPAColorsTypeTintLocalColor]];
     if ([tabBarController isTabBarHidden]) {
         [tabBarController setToolbarItems:toolbarItems animated:YES];
         if ([tabBarController isToolbarHideen]) {
@@ -200,7 +200,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             PLPhotoEditViewController *viewController = [[PLPhotoEditViewController alloc] initWithPhoto:photo metadata:metadata backgroundScreenshot:screenshot];
             PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-            navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+            navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
                 navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
                 [sself presentViewController:navigationController animated:YES completion:nil];
@@ -229,7 +229,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             PAMapViewController *viewController = [[PAMapViewController alloc] initWithImage:image latitude:photo.latitude.doubleValue longitude:photo.longitude.doubleValue];
             PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-            navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+            navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
                 navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
                 [sself presentViewController:navigationController animated:YES completion:nil];
@@ -299,7 +299,7 @@
             [sself.navigationController setNavigationBarHidden:NO animated:YES];
             [tabBarController setToolbarFadeout:NO animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
-                sself.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+                sself.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
             }];
             sself.navigationController.interactivePopGestureRecognizer.enabled = YES;
         }

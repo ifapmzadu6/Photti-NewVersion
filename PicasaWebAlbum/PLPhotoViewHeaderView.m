@@ -41,24 +41,24 @@
 }
 
 - (void)initialization {
-    self.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    self.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     
     _textLabel = [UILabel new];
     _textLabel.font = [UIFont systemFontOfSize:14.0f];
-    _textLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+    _textLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
     [self addSubview:_textLabel];
     
     _detailLabel = [UILabel new];
     _detailLabel.font = [UIFont systemFontOfSize:12.0f];
-    _detailLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    _detailLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     [self addSubview:_detailLabel];
     
     _selectButton = [UIButton new];
     [_selectButton addTarget:self action:@selector(selectButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _selectButton.titleLabel.font = [UIFont systemFontOfSize:15.0f];
     [_selectButton setTitle:NSLocalizedString(@"Select", nil) forState:UIControlStateNormal];
-    [_selectButton setTitleColor:[PAColors getColor:PAColorsTypeTintLocalColor] forState:UIControlStateNormal];
-    [_selectButton setTitleColor:[[PAColors getColor:PAColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
+    [_selectButton setTitleColor:[PAColors getColor:kPAColorsTypeTintLocalColor] forState:UIControlStateNormal];
+    [_selectButton setTitleColor:[[PAColors getColor:kPAColorsTypeTintLocalColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
     _selectButton.hitEdgeInsets = UIEdgeInsetsMake(0.0f, -30.0f, 0.0f, 0.0f);
     _selectButton.exclusiveTouch = YES;
     [self addSubview:_selectButton];

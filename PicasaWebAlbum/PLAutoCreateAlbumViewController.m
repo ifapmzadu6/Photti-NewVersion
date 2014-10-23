@@ -38,7 +38,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -48,10 +48,10 @@
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PictureLargeDay"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height == 480)) {
-        _iconImageView.tintColor = [[PAColors getColor:PAColorsTypeTintLocalColor] colorWithAlphaComponent:0.1f];
+        _iconImageView.tintColor = [[PAColors getColor:kPAColorsTypeTintLocalColor] colorWithAlphaComponent:0.1f];
     }
     else {
-        _iconImageView.tintColor = [[PAColors getColor:PAColorsTypeTintLocalColor] colorWithAlphaComponent:0.667f];
+        _iconImageView.tintColor = [[PAColors getColor:kPAColorsTypeTintLocalColor] colorWithAlphaComponent:0.667f];
     }
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
@@ -64,7 +64,7 @@
     else {
         _titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    _titleLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_titleLabel];
     
@@ -76,7 +76,7 @@
     else {
         _descriptionLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _descriptionLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    _descriptionLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     _descriptionLabel.textAlignment = NSTextAlignmentCenter;
     _descriptionLabel.numberOfLines = 0;
     [self.view addSubview:_descriptionLabel];
@@ -90,12 +90,12 @@
         _enableButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_enableButton setTitle:NSLocalizedString(@"Enable", nil) forState:UIControlStateNormal];
-    [_enableButton setTitleColor:[PAColors getColor:PAColorsTypeTintLocalColor] forState:UIControlStateHighlighted];
+    [_enableButton setTitleColor:[PAColors getColor:kPAColorsTypeTintLocalColor] forState:UIControlStateHighlighted];
     [_enableButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_enableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PAColorsTypeTintLocalColor]] forState:UIControlStateNormal];
-    [_enableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PAColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
+    [_enableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:kPAColorsTypeTintLocalColor]] forState:UIControlStateNormal];
+    [_enableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:kPAColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _enableButton.clipsToBounds = YES;
-    _enableButton.layer.borderColor = [PAColors getColor:PAColorsTypeTintLocalColor].CGColor;
+    _enableButton.layer.borderColor = [PAColors getColor:kPAColorsTypeTintLocalColor].CGColor;
     _enableButton.layer.borderWidth = 1.0f;
     _enableButton.layer.cornerRadius = 5.0f;
     _enableButton.exclusiveTouch = YES;
@@ -110,11 +110,11 @@
         _disableButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_disableButton setTitle:NSLocalizedString(@"Disable", nil) forState:UIControlStateNormal];
-    [_disableButton setTitleColor:[PAColors getColor:PAColorsTypeTintLocalColor] forState:UIControlStateNormal];
+    [_disableButton setTitleColor:[PAColors getColor:kPAColorsTypeTintLocalColor] forState:UIControlStateNormal];
     [_disableButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-    [_disableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PAColorsTypeTintLocalColor]] forState:UIControlStateHighlighted];
+    [_disableButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:kPAColorsTypeTintLocalColor]] forState:UIControlStateHighlighted];
     _disableButton.clipsToBounds = YES;
-    _disableButton.layer.borderColor = [PAColors getColor:PAColorsTypeTintLocalColor].CGColor;
+    _disableButton.layer.borderColor = [PAColors getColor:kPAColorsTypeTintLocalColor].CGColor;
     _disableButton.layer.borderWidth = 1.0f;
     _disableButton.layer.cornerRadius = 5.0f;
     _disableButton.exclusiveTouch = YES;

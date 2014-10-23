@@ -59,7 +59,7 @@
 
 - (void)initialization {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+        self.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     }
     
     _activityIndicatorView = [PAActivityIndicatorView new];
@@ -102,7 +102,7 @@
     
     _checkMark = [UIImageView new];
     _checkMark.image = [[UIImage imageNamed:@"CheckMark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _checkMark.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    _checkMark.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     _checkMark.alpha = 0.0f;
     [self.contentView addSubview:_checkMark];
     

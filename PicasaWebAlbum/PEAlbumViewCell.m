@@ -49,32 +49,32 @@
     _thirdImageView = [UIImageView new];
     _thirdImageView.contentMode = UIViewContentModeScaleAspectFill;
     _thirdImageView.clipsToBounds = YES;
-    _thirdImageView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _thirdImageView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
     _thirdImageView.layer.borderWidth = 1.0f;
     [self.contentView addSubview:_thirdImageView];
     
     _secondImageView = [UIImageView new];
     _secondImageView.contentMode = UIViewContentModeScaleAspectFill;
     _secondImageView.clipsToBounds = YES;
-    _secondImageView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _secondImageView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
     _secondImageView.layer.borderWidth = 1.0f;
     [self.contentView addSubview:_secondImageView];
     
     _firstImageView = [UIImageView new];
     _firstImageView.contentMode = UIViewContentModeScaleAspectFill;
     _firstImageView.clipsToBounds = YES;
-    _firstImageView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _firstImageView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
     _firstImageView.layer.borderWidth = 1.0f;
     [self.contentView addSubview:_firstImageView];
     
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:12.0f];
-    _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+    _titleLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
     [self.contentView addSubview:_titleLabel];
     
     _detailLabel = [UILabel new];
     _detailLabel.font = [UIFont systemFontOfSize:10.0f];
-    _detailLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    _detailLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     [self.contentView addSubview:_detailLabel];
     
     _overrayView = [UIView new];
@@ -84,7 +84,7 @@
     
     _checkMarkImageView = [UIImageView new];
     _checkMarkImageView.image = [[UIImage imageNamed:@"CheckMark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _checkMarkImageView.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    _checkMarkImageView.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
     _checkMarkImageView.alpha = 0.0f;
     [self.contentView addSubview:_checkMarkImageView];
     

@@ -114,7 +114,7 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [[PAColors getColor:PAColorsTypeTextColor] colorWithAlphaComponent:0.1f];
+    _tableView.backgroundColor = [[PAColors getColor:kPAColorsTypeTextColor] colorWithAlphaComponent:0.1f];
     _tableView.separatorColor = [UIColor colorWithWhite:0.0f alpha:0.15f];
     CGFloat navigationBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
     CGFloat statusBarHeight = [PAViewControllerKit statusBarHeight];
@@ -173,9 +173,9 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
         cell.textLabel.font = [UIFont systemFontOfSize:15.0f];
-        cell.textLabel.textColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+        cell.textLabel.textColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
         cell.detailTextLabel.font = [UIFont systemFontOfSize:15.0f];
-        cell.detailTextLabel.textColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+        cell.detailTextLabel.textColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     }
     cell.textLabel.alpha = 1.0f;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -341,7 +341,7 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
 
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    [header.textLabel setTextColor:[PAColors getColor:PAColorsTypeBackgroundColor]];
+    [header.textLabel setTextColor:[PAColors getColor:kPAColorsTypeBackgroundColor]];
 }
 
 @end

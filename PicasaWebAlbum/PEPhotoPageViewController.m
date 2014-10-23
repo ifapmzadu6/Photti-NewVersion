@@ -60,7 +60,7 @@
                        direction:UIPageViewControllerNavigationDirectionForward
                         animated:NO
                       completion:nil];
-        self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+        self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     }
     return self;
 }
@@ -89,7 +89,7 @@
                        direction:UIPageViewControllerNavigationDirectionForward
                         animated:NO
                       completion:nil];
-        self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+        self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     }
     return self;
 }
@@ -114,7 +114,7 @@
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
-    [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
+    [tabBarController setToolbarTintColor:[PAColors getColor:kPAColorsTypeTintLocalColor]];
     if ([tabBarController isTabBarHidden]) {
         if ([tabBarController isToolbarHideen]) {
             [tabBarController setToolbarHidden:NO animated:YES completion:nil];
@@ -179,7 +179,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             PEPhotoEditViewController *viewController = [[PEPhotoEditViewController alloc] initWithAsset:asset metadata:metadata backgroundScreenShot:screenshot];
             PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-            navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+            navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
                 navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
                 [sself presentViewController:navigationController animated:YES completion:nil];
@@ -204,7 +204,7 @@
         if (!sself) return;
         PAMapViewController *viewController = [[PAMapViewController alloc] initWithImage:result latitude:location.coordinate.latitude longitude:location.coordinate.longitude];
         PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];
-        navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+        navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
             navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             [sself presentViewController:navigationController animated:YES completion:nil];
@@ -382,7 +382,7 @@
             [sself.navigationController setNavigationBarHidden:NO animated:YES];
             [tabBarController setToolbarFadeout:NO animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
-                sself.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+                sself.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
             }];
             sself.navigationController.interactivePopGestureRecognizer.enabled = YES;
         }

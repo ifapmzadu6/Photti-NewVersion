@@ -56,7 +56,7 @@
     [_collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.scrollsToTop = NO;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     

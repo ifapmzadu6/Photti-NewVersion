@@ -61,21 +61,21 @@ static NSString * const kPECategoryViewCellSettingsKey = @"kPECategoryViewCellSe
     
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:16.0f];
-    _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+    _titleLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
     [self.contentView addSubview:_titleLabel];
     
     _moreButton = [UIButton new];
     [_moreButton addTarget:self action:@selector(moreButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _moreButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
     [_moreButton setTitle:NSLocalizedString(@"See All", nil) forState:UIControlStateNormal];
-    [_moreButton setTitleColor:[PAColors getColor:PAColorsTypeTextLightSubColor] forState:UIControlStateNormal];
+    [_moreButton setTitleColor:[PAColors getColor:kPAColorsTypeTextLightSubColor] forState:UIControlStateNormal];
     _moreButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     _moreButton.titleEdgeInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 10.0f);
     [self.contentView addSubview:_moreButton];
     
     _greaterThanImageView = [UIImageView new];
     _greaterThanImageView.image = [[UIImage imageNamed:@"GreaterThan"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _greaterThanImageView.tintColor = [PAColors getColor:PAColorsTypeTextLightSubColor];
+    _greaterThanImageView.tintColor = [PAColors getColor:kPAColorsTypeTextLightSubColor];
     _greaterThanImageView.frame = CGRectMake(0.0f, 0.0f, 8.0f, 10.0f);
     [self.contentView addSubview:_greaterThanImageView];
     
@@ -94,9 +94,9 @@ static NSString * const kPECategoryViewCellSettingsKey = @"kPECategoryViewCellSe
     [noItemAttributedString appendAttributedString:hideOnSettingsAttributedString];
     NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     style.alignment = NSTextAlignmentCenter;
-    [noItemAttributedString addAttributes:@{NSParagraphStyleAttributeName: style, NSFontAttributeName: [UIFont systemFontOfSize:12.0f], NSForegroundColorAttributeName: [PAColors getColor:PAColorsTypeTextColor]} range:NSMakeRange(0, noItemAttributedString.length)];
+    [noItemAttributedString addAttributes:@{NSParagraphStyleAttributeName: style, NSFontAttributeName: [UIFont systemFontOfSize:12.0f], NSForegroundColorAttributeName: [PAColors getColor:kPAColorsTypeTextColor]} range:NSMakeRange(0, noItemAttributedString.length)];
     _noItemLabel.attributedText = noItemAttributedString;
-    _noItemLabel.linkTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PAColorsTypeTintLocalColor]};
+    _noItemLabel.linkTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:kPAColorsTypeTintLocalColor]};
     _noItemLabel.delegate = self;
     _noItemLabel.editable = NO;
     _noItemLabel.scrollEnabled = NO;

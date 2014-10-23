@@ -21,7 +21,6 @@
 #import "PWPhotoExitObject.h"
 #import "PWPhotoMediaThumbnailObject.h"
 
-#import "PWAlbumObject+Methods.h"
 #import "PWPhotoObject+Methods.h"
 
 static NSString * const kPWAlbumObjectName = @"PWAlbumManagedObject";

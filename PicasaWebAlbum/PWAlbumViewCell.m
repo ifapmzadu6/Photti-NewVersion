@@ -60,7 +60,7 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
 }
 
 - (void)initialization {
-    self.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    self.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     
     _activityIndicatorView = [PAActivityIndicatorView new];
     [self.contentView addSubview:_activityIndicatorView];
@@ -70,8 +70,8 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
         UIImageView *imageView = [UIImageView new];
         imageView.clipsToBounds = YES;
         imageView.contentMode = UIViewContentModeScaleAspectFill;
-        imageView.tintColor = [[PAColors getColor:PAColorsTypeTintWebColor] colorWithAlphaComponent:0.4f];
-        imageView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+        imageView.tintColor = [[PAColors getColor:kPAColorsTypeTintWebColor] colorWithAlphaComponent:0.4f];
+        imageView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
         imageView.layer.borderWidth = 1.0f;
         imageView.layer.borderColor = [UIColor whiteColor].CGColor;
         [self.contentView insertSubview:imageView atIndex:0];
@@ -81,12 +81,12 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
     
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:12.0f];
-    _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+    _titleLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
     [self.contentView addSubview:_titleLabel];
     
     _numPhotosLabel = [UILabel new];
     _numPhotosLabel.font = [UIFont systemFontOfSize:10.0f];
-    _numPhotosLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    _numPhotosLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     [self.contentView addSubview:_numPhotosLabel];
     
     _overrayView = [UIView new];

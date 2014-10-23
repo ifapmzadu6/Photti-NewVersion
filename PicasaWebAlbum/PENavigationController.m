@@ -59,8 +59,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
-    self.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
+    self.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
 }
 
 #pragma mark UITabBarItem

@@ -121,7 +121,7 @@
         else {
             _photoListDataSource.flowLayout = [PAPhotoCollectionViewFlowLayout new];
         }
-        _photoListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+        _photoListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
         _photoListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
             dispatch_async(dispatch_get_main_queue(), ^{
                 typeof(wself) sself = wself;
@@ -158,7 +158,7 @@
     _collectionView.delegate = _photoListDataSource;
     _photoListDataSource.collectionView = _collectionView;
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     _collectionView.allowsMultipleSelection = YES;
     [self.view addSubview:_collectionView];
@@ -187,7 +187,7 @@
     [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
-        [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
+        [tabBarController setToolbarTintColor:[PAColors getColor:kPAColorsTypeTintLocalColor]];
         __weak typeof(self) wself = self;
         [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
             typeof(wself) sself = wself;
@@ -281,7 +281,7 @@
     [tabBarController setAdsHidden:YES animated:NO];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
-    navigationController.view.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    navigationController.view.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;
@@ -308,7 +308,7 @@
     NSArray *toolbarItems = @[_selectActionBarButtonItem, flexibleSpace, _selectUploadBarButtonItem, flexibleSpace, _selectTrashBarButtonItem];
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
-    [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:kPAColorsTypeTintLocalColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
@@ -321,7 +321,7 @@
     UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
-    [tabBarController setActionNavigationTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:kPAColorsTypeTintLocalColor]];
     [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;

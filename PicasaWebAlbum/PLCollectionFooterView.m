@@ -38,7 +38,7 @@
 - (void)initialization {
     _textLabel = [UILabel new];
     _textLabel.font = [UIFont systemFontOfSize:14.0f];
-    _textLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    _textLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     _textLabel.textAlignment = NSTextAlignmentCenter;
     _textLabel.adjustsFontSizeToFitWidth = YES;
     _textLabel.minimumScaleFactor = 0.5f;

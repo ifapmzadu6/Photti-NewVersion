@@ -52,11 +52,11 @@
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.scrollsToTop = NO;
     _collectionView.clipsToBounds = NO;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     
     _indicatorView = [PAActivityIndicatorView new];
     [self.view addSubview:_indicatorView];

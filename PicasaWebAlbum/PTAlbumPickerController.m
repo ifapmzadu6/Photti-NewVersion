@@ -50,7 +50,7 @@
             
             localNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:_localAlbumPickerController];
             localNavigationController.navigationBar.barTintColor = [UIColor blackColor];
-            localNavigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [PAColors getColor:PAColorsTypeBackgroundColor]};
+            localNavigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [PAColors getColor:kPAColorsTypeBackgroundColor]};
         }
         
         UINavigationController *webNavigationController = nil;
@@ -58,7 +58,7 @@
             _webAlbumPickerController = [PTWebAlbumListViewController new];
             webNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:_webAlbumPickerController];
             webNavigationController.navigationBar.barTintColor = [UIColor blackColor];
-            webNavigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [PAColors getColor:PAColorsTypeBackgroundColor]};
+            webNavigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [PAColors getColor:kPAColorsTypeBackgroundColor]};
         }
         
         self.delegate = self;
@@ -70,17 +70,17 @@
         if (localNavigationController && webNavigationController) {
             self.viewControllers = @[localNavigationController, webNavigationController];
             self.selectedIndex = 1;
-            self.colors = @[[PAColors getColor:PAColorsTypeTintLocalColor], [PAColors getColor:PAColorsTypeTintWebColor]];
+            self.colors = @[[PAColors getColor:kPAColorsTypeTintLocalColor], [PAColors getColor:kPAColorsTypeTintWebColor]];
         }
         else if (localNavigationController) {
             self.viewControllers = @[localNavigationController];
-            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
-            self.colors = @[[PAColors getColor:PAColorsTypeTintLocalColor]];
+            self.tabBar.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
+            self.colors = @[[PAColors getColor:kPAColorsTypeTintLocalColor]];
         }
         else if (webNavigationController) {
             self.viewControllers = @[webNavigationController];
-            self.tabBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
-            self.colors = @[[PAColors getColor:PAColorsTypeTintWebColor]];
+            self.tabBar.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
+            self.colors = @[[PAColors getColor:kPAColorsTypeTintWebColor]];
         }
     }
     return self;
@@ -89,7 +89,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     self.tabBar.barTintColor = [UIColor blackColor];
 }
 

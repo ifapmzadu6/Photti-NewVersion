@@ -48,21 +48,21 @@
 - (void)initialization {
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:16.0f];
-    _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+    _titleLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
     [self addSubview:_titleLabel];
     
     _moreButton = [UIButton new];
     [_moreButton addTarget:self action:@selector(moreButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _moreButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
     [_moreButton setTitle:NSLocalizedString(@"See All", nil) forState:UIControlStateNormal];
-    [_moreButton setTitleColor:[PAColors getColor:PAColorsTypeTextLightSubColor] forState:UIControlStateNormal];
+    [_moreButton setTitleColor:[PAColors getColor:kPAColorsTypeTextLightSubColor] forState:UIControlStateNormal];
     _moreButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     _moreButton.titleEdgeInsets = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 10.0f);
     [self addSubview:_moreButton];
     
     _greaterThanImageView = [UIImageView new];
     _greaterThanImageView.image = [[UIImage imageNamed:@"GreaterThan"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _greaterThanImageView.tintColor = [PAColors getColor:PAColorsTypeTextLightSubColor];
+    _greaterThanImageView.tintColor = [PAColors getColor:kPAColorsTypeTextLightSubColor];
     _greaterThanImageView.frame = CGRectMake(0.0f, 0.0f, 8.0f, 10.0f);
     [self addSubview:_greaterThanImageView];
     
@@ -77,7 +77,7 @@
     
     _bottomTitleLabel = [UILabel new];
     _bottomTitleLabel.font = [UIFont systemFontOfSize:16.0f];
-    _bottomTitleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+    _bottomTitleLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
     [self addSubview:_bottomTitleLabel];
     
     _titleLabel.text = NSLocalizedString(@"Recently Uploaded", nil);

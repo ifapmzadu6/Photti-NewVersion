@@ -95,7 +95,7 @@
     _photoListDataSource.collectionView = _collectionView;
     _collectionView.dataSource = _photoListDataSource;
     _collectionView.delegate = _photoListDataSource;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.allowsMultipleSelection = YES;
     _collectionView.exclusiveTouch = YES;
@@ -103,7 +103,7 @@
     
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
-    _refreshControl.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    _refreshControl.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
     [_collectionView addSubview:_refreshControl];
     

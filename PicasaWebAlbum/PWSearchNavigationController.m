@@ -141,7 +141,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     [super viewDidLoad];
     
     _searchBarBackgroundView = [UIView new];
-    _searchBarBackgroundView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _searchBarBackgroundView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
     _searchBarBackgroundView.alpha = 0.0f;
     _searchBarBackgroundView.exclusiveTouch = YES;
     [self.view addSubview:_searchBarBackgroundView];
@@ -158,8 +158,8 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     [_cancelButton addTarget:self action:@selector(cancelButtonAction) forControlEvents:UIControlEventTouchUpInside];
     _cancelButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     [_cancelButton setTitle:NSLocalizedString(@"Cancel", nil) forState:UIControlStateNormal];
-    [_cancelButton setTitleColor:[PAColors getColor:PAColorsTypeTintUploadColor] forState:UIControlStateNormal];
-    [_cancelButton setTitleColor:[[PAColors getColor:PAColorsTypeTintUploadColor] colorWithAlphaComponent:0.2f]  forState:UIControlStateHighlighted];
+    [_cancelButton setTitleColor:[PAColors getColor:kPAColorsTypeTintUploadColor] forState:UIControlStateNormal];
+    [_cancelButton setTitleColor:[[PAColors getColor:kPAColorsTypeTintUploadColor] colorWithAlphaComponent:0.2f]  forState:UIControlStateHighlighted];
     _cancelButton.exclusiveTouch = YES;
     [_searchBarBackgroundView addSubview:_cancelButton];
     
@@ -392,7 +392,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
-    [header.textLabel setTextColor:[PAColors getColor:PAColorsTypeBackgroundColor]];
+    [header.textLabel setTextColor:[PAColors getColor:kPAColorsTypeBackgroundColor]];
 }
 
 #pragma mark TableViewMethods

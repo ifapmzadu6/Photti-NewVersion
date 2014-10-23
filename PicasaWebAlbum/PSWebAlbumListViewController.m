@@ -95,14 +95,14 @@
     _collectionView.dataSource = _albumListDataSource;
     _collectionView.delegate = _albumListDataSource;
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     _refreshControl = [[PWRefreshControl alloc] init];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
-    _refreshControl.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    _refreshControl.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
     _activityIndicatorView = [PAActivityIndicatorView new];

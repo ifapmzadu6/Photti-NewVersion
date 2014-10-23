@@ -43,13 +43,13 @@
     [super viewDidLoad];
     
     if (_type == PWSettingsViewControllerInitTypeWeb) {
-        self.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+        self.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     }
     else if (_type == PWSettingsViewControllerInitTypeLocal) {
-        self.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+        self.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
     }
     else if (_type == PWSettingsViewControllerInitTypeTaskManager) {
-        self.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintUploadColor];
+        self.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintUploadColor];
     }
 }
 

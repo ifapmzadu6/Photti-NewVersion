@@ -138,8 +138,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
-    self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
     
     UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
     self.navigationItem.rightBarButtonItems = @[searchBarButtonItem];
@@ -159,7 +159,7 @@
     [_tableView registerClass:[PECategoryViewCell class] forCellReuseIdentifier:NSStringFromClass([PECategoryViewCell class])];
     _tableView.alwaysBounceVertical = YES;
     _tableView.exclusiveTouch = YES;
-    _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _tableView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     PATabBarController *tabBarViewController = (PATabBarController *)self.tabBarController;
     UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
     _tableView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom + 30.0f, 0.0f);
@@ -189,7 +189,7 @@
     footerView.text = @"Photti\nCopyright © 2014 Keisuke Karijuku.";
     footerView.font = [UIFont systemFontOfSize:13.0f];
     footerView.textAlignment = NSTextAlignmentCenter;
-    footerView.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    footerView.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     footerView.numberOfLines = 2;
     _tableView.tableFooterView = footerView;
 }
@@ -246,7 +246,7 @@
     [tabBarController setAdsHidden:YES animated:NO];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
-    navigationController.view.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    navigationController.view.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;
@@ -267,7 +267,7 @@
     _albumListDataSource = [PEAlbumListDataSource new];
     _albumListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 134.0f) : CGSizeMake(150.0f, 180.0f);
     _albumListDataSource.minimumLineSpacing = 15.0f;
-    _albumListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _albumListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
         typeof(wself) sself = wself;
@@ -281,7 +281,7 @@
     _momentListDataSource = [PEMomentListDataSource new];
     _momentListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 134.0f) : CGSizeMake(150.0f, 184.0f);
     _momentListDataSource.minimumLineSpacing = 15.0f;
-    _momentListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _momentListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _momentListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
         typeof(wself) sself = wself;
@@ -297,7 +297,7 @@
     _videoListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _videoListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _videoListDataSource.minimumLineSpacing = 15.0f;
-    _videoListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _videoListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
@@ -314,7 +314,7 @@
     _panoramaListDataSource.cellSize = (self.isPhone) ? CGSizeMake(270.0f, 100.0f) : CGSizeMake(500.0f, 150.0f);
     _panoramaListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(270.0f, 100.0f) : CGSizeMake(500.0f, 150.0f);
     _panoramaListDataSource.minimumLineSpacing = 15.0f;
-    _panoramaListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _panoramaListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
@@ -331,7 +331,7 @@
     _favoriteListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _favoriteListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _favoriteListDataSource.minimumLineSpacing = 15.0f;
-    _favoriteListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _favoriteListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
@@ -349,7 +349,7 @@
     _timelapseListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _timelapseListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _timelapseListDataSource.minimumLineSpacing = 15.0f;
-    _timelapseListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _timelapseListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
@@ -366,7 +366,7 @@
     _cloudListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _cloudListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _cloudListDataSource.minimumLineSpacing = 15.0f;
-    _cloudListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _cloudListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
@@ -383,7 +383,7 @@
     _burstsListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _burstsListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _burstsListDataSource.minimumLineSpacing = 15.0f;
-    _burstsListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _burstsListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _burstsListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
@@ -400,7 +400,7 @@
     _slomoVideosListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _slomoVideosListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _slomoVideosListDataSource.minimumLineSpacing = 15.0f;
-    _slomoVideosListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _slomoVideosListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _slomoVideosListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
@@ -417,7 +417,7 @@
     _allPhotoListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _allPhotoListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _allPhotoListDataSource.minimumLineSpacing = 15.0f;
-    _allPhotoListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _allPhotoListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
@@ -657,17 +657,17 @@
         
         if (indexPath.row == 0) {
             cell.textLabel.text = NSLocalizedString(@"Other", nil);
-            cell.textLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+            cell.textLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
         else if (indexPath.row == 1) {
             cell.centerTextLabel.text = NSLocalizedString(@"Tell a frend this app", nil);
-            cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+            cell.centerTextLabel.textColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
         else if (indexPath.row == 2) {
             cell.centerTextLabel.text = NSLocalizedString(@"Remove ads", nil);
-            cell.centerTextLabel.textColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+            cell.centerTextLabel.textColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
         

@@ -40,7 +40,7 @@
         
         _albumListDataSource = [PEAlbumListDataSource new];
         _albumListDataSource.flowLayout = [PAAlbumCollectionViewFlowLayout new];
-        _albumListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+        _albumListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
         __weak typeof(self) wself = self;
         _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
             typeof(wself) sself = wself;
@@ -75,7 +75,7 @@
     _collectionView.delegate = _albumListDataSource;
     _albumListDataSource.collectionView = _collectionView;
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     _collectionView.allowsMultipleSelection = YES;
     [self.view addSubview:_collectionView];
@@ -99,7 +99,7 @@
     [tabBarController setUserInteractionEnabled:NO];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
-        [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintLocalColor]];
+        [tabBarController setToolbarTintColor:[PAColors getColor:kPAColorsTypeTintLocalColor]];
         __weak typeof(self) wself = self;
         [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
             typeof(wself) sself = wself;
@@ -177,7 +177,7 @@
     [tabBarController setAdsHidden:YES animated:NO];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
-    navigationController.view.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    navigationController.view.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;

@@ -43,7 +43,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
@@ -53,10 +53,10 @@
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PicasaLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) && ((int)[[UIScreen mainScreen] bounds].size.height == 480)) {
-        _iconImageView.tintColor = [[PAColors getColor:PAColorsTypeTintWebColor] colorWithAlphaComponent:0.1f];
+        _iconImageView.tintColor = [[PAColors getColor:kPAColorsTypeTintWebColor] colorWithAlphaComponent:0.1f];
     }
     else {
-        _iconImageView.tintColor = [[PAColors getColor:PAColorsTypeTintWebColor] colorWithAlphaComponent:0.667f];
+        _iconImageView.tintColor = [[PAColors getColor:kPAColorsTypeTintWebColor] colorWithAlphaComponent:0.667f];
     }
     _iconImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:_iconImageView];
@@ -69,7 +69,7 @@
     else {
         _titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    _titleLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     _titleLabel.numberOfLines = 2;
     [self.view addSubview:_titleLabel];
@@ -82,7 +82,7 @@
     else {
         _descriptionLabel.font = [UIFont systemFontOfSize:17.0f];
     }
-    _descriptionLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    _descriptionLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     _descriptionLabel.textAlignment = NSTextAlignmentCenter;
     _descriptionLabel.numberOfLines = 0;
     [self.view addSubview:_descriptionLabel];
@@ -96,12 +96,12 @@
         _loginButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_loginButton setTitle:NSLocalizedString(@"Login", nil) forState:UIControlStateNormal];
-    [_loginButton setTitleColor:[PAColors getColor:PAColorsTypeTintWebColor] forState:UIControlStateHighlighted];
+    [_loginButton setTitleColor:[PAColors getColor:kPAColorsTypeTintWebColor] forState:UIControlStateHighlighted];
     [_loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_loginButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PAColorsTypeTintWebColor]] forState:UIControlStateNormal];
-    [_loginButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PAColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
+    [_loginButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:kPAColorsTypeTintWebColor]] forState:UIControlStateNormal];
+    [_loginButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:kPAColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _loginButton.clipsToBounds = YES;
-    _loginButton.layer.borderColor = [PAColors getColor:PAColorsTypeTintWebColor].CGColor;
+    _loginButton.layer.borderColor = [PAColors getColor:kPAColorsTypeTintWebColor].CGColor;
     _loginButton.layer.borderWidth = 1.0f;
     _loginButton.layer.cornerRadius = 5.0f;
     _loginButton.exclusiveTouch = YES;
@@ -117,8 +117,8 @@
             _skipButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
         }
         [_skipButton setTitle:NSLocalizedString(@"Skip", nil) forState:UIControlStateNormal];
-        [_skipButton setTitleColor:[PAColors getColor:PAColorsTypeTintWebColor] forState:UIControlStateNormal];
-        [_skipButton setTitleColor:[[PAColors getColor:PAColorsTypeTintWebColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
+        [_skipButton setTitleColor:[PAColors getColor:kPAColorsTypeTintWebColor] forState:UIControlStateNormal];
+        [_skipButton setTitleColor:[[PAColors getColor:kPAColorsTypeTintWebColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
         _skipButton.exclusiveTouch = YES;
         [self.view addSubview:_skipButton];
     }

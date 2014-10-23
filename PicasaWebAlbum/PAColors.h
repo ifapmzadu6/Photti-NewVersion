@@ -8,30 +8,30 @@
 
 @import Foundation;
 
-typedef enum _PAColorsTheme {
-	PAColorsThemeDefault,
-	PAColorsThemeNight
-} PAColorsTheme;
+typedef enum _kPAColorsTheme {
+	kPAColorsThemeDefault,
+	kPAColorsThemeNight
+} kPAColorsTheme;
 
-typedef enum _PAColorsType {
-	PAColorsTypeTintWebColor,
-	PAColorsTypeTintLocalColor,
-    PAColorsTypeTintUploadColor,
-    PAColorsTypeTintDefaultColor,
-	PAColorsTypeBackgroundColor,
-	PAColorsTypeBackgroundLightColor,
-	PAColorsTypeBackgroundDarkColor,
-	PAColorsTypeTextColor,
-	PAColorsTypeTextDarkColor,
-	PAColorsTypeTextLightColor,
-	PAColorsTypeTextLightSubColor,
-} PAColorsType;
+typedef enum _kPAColorsType {
+	kPAColorsTypeTintWebColor,
+	kPAColorsTypeTintLocalColor,
+    kPAColorsTypeTintUploadColor,
+    kPAColorsTypeTintDefaultColor,
+	kPAColorsTypeBackgroundColor,
+	kPAColorsTypeBackgroundLightColor,
+	kPAColorsTypeBackgroundDarkColor,
+	kPAColorsTypeTextColor,
+	kPAColorsTypeTextDarkColor,
+	kPAColorsTypeTextLightColor,
+	kPAColorsTypeTextLightSubColor,
+} kPAColorsType;
 
 @interface PAColors : NSObject
 
 + (void)loadThemeColors;
-+ (UIColor *)getColor:(PAColorsType)type;
-+ (void)setColor:(UIColor *)color type:(PAColorsType)type;
++ (UIColor *)getColor:(kPAColorsType)type;
++ (void)setColor:(UIColor *)color type:(kPAColorsType)type;
 + (void)setDefaultColors;
 
 @end

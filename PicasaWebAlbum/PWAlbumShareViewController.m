@@ -49,7 +49,7 @@
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
     
@@ -59,8 +59,8 @@
         view.exclusiveTouch = YES;
     }
     
-    self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PAColorsTypeTextColor]};
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:kPAColorsTypeTextColor]};
 }
 
 - (void)viewWillLayoutSubviews {
@@ -87,11 +87,11 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
-        cell.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+        cell.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     }
     cell.textLabel.text = nil;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:15.0f];
-    cell.textLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+    cell.textLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
     cell.accessoryType = UITableViewCellAccessoryNone;
     cell.accessoryView = nil;
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
@@ -109,7 +109,7 @@
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }
         else {
-            cell.textLabel.textColor = [[PAColors getColor:PAColorsTypeTextColor] colorWithAlphaComponent:0.8f];
+            cell.textLabel.textColor = [[PAColors getColor:kPAColorsTypeTextColor] colorWithAlphaComponent:0.8f];
         }
     }
     else {
@@ -126,11 +126,11 @@
             }
             if (!link) {
                 cell.textLabel.text = @"http://";
-                cell.textLabel.textColor = [[PAColors getColor:PAColorsTypeTextColor] colorWithAlphaComponent:0.5f];
+                cell.textLabel.textColor = [[PAColors getColor:kPAColorsTypeTextColor] colorWithAlphaComponent:0.5f];
             }
             else {
                 cell.textLabel.text = link;
-                cell.textLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+                cell.textLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
             }
         }
         else {
@@ -145,11 +145,11 @@
             button.titleLabel.font = [UIFont systemFontOfSize:15.0f];
             [button setTitle:NSLocalizedString(@"Share the link", nil) forState:UIControlStateNormal];
             [button setBackgroundImage:[PAIcons imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
-            [button setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PAColorsTypeTintWebColor]] forState:UIControlStateNormal];
-            [button setTitleColor:[PAColors getColor:PAColorsTypeTintWebColor] forState:UIControlStateHighlighted];
+            [button setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:kPAColorsTypeTintWebColor]] forState:UIControlStateNormal];
+            [button setTitleColor:[PAColors getColor:kPAColorsTypeTintWebColor] forState:UIControlStateHighlighted];
             [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             button.clipsToBounds = YES;
-            button.layer.borderColor = [PAColors getColor:PAColorsTypeTintWebColor].CGColor;
+            button.layer.borderColor = [PAColors getColor:kPAColorsTypeTintWebColor].CGColor;
             button.layer.borderWidth = 1.0f;
             button.layer.cornerRadius = 5.0f;
             button.exclusiveTouch = YES;

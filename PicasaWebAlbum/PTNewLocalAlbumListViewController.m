@@ -34,7 +34,7 @@
         
         _albumListDataSource = [PEAlbumListDataSource new];
         _albumListDataSource.flowLayout = [PAAlbumCollectionViewFlowLayout new];
-        _albumListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+        _albumListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
         __weak typeof(self) wself = self;
         _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
             typeof(wself) sself = wself;
@@ -49,7 +49,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
     
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelBarButtonAction)];
     self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
@@ -65,7 +65,7 @@
     _collectionView.delegate = _albumListDataSource;
     _albumListDataSource.collectionView = _collectionView;
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     _collectionView.allowsMultipleSelection = YES;
     [self.view addSubview:_collectionView];

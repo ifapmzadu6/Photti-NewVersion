@@ -171,8 +171,8 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
         navigationController.view.backgroundColor = [UIColor whiteColor];
         navigationController.automaticallyAdjustsScrollViewInsets = NO;
         navigationController.edgesForExtendedLayout = UIRectEdgeAll;
-        navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
-        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PAColorsTypeTextColor]};
+        navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
+        navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:kPAColorsTypeTextColor]};
         navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         
         completion ? completion(navigationController) : 0;

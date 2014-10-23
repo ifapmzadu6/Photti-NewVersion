@@ -80,7 +80,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintLocalColor];
+    self.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

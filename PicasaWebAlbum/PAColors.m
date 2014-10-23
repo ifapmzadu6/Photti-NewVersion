@@ -34,18 +34,18 @@
 
 + (void)loadThemeColors {
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-	PAColorsTheme theme = (PAColorsTheme)[userDefaults integerForKey:@"PAColorsTheme"];
-	if (theme == PAColorsThemeDefault) {
+	kPAColorsTheme theme = (kPAColorsTheme)[userDefaults integerForKey:@"kPAColorsTheme"];
+	if (theme == kPAColorsThemeDefault) {
 		[PAColors setDefaultColors];
 	}
 }
 
-+ (UIColor *)getColor:(PAColorsType)type {
++ (UIColor *)getColor:(kPAColorsType)type {
     PAColors *sharedManager = [PAColors sharedManager];
     return [sharedManager getColor:type];
 }
 
-+ (void)setColor:(UIColor *)color type:(PAColorsType)type {
++ (void)setColor:(UIColor *)color type:(kPAColorsType)type {
     PAColors *sharedManager = [PAColors sharedManager];
     [sharedManager setColor:color type:type];
 }
@@ -55,43 +55,43 @@
     [sharedManager setDefaultColors];
 }
 
-- (UIColor *)getColor:(PAColorsType)type {
+- (UIColor *)getColor:(kPAColorsType)type {
     return [_colors objectForKey:[self key:type]];
 }
 
-- (void)setColor:(UIColor *)color type:(PAColorsType)type {
+- (void)setColor:(UIColor *)color type:(kPAColorsType)type {
     [_colors setObject:color forKey:[self key:type]];
 }
 
-- (NSString *)key:(PAColorsType)type {
+- (NSString *)key:(kPAColorsType)type {
 	return [NSString stringWithFormat:@"PWT%d", type];
 }
 
 - (void)setDefaultColors {
     [self setColor:[UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:83.0f/255.0f alpha:1.0f]
-              type:PAColorsTypeTintWebColor];
+              type:kPAColorsTypeTintWebColor];
     [self setColor:[UIColor colorWithRed:115.0f/255.0f green:115.0f/255.0f blue:255.0f/255.0f alpha:1.0f]
-              type:PAColorsTypeTintLocalColor];
+              type:kPAColorsTypeTintLocalColor];
     [self setColor:[UIColor colorWithRed:94.0f/255.0f green:174.0f/255.0f blue:158.0f/255.0f alpha:1.0f]
-              type:PAColorsTypeTintUploadColor];
+              type:kPAColorsTypeTintUploadColor];
     [self setColor:[UIColor colorWithRed:0.0f green:122.0f/255.0f blue:1.0f alpha:1.0f]
-              type:PAColorsTypeTintDefaultColor];
+              type:kPAColorsTypeTintDefaultColor];
     
 	[self setColor:[UIColor colorWithRed:61.0f/255.0f green:67.0f/255.0f blue:71.0f/255.0f alpha:1.0f]
-			  type:PAColorsTypeTextColor];
+			  type:kPAColorsTypeTextColor];
     [self setColor:[UIColor colorWithRed:0.405f green:0.411f blue:0.431f alpha:1.0f]
-			  type:PAColorsTypeTextDarkColor];
+			  type:kPAColorsTypeTextDarkColor];
 	[self setColor:[UIColor colorWithRed:0.528f green:0.532f blue:0.548f alpha:1.0f]
-			  type:PAColorsTypeTextLightColor];
+			  type:kPAColorsTypeTextLightColor];
 	[self setColor:[UIColor colorWithRed:0.628f green:0.632f blue:0.644f alpha:1.0f]
-			  type:PAColorsTypeTextLightSubColor];
+			  type:kPAColorsTypeTextLightSubColor];
     
 	[self setColor:[UIColor colorWithWhite:1.0f alpha:1.0f]
-			  type:PAColorsTypeBackgroundColor];
+			  type:kPAColorsTypeBackgroundColor];
     [self setColor:[UIColor colorWithRed:235.0f/255.0f green:238.0f/255.0f blue:240.0f/255.0f alpha:1.0f]
-			  type:PAColorsTypeBackgroundLightColor];
+			  type:kPAColorsTypeBackgroundLightColor];
 	[self setColor:[UIColor colorWithRed:210.0f/255.0f green:213.0f/255.0f blue:215.0f/255.0f alpha:1.0f]
-			  type:PAColorsTypeBackgroundDarkColor];
+			  type:kPAColorsTypeBackgroundDarkColor];
 }
 
 @end

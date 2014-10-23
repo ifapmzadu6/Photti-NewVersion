@@ -52,7 +52,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundLightColor];
+    _tableView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
     _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
@@ -66,10 +66,10 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
         view.exclusiveTouch = YES;
     }
     
-    self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:PAColorsTypeTextColor]};
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:kPAColorsTypeTextColor]};
     
-    [[UITextField appearance] setTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    [[UITextField appearance] setTintColor:[PAColors getColor:kPAColorsTypeTintWebColor]];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -116,7 +116,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
         cell.textLabel.font = [UIFont boldSystemFontOfSize:15.0f];
-        cell.textLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+        cell.textLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
         cell.detailTextLabel.font = [UIFont boldSystemFontOfSize:15.0f];
     }
     cell.accessoryView = nil;
@@ -205,7 +205,7 @@ typedef enum _PWAlbumEditViewControllerCellAccessRow {
     
     NSDate *date = [PADateTimestamp dateForTimestamp:_timestamp];
     _datePickerView = [[PWDatePickerView alloc] initWithDate:date];
-    _datePickerView.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    _datePickerView.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     CGRect rect = self.view.bounds;
     CGFloat dHeight = 216.0f + 44.0f;
     if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {

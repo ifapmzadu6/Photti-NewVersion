@@ -53,7 +53,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBarButtonAction)];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
@@ -67,7 +67,7 @@
     [_tableView registerClass:[PDTaskTableViewCell class] forCellReuseIdentifier:@"Cell"];
     [_tableView registerClass:[PDTaskManagerViewControllerHeaderView class] forHeaderFooterViewReuseIdentifier:@"Header"];
     _tableView.rowHeight = 60.0f;
-    _tableView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _tableView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
     
@@ -187,7 +187,7 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayFooterView:(UITableViewHeaderFooterView *)view forSection:(NSInteger)section {
     view.textLabel.font = [UIFont systemFontOfSize:13.0f];
-    view.textLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    view.textLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

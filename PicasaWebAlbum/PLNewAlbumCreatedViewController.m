@@ -51,8 +51,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
-    self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintUploadColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintUploadColor];
     
     UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction)];
     self.navigationItem.leftBarButtonItem = doneBarButtonItem;
@@ -68,7 +68,7 @@
     [_collectionView registerClass:[PLFullAlbumViewCell class] forCellWithReuseIdentifier:@"Cell"];
     _collectionView.alwaysBounceHorizontal = YES;
     _collectionView.showsHorizontalScrollIndicator = NO;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _collectionView.clipsToBounds = NO;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _collectionView.contentInset = UIEdgeInsetsMake(0.0f, 80.0f, 0.0f, 80.0f);
@@ -92,7 +92,7 @@
     else {
         _createdNewAlbumLabel.font = [UIFont systemFontOfSize:16.0f];
     }
-    _createdNewAlbumLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    _createdNewAlbumLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     _createdNewAlbumLabel.textAlignment = NSTextAlignmentCenter;
     _createdNewAlbumLabel.numberOfLines = 0;
     [self.view addSubview:_createdNewAlbumLabel];
@@ -106,14 +106,14 @@
         _uploadButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_uploadButton setTitle:NSLocalizedString(@"Upload", nil) forState:UIControlStateNormal];
-    [_uploadButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PAColorsTypeTintUploadColor]] forState:UIControlStateNormal];
-    [_uploadButton setTitleColor:[PAColors getColor:PAColorsTypeBackgroundLightColor] forState:UIControlStateNormal];
-    [_uploadButton setTitleColor:[PAColors getColor:PAColorsTypeTintUploadColor] forState:UIControlStateHighlighted];
-    [_uploadButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PAColorsTypeTintUploadColor]] forState:UIControlStateNormal];
-    [_uploadButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:PAColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
+    [_uploadButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:kPAColorsTypeTintUploadColor]] forState:UIControlStateNormal];
+    [_uploadButton setTitleColor:[PAColors getColor:kPAColorsTypeBackgroundLightColor] forState:UIControlStateNormal];
+    [_uploadButton setTitleColor:[PAColors getColor:kPAColorsTypeTintUploadColor] forState:UIControlStateHighlighted];
+    [_uploadButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:kPAColorsTypeTintUploadColor]] forState:UIControlStateNormal];
+    [_uploadButton setBackgroundImage:[PAIcons imageWithColor:[PAColors getColor:kPAColorsTypeBackgroundLightColor]] forState:UIControlStateHighlighted];
     _uploadButton.clipsToBounds = YES;
     _uploadButton.layer.cornerRadius = 5.0f;
-    _uploadButton.layer.borderColor = [PAColors getColor:PAColorsTypeTintUploadColor].CGColor;
+    _uploadButton.layer.borderColor = [PAColors getColor:kPAColorsTypeTintUploadColor].CGColor;
     _uploadButton.layer.borderWidth = 1.0f;
     _uploadButton.exclusiveTouch = YES;
     [self.view addSubview:_uploadButton];
@@ -127,9 +127,9 @@
         _skipButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_skipButton setTitle:NSLocalizedString(@"Skip", nil) forState:UIControlStateNormal];
-    [_skipButton setTitleColor:[PAColors getColor:PAColorsTypeBackgroundLightColor] forState:UIControlStateHighlighted];
-    [_skipButton setTitleColor:[PAColors getColor:PAColorsTypeTintUploadColor] forState:UIControlStateNormal];
-    [_skipButton setBackgroundImage:[PAIcons imageWithColor:[[PAColors getColor:PAColorsTypeTintUploadColor] colorWithAlphaComponent:0.5f]] forState:UIControlStateHighlighted];
+    [_skipButton setTitleColor:[PAColors getColor:kPAColorsTypeBackgroundLightColor] forState:UIControlStateHighlighted];
+    [_skipButton setTitleColor:[PAColors getColor:kPAColorsTypeTintUploadColor] forState:UIControlStateNormal];
+    [_skipButton setBackgroundImage:[PAIcons imageWithColor:[[PAColors getColor:kPAColorsTypeTintUploadColor] colorWithAlphaComponent:0.5f]] forState:UIControlStateHighlighted];
     _skipButton.clipsToBounds = YES;
     _skipButton.layer.cornerRadius = 5.0f;
     _skipButton.exclusiveTouch = YES;
@@ -144,9 +144,9 @@
         _applyAllItemsButton.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     }
     [_applyAllItemsButton setTitle:NSLocalizedString(@"Apply the same operation to all items", nil) forState:UIControlStateNormal];
-    [_applyAllItemsButton setTitleColor:[PAColors getColor:PAColorsTypeBackgroundLightColor] forState:UIControlStateHighlighted];
-    [_applyAllItemsButton setTitleColor:[PAColors getColor:PAColorsTypeTintUploadColor] forState:UIControlStateNormal];
-    [_applyAllItemsButton setBackgroundImage:[PAIcons imageWithColor:[[PAColors getColor:PAColorsTypeTintUploadColor] colorWithAlphaComponent:0.5f]] forState:UIControlStateHighlighted];
+    [_applyAllItemsButton setTitleColor:[PAColors getColor:kPAColorsTypeBackgroundLightColor] forState:UIControlStateHighlighted];
+    [_applyAllItemsButton setTitleColor:[PAColors getColor:kPAColorsTypeTintUploadColor] forState:UIControlStateNormal];
+    [_applyAllItemsButton setBackgroundImage:[PAIcons imageWithColor:[[PAColors getColor:kPAColorsTypeTintUploadColor] colorWithAlphaComponent:0.5f]] forState:UIControlStateHighlighted];
     _applyAllItemsButton.clipsToBounds = YES;
     _applyAllItemsButton.layer.cornerRadius = 5.0f;
     _applyAllItemsButton.exclusiveTouch = YES;
@@ -276,7 +276,7 @@
     
     UIImageView *uploadImageView = [UIImageView new];
     uploadImageView.image = [[UIImage imageNamed:@"UploadOnlyIcon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    uploadImageView.tintColor = [[PAColors getColor:PAColorsTypeTintUploadColor] colorWithAlphaComponent:0.9f];
+    uploadImageView.tintColor = [[PAColors getColor:kPAColorsTypeTintUploadColor] colorWithAlphaComponent:0.9f];
     uploadImageView.frame = CGRectMake(centerX - 320.0f/2.0f, centerY - 320.0f/2.0f, 320.0f, 320.0f);
     uploadImageView.alpha = 0.0f;
     [self.view addSubview:uploadImageView];

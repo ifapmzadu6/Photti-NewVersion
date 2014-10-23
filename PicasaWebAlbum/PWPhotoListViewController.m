@@ -136,14 +136,14 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     }
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
-    [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    [tabBarController setToolbarTintColor:[PAColors getColor:kPAColorsTypeTintWebColor]];
     
     PAPhotoCollectionViewFlowLayout *collectionViewLayout = [PAPhotoCollectionViewFlowLayout new];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _photoListDataSource.collectionView = _collectionView;
     _collectionView.dataSource = _photoListDataSource;
     _collectionView.delegate = _photoListDataSource;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.allowsMultipleSelection = YES;
     _collectionView.exclusiveTouch = YES;
@@ -151,7 +151,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     
     _refreshControl = [PWRefreshControl new];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
-    _refreshControl.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    _refreshControl.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
     [_collectionView addSubview:_refreshControl];
     
@@ -216,7 +216,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
-    [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    [tabBarController setToolbarTintColor:[PAColors getColor:kPAColorsTypeTintWebColor]];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
         __weak typeof(self) wself = self;
@@ -253,7 +253,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     [tabBarController setAdsHidden:YES animated:NO];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
-    navigationController.view.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    navigationController.view.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;
@@ -500,7 +500,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     NSArray *toolbarItems = @[_selectActionBarButton, flexibleSpace, _organizeBarButtonItem, flexibleSpace, _trashBarButtonItem];
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setActionToolbarItems:toolbarItems animated:NO];
-    [tabBarController setActionToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    [tabBarController setActionToolbarTintColor:[PAColors getColor:kPAColorsTypeTintWebColor]];
     __weak typeof(self) wself = self;
     [tabBarController setActionToolbarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
@@ -513,7 +513,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     UINavigationItem *navigationItem = [[UINavigationItem alloc] initWithTitle:NSLocalizedString(@"Select items", nil)];
     [navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:NO];
     [tabBarController setActionNavigationItem:navigationItem animated:NO];
-    [tabBarController setActionNavigationTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    [tabBarController setActionNavigationTintColor:[PAColors getColor:kPAColorsTypeTintWebColor]];
     [tabBarController setActionNavigationBarHidden:NO animated:YES completion:^(BOOL finished) {
         typeof(wself) sself = wself;
         if (!sself) return;

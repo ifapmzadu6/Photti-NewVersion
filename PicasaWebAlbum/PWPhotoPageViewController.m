@@ -67,7 +67,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     
     //ScrollViewDelegate
     [self.view.subviews.firstObject setDelegate:(id)self];
@@ -94,7 +94,7 @@
     NSArray *toolbarItems = @[actionBarButtonItem, flexibleSpace, organizeBarButtonItem, flexibleSpace, trashBarButtonItem];
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
-    [tabBarController setToolbarTintColor:[PAColors getColor:PAColorsTypeTintWebColor]];
+    [tabBarController setToolbarTintColor:[PAColors getColor:kPAColorsTypeTintWebColor]];
     if ([tabBarController isToolbarHideen]) {
         [tabBarController setToolbarItems:toolbarItems animated:NO];
         __weak typeof(self) wself = self;
@@ -402,7 +402,7 @@
             [sself.navigationController setNavigationBarHidden:NO animated:YES];
             [tabBarController setToolbarFadeout:NO animated:YES completion:nil];
             [UIView animateWithDuration:0.25f animations:^{
-                sself.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+                sself.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
             }];
             sself.navigationController.interactivePopGestureRecognizer.enabled = YES;
         }

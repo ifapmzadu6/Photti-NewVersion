@@ -147,8 +147,8 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
-    self.navigationController.navigationBar.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
+    self.navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     
     UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
@@ -168,14 +168,14 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     _collectionView.delegate = _albumListDataSource;
     [_collectionView registerClass:[PWHorizontalScrollHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"Header"];
     _collectionView.alwaysBounceVertical = YES;
-    _collectionView.backgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
     [self.view addSubview:_collectionView];
     
     _refreshControl = [PWRefreshControl new];
     [_refreshControl addTarget:self action:@selector(refreshControlAction) forControlEvents:UIControlEventValueChanged];
     _refreshControl.myContentInsetTop = _collectionView.contentInset.top;
-    _refreshControl.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    _refreshControl.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     [_collectionView addSubview:_refreshControl];
     
     _activityIndicatorView = [PAActivityIndicatorView new];
@@ -307,7 +307,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [tabBarController setAdsHidden:YES animated:NO];
     
     PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
-    navigationController.view.tintColor = [PAColors getColor:PAColorsTypeTintWebColor];
+    navigationController.view.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{
         typeof(wself) sself = wself;

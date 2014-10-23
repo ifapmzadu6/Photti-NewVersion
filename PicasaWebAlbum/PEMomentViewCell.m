@@ -49,7 +49,7 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
 
 - (void)initialization {
     _imageViewBackgroundView = [UIView new];
-    _imageViewBackgroundView.backgroundColor = [PAColors getColor:PAColorsTypeTextColor];
+    _imageViewBackgroundView.backgroundColor = [PAColors getColor:kPAColorsTypeTextColor];
     _imageViewBackgroundView.opaque = YES;
     [self.contentView addSubview:_imageViewBackgroundView];
     
@@ -67,12 +67,12 @@ static NSUInteger kPHCollectionViewCellMaxNumberOfImageViews = 4;
     
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:12.0f];
-    _titleLabel.textColor = [PAColors getColor:PAColorsTypeTextColor];
+    _titleLabel.textColor = [PAColors getColor:kPAColorsTypeTextColor];
     [self.contentView addSubview:_titleLabel];
     
     _detailLabel = [UILabel new];
     _detailLabel.font = [UIFont systemFontOfSize:10.0f];
-    _detailLabel.textColor = [PAColors getColor:PAColorsTypeTextLightColor];
+    _detailLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
     [self.contentView addSubview:_detailLabel];
     
     _overrayView = [UIView new];
