@@ -20,6 +20,7 @@
 
 #import "PSNewLocalPhotoListViewController.h"
 #import "PECategoryViewCell.h"
+#import "PAHorizontalScrollView.h"
 
 @implementation PSNewLocalHomeViewController
 
@@ -84,48 +85,110 @@
     [super setUpVideoDataSource];
     
     self.videoListDataSource.isSelectMode = YES;
+    __weak typeof(self) wself = self;
+    self.videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
+    self.videoListDataSource.didDeselectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController removeSelectedPhoto:asset];
+    };
 }
 
 - (void)setUpPanoramaDataSource {
     [super setUpPanoramaDataSource];
     
     self.panoramaListDataSource.isSelectMode = YES;
+    __weak typeof(self) wself = self;
+    self.panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
 }
 
 - (void)setUpFavoriteDataSource {
     [super setUpFavoriteDataSource];
     
     self.favoriteListDataSource.isSelectMode = YES;
+    __weak typeof(self) wself = self;
+    self.favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
 }
 
 - (void)setUpTimelapseDataSource {
     [super setUpTimelapseDataSource];
     
     self.timelapseListDataSource.isSelectMode = YES;
+    __weak typeof(self) wself = self;
+    self.timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
 }
 
 - (void)setUpCloudDataSource {
     [super setUpCloudDataSource];
     
     self.cloudListDataSource.isSelectMode = YES;
+    __weak typeof(self) wself = self;
+    self.cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
 }
 
 - (void)setUpBurstsDataSource {
     [super setUpBurstsDataSource];
     
     self.burstsListDataSource.isSelectMode = YES;
+    __weak typeof(self) wself = self;
+    self.burstsListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
 }
 
 - (void)setUpSlomoVideosDataSource {
     [super setUpSlomoVideosDataSource];
     
     self.slomoVideosListDataSource.isSelectMode = YES;
+    __weak typeof(self) wself = self;
+    self.slomoVideosListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
 }
 
 - (void)setUpAllPhotosDataSource {
     [super setUpAllPhotosDataSource];
     
     self.allPhotoListDataSource.isSelectMode = YES;
+    __weak typeof(self) wself = self;
+    self.allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
 }
 
 
@@ -154,6 +217,9 @@
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas]) {
+            PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
+            [self.panoramaListDataSource selectAssetIdentifiers:tabBarController.selectedPhotoIDs animated:NO];
+            
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -162,6 +228,9 @@
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos]) {
+            PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
+            [self.videoListDataSource selectAssetIdentifiers:tabBarController.selectedPhotoIDs animated:NO];
+            
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -170,6 +239,9 @@
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites]) {
+            PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
+            [self.favoriteListDataSource selectAssetIdentifiers:tabBarController.selectedPhotoIDs animated:NO];
+            
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -178,6 +250,9 @@
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse]) {
+            PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
+            [self.timelapseListDataSource selectAssetIdentifiers:tabBarController.selectedPhotoIDs animated:NO];
+            
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -186,6 +261,9 @@
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud]) {
+            PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
+            [self.cloudListDataSource selectAssetIdentifiers:tabBarController.selectedPhotoIDs animated:NO];
+            
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -194,6 +272,9 @@
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Bursts]) {
+            PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
+            [self.burstsListDataSource selectAssetIdentifiers:tabBarController.selectedPhotoIDs animated:NO];
+            
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -202,6 +283,9 @@
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_SlomoVideos]) {
+            PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
+            [self.slomoVideosListDataSource selectAssetIdentifiers:tabBarController.selectedPhotoIDs animated:NO];
+            
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -210,6 +294,9 @@
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos]) {
+            PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
+            [self.allPhotoListDataSource selectAssetIdentifiers:tabBarController.selectedPhotoIDs animated:NO];
+            
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;

@@ -71,31 +71,37 @@
         __weak typeof(self) wself = self;
         if (type == PHPhotoListViewControllerType_AllPhotos) {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
-            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
+            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.photoListDataSource.fetchResult index:index ascending:sself.photoListDataSource.ascending];
-                [sself.navigationController pushViewController:viewController animated:YES];
+                if (!isSelectMode) {
+                    PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.photoListDataSource.fetchResult index:index ascending:sself.photoListDataSource.ascending];
+                    [sself.navigationController pushViewController:viewController animated:YES];
+                }
             };
         }
         else if (type == PHPhotoListViewControllerType_Dates) {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makePhotoListDataSourceWithStartDate:startDate endDate:endDate];
-            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
+            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.photoListDataSource.fetchResult index:index];
-                [sself.navigationController pushViewController:viewController animated:YES];
+                if (!isSelectMode) {
+                    PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.photoListDataSource.fetchResult index:index];
+                    [sself.navigationController pushViewController:viewController animated:YES];
+                }
             };
         }
         else {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makePhotoInAlbumListDataSourceWithCollection:assetCollection];
             BOOL isTypeFavorite = (type==PHPhotoListViewControllerType_Favorite) ? YES : NO;
-            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index) {
+            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.photoListDataSource.assetCollection index:index];
-                viewController.needsFavoriteChangedPopBack = isTypeFavorite;
-                [sself.navigationController pushViewController:viewController animated:YES];
+                if (!isSelectMode) {
+                    PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.photoListDataSource.assetCollection index:index];
+                    viewController.needsFavoriteChangedPopBack = isTypeFavorite;
+                    [sself.navigationController pushViewController:viewController animated:YES];
+                }
             };
         }
         if (type == PHPhotoListViewControllerType_Panorama) {

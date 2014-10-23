@@ -11,6 +11,7 @@
 #import "PEPhotoListDataSource.h"
 
 #import "PATabBarAdsController.h"
+#import "PSImagePickerController.h"
 
 @implementation PSNewLocalPhotoListViewController
 
@@ -18,15 +19,37 @@
     self = [super initWithAssetCollection:assetCollection type:type title:title startDate:startDate endDate:endDate];
     if (self) {
         self.photoListDataSource.isSelectMode = YES;
-        self.photoListDataSource.didSelectAssetBlock = nil;
+        __weak typeof(self) wself = self;
+        self.photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+            [tabBarController addSelectedPhoto:asset];
+        };
+        self.photoListDataSource.didDeselectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+            [tabBarController removeSelectedPhoto:asset];
+        };
     }
     return self;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.navigationItem.rightBarButtonItem = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:NO];
     
-    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+    PSImagePickerController *tabBarController = (PSImagePickerController *)self.tabBarController;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.photoListDataSource selectAssetIdentifiers:tabBarController.selectedPhotoIDs animated:NO];
+    });
+    
     [tabBarController setUserInteractionEnabled:NO];
 }
 

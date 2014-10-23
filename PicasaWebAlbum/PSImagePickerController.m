@@ -198,8 +198,17 @@
         
         _webAlbumViewController.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)_countOfSelectedWebPhoto];
     }
-    else {
+    else if ([photo isKindOfClass:[PHAsset class]]) {
+        NSString *id_str = ((PHAsset *)photo).localIdentifier;
+        if ([_selectedPhotoIDs containsObject:id_str]) {
+            return;
+        }
         
+        _selectedPhotoIDs = [_selectedPhotoIDs arrayByAddingObject:id_str];
+        
+        _countOfSelectedLocalPhoto++;
+        
+        _localPageViewController.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)_countOfSelectedWebPhoto];;
     }
 }
 
@@ -238,8 +247,20 @@
             _webAlbumViewController.tabBarItem.badgeValue = nil;
         }
     }
-    else {
+    else if ([photo isKindOfClass:[PHAsset class]]) {
+        NSString *id_str = ((PHAsset *)photo).localIdentifier;
+        NSMutableArray *selectedPhotoIDs = _selectedPhotoIDs.mutableCopy;
+        [selectedPhotoIDs removeObject:id_str];
+        _selectedPhotoIDs = selectedPhotoIDs.copy;
         
+        _countOfSelectedLocalPhoto--;
+        
+        if (_countOfSelectedLocalPhoto) {
+            _localPageViewController.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)_countOfSelectedWebPhoto];
+        }
+        else {
+            _localPageViewController.tabBarItem.badgeValue = nil;
+        }
     }
 }
 

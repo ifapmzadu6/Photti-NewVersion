@@ -80,8 +80,6 @@ static NSString * const kPECategoryViewCellSettingsKey = @"kPECategoryViewCellSe
     [self.contentView addSubview:_greaterThanImageView];
     
     _horizontalScrollView = [PAHorizontalScrollView new];
-    [_horizontalScrollView.collectionView registerClass:[PEAlbumViewCell class] forCellWithReuseIdentifier:@"PHAlbumViewCell"];
-    [_horizontalScrollView.collectionView registerClass:[PEMomentViewCell class] forCellWithReuseIdentifier:@"PHCollectionViewCell"];
     _horizontalScrollView.collectionView.contentInset = UIEdgeInsetsMake(0.0f, 15.0f, 0.0f, 15.0f);
     [self.contentView addSubview:_horizontalScrollView];
     

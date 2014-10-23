@@ -47,7 +47,16 @@
 @implementation PEHomeViewController
 
 + (NSArray *)defaultEnabledItems {
-    return @[kPEHomeViewControllerRowType_Albums, kPEHomeViewControllerRowType_Moments, kPEHomeViewControllerRowType_Videos, kPEHomeViewControllerRowType_Panoramas, kPEHomeViewControllerRowType_Timelapse, kPEHomeViewControllerRowType_Favorites, kPEHomeViewControllerRowType_Cloud, kPEHomeViewControllerRowType_Bursts, kPEHomeViewControllerRowType_SlomoVideos, kPEHomeViewControllerRowType_AllPhotos];
+    return @[kPEHomeViewControllerRowType_Albums,
+             kPEHomeViewControllerRowType_Moments,
+             kPEHomeViewControllerRowType_AllPhotos,
+             kPEHomeViewControllerRowType_Favorites,
+             kPEHomeViewControllerRowType_Panoramas,
+             kPEHomeViewControllerRowType_Videos,
+             kPEHomeViewControllerRowType_Timelapse,
+             kPEHomeViewControllerRowType_Bursts,
+             kPEHomeViewControllerRowType_SlomoVideos,
+             kPEHomeViewControllerRowType_Cloud];
 }
 
 + (NSString *)localizedStringFromRowType:(NSString *)rowType {
@@ -258,6 +267,7 @@
     _albumListDataSource = [PEAlbumListDataSource new];
     _albumListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 134.0f) : CGSizeMake(150.0f, 180.0f);
     _albumListDataSource.minimumLineSpacing = 15.0f;
+    _albumListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
         typeof(wself) sself = wself;
@@ -271,6 +281,7 @@
     _momentListDataSource = [PEMomentListDataSource new];
     _momentListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 134.0f) : CGSizeMake(150.0f, 184.0f);
     _momentListDataSource.minimumLineSpacing = 15.0f;
+    _momentListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
     _momentListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
         typeof(wself) sself = wself;
@@ -286,12 +297,15 @@
     _videoListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _videoListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _videoListDataSource.minimumLineSpacing = 15.0f;
+    _videoListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+    _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection index:index ascending:sself.videoListDataSource.ascending];
-        [sself.navigationController pushViewController:viewController animated:YES];
+        if (!isSelectMode) {
+            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection index:index ascending:sself.videoListDataSource.ascending];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        }
     };
 }
 
@@ -300,12 +314,15 @@
     _panoramaListDataSource.cellSize = (self.isPhone) ? CGSizeMake(270.0f, 100.0f) : CGSizeMake(500.0f, 150.0f);
     _panoramaListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(270.0f, 100.0f) : CGSizeMake(500.0f, 150.0f);
     _panoramaListDataSource.minimumLineSpacing = 15.0f;
+    _panoramaListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+    _panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection index:index ascending:sself.panoramaListDataSource.ascending];
-        [sself.navigationController pushViewController:viewController animated:YES];
+        if (!isSelectMode) {
+            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection index:index ascending:sself.panoramaListDataSource.ascending];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        }
     };
 }
 
@@ -314,13 +331,16 @@
     _favoriteListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _favoriteListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _favoriteListDataSource.minimumLineSpacing = 15.0f;
+    _favoriteListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+    _favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection index:index ascending:sself.favoriteListDataSource.ascending];
-        viewController.needsFavoriteChangedPopBack = YES;
-        [sself.navigationController pushViewController:viewController animated:YES];
+        if (!isSelectMode) {
+            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection index:index ascending:sself.favoriteListDataSource.ascending];
+            viewController.needsFavoriteChangedPopBack = YES;
+            [sself.navigationController pushViewController:viewController animated:YES];
+        }
     };
 }
 
@@ -329,12 +349,15 @@
     _timelapseListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _timelapseListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _timelapseListDataSource.minimumLineSpacing = 15.0f;
+    _timelapseListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+    _timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection index:index ascending:sself.timelapseListDataSource.ascending];
-        [sself.navigationController pushViewController:viewController animated:YES];
+        if (!isSelectMode) {
+            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection index:index ascending:sself.timelapseListDataSource.ascending];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        }
     };
 }
 
@@ -343,12 +366,15 @@
     _cloudListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _cloudListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _cloudListDataSource.minimumLineSpacing = 15.0f;
+    _cloudListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+    _cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection index:index ascending:sself.cloudListDataSource.ascending];
-        [sself.navigationController pushViewController:viewController animated:YES];
+        if (!isSelectMode) {
+            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection index:index ascending:sself.cloudListDataSource.ascending];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        }
     };
 }
 
@@ -357,12 +383,15 @@
     _burstsListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _burstsListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _burstsListDataSource.minimumLineSpacing = 15.0f;
+    _burstsListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _burstsListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+    _burstsListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection index:index ascending:sself.burstsListDataSource.ascending];
-        [sself.navigationController pushViewController:viewController animated:YES];
+        if (!isSelectMode) {
+            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection index:index ascending:sself.burstsListDataSource.ascending];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        }
     };
 }
 
@@ -371,12 +400,15 @@
     _slomoVideosListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _slomoVideosListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _slomoVideosListDataSource.minimumLineSpacing = 15.0f;
+    _slomoVideosListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _slomoVideosListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+    _slomoVideosListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection index:index ascending:sself.slomoVideosListDataSource.ascending];
-        [sself.navigationController pushViewController:viewController animated:YES];
+        if (!isSelectMode) {
+            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection index:index ascending:sself.slomoVideosListDataSource.ascending];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        }
     };
 }
 
@@ -385,12 +417,15 @@
     _allPhotoListDataSource.cellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _allPhotoListDataSource.landscapeCellSize = (self.isPhone) ? CGSizeMake(100.0f, 100.0f) : CGSizeMake(150.0f, 150.0f);
     _allPhotoListDataSource.minimumLineSpacing = 15.0f;
+    _allPhotoListDataSource.cellBackgroundColor = [PAColors getColor:PAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index){
+    _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.allPhotoListDataSource.fetchResult index:index ascending:sself.allPhotoListDataSource.ascending];
-        [sself.navigationController pushViewController:viewController animated:YES];
+        if (!isSelectMode) {
+            PEPhotoPageViewController *viewController = [[PEPhotoPageViewController alloc] initWithResult:sself.allPhotoListDataSource.fetchResult index:index ascending:sself.allPhotoListDataSource.ascending];
+            [sself.navigationController pushViewController:viewController animated:YES];
+        }
     };
 }
 

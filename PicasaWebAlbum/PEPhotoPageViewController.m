@@ -17,6 +17,7 @@
 #import "PABaseNavigationController.h"
 #import "PAMapViewController.h"
 #import "PATabBarAdsController.h"
+#import "PTAlbumPickerController.h"
 #import "UIView+ScreenCapture.h"
 
 @interface PEPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, PHPhotoLibraryChangeObserver>
@@ -296,7 +297,22 @@
 }
 
 - (void)organizeBarButtonAction:(id)sender {
-    
+    __weak typeof(self) wself = self;
+    UIAlertAction *copyAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Copy", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PTAlbumPickerController *viewController = [[PTAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+            
+        }];
+        viewController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
+        [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
+    }];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    alertController.popoverPresentationController.barButtonItem = sender;
+    [alertController addAction:copyAction];
+    [alertController addAction:cancelAction];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)trashBarButtonAction:(id)sender {

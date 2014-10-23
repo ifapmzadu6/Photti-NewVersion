@@ -66,6 +66,8 @@
     if (collectionView) {
         [collectionView registerClass:[PEPhotoViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PEPhotoViewCell class])];
         [collectionView registerClass:[PLCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:NSStringFromClass([PLCollectionFooterView class])];
+        
+        collectionView.allowsMultipleSelection = YES;
     }
 }
 
@@ -100,6 +102,29 @@
     return selectedAssets;
 }
 
+- (void)selectAssets:(NSArray *)assets animated:(BOOL)animated {
+    for (PHAsset *asset in assets) {
+        for (PHAsset *object in _fetchResult) {
+            if ([asset isEqual:object]) {
+                NSUInteger tmpIndex = [_fetchResult indexOfObject:object];
+                NSUInteger index = (_ascending) ? _fetchResult.count-tmpIndex-1 : tmpIndex;
+                NSIndexPath *indexPath = [NSIndexPath indexPathForItem:index inSection:0];
+                [_collectionView selectItemAtIndexPath:indexPath animated:animated scrollPosition:UICollectionViewScrollPositionNone];
+                break;
+            }
+        }
+    }
+}
+
+- (void)selectAssetIdentifiers:(NSArray *)assetIdentifiers animated:(BOOL)animated {
+    PHFetchResult *assets = [PHAsset fetchAssetsWithLocalIdentifiers:assetIdentifiers options:nil];
+    NSMutableArray *assetsArray = @[].mutableCopy;
+    for (PHAsset *asset in assets) {
+        [assetsArray addObject:asset];
+    }
+    [self selectAssets:assetsArray animated:animated];
+}
+
 #pragma mark PHPhotoLibraryChangeObserver
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
     PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:_fetchResult];
@@ -116,8 +141,18 @@
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSUInteger count = changeDetails.fetchResultAfterChanges.count;
         _fetchResult = changeDetails.fetchResultAfterChanges;
+        
+        NSUInteger count = changeDetails.fetchResultAfterChanges.count;
+        void (^completionBlock)() = ^{
+            _didChangeItemCountBlock ? _didChangeItemCountBlock(count) : 0;
+            
+            PLCollectionFooterView *footerView = _footerView;
+            if (footerView) {
+                NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Photos -", nil), (unsigned long)count];
+                [footerView setText:albumCountString];
+            }
+        };
         
         UICollectionView *collectionView = _collectionView;
         if (collectionView) {
@@ -132,25 +167,11 @@
                     [collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
                 }
             } completion:^(BOOL finished) {
-                if (_didChangeItemCountBlock) {
-                    _didChangeItemCountBlock(count);
-                }
-                PLCollectionFooterView *footerView = _footerView;
-                if (footerView) {
-                    NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Photos -", nil), (unsigned long)_fetchResult.count];
-                    [footerView setText:albumCountString];
-                }
+                completionBlock();
             }];
         }
         else {
-            if (_didChangeItemCountBlock) {
-                _didChangeItemCountBlock(count);
-            }
-            PLCollectionFooterView *footerView = _footerView;
-            if (footerView) {
-                NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Photos -", nil), (unsigned long)_fetchResult.count];
-                [footerView setText:albumCountString];
-            }
+            completionBlock();
         }
     });
 }
@@ -250,25 +271,26 @@
 
 #pragma mark UICollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (_isSelectMode) {
-        if (_didChangeSelectedItemCountBlock) {
-            _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
-        }
+    if (_didChangeSelectedItemCountBlock) {
+        _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
     }
-    else {
-        NSUInteger index = (_ascending) ? _fetchResult.count-indexPath.item-1 : indexPath.item;
-        PHAsset *asset = _fetchResult[index];
-        if (_didSelectAssetBlock) {
-            _didSelectAssetBlock(asset, index);
-        }
+    
+    NSUInteger index = (_ascending) ? _fetchResult.count-indexPath.item-1 : indexPath.item;
+    PHAsset *asset = _fetchResult[index];
+    if (_didSelectAssetBlock) {
+        _didSelectAssetBlock(asset, index, _isSelectMode);
     }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (_isSelectMode) {
-        if (_didChangeSelectedItemCountBlock) {
-            _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
-        }
+    if (_didChangeSelectedItemCountBlock) {
+        _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
+    }
+    
+    NSUInteger index = (_ascending) ? _fetchResult.count-indexPath.item-1 : indexPath.item;
+    PHAsset *asset = _fetchResult[index];
+    if (_didDeselectAssetBlock) {
+        _didDeselectAssetBlock(asset, index, _isSelectMode);
     }
 }
 
