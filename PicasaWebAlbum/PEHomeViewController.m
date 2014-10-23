@@ -70,7 +70,7 @@
     else if ([rowType isEqualToString:kPEHomeViewControllerRowType_SlomoVideos])
         return NSLocalizedString(@"Slo-mo", nil);
     else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos])
-        return NSLocalizedString(@"All Photos and Videos", nil);
+        return NSLocalizedString(@"Camera Roll", nil);
     return nil;
 }
 
@@ -93,7 +93,7 @@
         return kPEHomeViewControllerRowType_Bursts;
     else if ([rowType isEqualToString:NSLocalizedString(@"Slo-mo", nil)])
         return kPEHomeViewControllerRowType_SlomoVideos;
-    else if ([rowType isEqualToString:NSLocalizedString(@"All Photos and Videos", nil)])
+    else if ([rowType isEqualToString:NSLocalizedString(@"Camera Roll", nil)])
         return kPEHomeViewControllerRowType_AllPhotos;
     return nil;
 }

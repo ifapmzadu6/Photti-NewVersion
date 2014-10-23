@@ -63,7 +63,7 @@
         
         UINavigationController *webNavigationController = nil;
         if ([PWOAuthManager isLogined]) {
-            _webAlbumViewController = [[PSWebAlbumListViewController alloc] init];
+            _webAlbumViewController = [PSWebAlbumListViewController new];
             webNavigationController = [[PABaseNavigationController alloc] initWithRootViewController:_webAlbumViewController];
             webNavigationController.navigationBar.barTintColor = [UIColor blackColor];
             webNavigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName : [PAColors getColor:PAColorsTypeBackgroundColor]};
@@ -114,7 +114,7 @@
     [super viewWillLayoutSubviews];
     
     UINavigationController *webNavigationController = _webAlbumViewController.navigationController;
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+    if (self.isLandscape) {
         webNavigationController.tabBarItem.image = [PAIcons imageWithImage:[UIImage imageNamed:@"Picasa"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
         webNavigationController.tabBarItem.selectedImage = [PAIcons imageWithImage:[UIImage imageNamed:@"PicasaSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
     }
@@ -124,7 +124,7 @@
     }
     
     UINavigationController *localNavigationController = _localPageViewController.navigationController;
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+    if (self.isLandscape) {
         localNavigationController.tabBarItem.image = [PAIcons imageWithImage:[UIImage imageNamed:@"Picture"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
         localNavigationController.tabBarItem.selectedImage = [PAIcons imageWithImage:[UIImage imageNamed:@"PictureSelected"] insets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
     }

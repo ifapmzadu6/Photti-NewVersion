@@ -83,34 +83,49 @@
 - (void)setUpVideoDataSource {
     [super setUpVideoDataSource];
     
+    self.videoListDataSource.isSelectMode = YES;
 }
 
 - (void)setUpPanoramaDataSource {
     [super setUpPanoramaDataSource];
+    
+    self.panoramaListDataSource.isSelectMode = YES;
 }
 
 - (void)setUpFavoriteDataSource {
     [super setUpFavoriteDataSource];
+    
+    self.favoriteListDataSource.isSelectMode = YES;
 }
 
 - (void)setUpTimelapseDataSource {
     [super setUpTimelapseDataSource];
+    
+    self.timelapseListDataSource.isSelectMode = YES;
 }
 
 - (void)setUpCloudDataSource {
     [super setUpCloudDataSource];
+    
+    self.cloudListDataSource.isSelectMode = YES;
 }
 
 - (void)setUpBurstsDataSource {
     [super setUpBurstsDataSource];
+    
+    self.burstsListDataSource.isSelectMode = YES;
 }
 
 - (void)setUpSlomoVideosDataSource {
     [super setUpSlomoVideosDataSource];
+    
+    self.slomoVideosListDataSource.isSelectMode = YES;
 }
 
 - (void)setUpAllPhotosDataSource {
     [super setUpAllPhotosDataSource];
+    
+    self.allPhotoListDataSource.isSelectMode = YES;
 }
 
 
