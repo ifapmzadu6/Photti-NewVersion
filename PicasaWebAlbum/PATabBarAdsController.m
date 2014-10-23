@@ -107,8 +107,9 @@
         _bannerView.alpha = hidden ? 0.0f : 1.0f;
     };
     
+    CGFloat adAnimationDuration = (hidden) ? animationDuration/2.0f : animationDuration;
     if (animated) {
-        [UIView animateWithDuration:animationDuration animations:animation];
+        [UIView animateWithDuration:adAnimationDuration animations:animation];
     }
     else {
         animation();
