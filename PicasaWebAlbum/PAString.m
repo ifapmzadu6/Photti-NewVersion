@@ -32,7 +32,7 @@
 }
 
 + (NSString *)photoAndVideoStringWithPhotoCount:(NSUInteger)photoCount videoCount:(NSUInteger)videoCount {
-    return [[self class] photoAndVideoStringWithPhotoCount:photoCount videoCount:videoCount isInitialUpperCase:NO];
+    return [self.class photoAndVideoStringWithPhotoCount:photoCount videoCount:videoCount isInitialUpperCase:NO];
 }
 
 + (NSString *)photoAndVideoStringWithPhotoCount:(NSUInteger)photoCount videoCount:(NSUInteger)videoCount isInitialUpperCase:(BOOL)isInitialUpperCase {

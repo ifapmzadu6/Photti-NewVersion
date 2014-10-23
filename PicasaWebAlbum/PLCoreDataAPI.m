@@ -155,19 +155,19 @@
 
 #pragma mark NSNotificationCenter
 - (void)contextDidSaveNotification:(NSNotification *)notification {
-    if (notification.object != [[self class] readContext] && notification.object != [[self class] storeContext]) {
-        [[[self class] readContext] performBlockAndWait:^{
+    if (notification.object != [self.class readContext] && notification.object != [self.class storeContext]) {
+        [[self.class readContext] performBlockAndWait:^{
             NSError *error = nil;
-            if (![[[self class] readContext] save:&error]) {
+            if (![[self.class readContext] save:&error]) {
 #ifdef DEBUG
                 NSLog(@"%@", error);
 #endif
                 abort();
             }
             
-            [[[self class] storeContext] performBlock:^{
+            [[self.class storeContext] performBlock:^{
                 NSError *error = nil;
-                if (![[[self class] storeContext] save:&error]) {
+                if (![[self.class storeContext] save:&error]) {
 #ifdef DEBUG
                     NSLog(@"%@", error);
 #endif
