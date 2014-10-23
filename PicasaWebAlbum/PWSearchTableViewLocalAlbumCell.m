@@ -96,6 +96,32 @@
     _thumbnailImageView.image = nil;
 }
 
+- (void)setAssetCollection:(PHAssetCollection *)assetCollection searchedText:(NSString *)seatchedText {
+    _assetCollection = assetCollection;
+    if (!assetCollection) {
+        _albumHash = 0;
+        return;
+    }
+    
+    NSUInteger hash = assetCollection.hash;
+    _albumHash = hash;
+    
+    NSString *title = assetCollection.localizedTitle;
+    NSMutableAttributedString *attributedText = [[NSAttributedString alloc] initWithString:title].mutableCopy;
+    [attributedText addAttrubutes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:15.0f]} string:seatchedText];
+    _titleLabel.attributedText = attributedText;
+    
+    PHFetchOptions *options = [PHFetchOptions new];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:options];
+    PHAsset *asset = fetchResult.firstObject;
+    if (!asset) {
+        return;
+    }
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(72.0f, 72.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+        _thumbnailImageView.image = result;
+    }];
+}
+
 - (void)setAlbum:(PLAlbumObject *)album searchedText:(NSString *)searchedText {
     _album = album;
     if (!album) {

@@ -59,7 +59,7 @@
         
         __block NSManagedObjectID *taskObjectID = nil;
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:@"PDTaskObject" inManagedObjectContext:context];
+            PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
             taskObject.type = @(PDTaskObjectTypeWebAlbumToLocalAlbum);
             taskObject.from_album_id_str = webAlbumId;
             
@@ -84,7 +84,7 @@
     NSOrderedSet *fromLocalAlbums = fromLocalAlbum.photos;
     
     [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:@"PDTaskObject" inManagedObjectContext:context];
+        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
         taskObject.type = @(PDTaskObjectTypeLocalAlbumToWebAlbum);
         taskObject.from_album_id_str = fromLocalAlbumID;
         taskObject.to_album_id_str = toWebAlbumID;
@@ -120,7 +120,7 @@
     }
     
     [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
-        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:@"PDTaskObject" inManagedObjectContext:context];
+        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
         taskObject.type = @(PDTaskObjectTypeLocalAlbumToWebAlbum);
         taskObject.from_album_id_str = localIdentifier;
         taskObject.to_album_id_str = toWebAlbumID;
@@ -151,7 +151,7 @@
         for (id tmpphoto in photos) {
             if ([tmpphoto isKindOfClass:[PWPhotoObject class]]) {
                 PWPhotoObject *photo = (PWPhotoObject *)tmpphoto;
-                PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:@"PDWebPhotoObject" inManagedObjectContext:context];
+                PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
                 webPhoto.photo_object_id_str = photo.id_str;
                 webPhoto.tag_sort_index = photo.sortIndex;
                 webPhoto.task = taskObject;
@@ -159,9 +159,18 @@
             }
             else if ([tmpphoto isKindOfClass:[PLPhotoObject class]]) {
                 PLPhotoObject *photo = (PLPhotoObject *)tmpphoto;
-                PDLocalCopyPhotoObject *localCopyPhoto = [NSEntityDescription insertNewObjectForEntityForName:@"PDLocalCopyPhotoObject" inManagedObjectContext:context];
+                PDLocalCopyPhotoObject *localCopyPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalCopyPhotoObjectName inManagedObjectContext:context];
                 localCopyPhoto.photo_object_id_str = photo.id_str;
                 localCopyPhoto.is_done = @(YES);
+                localCopyPhoto.task = taskObject;
+                [taskObject addPhotosObject:localCopyPhoto];
+            }
+            else if ([tmpphoto isKindOfClass:[PHAsset class]]) {
+                PHAsset *asset = (PHAsset *)tmpphoto;
+                PDLocalCopyPhotoObject *localCopyPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalCopyPhotoObjectName inManagedObjectContext:context];
+                localCopyPhoto.photo_object_id_str = asset.localIdentifier;
+                localCopyPhoto.is_done = @(YES);
+                localCopyPhoto.task = taskObject;
                 [taskObject addPhotosObject:localCopyPhoto];
             }
         }
@@ -184,19 +193,25 @@
         for (id photo in photos) {
             if ([photo isKindOfClass:[PLPhotoObject class]]) {
                 PLPhotoObject *localPhoto = photo;
-                PDLocalPhotoObject *localPhotoObject = [NSEntityDescription insertNewObjectForEntityForName:@"PDLocalPhotoObject" inManagedObjectContext:context];
+                PDLocalPhotoObject *localPhotoObject = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalPhotoObjectName inManagedObjectContext:context];
                 localPhotoObject.photo_object_id_str = localPhoto.id_str;
                 localPhotoObject.task = taskObject;
                 [taskObject addPhotosObject:localPhotoObject];
             }
             else if ([photo isKindOfClass:[PWPhotoObject class]]) {
                 PWPhotoObject *webPhoto = (PWPhotoObject *)photo;
-                
-                PDCopyPhotoObject *copyPhotoObject = [NSEntityDescription insertNewObjectForEntityForName:@"PDCopyPhotoObject" inManagedObjectContext:context];
+                PDCopyPhotoObject *copyPhotoObject = [NSEntityDescription insertNewObjectForEntityForName:kPDCopyPhotoObjectName inManagedObjectContext:context];
                 copyPhotoObject.photo_object_id_str = webPhoto.id_str;
                 copyPhotoObject.tag_sort_index = webPhoto.sortIndex;
                 copyPhotoObject.task = taskObject;
                 [taskObject addPhotosObject:copyPhotoObject];
+            }
+            else if ([photo isKindOfClass:[PHAsset class]]) {
+                PHAsset *asset = (PHAsset *)photo;
+                PDLocalPhotoObject *localPhotoObject = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalPhotoObjectName inManagedObjectContext:context];
+                localPhotoObject.photo_object_id_str = asset.localIdentifier;
+                localPhotoObject.task = taskObject;
+                [taskObject addPhotosObject:localPhotoObject];
             }
         }
         

@@ -17,9 +17,14 @@ typedef enum _PDTaskObjectType {
 } PDTaskObjectType;
 
 
+static NSString * const kPDTaskObjectName = @"PDTaskObject";
+static NSString * const kPDWebPhotoObjectName = @"PDWebPhotoObject";
+static NSString * const kPDLocalPhotoObjectName = @"PDLocalPhotoObject";
+static NSString * const kPDCopyPhotoObjectName = @"PDCopyPhotoObject";
+static NSString * const kPDLocalCopyPhotoObjectName = @"PDLocalCopyPhotoObject";
+
 #import "PDTaskObject.h"
 #import "PDTaskObjectFactoryMethods.h"
-
 
 #import "PDBasePhotoObject.h"
 #import "PDWebPhotoObject.h"

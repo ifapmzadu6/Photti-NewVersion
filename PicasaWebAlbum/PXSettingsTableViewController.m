@@ -622,7 +622,7 @@
         if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
             [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [NSFetchRequest new];
-                request.entity = [NSEntityDescription entityForName:@"PDTaskObject" inManagedObjectContext:context];
+                request.entity = [NSEntityDescription entityForName:kPDTaskObjectName inManagedObjectContext:context];
                 NSError *error = nil;
                 NSArray *tasks = [context executeFetchRequest:request error:&error];
                 for (PDTaskObject *task in tasks) {

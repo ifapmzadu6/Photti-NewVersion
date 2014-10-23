@@ -371,7 +371,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 
 #pragma mark NSURLSessionTaskDelegate
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
-//    NSLog(@"%s", __func__);
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
@@ -519,8 +518,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 
 #pragma mark NSURLSessionDownloadDelegate
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
-//    NSLog(@"%s", __func__);
-    
     NSString *filePath = [PAKit makeUniquePathInTmpDir];
     NSURL *fileURL = [NSURL fileURLWithPath:filePath];
     
@@ -536,7 +533,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-//    NSLog(@"%s", __func__);
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
@@ -544,7 +540,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 
 #pragma mark NSURLSessionDataTask
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
-//    NSLog(@"%s", __func__);
     _uploadResponseData = data;
 }
 
@@ -563,7 +558,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     __block PDTaskObject *taskObject = nil;
     [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:@"PDTaskObject" inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPDTaskObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sort_index" ascending:YES]];
         request.fetchLimit = 1;
         NSError *error = nil;
@@ -581,7 +576,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     __block NSUInteger count = 0;
     [PDCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:@"PDTaskObject" inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPDTaskObjectName inManagedObjectContext:context];
         NSError *error = nil;
         count = [context countForFetchRequest:request error:&error];
         
