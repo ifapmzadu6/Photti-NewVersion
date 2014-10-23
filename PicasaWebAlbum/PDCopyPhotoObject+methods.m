@@ -94,10 +94,10 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
         request.HTTPMethod = @"POST";
         [NSFileManager cancelProtect:filePath];
         NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-        if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+        if (photoObject.tag_type.integerValue == kPWPhotoObjectTypePhoto) {
             [request addValue:kPWPhotoObjectContentType_jpeg forHTTPHeaderField:kHTTPHeaderFieldContentType];
         }
-        else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+        else if (photoObject.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
             [request addValue:@"multipart/related; boundary=\"END_OF_PART\"" forHTTPHeaderField:kHTTPHeaderFieldContentType];
             [request addValue:@"1.0" forHTTPHeaderField:kHTTPHeaderFieldMIMEVersion];
         }
@@ -123,7 +123,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
     NSString *filePath = [PAKit makeUniquePathInTmpDir];
     NSURL *filePathURL = [NSURL fileURLWithPath:filePath];
     
-    if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+    if (photoObject.tag_type.integerValue == kPWPhotoObjectTypePhoto) {
         NSError *error = nil;
         if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:filePathURL error:&error]) {
 #ifdef DEBUG
@@ -131,7 +131,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
 #endif
         }
     }
-    else if (photoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+    else if (photoObject.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
         NSData *body = [PDCopyPhotoObject makeBodyFromFilePath:location.absoluteString title:photoObject.title];
         NSError *error = nil;
         if (![body writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error]) {
@@ -201,7 +201,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
     __block PWPhotoObject *photoObject = nil;
     [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
         request.fetchLimit = 1;
         NSError *error = nil;

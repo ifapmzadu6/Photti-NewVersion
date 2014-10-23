@@ -76,7 +76,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         
         NSManagedObjectContext *context = [PWCoreDataAPI readContext];
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
         __weak typeof(self) wself = self;
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         _albumListDataSource = [[PRAlbumListDataSource alloc] initWithFetchRequest:request];
@@ -119,7 +119,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
         };
         
         NSFetchRequest *recentlyUploadedRequest = [NSFetchRequest new];
-        recentlyUploadedRequest.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        recentlyUploadedRequest.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
         recentlyUploadedRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"published" ascending:NO]];
         recentlyUploadedRequest.fetchLimit = 50;
         _photoListDataSource = [[PRPhotoListDataSource alloc] initWithFetchRequest:recentlyUploadedRequest albumID:nil];

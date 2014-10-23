@@ -231,8 +231,8 @@ static NSUInteger const kPRPhotoListMaxNumberOfRecentlyUploaded = 50;
     PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:NSStringFromClass([PLCollectionFooterView class]) forIndexPath:indexPath];
     
     if (self.numberOfPhotos > 0) {
-        NSArray *photos = [self.photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypePhoto)]];
-        NSArray *videos = [self.photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypeVideo)]];
+        NSArray *photos = [self.photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(kPWPhotoObjectTypePhoto)]];
+        NSArray *videos = [self.photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(kPWPhotoObjectTypeVideo)]];
         NSString *albumCountString = [PAString photoAndVideoStringWithPhotoCount:photos.count videoCount:videos.count isInitialUpperCase:YES];
         NSString *footerString =[NSString stringWithFormat:@"- %@ -", albumCountString];
         [footerView setText:footerString];

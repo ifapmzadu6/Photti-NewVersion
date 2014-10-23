@@ -27,7 +27,7 @@
         NSMutableDictionary *photoObjectSortIndexs = @{}.mutableCopy;
         [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
             NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+            request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", webAlbumId];
             request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
             NSError *error = nil;

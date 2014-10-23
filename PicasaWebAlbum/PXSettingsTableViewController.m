@@ -582,7 +582,7 @@
     [[SDImageCache sharedImageCache] clearDisk];
     [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
         NSFetchRequest *albumRequest = [NSFetchRequest new];
-        albumRequest.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+        albumRequest.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
         NSError *albumRequestError = nil;
         NSArray *albums = [context executeFetchRequest:albumRequest error:&albumRequestError];
         for (PWAlbumObject *album in albums) {
@@ -590,7 +590,7 @@
         }
         
         NSFetchRequest *photoRequest = [NSFetchRequest new];
-        photoRequest.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        photoRequest.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
         NSError *photoRequestError = nil;
         NSArray *photos = [context executeFetchRequest:photoRequest error:&photoRequestError];
         for (PWPhotoObject *photo in photos) {

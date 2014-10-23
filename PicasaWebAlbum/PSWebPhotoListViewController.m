@@ -54,7 +54,7 @@
         
         NSManagedObjectContext *context = [PWCoreDataAPI readContext];
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         

@@ -135,7 +135,7 @@
 #pragma mark UIBarButtonItemAction
 - (void)actionBarButtonAction:(id)sender {
     PWPhotoObject *photo = _photos[_index];
-    if (photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+    if (photo.tag_type.integerValue == kPWPhotoObjectTypePhoto) {
         PWPhotoMediaContentObject *content = photo.media.content.firstObject;
         NSString *urlString = content.url;
         UIImage *cachedImage = [_photoViewCache objectForKey:urlString];
@@ -189,7 +189,7 @@
             }];
         }
     }
-    else if (photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+    else if (photo.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
         UIActionSheet *actionSheet = [UIActionSheet new];
         actionSheet.delegate = self;
         actionSheet.tag = 1001;

@@ -152,10 +152,10 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     NSInteger numberOfRows = 0;
     switch (section) {
         case PWPhotoEditViewControllerSectionTypeEXIForVIDEO:
-            if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+            if (_photo.tag_type.integerValue == kPWPhotoObjectTypePhoto) {
                 numberOfRows = PWPhotoEditViewControllerExifTypeCOUNT;
             }
-            else if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+            else if (_photo.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
                 numberOfRows = PWPhotoEditViewControllerVIDEOTypeCOUNT;
             }
             break;
@@ -182,7 +182,7 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     cell.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.2f];
     
     if (indexPath.section == PWPhotoEditViewControllerSectionTypeEXIForVIDEO) {
-        if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+        if (_photo.tag_type.integerValue == kPWPhotoObjectTypePhoto) {
             switch (indexPath.row) {
                 case PWPhotoEditViewControllerExifTypeDISTANCE:
                     cell.textLabel.text = @"Distance";
@@ -228,7 +228,7 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
                     break;
             }
         }
-        else if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+        else if (_photo.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
             switch (indexPath.row) {
                 case PWPhotoEditViewControllerVIDEOTypeAUDIOCODEC:
                     cell.textLabel.text = @"Audio Codec";
@@ -323,10 +323,10 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     NSString *title = nil;
     switch (section) {
         case PWPhotoEditViewControllerSectionTypeEXIForVIDEO:
-            if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+            if (_photo.tag_type.integerValue == kPWPhotoObjectTypePhoto) {
                 title = @"EXIF";
             }
-            else if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+            else if (_photo.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
                 title = NSLocalizedString(@"Video", nil);
             }
             break;

@@ -43,7 +43,7 @@
         
         NSManagedObjectContext *context = [PWCoreDataAPI readContext];
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:@"PWAlbumManagedObject" inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         
         _albumListDataSource = [[PRAlbumListDataSource alloc] initWithFetchRequest:request];

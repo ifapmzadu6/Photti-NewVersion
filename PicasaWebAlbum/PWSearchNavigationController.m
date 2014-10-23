@@ -716,7 +716,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 - (void)webAlbumsSearchByName:(NSString *)name completion:(void (^)(NSArray *albums, NSError *error))completion {
     [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         request.predicate = [NSPredicate predicateWithFormat:@"title contains[c] %@", name];
         NSError *error = nil;
@@ -730,7 +730,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
 - (void)webAlbumsSearchByID:(NSString *)id_str completion:(void (^)(NSArray *albums, NSError *error))completion {
     [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
         request.fetchLimit = 1;

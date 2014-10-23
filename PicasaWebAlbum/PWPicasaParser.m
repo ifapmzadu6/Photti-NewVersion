@@ -33,7 +33,7 @@ static NSString * const PWXMLNode = @"text";
     if (!entries) return nil;
     
     NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+    request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
     NSError *error = nil;
     NSMutableArray *existingAlbums = [context executeFetchRequest:request error:&error].mutableCopy;
     
@@ -87,7 +87,7 @@ static NSString * const PWXMLNode = @"text";
         }
     }
     else {
-        album = [NSEntityDescription insertNewObjectForEntityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+        album = [NSEntityDescription insertNewObjectForEntityForName:kPWAlbumObjectName inManagedObjectContext:context];
     }
     
     album.id_str = id_str;
@@ -157,7 +157,7 @@ static NSString * const PWXMLNode = @"text";
     
     NSMutableArray *existingPhotos = @[].mutableCopy;
     NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+    request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
     if (albumID) {
         request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", albumID];
     }
@@ -228,7 +228,7 @@ static NSString * const PWXMLNode = @"text";
         }
     }
     else {
-        photo = [NSEntityDescription insertNewObjectForEntityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        photo = [NSEntityDescription insertNewObjectForEntityForName:kPWPhotoObjectName inManagedObjectContext:context];
     }
     
     NSString *albumid = NtN(NtN(json[@"gphoto:albumid"])[PWXMLNode]);
@@ -300,10 +300,10 @@ static NSString * const PWXMLNode = @"text";
     
     if (photo.gphoto) {
         if (photo.gphoto.originalvideo_duration) {
-            photo.tag_type = @(PWPhotoManagedObjectTypeVideo);
+            photo.tag_type = @(kPWPhotoObjectTypeVideo);
         }
         else {
-            photo.tag_type = @(PWPhotoManagedObjectTypePhoto);
+            photo.tag_type = @(kPWPhotoObjectTypePhoto);
         }
     }
     
@@ -328,7 +328,7 @@ static NSString * const PWXMLNode = @"text";
     if (!json) return nil;
 //    NSLog(@"%@", json);
     
-    PWPhotoLinkObject *link = [NSEntityDescription insertNewObjectForEntityForName:kPWLinkManagedObjectName inManagedObjectContext:context];
+    PWPhotoLinkObject *link = [NSEntityDescription insertNewObjectForEntityForName:kPWLinkObjectName inManagedObjectContext:context];
     
     link.href = NtN(json[@"href"]);
     link.rel = NtN(json[@"rel"]);
@@ -341,7 +341,7 @@ static NSString * const PWXMLNode = @"text";
     if (!json) return nil;
 //    NSLog(@"%@", json);
     
-    PWGPhotoObject *gphoto = [NSEntityDescription insertNewObjectForEntityForName:kPWGPhotoManagedObjectName inManagedObjectContext:context];
+    PWGPhotoObject *gphoto = [NSEntityDescription insertNewObjectForEntityForName:kPWGPhotoObjectName inManagedObjectContext:context];
     
     NSString *access = NtN(NtN(json[@"gphoto:access"])[PWXMLNode]);
     if (access && ![access isEqualToString:gphoto.access]) {
@@ -407,7 +407,7 @@ static NSString * const PWXMLNode = @"text";
     if (!json) return nil;
     //    NSLog(@"%@", json);
     
-    PWPhotoMediaObject *media = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaManagedObjectName inManagedObjectContext:context];
+    PWPhotoMediaObject *media = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaObjectName inManagedObjectContext:context];
     
     id contents = NtN(json[@"media:content"]);
     if ([contents isKindOfClass:[NSArray class]]) {
@@ -455,7 +455,7 @@ static NSString * const PWXMLNode = @"text";
     if (!json) return nil;
 //    NSLog(@"%@", json);
     
-    PWPhotoMediaContentObject *content = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaContentManagedObjectName inManagedObjectContext:context];
+    PWPhotoMediaContentObject *content = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaContentObjectName inManagedObjectContext:context];
     
     NSString *height = NtN(json[@"height"]);
     if (height) {
@@ -476,7 +476,7 @@ static NSString * const PWXMLNode = @"text";
     if (!json) return nil;
 //    NSLog(@"%@", json);
     
-    PWPhotoMediaThumbnailObject *thumbnail = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaThumbnailManagedObjectName inManagedObjectContext:context];
+    PWPhotoMediaThumbnailObject *thumbnail = [NSEntityDescription insertNewObjectForEntityForName:kPWMediaThumbnailObjectName inManagedObjectContext:context];
     
     NSString *height = NtN(json[@"height"]);
     if (height) {
@@ -495,7 +495,7 @@ static NSString * const PWXMLNode = @"text";
     if (!json) return nil;
     //    NSLog(@"%@", json);
     
-    PWPhotoExitObject *exif = [NSEntityDescription insertNewObjectForEntityForName:kPWPhotoExitManagedObjectName inManagedObjectContext:context];
+    PWPhotoExitObject *exif = [NSEntityDescription insertNewObjectForEntityForName:kPWPhotoExitObjectName inManagedObjectContext:context];
     
     NSString *distance = NtN(NtN(json[@"exif:distance"])[PWXMLNode]);
     if (distance && ![distance isEqualToString:exif.distance]) {

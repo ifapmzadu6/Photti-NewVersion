@@ -29,7 +29,7 @@
     if (self) {
         NSManagedObjectContext *context = [PWCoreDataAPI readContext];
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
         _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
         _fetchedResultsController.delegate = self;

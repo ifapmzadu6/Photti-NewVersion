@@ -74,7 +74,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         
         NSManagedObjectContext *context = [PWCoreDataAPI readContext];
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
         if (_album) {
             request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
             request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
@@ -298,7 +298,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
 
 - (void)selectActionBarButtonAction {
     NSArray *selectedPhotos = _photoListDataSource.selectedPhotos;
-    NSArray *videos = [selectedPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PWPhotoManagedObjectTypeVideo)]];
+    NSArray *videos = [selectedPhotos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(kPWPhotoObjectTypeVideo)]];
     if (selectedPhotos.count == 0) return;
     BOOL isContainVideo = (videos.count > 0) ? YES : NO;
     
@@ -354,10 +354,10 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     });
     PWPhotoObject *photo = photos.firstObject;
     NSURL *url = nil;
-    if (photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+    if (photo.tag_type.integerValue == kPWPhotoObjectTypePhoto) {
         url = [NSURL URLWithString:photo.tag_originalimage_url];
     }
-    else if (photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+    else if (photo.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
         for (PWPhotoMediaContentObject *content in photo.media.content.reversedOrderedSet) {
             if ([content.type isEqualToString:@"video/mpeg4"]) {
                 NSUInteger quality = content.width.unsignedIntegerValue > content.height.unsignedIntegerValue ? content.width.unsignedIntegerValue : content.height.unsignedIntegerValue;
@@ -376,7 +376,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
             if (!sself) return;
             if (!error) {
                 NSString *filePath = nil;
-                if (photo.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+                if (photo.tag_type.integerValue == kPWPhotoObjectTypePhoto) {
                     filePath = [[PAKit makeUniquePathInTmpDir] stringByAppendingPathExtension:@"jpg"];
                 }
                 else {

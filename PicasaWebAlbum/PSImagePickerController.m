@@ -271,7 +271,7 @@
     void (^pwBlock)() = ^{
         [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
             NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+            request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
             request.fetchLimit = 1;
             NSError *error = nil;

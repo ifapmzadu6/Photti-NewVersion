@@ -259,7 +259,7 @@
     if (!isGifImage) {
         UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
         if (memoryCachedImage) {
-            if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+            if (_photo.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
                 _videoBackgroundView.hidden = NO;
                 
                 NSString *durationString = _photo.gphoto.originalvideo_duration;
@@ -354,7 +354,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         if (_photoHash != hash) return;
         
-        if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+        if (_photo.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
             _videoBackgroundView.hidden = NO;
             
             NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;
@@ -378,7 +378,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         if (_photoHash != hash) return;
         
-        if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+        if (_photo.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
             _videoBackgroundView.hidden = NO;
             
             NSString *durationString = durationString = _photo.gphoto.originalvideo_duration;

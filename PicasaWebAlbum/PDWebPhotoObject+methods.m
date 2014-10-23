@@ -27,19 +27,19 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 
 - (void)makeSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
     __block PWPhotoObject *photoObject = nil;
-    __block PWPhotoManagedObjectType tag_type = PWPhotoManagedObjectTypeUnknown;
+    __block kPWPhotoObjectType tag_type = kPWPhotoObjectTypeUnknown;
     __block NSArray *contents = nil;
     NSString *photoObjectID = self.photo_object_id_str;
     [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photoObjectID];
         request.fetchLimit = 1;
         NSError *error = nil;
         NSArray *photos = [context executeFetchRequest:request error:&error];
         if (photos.count > 0) {
             photoObject = photos.firstObject;
-            tag_type = (PWPhotoManagedObjectType)photoObject.tag_type.integerValue;
+            tag_type = (kPWPhotoObjectType)photoObject.tag_type.integerValue;
             contents = photoObject.media.content.array;
         }
     }];
@@ -49,10 +49,10 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     }
     
     NSURL *url = nil;
-    if (tag_type == PWPhotoManagedObjectTypePhoto) {
+    if (tag_type == kPWPhotoObjectTypePhoto) {
         url = [NSURL URLWithString:photoObject.tag_originalimage_url];
     }
-    else if (tag_type == PWPhotoManagedObjectTypeVideo) {
+    else if (tag_type == kPWPhotoObjectTypeVideo) {
         NSArray *mp4contents = [contents filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type = %@", @"video/mpeg4"]];
         mp4contents = [mp4contents sortedArrayUsingComparator:^NSComparisonResult(PWPhotoMediaContentObject * obj1, PWPhotoMediaContentObject * obj2) {
             return MAX(obj1.width.integerValue, obj1.height.integerValue) > MAX(obj2.width.integerValue, obj2.height.integerValue);
@@ -312,11 +312,11 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     };
     
     PWPhotoObject *webPhotoObject = [PDWebPhotoObject getWebPhotoObjectWithID:self.photo_object_id_str context:[PWCoreDataAPI readContext]];
-    if (webPhotoObject.tag_type.integerValue == PWPhotoManagedObjectTypePhoto) {
+    if (webPhotoObject.tag_type.integerValue == kPWPhotoObjectTypePhoto) {
         NSData *data = [NSData dataWithContentsOfURL:location];
         [[PLAssetsManager sharedLibrary] writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:completionBlock];
     }
-    else if (webPhotoObject.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+    else if (webPhotoObject.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
         NSURL *newLocation = [location URLByAppendingPathExtension:@"mp4"];
         NSError *error = nil;
         if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:newLocation error:&error]) {
@@ -393,7 +393,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 
 + (PWAlbumObject *)getWebAlbumWithID:(NSString *)id_str context:(NSManagedObjectContext *)context {
     NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+    request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
     request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
     request.fetchLimit = 1;
     NSError *error = nil;
@@ -406,7 +406,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
 
 + (PWPhotoObject *)getWebPhotoObjectWithID:(NSString *)id_str context:(NSManagedObjectContext *)context {
     NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+    request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
     request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
     request.fetchLimit = 1;
     NSError *error = nil;

@@ -179,7 +179,7 @@
         
         [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
             NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+            request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
             request.fetchLimit = 1;
             NSError *error = nil;
@@ -245,7 +245,7 @@
                 [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
                     NSString *photo_object_id_str = ((PDWebPhotoObject *)obj).photo_object_id_str;
                     NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+                    request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
                     request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photo_object_id_str];
                     request.fetchLimit = 1;
                     NSError *error = nil;
@@ -417,7 +417,7 @@
                 [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
                     NSString *photo_object_id_str = ((PDWebPhotoObject *)obj).photo_object_id_str;
                     NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+                    request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
                     request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photo_object_id_str];
                     request.fetchLimit = 1;
                     NSError *error = nil;
@@ -444,7 +444,7 @@
         
         [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
             NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+            request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", destination_album_id_str];
             request.fetchLimit = 1;
             NSError *error = nil;

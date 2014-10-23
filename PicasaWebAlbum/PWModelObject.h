@@ -24,20 +24,20 @@
 #import "PWAlbumObject+Methods.h"
 #import "PWPhotoObject+Methods.h"
 
-static NSString * const kPWAlbumManagedObjectName = @"PWAlbumManagedObject";
-static NSString * const kPWGPhotoManagedObjectName = @"PWGPhotoManagedObject";
-static NSString * const kPWLinkManagedObjectName = @"PWLinkManagedObject";
-static NSString * const kPWMediaContentManagedObjectName = @"PWMediaContentManagedObject";
-static NSString * const kPWMediaManagedObjectName = @"PWMediaManagedObject";
-static NSString * const kPWMediaThumbnailManagedObjectName = @"PWMediaThumbnailManagedObject";
-static NSString * const kPWPhotoExitManagedObjectName = @"PWPhotoExitManagedObject";
-static NSString * const kPWPhotoManagedObjectName = @"PWPhotoManagedObject";
+static NSString * const kPWAlbumObjectName = @"PWAlbumManagedObject";
+static NSString * const kPWGPhotoObjectName = @"PWGPhotoManagedObject";
+static NSString * const kPWLinkObjectName = @"PWLinkManagedObject";
+static NSString * const kPWMediaContentObjectName = @"PWMediaContentManagedObject";
+static NSString * const kPWMediaObjectName = @"PWMediaManagedObject";
+static NSString * const kPWMediaThumbnailObjectName = @"PWMediaThumbnailManagedObject";
+static NSString * const kPWPhotoExitObjectName = @"PWPhotoExitManagedObject";
+static NSString * const kPWPhotoObjectName = @"PWPhotoManagedObject";
 
-typedef enum _PWPhotoManagedObjectType {
-    PWPhotoManagedObjectTypeUnknown,
-    PWPhotoManagedObjectTypePhoto,
-    PWPhotoManagedObjectTypeVideo
-} PWPhotoManagedObjectType;
+typedef enum _kPWPhotoObjectType {
+    kPWPhotoObjectTypeUnknown,
+    kPWPhotoObjectTypePhoto,
+    kPWPhotoObjectTypeVideo
+} kPWPhotoObjectType;
 
 static NSString * const kPWPhotoObjectContentType_mp4 = @"video/mp4";
 static NSString * const kPWPhotoObjectContentType_jpeg = @"image/jpeg";

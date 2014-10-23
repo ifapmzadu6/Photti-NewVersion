@@ -71,7 +71,7 @@ static NSString * const PWXMLNode = @"text";
             else {
                 [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                     NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+                    request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
                     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
                     NSError *error = nil;
                     NSArray *objects = [context executeFetchRequest:request error:&error];
@@ -137,7 +137,7 @@ static NSString * const PWXMLNode = @"text";
             else {
                 [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                     NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+                    request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
                     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
                     NSError *error = nil;
                     NSArray *objects = [context executeFetchRequest:request error:&error];
@@ -190,7 +190,7 @@ static NSString * const PWXMLNode = @"text";
         else {
             [PWCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                 NSFetchRequest *request = [NSFetchRequest new];
-                request.entity = [NSEntityDescription entityForName:kPWPhotoManagedObjectName inManagedObjectContext:context];
+                request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
                 request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
                 NSError *error = nil;
                 NSArray *objects = [context executeFetchRequest:request error:&error];
@@ -304,7 +304,7 @@ static NSString * const PWXMLNode = @"text";
             [context deleteObject:photoObject];
             
             NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPWAlbumManagedObjectName inManagedObjectContext:context];
+            request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
             request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photoObject.albumid];
             request.fetchLimit = 1;
             NSError *error = nil;

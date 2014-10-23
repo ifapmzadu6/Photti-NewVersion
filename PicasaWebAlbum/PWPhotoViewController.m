@@ -86,7 +86,7 @@
         [self loadImage];
     }
     
-    if (_photo.tag_type.integerValue == PWPhotoManagedObjectTypeVideo) {
+    if (_photo.tag_type.integerValue == kPWPhotoObjectTypeVideo) {
         _imageScrollView.isDisableZoom = YES;
         
         _videoButton = [UIButton new];
