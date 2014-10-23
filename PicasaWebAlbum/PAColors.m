@@ -26,7 +26,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        _colors = [NSMutableDictionary dictionary];
+        _colors = @{}.mutableCopy;
         [self setDefaultColors];
     }
     return self;
