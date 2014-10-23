@@ -77,7 +77,7 @@
     
     [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:@"PLPhotoObject" inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
         request.fetchLimit = 1;
         NSError *error = nil;
@@ -87,7 +87,7 @@
         }
         PLPhotoObject *photoObject = objects.firstObject;
         
-        request.entity = [NSEntityDescription entityForName:@"PLAlbumObject" inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
         request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", album_id_str];
         request.fetchLimit = 1;
         NSError *albumError = nil;

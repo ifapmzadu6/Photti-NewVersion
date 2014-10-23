@@ -10,6 +10,8 @@
 
 @interface PWPhotoObject (Methods)
 
++ (PWPhotoObject *)getPhotoObjectWithID:(NSString *)id_str;
+
 + (void)getCountFromPhotoObjects:(NSArray *)photos completion:(void (^)(NSUInteger countOfPhoto, NSUInteger countOfVideo))completion;
 
 @end

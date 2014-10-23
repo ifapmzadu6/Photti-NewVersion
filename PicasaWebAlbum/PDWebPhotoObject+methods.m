@@ -218,7 +218,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     __block NSString *localAlbumObjectURL = localAlbumObject.url;
     __block NSManagedObjectID *localAlbumObjectID = localAlbumObject.objectID;
     
-    if (localAlbumObjectTagType == PLAlbumObjectTagTypeImported) {
+    if (localAlbumObjectTagType == kPLAlbumObjectTagTypeImported) {
         [plContext performBlockAndWait:^{
             NSError *error = nil;
             if (![plContext save:&error]) {
@@ -240,7 +240,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
                 return;
             }
             
-            if (localAlbumObjectTagType == PLAlbumObjectTagTypeImported) {
+            if (localAlbumObjectTagType == kPLAlbumObjectTagTypeImported) {
                 [[PLAssetsManager sharedLibrary] groupForURL:[NSURL URLWithString:localAlbumObjectURL] resultBlock:^(ALAssetsGroup *group) {
                     if (!group) {
                         [PLCoreDataAPI writeContextFinish:plContext];
@@ -427,7 +427,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     NSDate *enumurateDate = [NSDate date];
     localAlbumObject.import = enumurateDate;
     localAlbumObject.update = enumurateDate;
-    localAlbumObject.tag_type = @(PLAlbumObjectTagTypeAutomatically);
+    localAlbumObject.tag_type = @(kPLAlbumObjectTagTypeAutomatically);
     return localAlbumObject;
 }
 

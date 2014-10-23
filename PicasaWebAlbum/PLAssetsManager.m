@@ -153,11 +153,11 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
 }
 
 - (void)getImportedAlbumsWithCompletion:(void (^)(NSArray *, NSError *))completion {
-    [self getAlbumWithPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PLAlbumObjectTagTypeImported)] completion:completion];
+    [self getAlbumWithPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(kPLAlbumObjectTagTypeImported)] completion:completion];
 }
 
 - (void)getAutomatticallyCreatedAlbumWithCompletion:(void (^)(NSArray *, NSError *))completion {
-    [self getAlbumWithPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(PLAlbumObjectTagTypeAutomatically)] completion:completion];
+    [self getAlbumWithPredicate:[NSPredicate predicateWithFormat:@"tag_type = %@", @(kPLAlbumObjectTagTypeAutomatically)] completion:completion];
 }
 
 - (void)checkNewAlbumBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate completion:(void (^)(NSArray *, NSError *))completion {
@@ -231,12 +231,12 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                 NSString *name = [group valueForProperty:ALAssetsGroupPropertyName];
                 NSNumber *albumType = [group valueForProperty:ALAssetsGroupPropertyType];
                 NSURL *albumUrl = [group valueForProperty:ALAssetsGroupPropertyURL];
-                NSNumber *tag_type = @(PLAlbumObjectTagTypeImported);
+                NSNumber *tag_type = @(kPLAlbumObjectTagTypeImported);
                 
                 __block PLAlbumObject *album = nil;
                 [context performBlockAndWait:^{
                     NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:@"PLAlbumObject" inManagedObjectContext:context];
+                    request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
                     request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
                     request.fetchLimit = 1;
                     NSError *error = nil;
@@ -253,7 +253,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
                 NSMutableArray *allPhotos = @[].mutableCopy;
                 [context performBlockAndWait:^{
                     NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:@"PLPhotoObject" inManagedObjectContext:context];
+                    request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
                     NSError *error = nil;
                     NSArray *objects = [context executeFetchRequest:request error:&error];
                     [allPhotos addObjectsFromArray:objects];
@@ -385,7 +385,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
     album.timestamp = [PADateTimestamp timestampByNumberForDate:adjustedDate];
     album.import = enumurateDate;
     album.update = enumurateDate;
-    album.tag_type = @(PLAlbumObjectTagTypeAutomatically);
+    album.tag_type = @(kPLAlbumObjectTagTypeAutomatically);
     return album;
 }
 
@@ -417,7 +417,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
         //新規写真は振り分けをしなければならない
         NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-        request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(PLAlbumObjectTagTypeAutomatically)];
+        request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(kPLAlbumObjectTagTypeAutomatically)];
         error = nil;
         NSMutableArray *autoCreatedAlbums = [context executeFetchRequest:request error:&error].mutableCopy;
         for (PLPhotoObject *newPhoto in newPhotos) {
@@ -454,7 +454,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
     
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO) AND (tag_date = %@)", @(PLAlbumObjectTagTypeAutomatically), adjustedYesterday];
+    request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO) AND (tag_date = %@)", @(kPLAlbumObjectTagTypeAutomatically), adjustedYesterday];
     NSError *error = nil;
     NSArray *yesterdayAlbums = [context executeFetchRequest:request error:&error];
     if (yesterdayAlbums.count == 0) {
@@ -477,7 +477,7 @@ static NSString * const kPLAssetsManagerErrorDomain = @"com.photti.PLAssetsManag
 + (void)deleteAutoCreateAlbumsNoPhotosWithContext:(NSManagedObjectContext *)context {
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(PLAlbumObjectTagTypeAutomatically)];
+    request.predicate = [NSPredicate predicateWithFormat:@"(tag_type = %@) AND (edited = NO)", @(kPLAlbumObjectTagTypeAutomatically)];
     NSError *error = nil;
     NSArray *autoCreatedAlbums = [context executeFetchRequest:request error:&error];
     for (PLAlbumObject *album in autoCreatedAlbums) {

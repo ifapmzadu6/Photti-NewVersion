@@ -110,7 +110,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
 }
 
 - (void)oldSetUploadTaskToWebAlbumID:(NSString *)webAlbumID completion:(void(^)(NSError *error))completion {
-    PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
+    PLPhotoObject *photoObject = [PLPhotoObject getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) {
         completion ? completion([NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
         return;
@@ -254,7 +254,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     };
     NSString *requestUrlString = [NSString stringWithFormat:@"%@/%@", kPDLocalPhotoObjectPostURL, webAlbumID];
     
-    PLPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
+    PLPhotoObject *photoObject = [PLPhotoObject getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) {
         completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
         return;
@@ -329,7 +329,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
         timestamp = [PADateTimestamp timestampForDate:assetCollection.startDate];
     }
     else {
-        PLAlbumObject *albumObject = [self getAlbumObjectWithID:from_album_id_str];
+        PLAlbumObject *albumObject = [PLAlbumObject getAlbumObjectWithID:from_album_id_str];
         if (!albumObject) {
             completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
             return;
@@ -466,39 +466,6 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     PHAssetCollection *assetCollection = fetchResult.firstObject;
     NSAssert(assetCollection, nil);
     return assetCollection;
-}
-
-#pragma mark Data
-- (PLPhotoObject *)getPhotoObjectWithID:(NSString *)id_str {
-    __block PLPhotoObject *photoObject = nil;
-    [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:@"PLPhotoObject" inManagedObjectContext:context];
-        request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-        request.fetchLimit = 1;
-        NSError *error = nil;
-        NSArray *objects = [context executeFetchRequest:request error:&error];
-        if (objects.count > 0) {
-            photoObject = objects.firstObject;
-        }
-    }];
-    return photoObject;
-}
-
-- (PLAlbumObject *)getAlbumObjectWithID:(NSString *)id_str {
-    __block PLAlbumObject *albumObject = nil;
-    [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:@"PLAlbumObject" inManagedObjectContext:context];
-        request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-        request.fetchLimit = 1;
-        NSError *error = nil;
-        NSArray *objects = [context executeFetchRequest:request error:&error];
-        if (objects.count > 0) {
-            albumObject = objects.firstObject;
-        }
-    }];
-    return albumObject;
 }
 
 @end

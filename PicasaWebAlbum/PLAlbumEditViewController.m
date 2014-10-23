@@ -31,7 +31,7 @@
             _uploading_type = uploading_type;
         }
         else {
-            _uploading_type = @(PLAlbumObjectTagUploadingTypeYES);
+            _uploading_type = @(kPLAlbumObjectTagUploadingTypeYES);
         }
     }
     return self;

@@ -181,7 +181,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
             album.timestamp = timestamp;
             album.import = [NSDate date];
             album.update = [NSDate date];
-            album.tag_type = @(PLAlbumObjectTagTypeMyself);
+            album.tag_type = @(kPLAlbumObjectTagTypeMyself);
         }];
     };
     PABaseNavigationController *navigationController = [[PABaseNavigationController alloc] initWithRootViewController:viewController];

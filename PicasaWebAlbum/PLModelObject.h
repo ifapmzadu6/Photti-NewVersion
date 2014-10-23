@@ -12,19 +12,22 @@
 static NSString * const kPLAlbumObjectName = @"PLAlbumObject";
 static NSString * const kPLPhotoObjectName = @"PLPhotoObject";
 
-typedef enum _PLAlbumObjectTagType {
-    PLAlbumObjectTagTypeImported = (1 << 0),
-    PLAlbumObjectTagTypeAutomatically = (1 << 1),
-    PLAlbumObjectTagTypeMyself = (1 << 2)
-} PLAlbumObjectTagType;
+typedef enum _kPLAlbumObjectTagType {
+    kPLAlbumObjectTagTypeImported = (1 << 0),
+    kPLAlbumObjectTagTypeAutomatically = (1 << 1),
+    kPLAlbumObjectTagTypeMyself = (1 << 2)
+} kPLAlbumObjectTagType;
 
-typedef enum _PLAlbumObjectTagUploadingType {
-    PLAlbumObjectTagUploadingTypeUnknown = 0,
-    PLAlbumObjectTagUploadingTypeYES,
-    PLAlbumObjectTagUploadingTypeNO
-} PLAlbumObjectTagUploadingType;
+typedef enum _kPLAlbumObjectTagUploadingType {
+    kPLAlbumObjectTagUploadingTypeUnknown = 0,
+    kPLAlbumObjectTagUploadingTypeYES,
+    kPLAlbumObjectTagUploadingTypeNO
+} kPLAlbumObjectTagUploadingType;
 
 #import "PLAlbumObject.h"
 #import "PLPhotoObject.h"
+
+#import "PLAlbumObject+methods.h"
+#import "PLPhotoObject+methods.h"
 
 #endif

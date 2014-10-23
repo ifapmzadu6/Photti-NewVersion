@@ -174,8 +174,15 @@
         return;
     }
     
-    if ([photo isKindOfClass:[PLPhotoObject class]]) {
-        NSString *id_str = ((PLPhotoObject *)photo).id_str;
+    if ([photo isKindOfClass:[PLPhotoObject class]] ||
+        [photo isKindOfClass:[PHAsset class]]) {
+        NSString *id_str = nil;
+        if ([photo isKindOfClass:[PHAsset class]]) {
+            id_str = ((PHAsset *)photo).localIdentifier;
+        }
+        else {
+            id_str = ((PLPhotoObject *)photo).id_str;
+        }
         if ([_selectedPhotoIDs containsObject:id_str]) {
             return;
         }
@@ -198,18 +205,6 @@
         
         _webAlbumViewController.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)_countOfSelectedWebPhoto];
     }
-    else if ([photo isKindOfClass:[PHAsset class]]) {
-        NSString *id_str = ((PHAsset *)photo).localIdentifier;
-        if ([_selectedPhotoIDs containsObject:id_str]) {
-            return;
-        }
-        
-        _selectedPhotoIDs = [_selectedPhotoIDs arrayByAddingObject:id_str];
-        
-        _countOfSelectedLocalPhoto++;
-        
-        _localPageViewController.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)_countOfSelectedWebPhoto];;
-    }
 }
 
 - (void)removeSelectedPhoto:(id)photo {
@@ -218,14 +213,24 @@
     }
     
     if ([photo isKindOfClass:[PLPhotoObject class]]) {
-        NSString *id_str = ((PLPhotoObject *)photo).id_str;
+        NSString *id_str = nil;
+        if ([photo isKindOfClass:[PHAsset class]]) {
+            id_str = ((PHAsset *)photo).localIdentifier;
+        }
+        else {
+            id_str = ((PLPhotoObject *)photo).id_str;
+        }
+        if (![_selectedPhotoIDs containsObject:id_str]) {
+            return;
+        }
+        
         NSMutableArray *selectedPhotoIDs = _selectedPhotoIDs.mutableCopy;
         [selectedPhotoIDs removeObject:id_str];
         _selectedPhotoIDs = selectedPhotoIDs.copy;
         
         _countOfSelectedLocalPhoto--;
         
-        if (_countOfSelectedLocalPhoto) {
+        if (_countOfSelectedLocalPhoto > 0) {
             _localPageViewController.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)_countOfSelectedLocalPhoto];
         }
         else {
@@ -234,32 +239,21 @@
     }
     else if ([photo isKindOfClass:[PWPhotoObject class]]) {
         NSString *id_str = ((PLPhotoObject *)photo).id_str;
+        if (![_selectedPhotoIDs containsObject:id_str]) {
+            return;
+        }
+        
         NSMutableArray *selectedPhotoIDs = _selectedPhotoIDs.mutableCopy;
         [selectedPhotoIDs removeObject:id_str];
         _selectedPhotoIDs = selectedPhotoIDs.copy;
         
         _countOfSelectedWebPhoto--;
         
-        if (_countOfSelectedWebPhoto) {
+        if (_countOfSelectedWebPhoto > 0) {
             _webAlbumViewController.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)_countOfSelectedWebPhoto];
         }
         else {
             _webAlbumViewController.tabBarItem.badgeValue = nil;
-        }
-    }
-    else if ([photo isKindOfClass:[PHAsset class]]) {
-        NSString *id_str = ((PHAsset *)photo).localIdentifier;
-        NSMutableArray *selectedPhotoIDs = _selectedPhotoIDs.mutableCopy;
-        [selectedPhotoIDs removeObject:id_str];
-        _selectedPhotoIDs = selectedPhotoIDs.copy;
-        
-        _countOfSelectedLocalPhoto--;
-        
-        if (_countOfSelectedLocalPhoto) {
-            _localPageViewController.tabBarItem.badgeValue = [NSString stringWithFormat:@"%lu", (unsigned long)_countOfSelectedWebPhoto];
-        }
-        else {
-            _localPageViewController.tabBarItem.badgeValue = nil;
         }
     }
 }
@@ -269,17 +263,7 @@
     __block id photo = nil;
     
     void (^pwBlock)() = ^{
-        [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-            NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
-            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-            request.fetchLimit = 1;
-            NSError *error = nil;
-            NSArray *objects = [context executeFetchRequest:request error:&error];
-            if (objects.count > 0) {
-                photo = objects.firstObject;
-            }
-        }];
+        photo = [PWPhotoObject getPhotoObjectWithID:id_str];
     };
     
     void (^plBlock)() = ^{

@@ -49,7 +49,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
 }
 
 - (void)makeDownloadSessionTaskWithSession:(NSURLSession *)session completion:(void (^)(NSURLSessionTask *, NSError *))completion {
-    PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
+    PWPhotoObject *photoObject = [PWPhotoObject getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) {
         completion ? completion(nil, [NSError errorWithDomain:kPDCopyPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
         return;
@@ -77,7 +77,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
         return;
     };
     
-    PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
+    PWPhotoObject *photoObject = [PWPhotoObject getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) {
         completion ? completion(nil, [NSError errorWithDomain:kPDCopyPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
         return;
@@ -117,7 +117,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
 }
 
 - (void)finishDownloadWithLocation:(NSURL *)location {
-    PWPhotoObject *photoObject = [self getPhotoObjectWithID:self.photo_object_id_str];
+    PWPhotoObject *photoObject = [PWPhotoObject getPhotoObjectWithID:self.photo_object_id_str];
     if (!photoObject) return;
     
     NSString *filePath = [PAKit makeUniquePathInTmpDir];
@@ -194,23 +194,6 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
     [body appendData:[secondFooterString dataUsingEncoding:NSUTF8StringEncoding]];
     
     return body;
-}
-
-#pragma mark Data
-- (PWPhotoObject *)getPhotoObjectWithID:(NSString *)id_str {
-    __block PWPhotoObject *photoObject = nil;
-    [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
-        request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-        request.fetchLimit = 1;
-        NSError *error = nil;
-        NSArray *photos = [context executeFetchRequest:request error:&error];
-        if (photos.count > 0) {
-            photoObject = photos.firstObject;
-        }
-    }];
-    return photoObject;
 }
 
 @end

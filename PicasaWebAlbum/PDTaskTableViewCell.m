@@ -177,26 +177,12 @@
         _taskTypeLabel.textColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
         _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.photos.count];
         
-        [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
-            NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
-            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-            request.fetchLimit = 1;
-            NSError *error = nil;
-            NSArray *objects = [context executeFetchRequest:request error:&error];
-            if (objects.count == 0) {
-                return;
-            }
-            PWAlbumObject *albumObject = objects.firstObject;
-            self.titleLabel.text = albumObject.title;
-            
-            [self loadThumbnailImageWithURLString:albumObject.tag_thumbnail_url hash:hash isSub:NO];
-        }];
+        PWAlbumObject *albumObject = [PWAlbumObject getAlbumObjectWithID:id_str];
+        _titleLabel.text = albumObject.title;
+        [self loadThumbnailImageWithURLString:albumObject.tag_thumbnail_url hash:hash isSub:NO];
     }
     else if (taskObject.type.integerValue == PDTaskObjectTypePhotosToLocalAlbum) {
         _isPhotosTask = YES;
-        
-        NSString *destination_album_id_str = taskObject.to_album_id_str;
         
         _taskTypeLabel.text = NSLocalizedString(@"Download", nil);
         _taskTypeLabel.textColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
@@ -213,20 +199,10 @@
                 return;
             }
             
-            __block NSString *url = nil;
             if ([obj isKindOfClass:[PDLocalPhotoObject class]]) {
                 NSString *photo_object_id_str = ((PDLocalPhotoObject *)obj).photo_object_id_str;
-                [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-                    NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                    request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photo_object_id_str];
-                    request.fetchLimit = 1;
-                    NSError *error = nil;
-                    NSArray *objects = [context executeFetchRequest:request error:&error];
-                    if (objects.count == 0) return;
-                    PLPhotoObject *photoObject = objects.firstObject;
-                    url = photoObject.url;
-                }];
+                PLPhotoObject *photoObject = [PLPhotoObject getPhotoObjectWithID:photo_object_id_str];
+                NSString *url = photoObject.url;
                 if (sself.taskHash != hash) return;
                 if (!url) return;
                 [sself loadThmbnailImageWithAssetURL:[NSURL URLWithString:url] hash:hash completion:^(UIImage *image) {
@@ -242,18 +218,9 @@
                 }];
             }
             else if ([obj isKindOfClass:[PDWebPhotoObject class]]) {
-                [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-                    NSString *photo_object_id_str = ((PDWebPhotoObject *)obj).photo_object_id_str;
-                    NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
-                    request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photo_object_id_str];
-                    request.fetchLimit = 1;
-                    NSError *error = nil;
-                    NSArray *objects = [context executeFetchRequest:request error:&error];
-                    if (objects.count == 0) return;
-                    PWPhotoObject *photoObject = objects.firstObject;
-                    url = photoObject.tag_thumbnail_url;
-                }];
+                NSString *photo_object_id_str = ((PDWebPhotoObject *)obj).photo_object_id_str;
+                PWPhotoObject *photoObject = [PWPhotoObject getPhotoObjectWithID:photo_object_id_str];
+                NSString *url = photoObject.tag_thumbnail_url;
                 if (sself.taskHash != hash) return;
                 if (!url) return;
                 [sself loadThumbnailImageWithURLString:url hash:hash completion:^(UIImage *image) {
@@ -270,17 +237,8 @@
             }
             else if ([obj isKindOfClass:[PDLocalCopyPhotoObject class]]) {
                 NSString *photo_object_id_str = ((PDLocalCopyPhotoObject *)obj).photo_object_id_str;
-                [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-                    NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                    request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photo_object_id_str];
-                    request.fetchLimit = 1;
-                    NSError *error = nil;
-                    NSArray *objects = [context executeFetchRequest:request error:&error];
-                    if (objects.count == 0) return;
-                    PLPhotoObject *photoObject = objects.firstObject;
-                    url = photoObject.url;
-                }];
+                PLPhotoObject *photoObject = [PLPhotoObject getPhotoObjectWithID:photo_object_id_str];
+                NSString *url = photoObject.url;
                 if (sself.taskHash != hash) return;
                 if (!url) return;
                 [sself loadThmbnailImageWithAssetURL:[NSURL URLWithString:url] hash:hash completion:^(UIImage *image) {
@@ -297,78 +255,43 @@
             }
         }];
         
-        [PLCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            if (sself.taskHash != hash) return;
-            
-            NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", destination_album_id_str];
-            request.fetchLimit = 1;
-            NSError *error = nil;
-            NSArray *objects = [context executeFetchRequest:request error:&error];
-            if (objects.count == 0) {
-                return;
-            }
-            PLAlbumObject *albumObject = objects.firstObject;
-            self.subTitleLabel.text = albumObject.name;
-            
-            PLPhotoObject *thumbnail = albumObject.thumbnail;
-            if (!thumbnail && albumObject.photos.count > 0) {
-                thumbnail = albumObject.photos.firstObject;
-            }
-            if (!thumbnail) return;
-            NSURL *url = [NSURL URLWithString:thumbnail.url];
-            [sself loadThmbnailImageWithAssetURL:url hash:hash completion:^(UIImage *image) {
-                [sself setImage:image toImageView:sself.subDestiantionThumbnailImageView toAlpha:1.0f hash:hash];
-            }];
+        NSString *destination_album_id_str = taskObject.to_album_id_str;
+        PLAlbumObject *albumObject = [PLAlbumObject getAlbumObjectWithID:destination_album_id_str];
+        _subTitleLabel.text = albumObject.name;
+        
+        PLPhotoObject *thumbnail = albumObject.thumbnail;
+        if (!thumbnail && albumObject.photos.count > 0) {
+            thumbnail = albumObject.photos.firstObject;
+        }
+        if (!thumbnail) return;
+        NSURL *url = [NSURL URLWithString:thumbnail.url];
+        [self loadThmbnailImageWithAssetURL:url hash:hash completion:^(UIImage *image) {
+            [self setImage:image toImageView:_subDestiantionThumbnailImageView toAlpha:1.0f hash:hash];
         }];
     }
     else if (taskObject.type.integerValue == PDTaskObjectTypeLocalAlbumToWebAlbum) {
         _isPhotosTask = NO;
         
-        NSString *id_str = taskObject.from_album_id_str;
-        
         _taskTypeLabel.text = NSLocalizedString(@"Upload", nil);
         _taskTypeLabel.textColor = [PAColors getColor:kPAColorsTypeTintWebColor];
         _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.photos.count];
         
-        [PLCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            if (sself.taskHash != hash) return;
-            
-            NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:@"PLAlbumObject" inManagedObjectContext:context];
-            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-            request.fetchLimit = 1;
-            NSError *error = nil;
-            NSArray *objects = [context executeFetchRequest:request error:&error];
-            if (objects.count == 0) return;
-            PLAlbumObject *albumObject = objects.firstObject;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                if (sself.taskHash != hash) return;
-                sself.titleLabel.text = albumObject.name;
-            });
-            
-            PLPhotoObject *thumbnail = albumObject.thumbnail;
-            if (!thumbnail && albumObject.photos.count > 0) {
-                thumbnail = albumObject.photos.firstObject;
-            }
-            if (!thumbnail) return;
-            NSURL *url = [NSURL URLWithString:thumbnail.url];
-            [sself loadThmbnailImageWithAssetURL:url hash:hash completion:^(UIImage *image) {
-                [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
-            }];
+        NSString *id_str = taskObject.from_album_id_str;
+        PLAlbumObject *albumObject = [PLAlbumObject getAlbumObjectWithID:id_str];
+        _titleLabel.text = albumObject.name;
+        
+        PLPhotoObject *thumbnail = albumObject.thumbnail;
+        if (!thumbnail && albumObject.photos.count > 0) {
+            thumbnail = albumObject.photos.firstObject;
+        }
+        if (!thumbnail) return;
+        NSURL *url = [NSURL URLWithString:thumbnail.url];
+        [self loadThmbnailImageWithAssetURL:url hash:hash completion:^(UIImage *image) {
+            [self setImage:image toImageView:_thumbnailImageView toAlpha:1.0f hash:hash];
         }];
     }
     else if (taskObject.type.integerValue == PDTaskObjectTypePhotosToWebAlbum) {
         _isPhotosTask = YES;
-        
-        NSString *destination_album_id_str = taskObject.to_album_id_str;
         
         _taskTypeLabel.text = NSLocalizedString(@"Upload", nil);
         _taskTypeLabel.textColor = [PAColors getColor:kPAColorsTypeTintWebColor];
@@ -385,20 +308,10 @@
                 return;
             }
             
-            __block NSString *url = nil;
             if ([obj isKindOfClass:[PDLocalPhotoObject class]]) {
                 NSString *photo_object_id_str = ((PDLocalPhotoObject *)obj).photo_object_id_str;
-                [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-                    NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                    request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photo_object_id_str];
-                    request.fetchLimit = 1;
-                    NSError *error = nil;
-                    NSArray *objects = [context executeFetchRequest:request error:&error];
-                    if (objects.count == 0) return;
-                    PLPhotoObject *photoObject = objects.firstObject;
-                    url = photoObject.url;
-                }];
+                PLPhotoObject *photoObject = [PLPhotoObject getPhotoObjectWithID:photo_object_id_str];
+                NSString *url = photoObject.url;
                 if (sself.taskHash != hash) return;
                 if (!url) return;
                 [sself loadThmbnailImageWithAssetURL:[NSURL URLWithString:url] hash:hash completion:^(UIImage *image) {
@@ -414,18 +327,9 @@
                 }];
             }
             else {
-                [PWCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-                    NSString *photo_object_id_str = ((PDWebPhotoObject *)obj).photo_object_id_str;
-                    NSFetchRequest *request = [NSFetchRequest new];
-                    request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
-                    request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", photo_object_id_str];
-                    request.fetchLimit = 1;
-                    NSError *error = nil;
-                    NSArray *objects = [context executeFetchRequest:request error:&error];
-                    if (objects.count == 0) return;
-                    PWPhotoObject *photoObject = objects.firstObject;
-                    url = photoObject.tag_thumbnail_url;
-                }];
+                NSString *photo_object_id_str = ((PDWebPhotoObject *)obj).photo_object_id_str;
+                PWPhotoObject *photoObject = [PWPhotoObject getPhotoObjectWithID:photo_object_id_str];
+                NSString *url = photoObject.tag_thumbnail_url;
                 if (sself.taskHash != hash) return;
                 if (!url) return;
                 [sself loadThumbnailImageWithURLString:url hash:hash completion:^(UIImage *image) {
@@ -442,21 +346,10 @@
             }
         }];
         
-        [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
-            NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPWAlbumObjectName inManagedObjectContext:context];
-            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", destination_album_id_str];
-            request.fetchLimit = 1;
-            NSError *error = nil;
-            NSArray *objects = [context executeFetchRequest:request error:&error];
-            if (objects.count == 0) {
-                return;
-            }
-            PWAlbumObject *albumObject = objects.firstObject;
-            self.subTitleLabel.text = albumObject.title;
-            
-            [self loadThumbnailImageWithURLString:albumObject.tag_thumbnail_url hash:hash isSub:YES];
-        }];
+        NSString *destination_album_id_str = taskObject.to_album_id_str;
+        PWAlbumObject *albumObject = [PWAlbumObject getAlbumObjectWithID:destination_album_id_str];
+        _subTitleLabel.text = albumObject.title;
+        [self loadThumbnailImageWithURLString:albumObject.tag_thumbnail_url hash:hash isSub:YES];
     }
     
     [self setNeedsLayout];

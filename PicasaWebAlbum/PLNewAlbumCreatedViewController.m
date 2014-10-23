@@ -155,10 +155,10 @@
     NSManagedObjectContext *context = [PLCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
     request.entity = [NSEntityDescription entityForName:kPLAlbumObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"(import = %@) AND (tag_uploading_type = %@)", _date, @(PLAlbumObjectTagUploadingTypeUnknown)];
+    request.predicate = [NSPredicate predicateWithFormat:@"(import = %@) AND (tag_uploading_type = %@)", _date, @(kPLAlbumObjectTagUploadingTypeUnknown)];
 //#ifdef DEBUG
 //    //下はテスト用
-//    request.predicate = [NSPredicate predicateWithFormat:@"tag_uploading_type = %@", @(PLAlbumObjectTagUploadingTypeUnknown)];
+//    request.predicate = [NSPredicate predicateWithFormat:@"tag_uploading_type = %@", @(kPLAlbumObjectTagUploadingTypeUnknown)];
 //#endif
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"tag_date" ascending:NO]];
     request.fetchLimit = 7;
@@ -299,7 +299,7 @@
             NSManagedObjectID *albumObjectID = albumObject.objectID;
             [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                 PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumObjectID];
-                albumObject.tag_uploading_type = @(PLAlbumObjectTagUploadingTypeYES);
+                albumObject.tag_uploading_type = @(kPLAlbumObjectTagUploadingTypeYES);
             }];
             
             [[PDTaskManager sharedManager] addTaskFromLocalAlbum:albumObject toWebAlbum:nil completion:^(NSError *error) {
@@ -317,7 +317,7 @@
     NSManagedObjectID *albumObjectID = albumObject.objectID;
     [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
         PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumObjectID];
-        albumObject.tag_uploading_type = @(PLAlbumObjectTagUploadingTypeNO);
+        albumObject.tag_uploading_type = @(kPLAlbumObjectTagUploadingTypeNO);
     }];
 }
 
@@ -458,7 +458,7 @@
             NSManagedObjectID *albumObjectID = albumObject.objectID;
             [context performBlockAndWait:^{
                 PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumObjectID];
-                albumObject.tag_uploading_type = @(PLAlbumObjectTagUploadingTypeYES);
+                albumObject.tag_uploading_type = @(kPLAlbumObjectTagUploadingTypeYES);
             }];
         }
         [context performBlockAndWait:^{
@@ -489,7 +489,7 @@
         NSManagedObjectID *albumObjectID = albumObject.objectID;
         [context performBlockAndWait:^{
             PLAlbumObject *albumObject = (PLAlbumObject *)[context objectWithID:albumObjectID];
-            albumObject.tag_uploading_type = @(PLAlbumObjectTagUploadingTypeNO);
+            albumObject.tag_uploading_type = @(kPLAlbumObjectTagUploadingTypeNO);
         }];
     }
     [context performBlockAndWait:^{
