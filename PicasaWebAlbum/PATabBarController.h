@@ -8,7 +8,7 @@
 
 @import UIKit;
 
-static const CGFloat animationDuration = 0.25f;
+static const CGFloat animationDuration = 0.3f;
 
 @interface PATabBarController : UITabBarController
 

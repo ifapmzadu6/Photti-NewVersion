@@ -38,9 +38,6 @@
         [self disableBannerBounce:_bannerView];
         
         GADRequest *request = [GADRequest request];
-#ifdef DEBUG
-        request.testDevices = @[ @"df48ebadba052c20f86a3ede43821c96"];
-#endif
         [_bannerView loadRequest:request];
     }
 }

@@ -16,7 +16,10 @@
 
 + (CGSize)itemSize {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        int size = MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds));
+        static int size;
+        if (!size) {
+            size = (int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds)));
+        }
         if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
             if (size > 667) {       //iPhone6Plus
                 return CGSizeMake(121.0f, 121.0f);

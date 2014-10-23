@@ -8,6 +8,8 @@
 
 #import "PATabBarController.h"
 
+#import "PAViewControllerKit.h"
+
 @interface PATabBarController () <UITabBarControllerDelegate, UINavigationBarDelegate>
 
 @property (strong, nonatomic) UIToolbar *toolbar;
@@ -60,14 +62,14 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    _toolbar = [[UIToolbar alloc] init];
+    _toolbar = [UIToolbar new];
     _toolbar.exclusiveTouch = YES;
     [self.view addSubview:_toolbar];
     
     _toolbar.alpha = 0.0f;
     _isToolbarHidden = YES;
     
-    _actionToolbar = [[UIToolbar alloc] init];
+    _actionToolbar = [UIToolbar new];
     _actionToolbar.barTintColor = [UIColor blackColor];
     _actionToolbar.exclusiveTouch = YES;
     [self.view addSubview:_actionToolbar];
@@ -75,7 +77,7 @@
     _actionToolbar.alpha = 0.0f;
     _isActionToolbarHidden = YES;
     
-    _actionNavigationBar = [[UINavigationBar alloc] init];
+    _actionNavigationBar = [UINavigationBar new];
     _actionNavigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [UIColor colorWithWhite:0.8f alpha:1.0f]};
     _actionNavigationBar.barTintColor = [UIColor blackColor];
     _actionNavigationBar.delegate = self;
@@ -180,7 +182,7 @@
 }
 
 - (CGFloat)navigationBarHeight {
-    CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    CGFloat statusBarHeight = [PAViewControllerKit statusBarHeight];
     
     UINavigationController *navigationController = self.childViewControllers.firstObject;
     if ([navigationController isKindOfClass:[UINavigationController class]]) {

@@ -13,6 +13,7 @@
 #import "PADateTimestamp.h"
 #import "PADateFormatter.h"
 #import "UIImage+ImageEffects.h"
+#import "PAViewControllerKit.h"
 
 typedef enum _PWPhotoEditViewControllerSectionType {
     PWPhotoEditViewControllerSectionTypeDESCRIPTION,
@@ -116,7 +117,7 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     _tableView.backgroundColor = [[PAColors getColor:PAColorsTypeTextColor] colorWithAlphaComponent:0.1f];
     _tableView.separatorColor = [UIColor colorWithWhite:0.0f alpha:0.15f];
     CGFloat navigationBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
-    CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    CGFloat statusBarHeight = [PAViewControllerKit statusBarHeight];
     _tableView.contentInset = UIEdgeInsetsMake(navigationBarHeight + statusBarHeight, 0.0f, 0.0f, 0.0f);
     _tableView.contentOffset = CGPointMake(0.0f, -_tableView.contentInset.top);
     _tableView.scrollIndicatorInsets = _tableView.contentInset;
@@ -131,7 +132,7 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     _backgroundImageView.frame = rect;
     
     CGFloat navigationBarHeight = CGRectGetHeight(self.navigationController.navigationBar.bounds);
-    CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    CGFloat statusBarHeight = [PAViewControllerKit statusBarHeight];
     _tableView.contentInset = UIEdgeInsetsMake(navigationBarHeight + statusBarHeight, 0.0f, 0.0f, 0.0f);
     _tableView.scrollIndicatorInsets = _tableView.contentInset;
     _tableView.frame = rect;

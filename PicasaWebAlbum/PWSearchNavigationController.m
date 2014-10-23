@@ -18,6 +18,7 @@
 #import "PLAssetsManager.h"
 #import "PWSearchTableViewWebAlbumCell.h"
 #import "PWSearchTableViewLocalAlbumCell.h"
+#import "PAViewControllerKit.h"
 
 #import "UIView+ScreenCapture.h"
 #import "UIImage+ImageEffects.h"
@@ -190,8 +191,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     [super viewWillLayoutSubviews];
     
     CGSize navigationBarSize = self.navigationBar.bounds.size;
-    CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
-    CGFloat statusBarHeight = MIN(statusBarSize.width, statusBarSize.height);
+    CGFloat statusBarHeight = [PAViewControllerKit statusBarHeight];
     _searchBarBackgroundView.frame = CGRectMake(0.0f, 0.0f, navigationBarSize.width, navigationBarSize.height + statusBarHeight);
     CGSize cancelButtonSize = [_cancelButton sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
     _searchBar.frame = CGRectMake(0.0f, statusBarHeight, navigationBarSize.width - (cancelButtonSize.width + 10.0f), navigationBarSize.height);

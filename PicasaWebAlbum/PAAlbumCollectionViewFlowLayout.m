@@ -16,20 +16,37 @@
 
 + (CGSize)itemSize {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        static int size;
+        if (!size) {
+            size = (int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds)));
+        }
+        
         if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
-                return CGSizeMake(90.0f, 124.0f);
+            if (size > 667) {
+                return CGSizeMake(114.0f, 148.0f);
+            }
+            else if (size > 568) {
+                return CGSizeMake(104.0f, 138.0f);
+            }
+            else if (size > 480) {
+                return CGSizeMake(104.0f, 138.0f);
             }
             else {
-                return CGSizeMake(90.0f, 124.0f);
+                return CGSizeMake(104.0f, 138.0f);
             }
         }
         else {
-            if ((int)(MAX(CGRectGetHeight([UIScreen mainScreen].bounds), CGRectGetWidth([UIScreen mainScreen].bounds))) > 480) {
-                return CGSizeMake(90.0f, 124.0f);
+            if (size > 667) {
+                return CGSizeMake(120.0f, 164.0f);
+            }
+            else if (size > 568) {
+                return CGSizeMake(106.0f, 140.0f);
+            }
+            else if (size > 480) {
+                return CGSizeMake(94.0f, 128.0f);
             }
             else {
-                return CGSizeMake(90.0f, 124.0f);
+                return CGSizeMake(94.0f, 128.0f);
             }
         }
     }

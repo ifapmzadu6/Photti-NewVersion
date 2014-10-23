@@ -10,6 +10,11 @@
 
 @implementation PAViewControllerKit
 
++ (CGFloat)statusBarHeight {
+    CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+    return MIN(20.0f, MIN(statusBarSize.width, statusBarSize.height));
+}
+
 + (void)rotateCollectionView:(UICollectionView *)collectionView rect:(CGRect)rect {
     [self rotateCollectionView:collectionView rect:rect contentInset:UIEdgeInsetsZero scrollIndicatorInsets:UIEdgeInsetsZero];
 }

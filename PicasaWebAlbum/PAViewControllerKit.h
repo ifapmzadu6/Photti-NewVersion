@@ -10,6 +10,8 @@
 
 @interface PAViewControllerKit : NSObject
 
++ (CGFloat)statusBarHeight;
+
 + (void)rotateCollectionView:(UICollectionView *)collectionView rect:(CGRect)rect contentInset:(UIEdgeInsets)contentInset scrollIndicatorInsets:(UIEdgeInsets)scrollIndicatorInsets;
 
 + (void)rotateCollectionView:(UICollectionView *)collectionView rect:(CGRect)rect;
