@@ -118,6 +118,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PWAlbumViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PWAlbumViewCell class]) forIndexPath:indexPath];
     
+    cell.backgroundColor = (_cellBackgroundColor) ? _cellBackgroundColor : [UIColor whiteColor];
     cell.album = [_fetchedResultsController objectAtIndexPath:indexPath];
     
     return cell;

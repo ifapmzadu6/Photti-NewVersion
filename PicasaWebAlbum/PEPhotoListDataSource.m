@@ -191,7 +191,7 @@
     NSUInteger tag = indexPath.row;
     cell.tag = tag;
     cell.isSelectWithCheckmark = _isSelectMode;
-    cell.backgroundColor = _cellBackgroundColor;
+    cell.backgroundColor = (_cellBackgroundColor) ? _cellBackgroundColor : [UIColor whiteColor];
     CGSize targetSize = (_flowLayout) ? _flowLayout.itemSize : _cellSize;
     NSUInteger index = (_ascending) ? (_fetchResult.count-indexPath.item-1) : indexPath.item;
     PHAsset *asset = _fetchResult[index];

@@ -120,9 +120,8 @@
                 [collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
             }
         } completion:^(BOOL finished) {
-            if (_didChangeItemCountBlock) {
-                _didChangeItemCountBlock(count);
-            }
+            (_didChangeItemCountBlock) ? _didChangeItemCountBlock(count) : 0;
+            
             PLCollectionFooterView *footerView = _footerView;
             if (footerView) {
                 NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Moments -", nil), (unsigned long)_fetchResult.count];

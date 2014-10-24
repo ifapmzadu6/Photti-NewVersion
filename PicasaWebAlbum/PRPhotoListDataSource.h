@@ -25,6 +25,7 @@
 
 @property (weak, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UICollectionViewFlowLayout *flowLayout;
+@property (strong, nonatomic) UIColor *cellBackgroundColor;
 
 @property (nonatomic, readonly) NSUInteger numberOfPhotos;
 @property (nonatomic, readonly) NSArray *photos;

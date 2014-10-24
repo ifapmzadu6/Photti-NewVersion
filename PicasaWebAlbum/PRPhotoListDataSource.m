@@ -217,6 +217,7 @@ static NSUInteger const kPRPhotoListMaxNumberOfRecentlyUploaded = 50;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PWPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PWPhotoViewCell class]) forIndexPath:indexPath];
     
+    cell.backgroundColor = (_cellBackgroundColor) ? _cellBackgroundColor : [UIColor whiteColor];
     cell.isSelectWithCheckMark = _isSelectMode;
     [cell setPhoto:[_fetchedResultsController objectAtIndexPath:indexPath]];
     
