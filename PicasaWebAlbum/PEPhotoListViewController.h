@@ -13,25 +13,25 @@
 
 @class PEPhotoListDataSource;
 
-typedef NS_ENUM(NSUInteger, PHPhotoListViewControllerType){
-    PHPhotoListViewControllerType_Album,
-    PHPhotoListViewControllerType_Moment,
-    PHPhotoListViewControllerType_Video,
-    PHPhotoListViewControllerType_Panorama,
-    PHPhotoListViewControllerType_Timelapse,
-    PHPhotoListViewControllerType_Favorite,
-    PHPhotoListViewControllerType_iCloud,
-    PHPhotoListViewControllerType_AllPhotos,
-    PHPhotoListViewControllerType_Bursts,
-    PHPhotoListViewControllerType_SlomoVideo,
-    PHPhotoListViewControllerType_Dates
+typedef NS_ENUM(NSUInteger, kPHPhotoListViewControllerType){
+    kPHPhotoListViewControllerType_Album,
+    kPHPhotoListViewControllerType_Moment,
+    kPHPhotoListViewControllerType_Video,
+    kPHPhotoListViewControllerType_Panorama,
+    kPHPhotoListViewControllerType_Timelapse,
+    kPHPhotoListViewControllerType_Favorite,
+    kPHPhotoListViewControllerType_iCloud,
+    kPHPhotoListViewControllerType_AllPhotos,
+    kPHPhotoListViewControllerType_Bursts,
+    kPHPhotoListViewControllerType_SlomoVideo,
+    kPHPhotoListViewControllerType_Dates
 };
 
 @interface PEPhotoListViewController : PABaseViewController
 
-- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type;
-- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type title:(NSString *)title;
-- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type title:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate;
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(kPHPhotoListViewControllerType)type;
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(kPHPhotoListViewControllerType)type title:(NSString *)title;
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(kPHPhotoListViewControllerType)type title:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate;
 
 @property (strong, nonatomic) PEPhotoListDataSource *photoListDataSource;
 

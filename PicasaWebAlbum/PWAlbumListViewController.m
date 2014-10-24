@@ -42,10 +42,6 @@
 #import "PAActivityIndicatorView.h"
 
 
-typedef NS_ENUM(NSUInteger, kPWAlbumListViewControllerActionSheetType) {
-    kPWAlbumListViewControllerActionSheetType_
-};
-
 @interface PWAlbumListViewController () <UIActionSheetDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;

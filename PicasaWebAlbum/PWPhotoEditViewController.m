@@ -15,13 +15,13 @@
 #import "UIImage+ImageEffects.h"
 #import "PAViewControllerKit.h"
 
-typedef enum _PWPhotoEditViewControllerSectionType {
+typedef NS_ENUM(NSUInteger, PWPhotoEditViewControllerSectionType) {
     PWPhotoEditViewControllerSectionTypeDESCRIPTION,
     PWPhotoEditViewControllerSectionTypeEXIForVIDEO,
     PWPhotoEditViewControllerSectionTypeCOUNT
-} PWPhotoEditViewControllerSectionType;
+};
 
-typedef enum _PWPhotoEditViewControllerExifType {
+typedef NS_ENUM(NSUInteger, PWPhotoEditViewControllerExifType) {
     PWPhotoEditViewControllerExifTypeDISTANCE,
     PWPhotoEditViewControllerExifTypeEXPOSURE,
     PWPhotoEditViewControllerExifTypeFLASH,
@@ -33,9 +33,9 @@ typedef enum _PWPhotoEditViewControllerExifType {
     PWPhotoEditViewControllerExifTypeMODEL,
     PWPhotoEditViewControllerExifTypeTIME,
     PWPhotoEditViewControllerExifTypeCOUNT
-} PWPhotoEditViewControllerExifType;
+};
 
-typedef enum _PWPhotoEditViewControllerVIDEOType{
+typedef NS_ENUM(NSUInteger, PWPhotoEditViewControllerVIDEOType) {
     PWPhotoEditViewControllerVIDEOTypeDURATION,
     PWPhotoEditViewControllerVIDEOTypeHEIGHT,
     PWPhotoEditViewControllerVIDEOTypeWIDTH,
@@ -46,9 +46,9 @@ typedef enum _PWPhotoEditViewControllerVIDEOType{
     PWPhotoEditViewControllerVIDEOTypeAUDIOCODEC,
     PWPhotoEditViewControllerVIDEOTypeCHANNELS,
     PWPhotoEditViewControllerVIDEOTypeCOUNT
-} PWPhotoEditViewControllerVIDEOType;
+};
 
-typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
+typedef NS_ENUM(NSUInteger, PWPhotoEditViewControllerDESCRIPTIONType) {
     PWPhotoEditViewControllerDESCRIPTIONTypeTITLE,
     PWPhotoEditViewControllerDESCRIPTIONTypeTIMESTAMP,
     PWPhotoEditViewControllerDESCRIPTIONTypeSIZE,
@@ -58,7 +58,7 @@ typedef enum _PWPhotoEditViewControllerDESCRIPTIONType {
     PWPhotoEditViewControllerDESCRIPTIONTypeSUMMARY,
     PWPhotoEditViewControllerDESCRIPTIONTypeKEYWORDS,
     PWPhotoEditViewControllerDESCRIPTIONTypeCOUNT
-} PWPhotoEditViewControllerDESCRIPTIONType;
+};
 
 
 @interface PWPhotoEditViewController () <UITableViewDataSource, UITableViewDelegate>

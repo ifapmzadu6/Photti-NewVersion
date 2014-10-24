@@ -24,7 +24,7 @@
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
-@property (nonatomic) PHPhotoListViewControllerType type;
+@property (nonatomic) kPHPhotoListViewControllerType type;
 @property (nonatomic) BOOL isSelectMode;
 @property (strong, nonatomic) UIBarButtonItem *selectTrashBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectUploadBarButtonItem;
@@ -35,7 +35,7 @@
 
 @implementation PEPhotoListViewController
 
-- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type {
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(kPHPhotoListViewControllerType)type {
     self = [self initWithAssetCollection:assetCollection type:type title:nil];
     if (self) {
         
@@ -43,7 +43,7 @@
     return self;
 }
 
-- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type title:(NSString *)title {
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(kPHPhotoListViewControllerType)type title:(NSString *)title {
     self = [self initWithAssetCollection:assetCollection type:type title:title startDate:nil endDate:nil];
     if (self) {
         
@@ -51,7 +51,7 @@
     return self;
 }
 
-- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type title:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate {
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(kPHPhotoListViewControllerType)type title:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate {
     self = [super init];
     if (self) {
         _type = type;
@@ -60,7 +60,7 @@
             self.title = title;
         }
         else {
-            if (type == PHPhotoListViewControllerType_AllPhotos) {
+            if (type == kPHPhotoListViewControllerType_AllPhotos) {
                 self.title = NSLocalizedString(@"All Items", nil);
             }
             else {
@@ -69,7 +69,7 @@
         }
         
         __weak typeof(self) wself = self;
-        if (type == PHPhotoListViewControllerType_AllPhotos) {
+        if (type == kPHPhotoListViewControllerType_AllPhotos) {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
             _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
                 typeof(wself) sself = wself;
@@ -80,7 +80,7 @@
                 }
             };
         }
-        else if (type == PHPhotoListViewControllerType_Dates) {
+        else if (type == kPHPhotoListViewControllerType_Dates) {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makePhotoListDataSourceWithStartDate:startDate endDate:endDate];
             _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
                 typeof(wself) sself = wself;
@@ -93,7 +93,7 @@
         }
         else {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makePhotoInAlbumListDataSourceWithCollection:assetCollection];
-            BOOL isTypeFavorite = (type==PHPhotoListViewControllerType_Favorite) ? YES : NO;
+            BOOL isTypeFavorite = (type==kPHPhotoListViewControllerType_Favorite) ? YES : NO;
             _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
@@ -104,7 +104,7 @@
                 }
             };
         }
-        if (type == PHPhotoListViewControllerType_Panorama) {
+        if (type == kPHPhotoListViewControllerType_Panorama) {
             CGRect rect = [UIScreen mainScreen].bounds;
             CGFloat width = MAX(CGRectGetWidth(rect), CGRectGetHeight(rect));
             CGFloat landscapeWidth = MIN(CGRectGetWidth(rect), CGRectGetHeight(rect));
@@ -180,7 +180,7 @@
     UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PAIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, selectBarButtonItem];
-    if (_type == PHPhotoListViewControllerType_Album) {
+    if (_type == kPHPhotoListViewControllerType_Album) {
         toolbarItems = @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
     }
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
@@ -350,7 +350,7 @@
 - (void)showSlbumActionSheet:(id)sender albumTitle:(NSString *)albumTitle {
     __weak typeof(self) wself = self;
     UIAlertAction *editAlertAction = nil;
-    if (_type == PHPhotoListViewControllerType_Album) {
+    if (_type == kPHPhotoListViewControllerType_Album) {
         editAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Edit", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             typeof(wself) sself = wself;
             if (!sself) return;
@@ -376,7 +376,7 @@
         }];
     }];
     UIAlertAction *deleteAlertAction = nil;
-    if (_type == PHPhotoListViewControllerType_Album) {
+    if (_type == kPHPhotoListViewControllerType_Album) {
         deleteAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Delete", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
             typeof(wself) sself = wself;
             if (!sself) return;

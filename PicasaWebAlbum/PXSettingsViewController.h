@@ -10,12 +10,12 @@
 
 #import "PABaseNavigationController.h"
 
-typedef enum _PWSettingsViewControllerInitType {
+typedef NS_ENUM(NSUInteger, PWSettingsViewControllerInitType) {
     PWSettingsViewControllerInitTypeDefault,
     PWSettingsViewControllerInitTypeLocal,
     PWSettingsViewControllerInitTypeWeb,
     PWSettingsViewControllerInitTypeTaskManager
-} PWSettingsViewControllerInitType;
+};
 
 @interface PXSettingsViewController : PABaseNavigationController
 

@@ -272,7 +272,7 @@
     _albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
+        PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:kPHPhotoListViewControllerType_Album];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }
@@ -287,7 +287,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         NSString *title = [PEMomentListDataSource titleForMoment:assetCollection];
-        PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album title:title];
+        PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:kPHPhotoListViewControllerType_Album title:title];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }
@@ -495,7 +495,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection type:PHPhotoListViewControllerType_Panorama];
+                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection type:kPHPhotoListViewControllerType_Panorama];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_panoramaListDataSource.fetchResult.count==0) ? NO : YES;
@@ -514,7 +514,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection type:PHPhotoListViewControllerType_Video];
+                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection type:kPHPhotoListViewControllerType_Video];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_videoListDataSource.fetchResult.count==0) ? NO : YES;
@@ -533,7 +533,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection type:PHPhotoListViewControllerType_Favorite];
+                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection type:kPHPhotoListViewControllerType_Favorite];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_favoriteListDataSource.fetchResult.count==0) ? NO : YES;
@@ -552,7 +552,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection type:PHPhotoListViewControllerType_Timelapse];
+                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection type:kPHPhotoListViewControllerType_Timelapse];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_timelapseListDataSource.fetchResult.count==0) ? NO : YES;
@@ -571,7 +571,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection type:PHPhotoListViewControllerType_iCloud];
+                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection type:kPHPhotoListViewControllerType_iCloud];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_cloudListDataSource.fetchResult.count==0) ? NO : YES;
@@ -590,7 +590,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection type:PHPhotoListViewControllerType_Bursts];
+                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection type:kPHPhotoListViewControllerType_Bursts];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_burstsListDataSource.fetchResult.count==0) ? NO : YES;
@@ -609,7 +609,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection type:PHPhotoListViewControllerType_SlomoVideo];
+                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection type:kPHPhotoListViewControllerType_SlomoVideo];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_slomoVideosListDataSource.fetchResult.count==0) ? NO : YES;
@@ -628,7 +628,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_AllPhotos];
+                PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:kPHPhotoListViewControllerType_AllPhotos];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_allPhotoListDataSource.fetchResult.count==0) ? NO : YES;
@@ -817,7 +817,7 @@
     contentView.touchUpInsideActionBlock = ^{
         typeof(wself) sself = wself;
         if (!sself) return;
-        PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
+        PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:nil type:kPHPhotoListViewControllerType_Dates title:title startDate:startDate endDate:endDate];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
     PHAsset *asset = fetchResult.firstObject;

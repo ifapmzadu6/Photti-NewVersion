@@ -9,12 +9,12 @@
 #ifndef PicasaWebAlbum_PDModelObject_h
 #define PicasaWebAlbum_PDModelObject_h
 
-typedef enum _PDTaskObjectType {
+typedef NS_ENUM(NSUInteger, PDTaskObjectType) {
     PDTaskObjectTypeLocalAlbumToWebAlbum,
     PDTaskObjectTypeWebAlbumToLocalAlbum,
     PDTaskObjectTypePhotosToLocalAlbum,
     PDTaskObjectTypePhotosToWebAlbum
-} PDTaskObjectType;
+};
 
 
 static NSString * const kPDTaskObjectName = @"PDTaskObject";

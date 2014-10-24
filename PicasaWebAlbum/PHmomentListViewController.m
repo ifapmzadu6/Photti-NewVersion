@@ -14,6 +14,7 @@
 #import "PEPhotoListViewController.h"
 #import "PATabBarAdsController.h"
 #import "PWSearchNavigationController.h"
+#import "PAAlbumCollectionViewFlowLayout.h"
 
 @interface PEMomentListViewController ()
 
@@ -34,13 +35,12 @@
         self.title = NSLocalizedString(@"Moment", nil);
         
         _dataSource = [PEMomentListDataSource new];
-        _dataSource.cellSize = CGSizeMake(90.0f, 120.0f);
-        _dataSource.minimumLineSpacing = 15.0f;
+        _dataSource.flowLayout = [PAAlbumCollectionViewFlowLayout new];
         __weak typeof(self) wself = self;
         _dataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
             typeof(wself) sself = wself;
             if (!sself) return;
-            PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
+            PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:kPHPhotoListViewControllerType_Album];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
         _dataSource.didChangeSelectedItemCountBlock = ^(NSUInteger count) {

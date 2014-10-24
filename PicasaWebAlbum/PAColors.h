@@ -8,12 +8,12 @@
 
 @import Foundation;
 
-typedef enum _kPAColorsTheme {
+typedef NS_ENUM(NSUInteger, kPAColorsTheme) {
 	kPAColorsThemeDefault,
 	kPAColorsThemeNight
-} kPAColorsTheme;
+};
 
-typedef enum _kPAColorsType {
+typedef NS_ENUM(NSUInteger, kPAColorsType) {
 	kPAColorsTypeTintWebColor,
 	kPAColorsTypeTintLocalColor,
     kPAColorsTypeTintUploadColor,
@@ -25,7 +25,7 @@ typedef enum _kPAColorsType {
 	kPAColorsTypeTextDarkColor,
 	kPAColorsTypeTextLightColor,
 	kPAColorsTypeTextLightSubColor,
-} kPAColorsType;
+};
 
 @interface PAColors : NSObject
 

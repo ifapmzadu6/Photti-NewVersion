@@ -33,11 +33,11 @@ static NSString * const kPWMediaThumbnailObjectName = @"PWMediaThumbnailManagedO
 static NSString * const kPWPhotoExitObjectName = @"PWPhotoExitManagedObject";
 static NSString * const kPWPhotoObjectName = @"PWPhotoManagedObject";
 
-typedef enum _kPWPhotoObjectType {
+typedef NS_ENUM(NSUInteger, kPWPhotoObjectType) {
     kPWPhotoObjectTypeUnknown,
     kPWPhotoObjectTypePhoto,
     kPWPhotoObjectTypeVideo
-} kPWPhotoObjectType;
+};
 
 static NSString * const kPWPhotoObjectContentType_mp4 = @"video/mp4";
 static NSString * const kPWPhotoObjectContentType_jpeg = @"image/jpeg";

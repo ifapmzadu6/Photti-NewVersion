@@ -18,6 +18,7 @@
 @property (strong, nonatomic) PHFetchResult *fetchResult;
 
 @property (weak, nonatomic) UICollectionView *collectionView;
+@property (strong, nonatomic) UICollectionViewFlowLayout *flowLayout;
 @property (nonatomic) CGSize cellSize;
 @property (nonatomic) UIColor *cellBackgroundColor;
 @property (nonatomic) CGFloat minimumInteritemSpacing;

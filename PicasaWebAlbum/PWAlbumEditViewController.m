@@ -16,15 +16,15 @@
 #import "PAAlertControllerKit.h"
 #import <Reachability.h>
 
-typedef enum _PWAlbumEditViewControllerCellRow {
+typedef NS_ENUM(NSUInteger, PWAlbumEditViewControllerCellRow) {
     PWAlbumEditViewControllerCellRowTitle,
     PWAlbumEditViewControllerCellRowTimestamp
-} PWAlbumEditViewControllerCellRow;
+};
 
-typedef enum _PWAlbumEditViewControllerCellAccessRow {
+typedef NS_ENUM(NSUInteger, PWAlbumEditViewControllerCellAccessRow) {
     PWAlbumEditViewControllerCellAccessRowAccess,
     PWAlbumEditViewControllerCellAccessRowShare
-} PWAlbumEditViewControllerCellAccessRow;
+};
 
 @interface PWAlbumEditViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 

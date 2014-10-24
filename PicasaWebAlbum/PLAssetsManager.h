@@ -11,11 +11,11 @@
 @import MapKit;
 
 
-typedef enum _PLAssetsManagerAutoCreateAlbumType {
+typedef NS_ENUM(NSUInteger, PLAssetsManagerAutoCreateAlbumType) {
     PLAssetsManagerAutoCreateAlbumTypeUnknown = 0,
     PLAssetsManagerAutoCreateAlbumTypeEnable,
     PLAssetsManagerAutoCreateAlbumTypeDisable
-} PLAssetsManagerAutoCreateAlbumType;
+};
 
 static NSString * const kPLAssetsManagerAssetCountKey = @"kPLAMACK";
 

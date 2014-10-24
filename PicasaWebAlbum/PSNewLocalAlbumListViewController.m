@@ -22,7 +22,7 @@
         self.albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
+            PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:assetCollection type:kPHPhotoListViewControllerType_Album];
             viewController.navigationItem.prompt = sself.navigationItem.prompt;
             [sself.navigationController pushViewController:viewController animated:YES];
         };

@@ -15,7 +15,7 @@
 
 @implementation PSNewLocalPhotoListViewController
 
-- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(PHPhotoListViewControllerType)type title:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate {
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(kPHPhotoListViewControllerType)type title:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate {
     self = [super initWithAssetCollection:assetCollection type:type title:title startDate:startDate endDate:endDate];
     if (self) {
         self.photoListDataSource.isSelectMode = YES;

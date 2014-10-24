@@ -61,7 +61,7 @@
     self.albumListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection){
         typeof(wself) sself = wself;
         if (!sself) return;
-        PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album];
+        PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:assetCollection type:kPHPhotoListViewControllerType_Album];
         viewController.navigationItem.prompt = sself.navigationItem.prompt;
         [sself.navigationController pushViewController:viewController animated:YES];
     };
@@ -75,7 +75,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         NSString *title = [PEMomentListDataSource titleForMoment:assetCollection];
-        PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:assetCollection type:PHPhotoListViewControllerType_Album title:title];
+        PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:assetCollection type:kPHPhotoListViewControllerType_Album title:title];
         viewController.navigationItem.prompt = sself.navigationItem.prompt;
         [sself.navigationController pushViewController:viewController animated:YES];
     };
@@ -223,7 +223,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection type:PHPhotoListViewControllerType_Panorama];
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.panoramaListDataSource.assetCollection type:kPHPhotoListViewControllerType_Panorama];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
@@ -234,7 +234,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection type:PHPhotoListViewControllerType_Video];
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.videoListDataSource.assetCollection type:kPHPhotoListViewControllerType_Video];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
@@ -245,7 +245,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection type:PHPhotoListViewControllerType_Favorite];
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.favoriteListDataSource.assetCollection type:kPHPhotoListViewControllerType_Favorite];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
@@ -256,7 +256,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection type:PHPhotoListViewControllerType_Timelapse];
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.timelapseListDataSource.assetCollection type:kPHPhotoListViewControllerType_Timelapse];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
@@ -267,7 +267,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection type:PHPhotoListViewControllerType_iCloud];
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.cloudListDataSource.assetCollection type:kPHPhotoListViewControllerType_iCloud];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
@@ -278,7 +278,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection type:PHPhotoListViewControllerType_Bursts];
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.burstsListDataSource.assetCollection type:kPHPhotoListViewControllerType_Bursts];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
@@ -289,7 +289,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection type:PHPhotoListViewControllerType_SlomoVideo];
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:sself.slomoVideosListDataSource.assetCollection type:kPHPhotoListViewControllerType_SlomoVideo];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }
@@ -300,7 +300,7 @@
             cell.moreButtonActionBlock = ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:nil type:PHPhotoListViewControllerType_AllPhotos];
+                PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:nil type:kPHPhotoListViewControllerType_AllPhotos];
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
         }

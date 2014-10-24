@@ -12,17 +12,17 @@
 static NSString * const kPLAlbumObjectName = @"PLAlbumObject";
 static NSString * const kPLPhotoObjectName = @"PLPhotoObject";
 
-typedef enum _kPLAlbumObjectTagType {
+typedef NS_OPTIONS(NSUInteger, kPLAlbumObjectTagType) {
     kPLAlbumObjectTagTypeImported = (1 << 0),
     kPLAlbumObjectTagTypeAutomatically = (1 << 1),
     kPLAlbumObjectTagTypeMyself = (1 << 2)
-} kPLAlbumObjectTagType;
+};
 
-typedef enum _kPLAlbumObjectTagUploadingType {
+typedef NS_ENUM(NSUInteger, kPLAlbumObjectTagUploadingType) {
     kPLAlbumObjectTagUploadingTypeUnknown = 0,
     kPLAlbumObjectTagUploadingTypeYES,
     kPLAlbumObjectTagUploadingTypeNO
-} kPLAlbumObjectTagUploadingType;
+};
 
 #import "PLAlbumObject.h"
 #import "PLPhotoObject.h"

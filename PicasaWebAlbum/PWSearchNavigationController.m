@@ -29,13 +29,13 @@
 #import "PEPhotoListViewController.h"
 
 
-typedef enum _PWSearchNavigationControllerItemType {
+typedef NS_OPTIONS(NSUInteger, PWSearchNavigationControllerItemType) {
     PWSearchNavigationControllerItemTypeHistory = (1 << 0),
     PWSearchNavigationControllerItemTypeLocalAlbum = (1 << 1),
     PWSearchNavigationControllerItemTypeWebAlbum = (1 << 2),
     PWSearchNavigationControllerItemTypeLocalPhoto = (1 << 3),
     PWSearchNavigationControllerItemTypeWebPhoto = (1 << 4)
-} PWSearchNavigationControllerItemType;
+};
 
 @interface PWSearchNavigationControllerItem : NSObject
 
@@ -442,9 +442,9 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         else if (sectionItem.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
             if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
                 PHAssetCollection *assetCollection = sectionItem.item[indexPath.row];
-                PHPhotoListViewControllerType type = PHPhotoListViewControllerType_Album;
+                kPHPhotoListViewControllerType type = kPHPhotoListViewControllerType_Album;
                 if (assetCollection.assetCollectionType == PHAssetCollectionTypeMoment) {
-                    type = PHPhotoListViewControllerType_Moment;
+                    type = kPHPhotoListViewControllerType_Moment;
                 }
                 [self closeSearchBarWithCompletion:^{
                     typeof(wself) sself = wself;

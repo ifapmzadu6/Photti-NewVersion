@@ -15,15 +15,15 @@
 
 #define NtN(obj) ({ __typeof__ (obj) __obj = (obj); __obj == [NSNull null] ? nil : obj; })
 
-typedef enum _PEPhotoEditViewControllerSectionType {
+typedef NS_ENUM(NSUInteger, PEPhotoEditViewControllerSectionType) {
     PEPhotoEditViewControllerSectionTypeDESCRIPTION,
     PEPhotoEditViewControllerSectionTypeEXIF,
     PEPhotoEditViewControllerSectionTypeTIFF,
     PEPhotoEditViewControllerSectionTypeGPS,
     PEPhotoEditViewControllerSectionTypeCOUNT
-} PEPhotoEditViewControllerSectionType;
+};
 
-typedef enum _PEPhotoEditViewControllerDescriptionType {
+typedef NS_ENUM(NSUInteger, PEPhotoEditViewControllerDescriptionType) {
     PEPhotoEditViewControllerDescriptionTypeFILENAME,
     PEPhotoEditViewControllerDescriptionTypeDATE,
     PEPhotoEditViewControllerDescriptionTypeHEIGHT,
@@ -31,9 +31,9 @@ typedef enum _PEPhotoEditViewControllerDescriptionType {
     PEPhotoEditViewControllerDescriptionTypeDURATION,
     PEPhotoEditViewControllerDescriptionTypeCAPTION,
     PEPhotoEditViewControllerDescriptionTypeCOUNT
-} PEPhotoEditViewControllerDescriptionType;
+};
 
-typedef enum _PEPhotoEditViewControllerExifType {
+typedef NS_ENUM(NSUInteger, PEPhotoEditViewControllerExifType) {
     PEPhotoEditViewControllerExifTypeAPERTUREVALUE,
     PEPhotoEditViewControllerExifTypeBRIGHTNESSVALUE,
     PEPhotoEditViewControllerExifTypeCOLORSPACE,
@@ -65,9 +65,9 @@ typedef enum _PEPhotoEditViewControllerExifType {
     PEPhotoEditViewControllerExifTypeSUBSECTIMEORIGINAL,
     PEPhotoEditViewControllerExifTypeWHITEBALANCE,
     PEPhotoEditViewControllerExifTypeCOUNT
-} PEPhotoEditViewControllerExifType;
+};
 
-typedef enum _PEPhotoEditViewControllerTiffType{
+typedef NS_ENUM(NSUInteger, PEPhotoEditViewControllerTiffType) {
     PEPhotoEditViewControllerTiffTypeDATETIME,
     PEPhotoEditViewControllerTiffTypeMAKE,
     PEPhotoEditViewControllerTiffTypeMODEL,
@@ -77,9 +77,9 @@ typedef enum _PEPhotoEditViewControllerTiffType{
     PEPhotoEditViewControllerTiffTypeXRESOLUTION,
     PEPhotoEditViewControllerTiffTypeYRESOLUTION,
     PEPhotoEditViewControllerTiffTypeCOUNT
-} PEPhotoEditViewControllerTiffType;
+};
 
-typedef enum _PEPhotoEditViewControllerGPSType {
+typedef NS_ENUM(NSUInteger, PEPhotoEditViewControllerGPSType) {
     PEPhotoEditViewControllerGPSTypeALTITUDE,
     PEPhotoEditViewControllerGPSTypeALTITUDEREF,
     PEPhotoEditViewControllerGPSTypeDATESTAMP,
@@ -89,7 +89,7 @@ typedef enum _PEPhotoEditViewControllerGPSType {
     PEPhotoEditViewControllerGPSTypeLONGITUDEREF,
     PEPhotoEditViewControllerGPSTypeTIMESTAMP,
     PEPhotoEditViewControllerGPSTypeCOUNT
-} PEPhotoEditViewControllerGPSType;
+};
 
 @interface PEPhotoEditViewController () <UITableViewDataSource, UITableViewDelegate>
 
