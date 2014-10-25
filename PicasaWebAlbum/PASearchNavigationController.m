@@ -475,7 +475,6 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         
         if (rowItem.type == PWSearchNavigationControllerItemTypeWebAlbum) {
             PWAlbumObject *album = rowItem.item.firstObject;
-            
             [self closeSearchBarWithCompletion:^{
                 typeof(wself) sself = wself;
                 if (!sself) return;

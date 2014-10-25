@@ -149,7 +149,7 @@
             
             PLCollectionFooterView *footerView = _footerView;
             if (footerView) {
-                NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Photos -", nil), (unsigned long)count];
+                NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Items -", nil), (unsigned long)count];
                 [footerView setText:albumCountString];
             }
         };
@@ -225,7 +225,7 @@
     if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
         PLCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:NSStringFromClass([PLCollectionFooterView class]) forIndexPath:indexPath];
         
-        NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Photos -", nil), (unsigned long)_fetchResult.count];
+        NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Items -", nil), (unsigned long)_fetchResult.count];
         [footerView setText:albumCountString];
         
         _footerView = footerView;
