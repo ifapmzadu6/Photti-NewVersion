@@ -106,13 +106,8 @@
         }
         if (type == kPHPhotoListViewControllerType_Panorama) {
             CGRect rect = [UIScreen mainScreen].bounds;
-            CGFloat width = MAX(CGRectGetWidth(rect), CGRectGetHeight(rect));
-            CGFloat landscapeWidth = MIN(CGRectGetWidth(rect), CGRectGetHeight(rect));
-            if (self.isLandscape) {
-                CGFloat tmp = landscapeWidth;
-                landscapeWidth = width;
-                width = tmp;
-            }
+            CGFloat width = MIN(CGRectGetWidth(rect), CGRectGetHeight(rect));
+            CGFloat landscapeWidth = MAX(CGRectGetWidth(rect), CGRectGetHeight(rect));
             CGFloat height = (self.isPhone) ? 100.0f : 160.0f;
             _photoListDataSource.cellSize = CGSizeMake(width, height);
             _photoListDataSource.landscapeCellSize = CGSizeMake(landscapeWidth, height);
@@ -242,7 +237,8 @@
 }
 
 - (void)selectActionBarButtonAction:(id)sender {
-    
+    NSArray *selectedAssets = _photoListDataSource.selectedAssets;
+    [self actionAssets:selectedAssets];
 }
 
 - (void)selectUploadBarButtonAction:(id)sender {
@@ -488,6 +484,25 @@
 
 - (void)actionAssets:(NSArray *)assets {
     UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:assets applicationActivities:nil];
+    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)actionAssetCollection:(PHAssetCollection *)assetCollection {
+    NSMutableArray *images = @[].mutableCopy;
+    PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
+    imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    imageOptions.synchronous = YES;
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+    for (PHAsset *asset in fetchResult) {
+        [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeDefault options:imageOptions resultHandler:^(UIImage *result, NSDictionary *info) {
+            [images addObject:result];
+        }];
+    }
+    
+    UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:images applicationActivities:nil];
+    viewController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+        
+    };
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
