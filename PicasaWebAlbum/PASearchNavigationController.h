@@ -10,7 +10,7 @@
 
 #import "PABaseNavigationController.h"
 
-@interface PWSearchNavigationController : PABaseNavigationController 
+@interface PASearchNavigationController : PABaseNavigationController 
 
 - (void)openSearchBarWithCancelBlock:(void (^)())cancelBlock;
 - (void)closeSearchBarWithCompletion:(void (^)())completion;

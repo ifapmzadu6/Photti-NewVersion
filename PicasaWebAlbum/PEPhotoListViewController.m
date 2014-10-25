@@ -15,7 +15,7 @@
 #import "PEPhotoDataSourceFactoryMethod.h"
 #import "PEPhotoListDataSource.h"
 #import "PEPhotoPageViewController.h"
-#import "PWSearchNavigationController.h"
+#import "PASearchNavigationController.h"
 #import "PDTaskManager.h"
 #import "PSImagePickerController.h"
 #import "PAViewControllerKit.h"
@@ -276,7 +276,7 @@
     [tabBarController setToolbarHidden:YES animated:YES completion:nil];
     [tabBarController setAdsHidden:YES animated:NO];
     
-    PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
+    PASearchNavigationController *navigationController = (PASearchNavigationController *)self.navigationController;
     navigationController.view.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{

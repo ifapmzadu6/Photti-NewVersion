@@ -8,8 +8,8 @@
 
 @import UIKit;
 
-#import "PWSearchNavigationController.h"
+#import "PASearchNavigationController.h"
 
-@interface PLNavigationController : PWSearchNavigationController
+@interface PLNavigationController : PASearchNavigationController
 
 @end

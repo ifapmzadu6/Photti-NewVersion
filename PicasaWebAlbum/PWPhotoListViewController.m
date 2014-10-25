@@ -252,7 +252,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     [tabBarController setToolbarHidden:YES animated:YES completion:nil];
     [tabBarController setAdsHidden:YES animated:NO];
     
-    PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
+    PASearchNavigationController *navigationController = (PASearchNavigationController *)self.navigationController;
     navigationController.view.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{

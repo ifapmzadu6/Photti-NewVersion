@@ -146,7 +146,7 @@
 		71A25464191940B0009914F7 /* PWPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A25463191940B0009914F7 /* PWPhotoListViewController.m */; };
 		71A2546819195259009914F7 /* PWPhotoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546719195259009914F7 /* PWPhotoViewCell.m */; };
 		71A2546C19195EDB009914F7 /* PWNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546B19195EDB009914F7 /* PWNavigationController.m */; };
-		71A254701919CFF5009914F7 /* PWSearchNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546F1919CFF5009914F7 /* PWSearchNavigationController.m */; };
+		71A254701919CFF5009914F7 /* PASearchNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546F1919CFF5009914F7 /* PASearchNavigationController.m */; };
 		71A25478191B3247009914F7 /* PAIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A25477191B3247009914F7 /* PAIcons.m */; };
 		71B11D8719E8E7C000263124 /* PXEditItemsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71B11D8619E8E7C000263124 /* PXEditItemsViewController.m */; };
 		71BA33871978292600CD0011 /* PDTaskObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BA33861978292600CD0011 /* PDTaskObject.m */; };
@@ -493,8 +493,8 @@
 		71A2546719195259009914F7 /* PWPhotoViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWPhotoViewCell.m; sourceTree = "<group>"; };
 		71A2546A19195EDB009914F7 /* PWNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWNavigationController.h; sourceTree = "<group>"; };
 		71A2546B19195EDB009914F7 /* PWNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWNavigationController.m; sourceTree = "<group>"; };
-		71A2546E1919CFF5009914F7 /* PWSearchNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWSearchNavigationController.h; sourceTree = "<group>"; };
-		71A2546F1919CFF5009914F7 /* PWSearchNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWSearchNavigationController.m; sourceTree = "<group>"; };
+		71A2546E1919CFF5009914F7 /* PASearchNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PASearchNavigationController.h; sourceTree = "<group>"; };
+		71A2546F1919CFF5009914F7 /* PASearchNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PASearchNavigationController.m; sourceTree = "<group>"; };
 		71A25476191B3247009914F7 /* PAIcons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAIcons.h; sourceTree = "<group>"; };
 		71A25477191B3247009914F7 /* PAIcons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAIcons.m; sourceTree = "<group>"; };
 		71B11D8519E8E7C000263124 /* PXEditItemsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PXEditItemsViewController.h; sourceTree = "<group>"; };
@@ -1740,13 +1740,13 @@
 			name = PWNavigationController;
 			sourceTree = "<group>";
 		};
-		71A2546D1919CFD0009914F7 /* PWSearchNavigationController */ = {
+		71A2546D1919CFD0009914F7 /* PASearchNavigationController */ = {
 			isa = PBXGroup;
 			children = (
-				71A2546E1919CFF5009914F7 /* PWSearchNavigationController.h */,
-				71A2546F1919CFF5009914F7 /* PWSearchNavigationController.m */,
+				71A2546E1919CFF5009914F7 /* PASearchNavigationController.h */,
+				71A2546F1919CFF5009914F7 /* PASearchNavigationController.m */,
 			);
-			name = PWSearchNavigationController;
+			name = PASearchNavigationController;
 			sourceTree = "<group>";
 		};
 		71A25475191B3222009914F7 /* PAIcons */ = {
@@ -1786,6 +1786,7 @@
 				7137A84B19AD8F3A00C715CB /* PABaseViewController */,
 				714F53B9196ECEAD00FB8992 /* PAMapViewController */,
 				7124F13A19B6F81600DFE49E /* PAMigrationViewController */,
+				71A2546D1919CFD0009914F7 /* PASearchNavigationController */,
 				7187904019A58B3A005545E1 /* PATabBarAdsController */,
 				719D92551918E06A00B75D8B /* PATabBarController */,
 				71BDCF5719F63ACD001135FB /* PAViewControllerKit */,
@@ -1853,7 +1854,6 @@
 				71A2546119194020009914F7 /* PWPhotoListViewController */,
 				71958C54191B8CD000CFC15F /* PWPhotoPageViewController */,
 				71958C59191B931F00CFC15F /* PWPhotoViewController */,
-				71A2546D1919CFD0009914F7 /* PWSearchNavigationController */,
 			);
 			name = "W    - Web";
 			sourceTree = "<group>";
@@ -2904,7 +2904,7 @@
 				711C19B519D3E08E00FE3536 /* PEPhotoListDataSource.m in Sources */,
 				71D52EFC197F98FE005CFF30 /* PDTaskManagerViewControllerHeaderView.m in Sources */,
 				714318DC193E04300066A1F8 /* PDTaskManagerViewController.m in Sources */,
-				71A254701919CFF5009914F7 /* PWSearchNavigationController.m in Sources */,
+				71A254701919CFF5009914F7 /* PASearchNavigationController.m in Sources */,
 				718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */,
 				71BD234C19778C020034CD3B /* PDWebPhotoObject.m in Sources */,
 				71BDCF8519F69792001135FB /* PSNewLocalPhotoListViewController.m in Sources */,

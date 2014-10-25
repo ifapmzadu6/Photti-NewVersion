@@ -32,7 +32,7 @@
 #import "PAViewControllerKit.h"
 #import "PWPhotoListViewController.h"
 #import "PWPhotoPageViewController.h"
-#import "PWSearchNavigationController.h"
+#import "PASearchNavigationController.h"
 #import "PATabBarAdsController.h"
 #import "PABaseNavigationController.h"
 #import "PWAlbumEditViewController.h"
@@ -302,7 +302,7 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [tabBarController setTabBarHidden:YES animated:YES completion:nil];
     [tabBarController setAdsHidden:YES animated:NO];
     
-    PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
+    PASearchNavigationController *navigationController = (PASearchNavigationController *)self.navigationController;
     navigationController.view.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{

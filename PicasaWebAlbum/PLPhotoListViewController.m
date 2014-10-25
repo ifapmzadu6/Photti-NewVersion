@@ -26,7 +26,7 @@
 #import "PAViewControllerKit.h"
 #import "PSImagePickerController.h"
 #import "PTAlbumPickerController.h"
-#import "PWSearchNavigationController.h"
+#import "PASearchNavigationController.h"
 #import "PWModelObject.h"
 #import "PDTaskManager.h"
 
@@ -708,7 +708,7 @@
     [tabBarController setToolbarHidden:YES animated:YES completion:nil];
     [tabBarController setAdsHidden:YES animated:NO];
     
-    PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
+    PASearchNavigationController *navigationController = (PASearchNavigationController *)self.navigationController;
     navigationController.view.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{

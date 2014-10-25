@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PWSearchNavigationController.h"
+#import "PASearchNavigationController.h"
 
 @import Photos;
 
@@ -83,7 +83,7 @@ static NSString * const PWSearchNavigationControllerHistoryItemUpdateKey = @"PWS
 @end
 
 
-@interface PWSearchNavigationController () <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>
+@interface PASearchNavigationController () <UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>
 
 @property (strong, nonatomic) UISearchBar *searchBar;
 @property (strong, nonatomic) UIButton *cancelButton;
@@ -102,7 +102,7 @@ static NSString * const PWSearchNavigationControllerHistoryItemUpdateKey = @"PWS
 
 @end
 
-@implementation PWSearchNavigationController
+@implementation PASearchNavigationController
 
 static NSString * const PWSearchNavigationControllerHistoryKey = @"PWNCH";
 static NSString * const PWSearchNavigationControllerWebAlbumCell = @"PWSNCWAC1";
@@ -484,13 +484,19 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
             }];
         }
         else if (rowItem.type == PWSearchNavigationControllerItemTypeLocalAlbum) {
-            PLAlbumObject *album = rowItem.item.firstObject;
-            
             [self closeSearchBarWithCompletion:^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                PLPhotoListViewController *viewController = [[PLPhotoListViewController alloc] initWithAlbum:album];
-                [sself pushViewController:viewController animated:YES];
+                if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+                    PHAssetCollection *assetCollection = rowItem.item.firstObject;
+                    PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:kPHPhotoListViewControllerType_Album];
+                    [sself pushViewController:viewController animated:YES];
+                }
+                else {
+                    PLAlbumObject *album = rowItem.item.firstObject;
+                    PLPhotoListViewController *viewController = [[PLPhotoListViewController alloc] initWithAlbum:album];
+                    [sself pushViewController:viewController animated:YES];
+                }
             }];
         }
     }

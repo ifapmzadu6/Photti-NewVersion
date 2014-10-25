@@ -15,7 +15,7 @@
 #import "PABaseNavigationController.h"
 #import "PLNewAlbumEditViewController.h"
 #import "PATabBarAdsController.h"
-#import "PWSearchNavigationController.h"
+#import "PASearchNavigationController.h"
 #import "PXSettingsViewController.h"
 #import "PTAlbumPickerController.h"
 
@@ -154,7 +154,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [tabBarController setTabBarHidden:YES animated:YES completion:nil];
     [tabBarController setAdsHidden:YES animated:NO];
     
-    PWSearchNavigationController *navigationController = (PWSearchNavigationController *)self.navigationController;
+    PASearchNavigationController *navigationController = (PASearchNavigationController *)self.navigationController;
     navigationController.view.tintColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
     __weak typeof(self) wself = self;
     [navigationController openSearchBarWithCancelBlock:^{
