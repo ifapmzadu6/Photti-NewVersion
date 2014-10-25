@@ -112,12 +112,8 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            self.title = NSLocalizedString(@"iPhone上の写真", nil);
-        }
-        else {
-            self.title = NSLocalizedString(@"iPad上の写真", nil);
-        }
+        self.title = NSLocalizedString(@"On Device", nil);
+        
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeAll;
         
