@@ -153,7 +153,7 @@
         PXEditItemsViewController *viewController = [[PXEditItemsViewController alloc] initWithEnabledItems:localizedStringOfEnabledItems disabledItems:localizedStringOfDisabledItems];
         viewController.title = NSLocalizedString(@"Category", nil);
         viewController.enabledItemsTitle = NSLocalizedString(@"Display", nil);
-        viewController.disabledItemsTitle = NSLocalizedString(@"Not Display", nil);
+        viewController.disabledItemsTitle = NSLocalizedString(@"Not display", nil);
         viewController.completionBlock = ^(NSArray *enabledItems, NSArray *disabledItems){
             NSMutableArray *enabledRowTypes = @[].mutableCopy;
             for (NSString *localizedString in enabledItems) {

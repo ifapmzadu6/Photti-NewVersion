@@ -483,7 +483,26 @@
 }
 
 - (void)actionAssets:(NSArray *)assets {
-    UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:assets applicationActivities:nil];
+    NSMutableArray *images = @[].mutableCopy;
+    for (PHAsset *asset in assets) {
+        if (asset.mediaType == PHAssetMediaTypeImage) {
+            PHImageRequestOptions *options = [PHImageRequestOptions new];
+            options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+            options.synchronous = YES;
+            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage *result, NSDictionary *info) {
+                [images addObject:result];
+            }];
+        }
+        else if (asset.mediaType == PHAssetMediaTypeVideo) {
+            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+            options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
+                [images addObject:asset];
+            }];
+        }
+    }
+    
+    UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:images applicationActivities:nil];
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 

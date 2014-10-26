@@ -228,7 +228,9 @@ typedef NS_ENUM(NSUInteger, PEPhotoEditViewControllerGPSType) {
             }
             case PEPhotoEditViewControllerDescriptionTypeDURATION: {
                 cell.textLabel.text = NSLocalizedString(@"Duration", nil);
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%lf", _asset.duration];
+                if (_asset.duration > 0) {
+                    cell.detailTextLabel.text = [NSString stringWithFormat:@"%lf", _asset.duration];
+                }
                 break;
             }
             case PEPhotoEditViewControllerDescriptionTypeHEIGHT: {

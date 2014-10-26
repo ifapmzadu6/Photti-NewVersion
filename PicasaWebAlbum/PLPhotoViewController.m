@@ -92,12 +92,14 @@
 - (void)videoButtonAction {
     NSURL *videoUrl = [NSURL URLWithString:_photo.url];
     _moviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:videoUrl];
+    CGSize screenSize = [UIScreen mainScreen].bounds.size;
+    CGFloat width = MIN(screenSize.width, screenSize.height);
+    CGFloat height = MAX(screenSize.width, screenSize.height);
     if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        CGSize size = [UIScreen mainScreen].bounds.size;
-        _moviePlayerController.view.frame = CGRectMake(0.0f, 0.0f, size.height, size.width);
+        _moviePlayerController.view.frame = CGRectMake(0.0f, 0.0f, height, width);
     }
     else {
-        _moviePlayerController.view.frame = [UIScreen mainScreen].bounds;
+        _moviePlayerController.view.frame = CGRectMake(0.0f, 0.0f, width, height);
     }
     _moviePlayerController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _moviePlayerController.controlStyle = MPMovieControlStyleNone;

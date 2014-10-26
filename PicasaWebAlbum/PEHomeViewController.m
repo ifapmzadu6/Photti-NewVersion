@@ -773,7 +773,7 @@
     {
         NSString *title = NSLocalizedString(@"Today", nil);
         NSDate *startDate = [PADateFormatter adjustZeroClock:[NSDate date]];
-        NSDate *endDate = [NSDate date];
+        NSDate *endDate = [NSDate dateWithTimeInterval:(24*60*60) sinceDate:startDate];
         UIView *view = [self makeBannerViewWithTitle:title startDate:startDate endDate:endDate];
         if (view) [views addObject:view];
     } {

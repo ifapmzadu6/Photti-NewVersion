@@ -233,7 +233,16 @@
         }];
     }
     else if (asset.mediaType == PHAssetMediaTypeVideo) {
-        
+        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+        options.networkAccessAllowed = YES;
+        options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+        [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:@[asset] applicationActivities:nil];
+            viewController.popoverPresentationController.barButtonItem = sender;
+            [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
+        }];
     }
 }
 
