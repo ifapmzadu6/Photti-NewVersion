@@ -113,8 +113,8 @@ static NSUInteger kPLAlbumViewCellNumberOfImageView = 3;
     UIImageView *imageView = _imageViews.firstObject;
     _activityIndicatorView.center = imageView.center;
     
-    _titleLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 26.0f, CGRectGetWidth(rect), 14.0f);
-    _numPhotosLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 12.0f, CGRectGetWidth(rect), 12.0f);
+    _titleLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 27.0f, CGRectGetWidth(rect), 14.0f);
+    _numPhotosLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 13.0f, CGRectGetWidth(rect), 12.0f);
     
     _overrayView.frame = CGRectMake(0.0f, 0.0f, CGRectGetWidth(rect), CGRectGetMaxY(imageView.frame));
 }

@@ -106,13 +106,13 @@
         _assetCollectionFetchResults = assetCollectionFetchResults;
         
         [_collectionView performBatchUpdates:^{
-            if (deleteIndexPaths) {
+            if (deleteIndexPaths.count > 0) {
                 [_collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
             }
-            if (insertIndexPaths) {
+            if (insertIndexPaths.count > 0) {
                 [_collectionView insertItemsAtIndexPaths:insertIndexPaths];
             }
-            if (reloadIndexPaths) {
+            if (reloadIndexPaths.count > 0) {
                 [_collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
             }
         } completion:^(BOOL finished) {

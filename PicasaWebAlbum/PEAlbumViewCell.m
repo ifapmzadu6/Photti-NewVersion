@@ -108,8 +108,8 @@
     _secondImageView.frame = CGRectMake(delta, delta, imageSize, imageSize);
     _thirdImageView.frame = CGRectMake(delta*2.0f, 0.0f, imageSize, imageSize);
     
-    _titleLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 26.0f, CGRectGetWidth(rect), 14.0f);
-    _detailLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 12.0f, CGRectGetWidth(rect), 12.0f);
+    _titleLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 27.0f, CGRectGetWidth(rect), 14.0f);
+    _detailLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect) - 13.0f, CGRectGetWidth(rect), 12.0f);
     
     _overrayView.frame = CGRectMake(0.0f, 0.0f, CGRectGetWidth(rect), CGRectGetMaxY(_firstImageView.frame));
     _checkMarkImageView.frame = CGRectMake(CGRectGetMaxX(_firstImageView.frame) - 32.0f, CGRectGetMaxY(_firstImageView.frame) - 32.0f, 25.0f, 25.0f);

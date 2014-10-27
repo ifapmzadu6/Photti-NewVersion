@@ -162,13 +162,13 @@
         UICollectionView *collectionView = _collectionView;
         if (collectionView) {
             [collectionView performBatchUpdates:^{
-                if (deleteIndexPaths) {
+                if (deleteIndexPaths.count > 0) {
                     [collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
                 }
-                if (insertIndexPaths) {
+                if (insertIndexPaths.count > 0) {
                     [collectionView insertItemsAtIndexPaths:insertIndexPaths];
                 }
-                if (reloadIndexPaths) {
+                if (reloadIndexPaths.count > 0) {
                     [collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
                 }
             } completion:^(BOOL finished) {
