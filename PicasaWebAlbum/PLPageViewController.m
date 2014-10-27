@@ -472,14 +472,11 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     PTAlbumPickerController *albumPickerController = [[PTAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        
         void (^completion)() = ^{
             dispatch_async(dispatch_get_main_queue(), ^{
                 typeof(wself) sself = wself;
                 if (!sself) return;
-                
                 [sself disableSelectMode:sself.myViewControllers[sself.index]];
-                
                 [PAAlertControllerKit showDontRemoveThoseItemsUntilTheTaskIsFinished];
             });
         };
@@ -498,11 +495,9 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         else {
             [PLCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
                 PLAlbumObject *albumObject = (PLAlbumObject *)album;
-                
                 for (PLPhotoObject *photoObject in selectedPhotos) {
                     [albumObject addPhotosObject:photoObject];
                 }
-                
                 completion();
             }];
         }

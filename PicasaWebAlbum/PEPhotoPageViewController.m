@@ -19,6 +19,8 @@
 #import "PATabBarAdsController.h"
 #import "PTAlbumPickerController.h"
 #import "UIView+ScreenCapture.h"
+#import "PAAlertControllerKit.h"
+#import "PDTaskManager.h"
 
 @interface PEPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, PHPhotoLibraryChangeObserver>
 
@@ -314,7 +316,25 @@
             typeof(wself) sself = wself;
             if (!sself) return;
             PHAsset *asset = sself.fetchedResult[sself.index];
-            
+            if (isWebAlbum) {
+                [[PDTaskManager sharedManager] addTaskPhotos:@[asset] toWebAlbum:album completion:^(NSError *error) {
+                    if (error) {
+#ifdef DEBUG
+                        NSLog(@"%@", error);
+#endif
+                        return;
+                    }
+                    [PAAlertControllerKit showDontRemoveThoseItemsUntilTheTaskIsFinished];
+                }];
+            }
+            else {
+                PHAssetCollection *assetColection = (PHAssetCollection *)album;
+                [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                    PHAssetCollectionChangeRequest *changeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetColection];
+                    [changeRequest addAssets:@[asset]];
+                } completionHandler:^(BOOL success, NSError *error) {
+                }];
+            }
         }];
         viewController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
         [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
