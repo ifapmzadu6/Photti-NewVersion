@@ -399,14 +399,15 @@
 
 - (void)showUploadActionSheet:(id)sender selectedAssets:(NSArray *)selectedAssets {
     __weak typeof(self) wself = self;
-    UIAlertAction *uploadAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Upload", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    UIAlertAction *uploadAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Copy", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        [sself uploadAssets:selectedAssets];
+        [sself copyToAlbumAssets:selectedAssets];
     }];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
     
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"%ld Items", nil), (long)selectedAssets.count];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     alertController.popoverPresentationController.barButtonItem = sender;
     [alertController addAction:uploadAction];
     [alertController addAction:cancelAction];
@@ -416,6 +417,32 @@
 - (void)showDeleteActionSheet:(id)sender selectedAssets:(NSArray *)selectedAssets {
     __weak typeof(self) wself = self;
     UIAlertAction *removeFromAlbumAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove From This Album", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        [sself showDeleteSureActionSheet:sender selectedAssets:selectedAssets];
+    }];
+    UIAlertAction *removeAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove From Photo Library", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        [PEPhotoListViewController deleteAssets:selectedAssets completion:nil];
+    }];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+    
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"%ld Items", nil), (long)selectedAssets.count];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    alertController.popoverPresentationController.barButtonItem = sender;
+    PHAssetCollection *assetCollection = _photoListDataSource.assetCollection;
+    if (assetCollection) {
+        [alertController addAction:removeFromAlbumAction];
+    }
+    [alertController addAction:removeAction];
+    [alertController addAction:cancelAction];
+    [self.tabBarController presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)showDeleteSureActionSheet:(id)sender selectedAssets:(NSArray *)selectedAssets {
+    __weak typeof(self) wself = self;
+    UIAlertAction *deleteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PHAssetCollection *assetCollection = sself.photoListDataSource.assetCollection;
@@ -429,20 +456,12 @@
             }
         }];
     }];
-    UIAlertAction *removeAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove From Photo Library", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        [PEPhotoListViewController deleteAssets:selectedAssets completion:nil];
-    }];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
     
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    NSString *title = NSLocalizedString(@"Are you sure you want to remove these items? These items will be removed from this album, but will remain in your Photo Library.", nil);
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     alertController.popoverPresentationController.barButtonItem = sender;
-    PHAssetCollection *assetCollection = _photoListDataSource.assetCollection;
-    if (assetCollection) {
-        [alertController addAction:removeFromAlbumAction];
-    }
-    [alertController addAction:removeAction];
+    [alertController addAction:deleteAction];
     [alertController addAction:cancelAction];
     [self.tabBarController presentViewController:alertController animated:YES completion:nil];
 }
@@ -585,7 +604,7 @@
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
-- (void)uploadAssets:(NSArray *)assets {
+- (void)copyToAlbumAssets:(NSArray *)assets {
     PTAlbumPickerController *viewController = [[PTAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
         if (isWebAlbum) {
             [[PDTaskManager sharedManager] addTaskPhotos:assets toWebAlbum:album completion:^(NSError *error) {
