@@ -22,6 +22,7 @@
 #import "PTAlbumPickerController.h"
 #import "PLCoreDataAPI.h"
 #import "PDTaskManager.h"
+#import "PAAlertControllerKit.h"
 #import "UIView+ScreenCapture.h"
 
 @interface PLPhotoPageViewController () <UIActionSheetDelegate>
@@ -152,9 +153,7 @@
 #endif
                     return;
                 }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                });
+                [PAAlertControllerKit showDontRemoveThoseItemsUntilTheTaskIsFinished];
             }];
         }
         else {

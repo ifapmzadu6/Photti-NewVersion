@@ -28,6 +28,7 @@
 #import "PADateFormatter.h"
 #import "PADateTimestamp.h"
 #import "PDTaskManager.h"
+#import "PAAlertControllerKit.h"
 
 @interface PLPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate, UIActionSheetDelegate>
 
@@ -479,7 +480,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
                 
                 [sself disableSelectMode:sself.myViewControllers[sself.index]];
                 
-                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                [PAAlertControllerKit showDontRemoveThoseItemsUntilTheTaskIsFinished];
             });
         };
         

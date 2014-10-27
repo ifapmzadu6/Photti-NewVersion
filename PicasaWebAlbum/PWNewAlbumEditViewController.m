@@ -68,10 +68,7 @@
     }
     
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Saving...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
-    indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
-    [indicator startAnimating];
-    [alertView setValue:indicator forKey:@"accessoryView"];
+    [PAAlertControllerKit attachActivityIndicatorView:alertView];
     [alertView show];
     
     NSString *albumTitle = nil;

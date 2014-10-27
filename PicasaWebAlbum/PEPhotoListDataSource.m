@@ -103,6 +103,7 @@
 }
 
 - (void)selectAssets:(NSArray *)assets animated:(BOOL)animated {
+    NSMutableArray *deleteIndexPaths = _collectionView.indexPathsForSelectedItems.mutableCopy;
     for (PHAsset *asset in assets) {
         for (PHAsset *object in _fetchResult) {
             if ([asset isEqual:object]) {
@@ -110,9 +111,13 @@
                 NSUInteger index = (_ascending) ? _fetchResult.count-tmpIndex-1 : tmpIndex;
                 NSIndexPath *indexPath = [NSIndexPath indexPathForItem:index inSection:0];
                 [_collectionView selectItemAtIndexPath:indexPath animated:animated scrollPosition:UICollectionViewScrollPositionNone];
+                [deleteIndexPaths removeObject:indexPath];
                 break;
             }
         }
+    }
+    for (NSIndexPath *deleteIndexPath in deleteIndexPaths) {
+        [_collectionView deselectItemAtIndexPath:deleteIndexPath animated:animated];
     }
 }
 

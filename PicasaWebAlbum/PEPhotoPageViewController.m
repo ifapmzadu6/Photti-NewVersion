@@ -311,6 +311,9 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PTAlbumPickerController *viewController = [[PTAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PHAsset *asset = sself.fetchedResult[sself.index];
             
         }];
         viewController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);

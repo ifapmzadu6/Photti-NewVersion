@@ -12,4 +12,8 @@
 
 + (void)showNotCollectedToNetwork;
 
++ (void)showDontRemoveThoseItemsUntilTheTaskIsFinished;
+
++ (void)attachActivityIndicatorView:(UIAlertView *)alertView;
+
 @end

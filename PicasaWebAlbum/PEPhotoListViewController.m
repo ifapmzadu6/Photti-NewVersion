@@ -18,14 +18,15 @@
 #import "PASearchNavigationController.h"
 #import "PDTaskManager.h"
 #import "PSImagePickerController.h"
+#import "PTAlbumPickerController.h"
 #import "PAViewControllerKit.h"
+#import "PAAlertControllerKit.h"
 
 @interface PEPhotoListViewController () <UITextFieldDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
 @property (nonatomic) kPHPhotoListViewControllerType type;
-@property (nonatomic) BOOL isSelectMode;
 @property (strong, nonatomic) UIBarButtonItem *selectTrashBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectUploadBarButtonItem;
 @property (strong, nonatomic) UIBarButtonItem *selectActionBarButtonItem;
@@ -162,13 +163,17 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    if (!_isSelectMode) {
-        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
-        
-        for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
-            [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
-        }
+    if (_photoListDataSource.isSelectMode) {
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:NO];
     }
+    else {
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
+    }
+    
+    [_photoListDataSource selectAssets:nil animated:YES];
+    _selectActionBarButtonItem.enabled = NO;
+    _selectUploadBarButtonItem.enabled = NO;
+    _selectTrashBarButtonItem.enabled = NO;
     
     UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction:)];
@@ -242,6 +247,8 @@
 }
 
 - (void)selectUploadBarButtonAction:(id)sender {
+    NSArray *selectedAssets = _photoListDataSource.selectedAssets;
+    [self uploadAssets:selectedAssets];
 }
 
 - (void)selectTrashBarButtonAction:(id)sender {
@@ -366,9 +373,7 @@
 #endif
                 return;
             }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-            });
+            [PAAlertControllerKit showDontRemoveThoseItemsUntilTheTaskIsFinished];
         }];
     }];
     UIAlertAction *deleteAlertAction = nil;
@@ -522,6 +527,14 @@
     viewController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
         
     };
+    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)uploadAssets:(NSArray *)assets {
+    PTAlbumPickerController *viewController = [[PTAlbumPickerController alloc] initWithCompletion:^(id album, BOOL isWebAlbum) {
+        
+    }];
+    viewController.prompt = NSLocalizedString(@"Choose an album to copy to.", nil);
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 

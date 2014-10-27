@@ -8,6 +8,9 @@
 
 #import "PAAlertControllerKit.h"
 
+#import "PAActivityIndicatorView.h"
+
+
 @implementation PAAlertControllerKit
 
 + (void)showNotCollectedToNetwork {
@@ -25,5 +28,38 @@
         [alertView dismissWithClickedButtonIndex:0 animated:YES];
     });
 }
+
++ (void)showDontRemoveThoseItemsUntilTheTaskIsFinished {
+    if (![NSThread isMainThread]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self showDontRemoveThoseItemsUntilTheTaskIsFinished];
+        });
+        return;
+    }
+    
+    NSString *title = NSLocalizedString(@"A new task has been added.", nil);
+    NSString *message = NSLocalizedString(@"Don't remove those items until the task is finished.", nil);
+    [[[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+}
+
++ (void)attachActivityIndicatorView:(UIAlertView *)alertView {
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        return;
+    }
+    
+    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
+    CGSize screenSize = [UIScreen mainScreen].bounds.size;
+    CGFloat screenWidth = MIN(screenSize.width, screenSize.height);
+    CGFloat screenHeight = MAX(screenSize.width, screenSize.height);
+    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        CGFloat tmp = screenWidth;
+        screenWidth = screenHeight;
+        screenHeight = tmp;
+    }
+    indicator.center = CGPointMake((screenWidth / 2.0f) - 20.0f, (screenHeight / 2.0f) - 130.0f);
+    [indicator startAnimating];
+    [alertView setValue:indicator forKey:@"accessoryView"];
+}
+
 
 @end

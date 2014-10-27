@@ -321,10 +321,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     if (selectedPhotos.count == 0) return;
     
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Loading...", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil];
-    PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
-    indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
-    [indicator startAnimating];
-    [alertView setValue:indicator forKey:@"accessoryView"];
+    [PAAlertControllerKit attachActivityIndicatorView:alertView];
     alertView.tag = 100;
     [alertView show];
     
@@ -448,9 +445,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                     NSLog(@"%@", error);
 #endif
                 }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                });
+                [PAAlertControllerKit showDontRemoveThoseItemsUntilTheTaskIsFinished];
             }];
         }
         else {
@@ -461,9 +456,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
                     NSLog(@"%@", error);
 #endif
                 }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
-                });
+                [PAAlertControllerKit showDontRemoveThoseItemsUntilTheTaskIsFinished];
             }];
         }
         
@@ -752,10 +745,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     else if (actionSheet.tag == 1004) {
         if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-            PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
-            indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
-            [indicator startAnimating];
-            [alertView setValue:indicator forKey:@"accessoryView"];
+            [PAAlertControllerKit attachActivityIndicatorView:alertView];
             [alertView show];
             
             PWAlbumObject *album = _actionSheetItem;
@@ -786,10 +776,7 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
     else if (actionSheet.tag == 1005) {
         if ([buttonTitle isEqualToString:NSLocalizedString(@"Delete", nil)]) {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Deleting...", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-            PAActivityIndicatorView *indicator = [PAActivityIndicatorView new];
-            indicator.center = CGPointMake((self.view.bounds.size.width / 2) - 20, (self.view.bounds.size.height / 2) - 130);
-            [indicator startAnimating];
-            [alertView setValue:indicator forKey:@"accessoryView"];
+            [PAAlertControllerKit attachActivityIndicatorView:alertView];
             [alertView show];
             
             NSArray *selectedPhotos = _photoListDataSource.selectedPhotos;
