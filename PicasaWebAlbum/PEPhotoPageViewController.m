@@ -340,7 +340,9 @@
         [sself.tabBarController presentViewController:viewController animated:YES completion:nil];
     }];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"%ld Items", nil), 1];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     alertController.popoverPresentationController.barButtonItem = sender;
     [alertController addAction:copyAction];
     [alertController addAction:cancelAction];
@@ -349,14 +351,7 @@
 
 - (void)trashBarButtonAction:(id)sender {
     PHAsset *asset = _fetchedResult[_index];
-    __weak typeof(self) wself = self;
-    [self deleteAssets:@[asset] completion:^(BOOL success, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if (success && !error) {
-            [sself.navigationController popViewControllerAnimated:YES];
-        }
-    }];
+    [self showDeleteActionSheet:sender selectedAssets:@[asset]];
 }
 
 #pragma mark UIPageViewControllerDataSource
@@ -438,8 +433,65 @@
     _fetchedResult = changeDetails.fetchResultAfterChanges;
 }
 
+#pragma mark UIAlertController
+- (void)showDeleteActionSheet:(id)sender selectedAssets:(NSArray *)selectedAssets {
+    __weak typeof(self) wself = self;
+    UIAlertAction *removeFromAlbumAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove From This Album", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        [sself showDeleteSureActionSheet:sender selectedAssets:selectedAssets];
+    }];
+    UIAlertAction *removeAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove From Photo Library", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        [PEPhotoPageViewController deleteAssets:selectedAssets completion:^(BOOL success, NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (success && !error) {
+                [sself.navigationController popViewControllerAnimated:YES];
+            }
+        }];
+    }];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+    
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"%ld Items", nil), (long)selectedAssets.count];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    alertController.popoverPresentationController.barButtonItem = sender;
+    PHAssetCollection *assetCollection = self.assetCollection;
+    if (assetCollection.assetCollectionType == PHAssetCollectionTypeAlbum) {
+        [alertController addAction:removeFromAlbumAction];
+    }
+    [alertController addAction:removeAction];
+    [alertController addAction:cancelAction];
+    [self.tabBarController presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)showDeleteSureActionSheet:(id)sender selectedAssets:(NSArray *)selectedAssets {
+    __weak typeof(self) wself = self;
+    UIAlertAction *deleteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PHAssetCollection *assetCollection = sself.assetCollection;
+        [PEPhotoPageViewController deleteAssets:selectedAssets fromAssetCollection:assetCollection completion:^(BOOL success, NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (success && !error) {
+                [sself.navigationController popViewControllerAnimated:YES];
+            }
+        }];
+    }];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+    
+    NSString *title = NSLocalizedString(@"Are you sure you want to remove this item? This item will be removed from this album, but will remain in your Photo Library.", nil);
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    alertController.popoverPresentationController.barButtonItem = sender;
+    [alertController addAction:deleteAction];
+    [alertController addAction:cancelAction];
+    [self.tabBarController presentViewController:alertController animated:YES completion:nil];
+}
+
 #pragma mark Photo
-- (void)deleteAssets:(NSArray *)assets completion:(void (^)(BOOL, NSError *))completion {
++ (void)deleteAssets:(NSArray *)assets completion:(void (^)(BOOL, NSError *))completion {
     if (assets.count == 0) return;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         [PHAssetChangeRequest deleteAssets:assets];
@@ -452,6 +504,19 @@
     }];
 }
 
++ (void)deleteAssets:(NSArray *)assets fromAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(BOOL, NSError *))completion {
+    if (assets.count == 0) return;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetCollectionChangeRequest *changeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+        [changeRequest removeAssets:assets];
+    } completionHandler:^(BOOL success, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(success, error);
+            }
+        });
+    }];
+}
 
 + (void)setFavoriteWithAsset:(PHAsset *)asset isFavorite:(BOOL)isFavorite completion:(void (^)())completion {
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{

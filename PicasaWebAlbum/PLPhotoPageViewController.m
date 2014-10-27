@@ -134,7 +134,8 @@
 }
 
 - (void)organizeBarButtonAction:(id)sender {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Copy", nil), nil];
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"%ld Items", nil), 1];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Copy", nil), nil];
     actionSheet.tag = 1001;
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }

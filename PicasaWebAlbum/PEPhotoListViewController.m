@@ -293,8 +293,7 @@
     
     _selectActionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectActionBarButtonAction:)];
     _selectActionBarButtonItem.enabled = NO;
-    _selectUploadBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"Upload"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] style:UIBarButtonItemStylePlain target:self action:@selector(selectUploadBarButtonAction:)];
-    _selectUploadBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(3.0f, 3.0f, 3.0f, 3.0f)];
+    _selectUploadBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(selectUploadBarButtonAction:)];
     _selectUploadBarButtonItem.enabled = NO;
     _selectTrashBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(selectTrashBarButtonAction:)];
     _selectTrashBarButtonItem.enabled = NO;
@@ -432,7 +431,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     alertController.popoverPresentationController.barButtonItem = sender;
     PHAssetCollection *assetCollection = _photoListDataSource.assetCollection;
-    if (assetCollection) {
+    if (assetCollection.assetCollectionType == PHAssetCollectionTypeAlbum) {
         [alertController addAction:removeFromAlbumAction];
     }
     [alertController addAction:removeAction];
