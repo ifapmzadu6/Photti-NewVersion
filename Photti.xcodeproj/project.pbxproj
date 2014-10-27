@@ -71,7 +71,6 @@
 		713746D1193DD6C40097470A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E8856719115DBE005A78E0 /* Security.framework */; };
 		7137A84E19AD8F8400C715CB /* PABaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7137A84D19AD8F8400C715CB /* PABaseViewController.m */; };
 		71388286193E13E8009AFB1F /* PDCoreDataAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 71388285193E13E8009AFB1F /* PDCoreDataAPI.m */; };
-		713A16DA19551985004117F0 /* PDTaskViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 713A16D919551985004117F0 /* PDTaskViewController.m */; };
 		713EE07819E2F4F900983301 /* PWHorizontalScrollHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 713EE07719E2F4F900983301 /* PWHorizontalScrollHeaderView.m */; };
 		714318D8193DF6F70066A1F8 /* PDTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 714318D7193DF6F70066A1F8 /* PDTaskManager.m */; };
 		714318DC193E04300066A1F8 /* PDTaskManagerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 714318DB193E04300066A1F8 /* PDTaskManagerViewController.m */; };
@@ -344,8 +343,6 @@
 		71388284193E13E8009AFB1F /* PDCoreDataAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDCoreDataAPI.h; sourceTree = "<group>"; };
 		71388285193E13E8009AFB1F /* PDCoreDataAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDCoreDataAPI.m; sourceTree = "<group>"; };
 		7138828A193E31A2009AFB1F /* PDModelObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PDModelObject.h; sourceTree = "<group>"; };
-		713A16D819551985004117F0 /* PDTaskViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskViewController.h; sourceTree = "<group>"; };
-		713A16D919551985004117F0 /* PDTaskViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskViewController.m; sourceTree = "<group>"; };
 		713EE07619E2F4F900983301 /* PWHorizontalScrollHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWHorizontalScrollHeaderView.h; sourceTree = "<group>"; };
 		713EE07719E2F4F900983301 /* PWHorizontalScrollHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWHorizontalScrollHeaderView.m; sourceTree = "<group>"; };
 		714318D6193DF6F70066A1F8 /* PDTaskManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskManager.h; sourceTree = "<group>"; };
@@ -1238,15 +1235,6 @@
 			name = PDCoreDataAPI;
 			sourceTree = "<group>";
 		};
-		713A16D719551964004117F0 /* PDTaskViewController */ = {
-			isa = PBXGroup;
-			children = (
-				713A16D819551985004117F0 /* PDTaskViewController.h */,
-				713A16D919551985004117F0 /* PDTaskViewController.m */,
-			);
-			name = PDTaskViewController;
-			sourceTree = "<group>";
-		};
 		713EE07519E2F4C300983301 /* PWHorizontalScrollHeaderView */ = {
 			isa = PBXGroup;
 			children = (
@@ -1799,7 +1787,6 @@
 			children = (
 				715943C21957C220009315E5 /* PDNavigationController */,
 				719D925A1918E24A00B75D8B /* PDTaskManagerViewController */,
-				713A16D719551964004117F0 /* PDTaskViewController */,
 				715943C61957E54E009315E5 /* PDUploadDescriptionViewController */,
 			);
 			name = "D    - Task";
@@ -2835,7 +2822,6 @@
 				719D92331917848A00B75D8B /* PWPhotoExitObject.m in Sources */,
 				71BDCF5F19F659E4001135FB /* PRAlbumListDataSource.m in Sources */,
 				71C477A3192CE8C100A60177 /* PLAllPhotosViewController.m in Sources */,
-				713A16DA19551985004117F0 /* PDTaskViewController.m in Sources */,
 				71A25478191B3247009914F7 /* PAIcons.m in Sources */,
 				710461821917725200DF369D /* PWPicasaParser.m in Sources */,
 				714F53BC196ECEC500FB8992 /* PAMapViewController.m in Sources */,

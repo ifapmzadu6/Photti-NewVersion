@@ -162,14 +162,19 @@
         UICollectionView *collectionView = _collectionView;
         if (collectionView) {
             [collectionView performBatchUpdates:^{
-                if (deleteIndexPaths.count > 0) {
-                    [collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
+                @try {
+                    if (deleteIndexPaths.count > 0) {
+                        [collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
+                    }
+                    if (insertIndexPaths.count > 0) {
+                        [collectionView insertItemsAtIndexPaths:insertIndexPaths];
+                    }
+                    if (reloadIndexPaths.count > 0) {
+                        [collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
+                    }
                 }
-                if (insertIndexPaths.count > 0) {
-                    [collectionView insertItemsAtIndexPaths:insertIndexPaths];
-                }
-                if (reloadIndexPaths.count > 0) {
-                    [collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
+                @catch (NSException *exception) {
+                    [collectionView reloadData];
                 }
             } completion:^(BOOL finished) {
                 completionBlock();

@@ -206,28 +206,23 @@
 
 #pragma mark NSFetchedResultsController
 - (void)loadData {
-    __weak typeof(self) wself = self;
-    [PDCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        
-        NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:NSStringFromClass([PDTaskObject class]) inManagedObjectContext:context];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sort_index" ascending:YES]];
-        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-        sself.fetchedResultsController.delegate = sself;
-        
-        NSError *error = nil;
-        if (![sself.fetchedResultsController performFetch:&error]) {
-            abort();
+    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+    NSFetchRequest *request = [NSFetchRequest new];
+    request.entity = [NSEntityDescription entityForName:NSStringFromClass([PDTaskObject class]) inManagedObjectContext:context];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sort_index" ascending:YES]];
+    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+    _fetchedResultsController.delegate = self;
+    
+    NSError *error = nil;
+    if (![_fetchedResultsController performFetch:&error]) {
+        abort();
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (_tableView.indexPathsForVisibleRows.count == 0) {
+            [_tableView reloadData];
         }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (sself.tableView.indexPathsForVisibleRows.count == 0) {
-                [sself.tableView reloadData];
-            }
-        });
-    }];
+    });
 }
 
 #pragma NSFetchedResultsControllerDelegate
