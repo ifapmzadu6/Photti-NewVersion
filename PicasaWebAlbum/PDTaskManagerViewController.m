@@ -63,8 +63,8 @@
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    [_tableView registerClass:[PDTaskTableViewCell class] forCellReuseIdentifier:@"Cell"];
-    [_tableView registerClass:[PDTaskManagerViewControllerHeaderView class] forHeaderFooterViewReuseIdentifier:@"Header"];
+    [_tableView registerClass:[PDTaskTableViewCell class] forCellReuseIdentifier:NSStringFromClass([PDTaskTableViewCell class])];
+    [_tableView registerClass:[PDTaskManagerViewControllerHeaderView class] forHeaderFooterViewReuseIdentifier:NSStringFromClass([PDTaskManagerViewControllerHeaderView class])];
     _tableView.rowHeight = 60.0f;
     _tableView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _tableView.exclusiveTouch = YES;
@@ -98,10 +98,6 @@
 }
 
 - (void)dealloc {
-#ifdef DEBUG
-    NSLog(@"%s", __func__);
-#endif
-    
     NSManagedObjectContext *plcontext = [PLCoreDataAPI readContext];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:plcontext];
     NSManagedObjectContext *pwcontext = [PWCoreDataAPI readContext];
@@ -152,7 +148,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    PDTaskTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    PDTaskTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([PDTaskTableViewCell class]) forIndexPath:indexPath];
     
     if (indexPath.section == 0) {
         cell.taskObject = _fetchedResultsController.fetchedObjects.firstObject;
@@ -166,7 +162,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    PDTaskManagerViewControllerHeaderView *headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"Header"];
+    PDTaskManagerViewControllerHeaderView *headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:NSStringFromClass([PDTaskManagerViewControllerHeaderView class])];
     
     if (section == 0) {
         [headerView setText:NSLocalizedString(@"In Process...", nil)];

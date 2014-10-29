@@ -79,10 +79,6 @@ static NSString * const kPECategoryViewCellSettingsKey = @"kPECategoryViewCellSe
     _greaterThanImageView.frame = CGRectMake(0.0f, 0.0f, 8.0f, 10.0f);
     [self.contentView addSubview:_greaterThanImageView];
     
-    _horizontalScrollView = [PAHorizontalScrollView new];
-    _horizontalScrollView.collectionView.contentInset = UIEdgeInsetsMake(0.0f, 15.0f, 0.0f, 15.0f);
-    [self.contentView addSubview:_horizontalScrollView];
-    
     _noItemLabel = [PALinkableTextView new];
     NSString *hideOnSettingsString = NSLocalizedString(@"You can hide this category on Settings.", nil);
     NSMutableAttributedString *hideOnSettingsAttributedString = [[NSMutableAttributedString alloc] initWithString:hideOnSettingsString];
@@ -101,6 +97,10 @@ static NSString * const kPECategoryViewCellSettingsKey = @"kPECategoryViewCellSe
     _noItemLabel.editable = NO;
     _noItemLabel.scrollEnabled = NO;
     [self.contentView addSubview:_noItemLabel];
+    
+    _horizontalScrollView = [PAHorizontalScrollView new];
+    _horizontalScrollView.collectionView.contentInset = UIEdgeInsetsMake(0.0f, 15.0f, 0.0f, 15.0f);
+    [self.contentView addSubview:_horizontalScrollView];
 }
 
 - (void)layoutSubviews {
@@ -138,9 +138,12 @@ static NSString * const kPECategoryViewCellSettingsKey = @"kPECategoryViewCellSe
 
 #pragma mark UITextViewDelegate
 - (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange {
-    if (_didSelectSettingsBlock) {
-        _didSelectSettingsBlock();
+    if (textView.userInteractionEnabled) {
+        if (_didSelectSettingsBlock) {
+            _didSelectSettingsBlock();
+        }
     }
+    
     return NO;
 };
 

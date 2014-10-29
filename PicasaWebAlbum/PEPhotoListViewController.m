@@ -38,17 +38,11 @@
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(kPHPhotoListViewControllerType)type {
     self = [self initWithAssetCollection:assetCollection type:type title:nil];
-    if (self) {
-        
-    }
     return self;
 }
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(kPHPhotoListViewControllerType)type title:(NSString *)title {
     self = [self initWithAssetCollection:assetCollection type:type title:title startDate:nil endDate:nil];
-    if (self) {
-        
-    }
     return self;
 }
 

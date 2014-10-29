@@ -285,7 +285,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         NSString *title = [PEMomentListDataSource titleForMoment:assetCollection];
-        PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:kPHPhotoListViewControllerType_Album title:title];
+        PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:kPHPhotoListViewControllerType_Moment title:title];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
 }
@@ -459,11 +459,13 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_albumListDataSource.fetchResult.count==0) ? NO : YES;
+            cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             __weak typeof(cell) wcell = cell;
             _albumListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
                 typeof(wcell) scell = wcell;
                 if (!scell) return;
                 cell.noItemLabel.hidden = (count==0) ? NO : YES;
+                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments]) {
@@ -478,11 +480,13 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_momentListDataSource.fetchResult.count==0) ? NO : YES;
+            cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             __weak typeof(cell) wcell = cell;
             _momentListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
                 typeof(wcell) scell = wcell;
                 if (!scell) return;
                 cell.noItemLabel.hidden = (count==0) ? NO : YES;
+                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas]) {
@@ -497,11 +501,13 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_panoramaListDataSource.fetchResult.count==0) ? NO : YES;
+            cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             __weak typeof(cell) wcell = cell;
             _panoramaListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
                 typeof(wcell) scell = wcell;
                 if (!scell) return;
                 cell.noItemLabel.hidden = (count==0) ? NO : YES;
+                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos]) {
@@ -516,11 +522,13 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_videoListDataSource.fetchResult.count==0) ? NO : YES;
+            cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             __weak typeof(cell) wcell = cell;
             _videoListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
                 typeof(wcell) scell = wcell;
                 if (!scell) return;
                 cell.noItemLabel.hidden = (count==0) ? NO : YES;
+                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites]) {
@@ -535,11 +543,13 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_favoriteListDataSource.fetchResult.count==0) ? NO : YES;
+            cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             __weak typeof(cell) wcell = cell;
             _favoriteListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
                 typeof(wcell) scell = wcell;
                 if (!scell) return;
                 cell.noItemLabel.hidden = (count==0) ? NO : YES;
+                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse]) {
@@ -554,11 +564,13 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_timelapseListDataSource.fetchResult.count==0) ? NO : YES;
+            cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             __weak typeof(cell) wcell = cell;
             _timelapseListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
                 typeof(wcell) scell = wcell;
                 if (!scell) return;
                 cell.noItemLabel.hidden = (count==0) ? NO : YES;
+                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud]) {
@@ -573,11 +585,13 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_cloudListDataSource.fetchResult.count==0) ? NO : YES;
+            cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             __weak typeof(cell) wcell = cell;
             _cloudListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
                 typeof(wcell) scell = wcell;
                 if (!scell) return;
                 cell.noItemLabel.hidden = (count==0) ? NO : YES;
+                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Bursts]) {
@@ -592,11 +606,13 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_burstsListDataSource.fetchResult.count==0) ? NO : YES;
+            cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             __weak typeof(cell) wcell = cell;
             _burstsListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
                 typeof(wcell) scell = wcell;
                 if (!scell) return;
                 cell.noItemLabel.hidden = (count==0) ? NO : YES;
+                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_SlomoVideos]) {
@@ -611,11 +627,13 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_slomoVideosListDataSource.fetchResult.count==0) ? NO : YES;
+            cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             __weak typeof(cell) wcell = cell;
             _slomoVideosListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
                 typeof(wcell) scell = wcell;
                 if (!scell) return;
                 cell.noItemLabel.hidden = (count==0) ? NO : YES;
+                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             };
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos]) {
@@ -630,11 +648,13 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_allPhotoListDataSource.fetchResult.count==0) ? NO : YES;
+            cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             __weak typeof(cell) wcell = cell;
             _allPhotoListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
                 typeof(wcell) scell = wcell;
                 if (!scell) return;
                 cell.noItemLabel.hidden = (count==0) ? NO : YES;
+                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
             };
         }
         cell.didSelectSettingsBlock = ^{

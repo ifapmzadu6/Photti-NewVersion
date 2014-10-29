@@ -290,6 +290,9 @@
     if (_didSelectAssetBlock) {
         _didSelectAssetBlock(asset, index, _isSelectMode);
     }
+    if (!_isSelectMode) {
+        [collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {

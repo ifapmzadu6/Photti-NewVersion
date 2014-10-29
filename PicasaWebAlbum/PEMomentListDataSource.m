@@ -33,7 +33,7 @@
         
         PHFetchOptions *options = [PHFetchOptions new];
         options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"endDate" ascending:NO]];
-        _fetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeMoment subtype:PHAssetCollectionSubtypeAny options:options];
+        _fetchResult = [PHAssetCollection fetchMomentsWithOptions:options];
         NSMutableArray *assetCollectionFetchResults = @[].mutableCopy;
         for (PHAssetCollection *collection in _fetchResult) {
             PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
@@ -230,6 +230,7 @@
         if (_didSelectCollectionBlock) {
             _didSelectCollectionBlock(collection);
         }
+        [collectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
 }
 

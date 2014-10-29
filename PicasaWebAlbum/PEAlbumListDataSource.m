@@ -238,6 +238,7 @@
         if (_didSelectCollectionBlock) {
             _didSelectCollectionBlock(collection);
         }
+        [collectionView deselectItemAtIndexPath:indexPath animated:YES];
     }
 }
 

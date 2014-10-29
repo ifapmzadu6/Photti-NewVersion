@@ -461,10 +461,10 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     
     PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[identifier] options:nil];
     if (fetchResult.count == 0) {
-        fetchResult = [PHAssetCollection fetchAssetCollectionsWithALAssetGroupURLs:@[identifier] options:nil];
+        NSURL *url = [NSURL URLWithString:identifier];
+        fetchResult = [PHAssetCollection fetchAssetCollectionsWithALAssetGroupURLs:@[url] options:nil];
     }
     PHAssetCollection *assetCollection = fetchResult.firstObject;
-    NSAssert(assetCollection, nil);
     return assetCollection;
 }
 

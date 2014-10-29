@@ -17,13 +17,10 @@
 #import "PWPicasaAPI.h"
 #import "PDModelObject.h"
 #import "PDCoreDataAPI.h"
-
 #import "PAString.h"
 #import "PAIcons.h"
-
 #import <SDImageCache.h>
 #import "SDWebImageDecoder.h"
-
 #import "PWRoundedCornerBadgeLabel.h"
 
 @interface PDTaskTableViewCell ()
