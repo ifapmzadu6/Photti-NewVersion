@@ -68,7 +68,6 @@
                 self.title = assetCollection.localizedTitle;
             }
         }
-        
         __weak typeof(self) wself = self;
         if (type == kPHPhotoListViewControllerType_AllPhotos) {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
