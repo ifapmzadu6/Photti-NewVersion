@@ -83,4 +83,31 @@
     }];
 }
 
++ (void)makeNewAlbumWithTitle:(NSString *)title {
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title];
+    } completionHandler:^(BOOL success, NSError *error) {
+        if (error) {
+#ifdef DEBUG
+            NSLog(@"%@", error);
+#endif
+        }
+    }];
+}
+
++ (void)setFavoriteWithAsset:(PHAsset *)asset isFavorite:(BOOL)isFavorite completion:(void (^)())completion {
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetChangeRequest *changeAssetRequest = [PHAssetChangeRequest changeRequestForAsset:asset];
+        changeAssetRequest.favorite = isFavorite;
+    } completionHandler:^(BOOL success, NSError *error) {
+        if (success && !error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (completion) {
+                    completion();
+                }
+            });
+        }
+    }];
+}
+
 @end

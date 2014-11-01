@@ -19,6 +19,7 @@
 #import "PEPhotoListViewController.h"
 #import "PASearchNavigationController.h"
 #import "PAAlbumCollectionViewFlowLayout.h"
+#import "PAPhotoKit.h"
 
 @interface PEAlbumListViewController () <UITextFieldDelegate>
 
@@ -148,7 +149,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         UITextField *textFields = alertController.textFields.firstObject;
-        [sself makeNewAlbumWithTitle:textFields.text];
+        [PAPhotoKit makeNewAlbumWithTitle:textFields.text];
     }];
     _saveAlertAction.enabled = NO;
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
@@ -185,19 +186,6 @@
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
         [tabBarController setToolbarHidden:NO animated:NO completion:nil];
         [tabBarController setAdsHidden:NO animated:YES];
-    }];
-}
-
-#pragma mark Photos
-- (void)makeNewAlbumWithTitle:(NSString *)title {
-    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title];
-    } completionHandler:^(BOOL success, NSError *error) {
-        if (error) {
-#ifdef DEBUG
-            NSLog(@"%@", error);
-#endif
-        }
     }];
 }
 

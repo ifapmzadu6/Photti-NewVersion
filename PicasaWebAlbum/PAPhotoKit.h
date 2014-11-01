@@ -21,4 +21,8 @@
 
 + (void)deleteAssets:(NSArray *)assets fromAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(BOOL, NSError *))completion;
 
++ (void)makeNewAlbumWithTitle:(NSString *)title;
+
++ (void)setFavoriteWithAsset:(PHAsset *)asset isFavorite:(BOOL)isFavorite completion:(void (^)())completion;
+
 @end

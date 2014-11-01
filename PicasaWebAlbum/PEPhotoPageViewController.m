@@ -21,6 +21,7 @@
 #import "UIView+ScreenCapture.h"
 #import "PAAlertControllerKit.h"
 #import "PDTaskManager.h"
+#import "PAPhotoKit.h"
 
 @interface PEPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, PHPhotoLibraryChangeObserver>
 
@@ -444,7 +445,7 @@
     UIAlertAction *removeAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove From Photo Library", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        [PEPhotoPageViewController deleteAssets:selectedAssets completion:^(BOOL success, NSError *error) {
+        [PAPhotoKit deleteAssets:selectedAssets completion:^(BOOL success, NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (success && !error) {
@@ -472,7 +473,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PHAssetCollection *assetCollection = sself.assetCollection;
-        [PEPhotoPageViewController deleteAssets:selectedAssets fromAssetCollection:assetCollection completion:^(BOOL success, NSError *error) {
+        [PAPhotoKit deleteAssets:selectedAssets fromAssetCollection:assetCollection completion:^(BOOL success, NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (success && !error) {
@@ -489,49 +490,5 @@
     [alertController addAction:cancelAction];
     [self.tabBarController presentViewController:alertController animated:YES completion:nil];
 }
-
-#pragma mark Photo
-+ (void)deleteAssets:(NSArray *)assets completion:(void (^)(BOOL, NSError *))completion {
-    if (assets.count == 0) return;
-    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        [PHAssetChangeRequest deleteAssets:assets];
-    } completionHandler:^(BOOL success, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (completion) {
-                completion(success, error);
-            }
-        });
-    }];
-}
-
-+ (void)deleteAssets:(NSArray *)assets fromAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(BOOL, NSError *))completion {
-    if (assets.count == 0) return;
-    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        PHAssetCollectionChangeRequest *changeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
-        [changeRequest removeAssets:assets];
-    } completionHandler:^(BOOL success, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (completion) {
-                completion(success, error);
-            }
-        });
-    }];
-}
-
-+ (void)setFavoriteWithAsset:(PHAsset *)asset isFavorite:(BOOL)isFavorite completion:(void (^)())completion {
-    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        PHAssetChangeRequest *changeAssetRequest = [PHAssetChangeRequest changeRequestForAsset:asset];
-        changeAssetRequest.favorite = isFavorite;
-    } completionHandler:^(BOOL success, NSError *error) {
-        if (success && !error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (completion) {
-                    completion();
-                }
-            });
-        }
-    }];
-}
-
 
 @end

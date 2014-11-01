@@ -14,6 +14,7 @@
 #import "PAViewControllerKit.h"
 #import "PATabBarController.h"
 #import "PTAlbumPickerController.h"
+#import "PAPhotoKit.h"
 
 @interface PTNewLocalAlbumListViewController () <UITextFieldDelegate>
 
@@ -98,7 +99,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         UITextField *textFields = alertController.textFields.firstObject;
-        [sself makeNewAlbumWithTitle:textFields.text];
+        [PAPhotoKit makeNewAlbumWithTitle:textFields.text];
     }];
     _saveAlertAction.enabled = NO;
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
@@ -118,19 +119,6 @@
     _saveAlertAction.enabled = (text.length > 0) ? YES : NO;
     
     return YES;
-}
-
-#pragma mark Photos
-- (void)makeNewAlbumWithTitle:(NSString *)title {
-    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title];
-    } completionHandler:^(BOOL success, NSError *error) {
-        if (error) {
-#ifdef DEBUG
-            NSLog(@"%@", error);
-#endif
-        }
-    }];
 }
 
 @end
