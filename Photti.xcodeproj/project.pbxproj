@@ -1872,13 +1872,13 @@
 		71B72FF119DDAB7000D105EA /* A    - Common */ = {
 			isa = PBXGroup;
 			children = (
-				71573B031A051957001F11BC /* PAPlayerView */,
-				71BDCF6119F660FE001135FB /* PAAlertControllerKit */,
 				71138EAE19EABA4F00C87BBF /* PAActivityIndicatorView */,
+				71BDCF6119F660FE001135FB /* PAAlertControllerKit */,
 				7191706319D15F73003BFFC3 /* PACenterTextTableViewCell */,
 				711183A319D0324C00548730 /* PAGradientView */,
 				711183A819D0462500548730 /* PAHorizontalScrollView */,
 				71138EB219EAE2F700C87BBF /* PALinkableTextView */,
+				71573B031A051957001F11BC /* PAPlayerView */,
 			);
 			name = "A    - Common";
 			sourceTree = "<group>";
