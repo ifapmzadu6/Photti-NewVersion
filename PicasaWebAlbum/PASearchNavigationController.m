@@ -20,6 +20,7 @@
 #import "PWSearchTableViewWebAlbumCell.h"
 #import "PWSearchTableViewLocalAlbumCell.h"
 #import "PAViewControllerKit.h"
+#import "PAPhotoKit.h"
 
 #import "UIView+ScreenCapture.h"
 #import "UIImage+ImageEffects.h"
@@ -640,7 +641,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         if (sself.searchedTextHash != hash) return;
         
         if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-            PHAssetCollection *assetCollection = [self assetCollectionWithLocalIdentifier:historyItem.identifier];
+            PHAssetCollection *assetCollection = [PAPhotoKit getAssetCollectionWithIdentifier:historyItem.identifier];
             if (assetCollection) {
                 PWSearchNavigationControllerItem *item = [PWSearchNavigationControllerItem new];
                 item.type = PWSearchNavigationControllerItemTypeLocalAlbum;
@@ -770,19 +771,6 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
             completion(albums, error);
         }
     }];
-}
-
-#pragma mark Photo
-- (PHAssetCollection *)assetCollectionWithLocalIdentifier:(NSString *)localIdentifier {
-    PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[localIdentifier] options:nil];
-    if (fetchResult.count > 0) {
-        return fetchResult.firstObject;
-    }
-    PHFetchResult *oldFetchResult = [PHAssetCollection fetchAssetCollectionsWithALAssetGroupURLs:@[localIdentifier] options:nil];
-    if (oldFetchResult.count > 0) {
-        return oldFetchResult.firstObject;
-    }
-    return nil;
 }
 
 @end

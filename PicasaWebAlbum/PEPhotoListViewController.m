@@ -21,6 +21,7 @@
 #import "PTAlbumPickerController.h"
 #import "PAViewControllerKit.h"
 #import "PAAlertControllerKit.h"
+#import "PAPhotoKit.h"
 
 @interface PEPhotoListViewController () <UITextFieldDelegate>
 
@@ -364,7 +365,7 @@
         deleteAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Delete", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            [PEPhotoListViewController deleteAssetCollection:sself.photoListDataSource.assetCollection completion:^(BOOL success, NSError *error) {
+            [PAPhotoKit deleteAssetCollection:sself.photoListDataSource.assetCollection completion:^(BOOL success, NSError *error) {
                 if (success && !error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [sself.navigationController popViewControllerAnimated:YES];
@@ -416,7 +417,7 @@
     UIAlertAction *removeAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove From Photo Library", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        [PEPhotoListViewController deleteAssets:selectedAssets completion:nil];
+        [PAPhotoKit deleteAssets:selectedAssets completion:nil];
     }];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
     
@@ -438,7 +439,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PHAssetCollection *assetCollection = sself.photoListDataSource.assetCollection;
-        [PEPhotoListViewController deleteAssets:selectedAssets fromAssetCollection:assetCollection completion:^(BOOL success, NSError *error) {
+        [PAPhotoKit deleteAssets:selectedAssets fromAssetCollection:assetCollection completion:^(BOOL success, NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (success && !error) {
@@ -505,45 +506,6 @@
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         PHAssetCollectionChangeRequest *changeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
         changeRequest.title = newName;
-    } completionHandler:^(BOOL success, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (completion) {
-                completion(success, error);
-            }
-        });
-    }];
-}
-
-+ (void)deleteAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(BOOL, NSError *))completion {
-    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        [PHAssetCollectionChangeRequest deleteAssetCollections:@[assetCollection]];
-    } completionHandler:^(BOOL success, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (completion) {
-                completion(success, error);
-            }
-        });
-    }];
-}
-
-+ (void)deleteAssets:(NSArray *)assets completion:(void (^)(BOOL, NSError *))completion {
-    if (assets.count == 0) return;
-    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        [PHAssetChangeRequest deleteAssets:assets];
-    } completionHandler:^(BOOL success, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (completion) {
-                completion(success, error);
-            }
-        });
-    }];
-}
-
-+ (void)deleteAssets:(NSArray *)assets fromAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(BOOL, NSError *))completion {
-    if (assets.count == 0) return;
-    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        PHAssetCollectionChangeRequest *changeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
-        [changeRequest removeAssets:assets];
     } completionHandler:^(BOOL success, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (completion) {

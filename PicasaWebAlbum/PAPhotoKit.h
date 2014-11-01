@@ -15,4 +15,10 @@
 
 + (PHAsset *)getAssetWithIdentifier:(NSString *)identifier;
 
++ (void)deleteAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(BOOL, NSError *))completion;
+
++ (void)deleteAssets:(NSArray *)assets completion:(void (^)(BOOL, NSError *))completion;
+
++ (void)deleteAssets:(NSArray *)assets fromAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(BOOL, NSError *))completion;
+
 @end
