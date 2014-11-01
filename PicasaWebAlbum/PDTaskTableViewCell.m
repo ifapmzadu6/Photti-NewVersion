@@ -22,6 +22,7 @@
 #import <SDImageCache.h>
 #import "SDWebImageDecoder.h"
 #import "PWRoundedCornerBadgeLabel.h"
+#import "PAPhotoKit.h"
 
 @interface PDTaskTableViewCell ()
 
@@ -263,7 +264,9 @@
         if (!thumbnail) return;
         NSURL *url = [NSURL URLWithString:thumbnail.url];
         [self loadThmbnailImageWithAssetURL:url hash:hash completion:^(UIImage *image) {
-            [self setImage:image toImageView:_subDestiantionThumbnailImageView toAlpha:1.0f hash:hash];
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            [sself setImage:image toImageView:sself.subDestiantionThumbnailImageView toAlpha:1.0f hash:hash];
         }];
     }
     else if (taskObject.type.integerValue == PDTaskObjectTypeLocalAlbumToWebAlbum) {
@@ -274,18 +277,35 @@
         _countLabel.text = [NSString stringWithFormat:@"%ld", (long)taskObject.photos.count];
         
         NSString *id_str = taskObject.from_album_id_str;
-        PLAlbumObject *albumObject = [PLAlbumObject getAlbumObjectWithID:id_str];
-        _titleLabel.text = albumObject.name;
-        
-        PLPhotoObject *thumbnail = albumObject.thumbnail;
-        if (!thumbnail && albumObject.photos.count > 0) {
-            thumbnail = albumObject.photos.firstObject;
+        if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+            PHAssetCollection *assetCollection = [PAPhotoKit getAssetCollectionWithIdentifier:id_str];
+            _titleLabel.text = assetCollection.localizedTitle;
+            
+            PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+            if (fetchResult.count == 0) return;
+            [[PHImageManager defaultManager] requestImageForAsset:fetchResult.firstObject targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                [sself setImage:result toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
+            }];
         }
-        if (!thumbnail) return;
-        NSURL *url = [NSURL URLWithString:thumbnail.url];
-        [self loadThmbnailImageWithAssetURL:url hash:hash completion:^(UIImage *image) {
-            [self setImage:image toImageView:_thumbnailImageView toAlpha:1.0f hash:hash];
-        }];
+        else {
+            PLAlbumObject *albumObject = [PLAlbumObject getAlbumObjectWithID:id_str];
+            _titleLabel.text = albumObject.name;
+            
+            PLPhotoObject *thumbnail = albumObject.thumbnail;
+            if (!thumbnail && albumObject.photos.count > 0) {
+                thumbnail = albumObject.photos.firstObject;
+            }
+            if (!thumbnail) return;
+            NSURL *url = [NSURL URLWithString:thumbnail.url];
+            __weak typeof(self) wself = self;
+            [self loadThmbnailImageWithAssetURL:url hash:hash completion:^(UIImage *image) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
+            }];
+        }
     }
     else if (taskObject.type.integerValue == PDTaskObjectTypePhotosToWebAlbum) {
         _isPhotosTask = YES;
@@ -307,21 +327,41 @@
             
             if ([obj isKindOfClass:[PDLocalPhotoObject class]]) {
                 NSString *photo_object_id_str = ((PDLocalPhotoObject *)obj).photo_object_id_str;
-                PLPhotoObject *photoObject = [PLPhotoObject getPhotoObjectWithID:photo_object_id_str];
-                NSString *url = photoObject.url;
-                if (sself.taskHash != hash) return;
-                if (!url) return;
-                [sself loadThmbnailImageWithAssetURL:[NSURL URLWithString:url] hash:hash completion:^(UIImage *image) {
-                    if (idx == 0) {
-                        [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
-                    }
-                    else if (idx == 1) {
-                        [sself setImage:image toImageView:sself.subThumbnailImageView toAlpha:0.667f hash:hash];
-                    }
-                    else if (idx == 2) {
-                        [sself setImage:image toImageView:sself.subSubThumbnailImageView toAlpha:0.333f hash:hash];
-                    }
-                }];
+                if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+                    PHAsset *asset = [PAPhotoKit getAssetWithIdentifier:photo_object_id_str];
+                    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+                        typeof(wself) sself = wself;
+                        if (!sself) return;
+                        if (idx == 0) {
+                            [sself setImage:result toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
+                        }
+                        else if (idx == 1) {
+                            [sself setImage:result toImageView:sself.subThumbnailImageView toAlpha:0.667f hash:hash];
+                        }
+                        else if (idx == 2) {
+                            [sself setImage:result toImageView:sself.subSubThumbnailImageView toAlpha:0.333f hash:hash];
+                        }
+                    }];
+                }
+                else {
+                    PLPhotoObject *photoObject = [PLPhotoObject getPhotoObjectWithID:photo_object_id_str];
+                    NSString *url = photoObject.url;
+                    if (sself.taskHash != hash) return;
+                    if (!url) return;
+                    [sself loadThmbnailImageWithAssetURL:[NSURL URLWithString:url] hash:hash completion:^(UIImage *image) {
+                        typeof(wself) sself = wself;
+                        if (!sself) return;
+                        if (idx == 0) {
+                            [sself setImage:image toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
+                        }
+                        else if (idx == 1) {
+                            [sself setImage:image toImageView:sself.subThumbnailImageView toAlpha:0.667f hash:hash];
+                        }
+                        else if (idx == 2) {
+                            [sself setImage:image toImageView:sself.subSubThumbnailImageView toAlpha:0.333f hash:hash];
+                        }
+                    }];
+                }
             }
             else {
                 NSString *photo_object_id_str = ((PDWebPhotoObject *)obj).photo_object_id_str;

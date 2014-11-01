@@ -13,6 +13,7 @@
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
 #import "PDModelObject.h"
+#import "PAPhotoKit.h"
 
 @implementation PDLocalCopyPhotoObject (methods)
 
@@ -27,10 +28,10 @@
 
 - (void)newCopyToLocalAlbum {
     NSString *albumIdentifier = self.task.to_album_id_str;
-    PHAssetCollection *assetCollection = [self getAssetCollectionWithIdentifier:albumIdentifier];
+    PHAssetCollection *assetCollection = [PAPhotoKit getAssetCollectionWithIdentifier:albumIdentifier];
     
     NSString *photoIdentifier = self.photo_object_id_str;
-    PHAsset *asset = [self getAssetWithIdentifier:photoIdentifier];
+    PHAsset *asset = [PAPhotoKit getAssetWithIdentifier:photoIdentifier];
     
     NSError *error = nil;
     [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
@@ -49,26 +50,6 @@
             selfObject.is_done = @(YES);
         }];
     }
-}
-
-- (PHAssetCollection *)getAssetCollectionWithIdentifier:(NSString *)identifier {
-    PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[identifier] options:nil];
-    if (fetchResult.count == 0) {
-        fetchResult = [PHAssetCollection fetchAssetCollectionsWithALAssetGroupURLs:@[identifier] options:nil];
-    }
-    PHAssetCollection *assetCollection = fetchResult.firstObject;
-    NSAssert(assetCollection, nil);
-    return assetCollection;
-}
-
-- (PHAsset *)getAssetWithIdentifier:(NSString *)identifier {
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[identifier] options:nil];
-    if (fetchResult.count == 0) {
-        fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[identifier] options:nil];
-    }
-    PHAsset *asset = fetchResult.firstObject;
-    NSAssert(asset, nil);
-    return asset;
 }
 
 - (void)oldCopyToLocalAlbum {

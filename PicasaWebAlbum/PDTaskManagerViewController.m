@@ -205,15 +205,18 @@
 
 #pragma mark NSFetchedResultsController
 - (void)loadData {
-    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+    NSManagedObjectContext *context = [PDCoreDataAPI readContext];
     NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:NSStringFromClass([PDTaskObject class]) inManagedObjectContext:context];
+    request.entity = [NSEntityDescription entityForName:kPDTaskObjectName inManagedObjectContext:context];
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sort_index" ascending:YES]];
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
     _fetchedResultsController.delegate = self;
     
     NSError *error = nil;
     if (![_fetchedResultsController performFetch:&error]) {
+#ifdef DEBUG
+        NSLog(@"%@", error);
+#endif
         abort();
     }
     

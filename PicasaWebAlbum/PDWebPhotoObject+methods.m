@@ -20,6 +20,7 @@
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
 #import "PADateTimestamp.h"
+#import "PAPhotoKit.h"
 
 static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWebPhotoObjectMethods";
 
@@ -103,7 +104,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
         albumTitle = albumObject.title;
     }];
     
-    PHAssetCollection *assetCollection = [self getAssetCollectionWithIdentifier:local_album_id_str];
+    PHAssetCollection *assetCollection = [PAPhotoKit getAssetCollectionWithIdentifier:local_album_id_str];
     if (!assetCollection) {
         __block NSString *assetCollectionIdentifier = nil;
         NSError *error = nil;
@@ -331,31 +332,6 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     }
 }
 
-
-#pragma mark Photo
-- (PHAssetCollection *)getAssetCollectionWithIdentifier:(NSString *)identifier {
-    if (!identifier) {
-        return nil;
-    }
-    
-    PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[identifier] options:nil];
-    if (fetchResult.count == 0) {
-        fetchResult = [PHAssetCollection fetchAssetCollectionsWithALAssetGroupURLs:@[identifier] options:nil];
-    }
-    PHAssetCollection *assetCollection = fetchResult.firstObject;
-    NSAssert(assetCollection, nil);
-    return assetCollection;
-}
-
-- (PHAsset *)getAssetWithIdentifier:(NSString *)identifier {
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[identifier] options:nil];
-    if (fetchResult.count == 0) {
-        fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[identifier] options:nil];
-    }
-    PHAsset *asset = fetchResult.firstObject;
-    NSAssert(asset, nil);
-    return asset;
-}
 
 #pragma mark GetData
 + (PLAlbumObject *)getLocalAlbumWithID:(NSString *)id_str context:(NSManagedObjectContext *)context {

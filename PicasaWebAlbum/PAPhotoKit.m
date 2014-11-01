@@ -8,6 +8,36 @@
 
 #import "PAPhotoKit.h"
 
+@interface PAPhotoKit ()
+
+@end
+
 @implementation PAPhotoKit
+
++ (PHAssetCollection *)getAssetCollectionWithIdentifier:(NSString *)identifier {
+    if (!identifier) {
+        return nil;
+    }
+    
+    PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[identifier] options:nil];
+    if (fetchResult.count == 0) {
+        NSURL *url = [NSURL URLWithString:identifier];
+        fetchResult = [PHAssetCollection fetchAssetCollectionsWithALAssetGroupURLs:@[url] options:nil];
+    }
+    PHAssetCollection *assetCollection = fetchResult.firstObject;
+    NSAssert(assetCollection, nil);
+    return assetCollection;
+}
+
++ (PHAsset *)getAssetWithIdentifier:(NSString *)identifier {
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[identifier] options:nil];
+    if (fetchResult.count == 0) {
+        fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[identifier] options:nil];
+    }
+    PHAsset *asset = fetchResult.firstObject;
+    NSAssert(asset, nil);
+    return asset;
+}
+
 
 @end

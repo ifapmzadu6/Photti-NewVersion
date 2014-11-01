@@ -32,6 +32,7 @@
 #import "NSFileManager+methods.h"
 #import "PDTaskManager.h"
 #import "HTTPDefine.h"
+#import "PAPhotoKit.h"
 
 static NSString * const kPDLocalPhotoObjectMethodsErrorDomain = @"com.photti.PDLocalPhotoObjectMethods";
 static NSString * const kPDLocalPhotoObjectPostURL = @"https://picasaweb.google.com/data/feed/api/user/default/albumid";
@@ -49,7 +50,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
 }
 
 - (void)newSetUploadTaskToWebAlbumID:(NSString *)webAlbumID completion:(void(^)(NSError *error))completion {
-    PHAsset *asset = [self getAssetWithIdentifier:self.photo_object_id_str];
+    PHAsset *asset = [PAPhotoKit getAssetWithIdentifier:self.photo_object_id_str];
     if (!asset) {
         completion ? completion([NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
         return;
@@ -206,24 +207,20 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     };
     NSString *requestUrlString = [NSString stringWithFormat:@"%@/%@", kPDLocalPhotoObjectPostURL, webAlbumID];
     
-    PHAsset *asset = [self getAssetWithIdentifier:self.photo_object_id_str];
+    PHAsset *asset = [PAPhotoKit getAssetWithIdentifier:self.photo_object_id_str];
     if (!asset) {
         completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
         return;
     }
     BOOL isVideo = (asset.mediaType == PHAssetMediaTypeVideo) ? YES : NO;
     NSString *filePath = self.prepared_body_filepath;
-    if (!filePath) {
+    if (!filePath || ![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         __weak typeof(self) wself = self;
         [self setUploadTaskToWebAlbumID:webAlbumID completion:^(NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;
             [sself makeSessionTaskWithSession:session completion:completion];
         }];
-        return;
-    }
-    if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-        completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
         return;
     }
     [NSFileManager cancelProtect:filePath];
@@ -324,7 +321,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     NSString *title = nil;
     NSString *timestamp = nil;
     if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-        PHAssetCollection *assetCollection = [self getAssetCollectionWithIdentifier:from_album_id_str];
+        PHAssetCollection *assetCollection = [PAPhotoKit getAssetCollectionWithIdentifier:from_album_id_str];
         title = assetCollection.localizedTitle;
         timestamp = [PADateTimestamp timestampForDate:assetCollection.startDate];
     }
@@ -441,31 +438,6 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     [body appendData:[secondFooterString dataUsingEncoding:NSUTF8StringEncoding]];
     
     return body;
-}
-
-#pragma mark Photo
-- (PHAsset *)getAssetWithIdentifier:(NSString *)identifier {
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[identifier] options:nil];
-    if (fetchResult.count == 0) {
-        fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[identifier] options:nil];
-    }
-    PHAsset *asset = fetchResult.firstObject;
-    NSAssert(asset, nil);
-    return asset;
-}
-
-- (PHAssetCollection *)getAssetCollectionWithIdentifier:(NSString *)identifier {
-    if (!identifier) {
-        return nil;
-    }
-    
-    PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[identifier] options:nil];
-    if (fetchResult.count == 0) {
-        NSURL *url = [NSURL URLWithString:identifier];
-        fetchResult = [PHAssetCollection fetchAssetCollectionsWithALAssetGroupURLs:@[url] options:nil];
-    }
-    PHAssetCollection *assetCollection = fetchResult.firstObject;
-    return assetCollection;
 }
 
 @end
