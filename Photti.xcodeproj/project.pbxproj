@@ -82,6 +82,7 @@
 		714F78BF19F94DCC00BF3444 /* PLPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 714F78BE19F94DCC00BF3444 /* PLPhotoObject+methods.m */; };
 		71502F1019349E8A0006979B /* PSLocalPhotoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71502F0F19349E8A0006979B /* PSLocalPhotoListViewController.m */; };
 		71573AD41A03EE9E001F11BC /* PAPhotoKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 71573AD31A03EE9E001F11BC /* PAPhotoKit.m */; };
+		71573B061A051985001F11BC /* PAPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71573B051A051985001F11BC /* PAPlayerView.m */; };
 		715943C11957C1F3009315E5 /* PLNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 715943C01957C1F3009315E5 /* PLNavigationController.m */; };
 		715943C51957C231009315E5 /* PDNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 715943C41957C231009315E5 /* PDNavigationController.m */; };
 		715943C91957E573009315E5 /* PDUploadDescriptionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 715943C81957E573009315E5 /* PDUploadDescriptionViewController.m */; };
@@ -366,6 +367,8 @@
 		71502F0F19349E8A0006979B /* PSLocalPhotoListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSLocalPhotoListViewController.m; sourceTree = "<group>"; };
 		71573AD21A03EE9E001F11BC /* PAPhotoKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAPhotoKit.h; sourceTree = "<group>"; };
 		71573AD31A03EE9E001F11BC /* PAPhotoKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAPhotoKit.m; sourceTree = "<group>"; };
+		71573B041A051985001F11BC /* PAPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAPlayerView.h; sourceTree = "<group>"; };
+		71573B051A051985001F11BC /* PAPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAPlayerView.m; sourceTree = "<group>"; };
 		715943BF1957C1F3009315E5 /* PLNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLNavigationController.h; sourceTree = "<group>"; };
 		715943C01957C1F3009315E5 /* PLNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLNavigationController.m; sourceTree = "<group>"; };
 		715943C31957C231009315E5 /* PDNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDNavigationController.h; sourceTree = "<group>"; };
@@ -1336,6 +1339,15 @@
 			name = PAPhotoKit;
 			sourceTree = "<group>";
 		};
+		71573B031A051957001F11BC /* PAPlayerView */ = {
+			isa = PBXGroup;
+			children = (
+				71573B041A051985001F11BC /* PAPlayerView.h */,
+				71573B051A051985001F11BC /* PAPlayerView.m */,
+			);
+			name = PAPlayerView;
+			sourceTree = "<group>";
+		};
 		715943BE1957C1E0009315E5 /* PLNavigationController */ = {
 			isa = PBXGroup;
 			children = (
@@ -1860,6 +1872,7 @@
 		71B72FF119DDAB7000D105EA /* A    - Common */ = {
 			isa = PBXGroup;
 			children = (
+				71573B031A051957001F11BC /* PAPlayerView */,
 				71BDCF6119F660FE001135FB /* PAAlertControllerKit */,
 				71138EAE19EABA4F00C87BBF /* PAActivityIndicatorView */,
 				7191706319D15F73003BFFC3 /* PACenterTextTableViewCell */,
@@ -2862,6 +2875,7 @@
 				71BE586919F4A03B002A85AB /* PAKit.m in Sources */,
 				7191705E19D1223E003BFFC3 /* PEAlbumViewCell.m in Sources */,
 				71A2546819195259009914F7 /* PWPhotoViewCell.m in Sources */,
+				71573B061A051985001F11BC /* PAPlayerView.m in Sources */,
 				7149D2D319DC2CFE004BD7A7 /* NSIndexSet+methods.m in Sources */,
 				712E03BB1920BA6E0035D9E0 /* PWPhotoObject+Methods.m in Sources */,
 				714F78BB19F9401600BF3444 /* PLAlbumObject+methods.m in Sources */,

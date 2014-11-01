@@ -159,14 +159,14 @@
                 typeof(wself) sself = wself;
                 if (!sself) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [alertView dismissWithClickedButtonIndex:NSIntegerMax animated:YES];
+                        [alertView dismissWithClickedButtonIndex:alertView.cancelButtonIndex animated:YES];
                     });
                     return;
                 };
                 
                 NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [alertView dismissWithClickedButtonIndex:NSIntegerMax animated:YES];
+                        [alertView dismissWithClickedButtonIndex:alertView.cancelButtonIndex animated:YES];
                     });
                     if (error) return;
                     UIImage *image = [UIImage imageWithData:data];
@@ -204,6 +204,7 @@
             }
         }
         [actionSheet addButtonWithTitle:NSLocalizedString(@"Cancel", nil)];
+        actionSheet.cancelButtonIndex = actionSheet.numberOfButtons-1;
         [actionSheet showFromBarButtonItem:sender animated:YES];
     }
 }
@@ -466,14 +467,14 @@
         typeof(wself) sself = wself;
         if (!sself) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [alertView dismissWithClickedButtonIndex:NSIntegerMax animated:YES];
+                [alertView dismissWithClickedButtonIndex:alertView.cancelButtonIndex animated:YES];
             });
             return;
         };
         
         NSURLSessionDataTask *task = (NSURLSessionDataTask *)[[NSURLSession sharedSession] downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [alertView dismissWithClickedButtonIndex:NSIntegerMax animated:YES];
+                [alertView dismissWithClickedButtonIndex:alertView.cancelButtonIndex animated:YES];
             });
             if (error) return;
             
