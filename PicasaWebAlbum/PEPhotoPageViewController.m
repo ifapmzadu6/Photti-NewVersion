@@ -38,9 +38,6 @@
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection index:(NSUInteger)index {
     self = [self initWithAssetCollection:assetCollection index:index ascending:NO];
-    if (self) {
-        
-    }
     return self;
 }
 
@@ -70,9 +67,6 @@
 
 - (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index {
     self = [self initWithResult:result index:index ascending:NO];
-    if (self) {
-        
-    }
     return self;
 }
 
@@ -253,7 +247,7 @@
     BOOL isFavorite = YES;
     PHAsset *asset = _fetchedResult[_index];
     __weak typeof(self) wself = self;
-    [self.class setFavoriteWithAsset:asset isFavorite:isFavorite completion:^{
+    [PAPhotoKit setFavoriteWithAsset:asset isFavorite:isFavorite completion:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
@@ -293,7 +287,7 @@
     BOOL isFavorite = NO;
     PHAsset *asset = _fetchedResult[_index];
     __weak typeof(self) wself = self;
-    [self.class setFavoriteWithAsset:asset isFavorite:isFavorite completion:^{
+    [PAPhotoKit setFavoriteWithAsset:asset isFavorite:isFavorite completion:^{
         typeof(wself) sself = wself;
         if (!sself) return;
         if (sself.needsFavoriteChangedPopBack) {

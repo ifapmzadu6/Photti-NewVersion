@@ -132,10 +132,13 @@ static NSString * const kPWMapViewControllerGMapHTTPURL = @"http://maps.google.c
                 [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
             }
         }];
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+        
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         alertController.popoverPresentationController.barButtonItem = sender;
         [alertController addAction:openInGoogleMapsAction];
         [alertController addAction:openInMapsAction];
+        [alertController addAction:cancelAction];
         [self presentViewController:alertController animated:YES completion:nil];
     }
     else {
