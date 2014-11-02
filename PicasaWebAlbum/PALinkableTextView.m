@@ -47,6 +47,10 @@
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
+    if (!self.userInteractionEnabled) {
+        return nil;
+    }
+    
     CGPoint p = point;
     p.y -= self.textContainerInset.top;
     p.x -= self.textContainerInset.left;

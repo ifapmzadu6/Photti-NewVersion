@@ -166,6 +166,11 @@
         [_player play];
     }
     
+    UIScrollView *scrollView = self.parentViewController.view.subviews.firstObject;
+    if ([scrollView isKindOfClass:[UIScrollView class]]) {
+        scrollView.scrollEnabled = NO;
+    }
+    
     [UIView animateWithDuration:0.2f animations:^{
         _videoButton.alpha = 0.0f;
     }];
@@ -181,6 +186,11 @@
         
         [UIView animateWithDuration:0.2f animations:^{
             _videoButton.alpha = 1.0f;
+        } completion:^(BOOL finished) {
+            UIScrollView *scrollView = self.parentViewController.view.subviews.firstObject;
+            if ([scrollView isKindOfClass:[UIScrollView class]]) {
+                scrollView.scrollEnabled = YES;
+            }
         }];
     }
 }
@@ -195,6 +205,11 @@
         
         [UIView animateWithDuration:0.2f animations:^{
             _videoButton.alpha = 1.0f;
+        } completion:^(BOOL finished) {
+            UIScrollView *scrollView = self.parentViewController.view.subviews.firstObject;
+            if ([scrollView isKindOfClass:[UIScrollView class]]) {
+                scrollView.scrollEnabled = YES;
+            }
         }];
     }
 }

@@ -19,4 +19,5 @@
 - (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index;
 - (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index ascending:(BOOL)ascending;
 
+
 @end
