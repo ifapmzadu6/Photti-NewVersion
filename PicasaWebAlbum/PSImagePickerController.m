@@ -17,6 +17,7 @@
 #import "PWCoreDataAPI.h"
 #import "PWOAuthManager.h"
 #import "PADepressingTransition.h"
+#import "PAPhotoKit.h"
 
 #import "PABaseNavigationController.h"
 #import "PSNewLocalHomeViewController.h"
@@ -215,7 +216,8 @@
         return;
     }
     
-    if ([photo isKindOfClass:[PLPhotoObject class]]) {
+    if ([photo isKindOfClass:[PLPhotoObject class]] ||
+        [photo isKindOfClass:[PHAsset class]]) {
         NSString *id_str = nil;
         if ([photo isKindOfClass:[PHAsset class]]) {
             id_str = ((PHAsset *)photo).localIdentifier;
@@ -268,27 +270,10 @@
     photo = [PWPhotoObject getPhotoObjectWithID:id_str];
     if (!photo) {
         if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
-            PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[id_str] options:nil];
-            if (result.count == 0) {
-                NSURL *url = [NSURL URLWithString:id_str];
-                result = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-            }
-            if (result.count > 0) {
-                photo = result.firstObject;
-            }
+            photo = [PAPhotoKit getAssetWithIdentifier:id_str];
         }
         else {
-            [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-                NSFetchRequest *request = [NSFetchRequest new];
-                request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-                request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-                request.fetchLimit = 1;
-                NSError *error = nil;
-                NSArray *objects = [context executeFetchRequest:request error:&error];
-                if (objects.count > 0) {
-                    photo = objects.firstObject;
-                }
-            }];
+            photo = [PLPhotoObject getPhotoObjectWithID:id_str];
         }
     }
     
