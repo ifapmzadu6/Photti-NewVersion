@@ -115,7 +115,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
-        [tabBarController addSelectedPhoto:asset];
+        [tabBarController removeSelectedPhoto:asset];
     };
 }
 
@@ -134,7 +134,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
-        [tabBarController addSelectedPhoto:asset];
+        [tabBarController removeSelectedPhoto:asset];
     };
 }
 
@@ -153,7 +153,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
-        [tabBarController addSelectedPhoto:asset];
+        [tabBarController removeSelectedPhoto:asset];
     };
 }
 
@@ -172,7 +172,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
-        [tabBarController addSelectedPhoto:asset];
+        [tabBarController removeSelectedPhoto:asset];
     };
 }
 
@@ -191,7 +191,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
-        [tabBarController addSelectedPhoto:asset];
+        [tabBarController removeSelectedPhoto:asset];
     };
 }
 
@@ -210,7 +210,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
-        [tabBarController addSelectedPhoto:asset];
+        [tabBarController removeSelectedPhoto:asset];
     };
 }
 
@@ -229,7 +229,7 @@
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
-        [tabBarController addSelectedPhoto:asset];
+        [tabBarController removeSelectedPhoto:asset];
     };
 }
 
