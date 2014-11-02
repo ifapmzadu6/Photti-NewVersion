@@ -137,11 +137,14 @@
 
 #pragma mark UIBarButtonAction
 - (void)doneBarButtonActionWithSelectedAlbum:(id)selectedAlbum isWebAlbum:(BOOL)isWebAlbum {
-    if (_completion) {
-        _completion(selectedAlbum, isWebAlbum);
-    }
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
+    __weak typeof(self) wself = self;
+    [self dismissViewControllerAnimated:YES completion:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (sself.completion) {
+            sself.completion(selectedAlbum, isWebAlbum);
+        }
+    }];
 }
 
 #pragma methods

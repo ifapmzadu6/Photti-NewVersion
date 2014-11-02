@@ -193,8 +193,6 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    
-    
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];

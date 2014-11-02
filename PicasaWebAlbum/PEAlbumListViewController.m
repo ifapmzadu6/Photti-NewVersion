@@ -85,34 +85,38 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    if (!_albumListDataSource.isSelectMode) {
-        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
-        
-        for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
-            [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    NSString *selfClassString = NSStringFromClass([self class]);
+    NSString *classString = NSStringFromClass([PEAlbumListViewController class]);
+    if ([selfClassString isEqualToString:classString]) {
+        if (!_albumListDataSource.isSelectMode) {
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
+            
+            for (NSIndexPath *indexPath in _collectionView.indexPathsForSelectedItems) {
+                [_collectionView deselectItemAtIndexPath:indexPath animated:YES];
+            }
         }
+        
+        UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction:)];
+        UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        NSArray *toolbarItems =  @[flexibleSpace, addBarButtonItem, flexibleSpace];
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+        [tabBarController setUserInteractionEnabled:NO];
+        if ([tabBarController isToolbarHideen]) {
+            [tabBarController setToolbarItems:toolbarItems animated:NO];
+            [tabBarController setToolbarTintColor:[PAColors getColor:kPAColorsTypeTintLocalColor]];
+            __weak typeof(self) wself = self;
+            [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+                [tabBarController setTabBarHidden:YES animated:NO completion:nil];
+            }];
+        }
+        else {
+            [tabBarController setToolbarItems:toolbarItems animated:YES];
+        }
+        [tabBarController setAdsHidden:NO animated:YES];
     }
-    
-    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction:)];
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems =  @[flexibleSpace, addBarButtonItem, flexibleSpace];
-    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
-    [tabBarController setUserInteractionEnabled:NO];
-    if ([tabBarController isToolbarHideen]) {
-        [tabBarController setToolbarItems:toolbarItems animated:NO];
-        [tabBarController setToolbarTintColor:[PAColors getColor:kPAColorsTypeTintLocalColor]];
-        __weak typeof(self) wself = self;
-        [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
-            [tabBarController setTabBarHidden:YES animated:NO completion:nil];
-        }];
-    }
-    else {
-        [tabBarController setToolbarItems:toolbarItems animated:YES];
-    }
-    [tabBarController setAdsHidden:NO animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

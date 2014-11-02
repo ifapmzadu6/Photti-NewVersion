@@ -158,41 +158,45 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    if (_photoListDataSource.isSelectMode) {
-        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:NO];
-    }
-    else {
-        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
-    }
-    
-    [_photoListDataSource selectAssets:nil animated:YES];
-    _selectActionBarButtonItem.enabled = NO;
-    _selectUploadBarButtonItem.enabled = NO;
-    _selectTrashBarButtonItem.enabled = NO;
-    
-    UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
-    UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction:)];
-    UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PAIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction:)];
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, selectBarButtonItem];
-    if (_type == kPHPhotoListViewControllerType_Album) {
-        toolbarItems = @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
-    }
-    PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
-    [tabBarController setUserInteractionEnabled:NO];
-    if ([tabBarController isToolbarHideen]) {
-        [tabBarController setToolbarItems:toolbarItems animated:NO];
-        [tabBarController setToolbarTintColor:[PAColors getColor:kPAColorsTypeTintLocalColor]];
-        __weak typeof(self) wself = self;
-        [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
-            [tabBarController setTabBarHidden:YES animated:NO completion:nil];
-        }];
-    }
-    else {
-        [tabBarController setToolbarItems:toolbarItems animated:YES];
+    NSString *selfClassString = NSStringFromClass([self class]);
+    NSString *classString = NSStringFromClass([PEPhotoListViewController class]);
+    if ([selfClassString isEqualToString:classString]) {
+        if (_photoListDataSource.isSelectMode) {
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:NO];
+        }
+        else {
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
+        }
+        
+        [_photoListDataSource selectAssets:nil animated:YES];
+        _selectActionBarButtonItem.enabled = NO;
+        _selectUploadBarButtonItem.enabled = NO;
+        _selectTrashBarButtonItem.enabled = NO;
+        
+        UIBarButtonItem *actionBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionBarButtonAction:)];
+        UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction:)];
+        UIBarButtonItem *selectBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[PAIcons imageWithText:NSLocalizedString(@"Select", nil) fontSize:17.0f] style:UIBarButtonItemStylePlain target:self action:@selector(selectBarButtonAction:)];
+        UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+        NSArray *toolbarItems =  @[actionBarButtonItem, flexibleSpace, selectBarButtonItem];
+        if (_type == kPHPhotoListViewControllerType_Album) {
+            toolbarItems = @[actionBarButtonItem, flexibleSpace, addBarButtonItem, flexibleSpace, selectBarButtonItem];
+        }
+        PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
+        [tabBarController setUserInteractionEnabled:NO];
+        if ([tabBarController isToolbarHideen]) {
+            [tabBarController setToolbarItems:toolbarItems animated:NO];
+            [tabBarController setToolbarTintColor:[PAColors getColor:kPAColorsTypeTintLocalColor]];
+            __weak typeof(self) wself = self;
+            [tabBarController setToolbarHidden:NO animated:animated completion:^(BOOL finished) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
+                [tabBarController setTabBarHidden:YES animated:NO completion:nil];
+            }];
+        }
+        else {
+            [tabBarController setToolbarItems:toolbarItems animated:YES];
+        }
     }
 }
 

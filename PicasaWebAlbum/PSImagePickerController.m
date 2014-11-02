@@ -83,7 +83,7 @@
             self.viewControllers = @[localNavigationController];
             self.colors = @[[PAColors getColor:kPAColorsTypeTintLocalColor]];
         }
-        else if (_webAlbumViewController) {
+        else if (webNavigationController) {
             self.viewControllers = @[webNavigationController];
             self.colors = @[[PAColors getColor:kPAColorsTypeTintWebColor]];
         }
@@ -151,21 +151,24 @@
 
 #pragma mark UIBarButtonAction
 - (void)doneBarButtonAction {
-    if (_selectedPhotoIDs.count > 0) {
-        NSMutableArray *photos = @[].mutableCopy;
-        for (NSString *id_str in _selectedPhotoIDs) {
-            id photo = [self getPhotoByID:id_str];
-            if (photo) {
-                [photos addObject:photo];
+    __weak typeof(self) wself = self;
+    [self dismissViewControllerAnimated:YES completion:^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (sself.selectedPhotoIDs.count > 0) {
+            NSMutableArray *photos = @[].mutableCopy;
+            for (NSString *id_str in sself.selectedPhotoIDs) {
+                id photo = [sself getPhotoByID:id_str];
+                if (photo) {
+                    [photos addObject:photo];
+                }
+            }
+            
+            if (sself.completion) {
+                sself.completion(photos);
             }
         }
-        
-        if (_completion) {
-            _completion(photos);
-        }
-    }
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
+    }];
 }
 
 #pragma mark Methods
