@@ -11,6 +11,7 @@
 		710461821917725200DF369D /* PWPicasaParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 710461811917725200DF369D /* PWPicasaParser.m */; };
 		710461841917742A00DF369D /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 710461831917742A00DF369D /* CoreData.framework */; };
 		710461A01917759900DF369D /* PWCoreDataAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 7104619F1917759900DF369D /* PWCoreDataAPI.m */; };
+		710BC2651A06EF4400205DFD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 710BC2641A06EF4400205DFD /* Images.xcassets */; };
 		711000201964EB88009A329C /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7110001F1964EB88009A329C /* MediaPlayer.framework */; };
 		71109BD1196FBC3700EEDAAE /* PLPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109BD0196FBC3700EEDAAE /* PLPhotoEditViewController.m */; };
 		71109BD51973C90000EEDAAE /* PLAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109BD41973C90000EEDAAE /* PLAlbumEditViewController.m */; };
@@ -76,6 +77,10 @@
 		714318DC193E04300066A1F8 /* PDTaskManagerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 714318DB193E04300066A1F8 /* PDTaskManagerViewController.m */; };
 		71433D9319B6C4950046F37C /* PWModel.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = 71433D9219B6C4950046F37C /* PWModel.xcmappingmodel */; };
 		7149D2D319DC2CFE004BD7A7 /* NSIndexSet+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 7149D2D219DC2CFE004BD7A7 /* NSIndexSet+methods.m */; };
+		714A8D6C1A0690BD00F1FA2F /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 714A8D6B1A0690BD00F1FA2F /* ShareViewController.m */; };
+		714A8D711A0690BD00F1FA2F /* PhottiShareExtention.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 714A8D661A0690BD00F1FA2F /* PhottiShareExtention.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		714A8D791A069CDF00F1FA2F /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 714A8D781A069CDF00F1FA2F /* MainInterface.storyboard */; };
+		714A8D7A1A06E64D00F1FA2F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 714A8D7C1A06E64D00F1FA2F /* Localizable.strings */; };
 		714F53BC196ECEC500FB8992 /* PAMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 714F53BB196ECEC500FB8992 /* PAMapViewController.m */; };
 		714F78B619F93F7A00BF3444 /* PWAlbumObject+Methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 714F78B519F93F7A00BF3444 /* PWAlbumObject+Methods.m */; };
 		714F78BB19F9401600BF3444 /* PLAlbumObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 714F78BA19F9401600BF3444 /* PLAlbumObject+methods.m */; };
@@ -210,6 +215,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		714A8D6F1A0690BD00F1FA2F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 71E884F619115C7E005A78E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 714A8D651A0690BD00F1FA2F;
+			remoteInfo = PhottiShareExtention;
+		};
 		71E8852719115C7E005A78E0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 71E884F619115C7E005A78E0 /* Project object */;
@@ -219,6 +231,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		714A8D751A0690BD00F1FA2F /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				714A8D711A0690BD00F1FA2F /* PhottiShareExtention.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		2E6591034724CD74C9320B7E /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		710461801917725200DF369D /* PWPicasaParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWPicasaParser.h; sourceTree = "<group>"; };
@@ -226,6 +252,7 @@
 		710461831917742A00DF369D /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		7104619E1917759900DF369D /* PWCoreDataAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWCoreDataAPI.h; sourceTree = "<group>"; };
 		7104619F1917759900DF369D /* PWCoreDataAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWCoreDataAPI.m; sourceTree = "<group>"; };
+		710BC2641A06EF4400205DFD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		7110001F1964EB88009A329C /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		71109BCF196FBC3700EEDAAE /* PLPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPhotoEditViewController.h; sourceTree = "<group>"; };
 		71109BD0196FBC3700EEDAAE /* PLPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoEditViewController.m; sourceTree = "<group>"; };
@@ -355,6 +382,13 @@
 		71433D9219B6C4950046F37C /* PWModel.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = PWModel.xcmappingmodel; sourceTree = "<group>"; };
 		7149D2D119DC2CFE004BD7A7 /* NSIndexSet+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSIndexSet+methods.h"; sourceTree = "<group>"; };
 		7149D2D219DC2CFE004BD7A7 /* NSIndexSet+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSIndexSet+methods.m"; sourceTree = "<group>"; };
+		714A8D661A0690BD00F1FA2F /* PhottiShareExtention.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PhottiShareExtention.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		714A8D691A0690BD00F1FA2F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		714A8D6A1A0690BD00F1FA2F /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
+		714A8D6B1A0690BD00F1FA2F /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
+		714A8D781A069CDF00F1FA2F /* MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
+		714A8D7B1A06E64D00F1FA2F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		714A8D7D1A06E65200F1FA2F /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		714F53BA196ECEC500FB8992 /* PAMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAMapViewController.h; sourceTree = "<group>"; };
 		714F53BB196ECEC500FB8992 /* PAMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAMapViewController.m; sourceTree = "<group>"; };
 		714F78B419F93F7A00BF3444 /* PWAlbumObject+Methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PWAlbumObject+Methods.h"; sourceTree = "<group>"; };
@@ -612,6 +646,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		714A8D631A0690BD00F1FA2F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		71E884FB19115C7E005A78E0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1266,6 +1307,27 @@
 				7149D2D219DC2CFE004BD7A7 /* NSIndexSet+methods.m */,
 			);
 			name = "NSIndexSet+methods";
+			sourceTree = "<group>";
+		};
+		714A8D671A0690BD00F1FA2F /* PhottiShareExtention */ = {
+			isa = PBXGroup;
+			children = (
+				714A8D6A1A0690BD00F1FA2F /* ShareViewController.h */,
+				714A8D6B1A0690BD00F1FA2F /* ShareViewController.m */,
+				714A8D781A069CDF00F1FA2F /* MainInterface.storyboard */,
+				710BC2641A06EF4400205DFD /* Images.xcassets */,
+				714A8D681A0690BD00F1FA2F /* Supporting Files */,
+			);
+			path = PhottiShareExtention;
+			sourceTree = "<group>";
+		};
+		714A8D681A0690BD00F1FA2F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				714A8D691A0690BD00F1FA2F /* Info.plist */,
+				714A8D7C1A06E64D00F1FA2F /* Localizable.strings */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		714F53B9196ECEAD00FB8992 /* PAMapViewController */ = {
@@ -2490,6 +2552,7 @@
 				71E8850719115C7E005A78E0 /* Photti */,
 				71C5D71B19E14C9D00F77652 /* Images.xcassets */,
 				71E8852919115C7E005A78E0 /* PicasaWebAlbumTests */,
+				714A8D671A0690BD00F1FA2F /* PhottiShareExtention */,
 				71E8850019115C7E005A78E0 /* Frameworks */,
 				71E884FF19115C7E005A78E0 /* Products */,
 				0B66A6FFBBD2500CE17242ED /* Pods */,
@@ -2501,6 +2564,7 @@
 			children = (
 				71E884FE19115C7E005A78E0 /* Photti.app */,
 				71E8852219115C7E005A78E0 /* PhottiTests.xctest */,
+				714A8D661A0690BD00F1FA2F /* PhottiShareExtention.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2671,6 +2735,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		714A8D651A0690BD00F1FA2F /* PhottiShareExtention */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 714A8D741A0690BD00F1FA2F /* Build configuration list for PBXNativeTarget "PhottiShareExtention" */;
+			buildPhases = (
+				714A8D621A0690BD00F1FA2F /* Sources */,
+				714A8D631A0690BD00F1FA2F /* Frameworks */,
+				714A8D641A0690BD00F1FA2F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PhottiShareExtention;
+			productName = PhottiShareExtention;
+			productReference = 714A8D661A0690BD00F1FA2F /* PhottiShareExtention.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		71E884FD19115C7E005A78E0 /* Photti */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 71E8853319115C7E005A78E0 /* Build configuration list for PBXNativeTarget "Photti" */;
@@ -2681,10 +2762,12 @@
 				71E884FC19115C7E005A78E0 /* Resources */,
 				43F0667989AA436D94CD8C03 /* Copy Pods Resources */,
 				718FF6B7197D6A1400C3D3BF /* ShellScript */,
+				714A8D751A0690BD00F1FA2F /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				714A8D701A0690BD00F1FA2F /* PBXTargetDependency */,
 			);
 			name = Photti;
 			productName = PicasaWebAlbum;
@@ -2719,6 +2802,10 @@
 				LastUpgradeCheck = 0600;
 				ORGANIZATIONNAME = "Keisuke Karijuku";
 				TargetAttributes = {
+					714A8D651A0690BD00F1FA2F = {
+						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = 4HT2V2M2FQ;
+					};
 					71E884FD19115C7E005A78E0 = {
 						DevelopmentTeam = 4HT2V2M2FQ;
 						SystemCapabilities = {
@@ -2757,11 +2844,22 @@
 			targets = (
 				71E884FD19115C7E005A78E0 /* Photti */,
 				71E8852119115C7E005A78E0 /* PhottiTests */,
+				714A8D651A0690BD00F1FA2F /* PhottiShareExtention */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		714A8D641A0690BD00F1FA2F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				710BC2651A06EF4400205DFD /* Images.xcassets in Resources */,
+				714A8D7A1A06E64D00F1FA2F /* Localizable.strings in Resources */,
+				714A8D791A069CDF00F1FA2F /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		71E884FC19115C7E005A78E0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2831,6 +2929,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		714A8D621A0690BD00F1FA2F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				714A8D6C1A0690BD00F1FA2F /* ShareViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		71E884FA19115C7E005A78E0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3018,6 +3124,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		714A8D701A0690BD00F1FA2F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 714A8D651A0690BD00F1FA2F /* PhottiShareExtention */;
+			targetProxy = 714A8D6F1A0690BD00F1FA2F /* PBXContainerItemProxy */;
+		};
 		71E8852819115C7E005A78E0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 71E884FD19115C7E005A78E0 /* Photti */;
@@ -3026,6 +3137,15 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		714A8D7C1A06E64D00F1FA2F /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				714A8D7B1A06E64D00F1FA2F /* en */,
+				714A8D7D1A06E65200F1FA2F /* ja */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		715A31AD198F5876002A0A37 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -3056,6 +3176,46 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		714A8D721A0690BD00F1FA2F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = PhottiShareExtention/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		714A8D731A0690BD00F1FA2F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				INFOPLIST_FILE = PhottiShareExtention/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		71E8853119115C7E005A78E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3219,6 +3379,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		714A8D741A0690BD00F1FA2F /* Build configuration list for PBXNativeTarget "PhottiShareExtention" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				714A8D721A0690BD00F1FA2F /* Debug */,
+				714A8D731A0690BD00F1FA2F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		71E884F919115C7E005A78E0 /* Build configuration list for PBXProject "Photti" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

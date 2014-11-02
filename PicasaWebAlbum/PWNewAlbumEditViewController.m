@@ -31,8 +31,7 @@
     
     self.timestamp = [PADateTimestamp timestampForDate:[NSDate date]];
     
-    UIBarButtonItem *createBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Save", nil) style:UIBarButtonItemStylePlain target:self action:@selector(createBarButtonAction)];
-    [createBarButtonItem setTitleTextAttributes:@{NSFontAttributeName: [UIFont boldSystemFontOfSize:17.0f]} forState:UIControlStateNormal];
+    UIBarButtonItem *createBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(createBarButtonAction)];
     self.navigationItem.rightBarButtonItem = createBarButtonItem;
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;

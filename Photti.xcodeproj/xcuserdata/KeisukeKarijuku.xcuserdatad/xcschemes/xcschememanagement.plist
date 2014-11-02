@@ -9,14 +9,24 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>PhottiShareExtention.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>18</integer>
+		</dict>
 		<key>Photti_release.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>16</integer>
+			<integer>15</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>714A8D651A0690BD00F1FA2F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>71E884FD19115C7E005A78E0</key>
 		<dict>
 			<key>primary</key>
