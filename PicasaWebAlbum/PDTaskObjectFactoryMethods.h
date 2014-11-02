@@ -14,9 +14,12 @@
 @interface PDTaskObjectFactoryMethods : NSObject
 
 + (void)makeTaskFromWebAlbum:(PWAlbumObject *)fromWebAlbum toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSManagedObjectID *taskObjectID, NSError *error))completion;
-+ (void)makeTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSManagedObjectID *taskObject, NSError *error))completion;
 + (void)makeTaskFromAssetCollection:(PHAssetCollection *)assetCollection toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSManagedObjectID *, NSError *))completion;
 + (void)makeTaskFromPhotos:(NSArray *)photos toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSManagedObjectID *taskObject, NSError *error))completion;
++ (void)makeTaskFromPhotos:(NSArray *)photos toAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(NSManagedObjectID *taskObject, NSError *error))completion;
+
+#pragma mark Deprecated
++ (void)makeTaskFromLocalAlbum:(PLAlbumObject *)fromLocalAlbum toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSManagedObjectID *taskObject, NSError *error))completion;
 + (void)makeTaskFromPhotos:(NSArray *)photos toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSManagedObjectID *taskObject, NSError *error))completion;
 
 @end

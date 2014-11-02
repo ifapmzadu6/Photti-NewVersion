@@ -167,7 +167,8 @@
 #pragma mark UIcollectionViewDelegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     PSLocalPhotoListViewController *viewController = [[PSLocalPhotoListViewController alloc] initWithAlbum:[_fetchedResultsController objectAtIndexPath:indexPath]];
-    viewController.navigationItem.prompt = self.navigationItem.prompt;
+    UIViewController *pageViewController = self.parentViewController;
+    viewController.navigationItem.prompt = pageViewController.navigationItem.prompt;
     [self.navigationController pushViewController:viewController animated:YES];
 }
 

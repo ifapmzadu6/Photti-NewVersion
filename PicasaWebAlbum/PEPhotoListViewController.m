@@ -22,6 +22,7 @@
 #import "PAViewControllerKit.h"
 #import "PAAlertControllerKit.h"
 #import "PAPhotoKit.h"
+#import "PWModelObject.h"
 
 @interface PEPhotoListViewController () <UITextFieldDelegate>
 
@@ -464,6 +465,27 @@
     PSImagePickerController *imagePickerController = [[PSImagePickerController alloc] initWithAlbumTitle:_photoListDataSource.assetCollection.localizedTitle completion:^(NSArray *selectedPhotos) {
         typeof(wself) sself = wself;
         if (!sself) return;
+        
+        BOOL isOnlyLocal = YES;
+        for (id photo in selectedPhotos) {
+            if ([photo isKindOfClass:[PWPhotoObject class]]) {
+                isOnlyLocal = NO;
+            }
+        }
+        
+        [[PDTaskManager sharedManager] addTaskPhotos:selectedPhotos toAssetCollection:sself.photoListDataSource.assetCollection completion:^(NSError *error) {
+            if (error) {
+#ifdef DEBUG
+                NSLog(@"%@", error);
+#endif
+            }
+            
+            if (!isOnlyLocal) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"A new task has been added.", nil) message:NSLocalizedString(@"Don't remove those items until the task is finished.", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+                });
+            }
+        }];
     }];
     [self.tabBarController presentViewController:imagePickerController animated:YES completion:nil];
 }

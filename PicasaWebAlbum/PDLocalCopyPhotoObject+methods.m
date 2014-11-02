@@ -13,6 +13,7 @@
 #import "PLModelObject.h"
 #import "PLCoreDataAPI.h"
 #import "PDModelObject.h"
+#import "PDCoreDataAPI.h"
 #import "PAPhotoKit.h"
 
 @implementation PDLocalCopyPhotoObject (methods)
@@ -45,7 +46,7 @@
     }
     else {
         NSManagedObjectID *selfObjectID = self.objectID;
-        [PLCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
             PDBasePhotoObject *selfObject = (PDBasePhotoObject *)[context objectWithID:selfObjectID];
             selfObject.is_done = @(YES);
         }];
@@ -79,6 +80,12 @@
         PLAlbumObject *albumObject = albums.firstObject;
         
         [albumObject addPhotosObject:photoObject];
+    }];
+    
+    NSManagedObjectID *selfObjectID = self.objectID;
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        PDBasePhotoObject *selfObject = (PDBasePhotoObject *)[context objectWithID:selfObjectID];
+        selfObject.is_done = @(YES);
     }];
 }
 

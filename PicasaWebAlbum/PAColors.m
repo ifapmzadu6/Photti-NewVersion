@@ -64,7 +64,7 @@
 }
 
 - (NSString *)key:(kPAColorsType)type {
-	return [NSString stringWithFormat:@"PWT%d", type];
+	return [NSString stringWithFormat:@"PWT%ld", (long)type];
 }
 
 - (void)setDefaultColors {

@@ -262,34 +262,30 @@
 - (id)getPhotoByID:(NSString *)id_str {
     __block id photo = nil;
     
-    void (^pwBlock)() = ^{
-        photo = [PWPhotoObject getPhotoObjectWithID:id_str];
-    };
-    
-    void (^plBlock)() = ^{
-        [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
-            NSFetchRequest *request = [NSFetchRequest new];
-            request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
-            request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
-            request.fetchLimit = 1;
-            NSError *error = nil;
-            NSArray *objects = [context executeFetchRequest:request error:&error];
-            if (objects.count > 0) {
-                photo = objects.firstObject;
+    photo = [PWPhotoObject getPhotoObjectWithID:id_str];
+    if (!photo) {
+        if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+            PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[id_str] options:nil];
+            if (result.count == 0) {
+                NSURL *url = [NSURL URLWithString:id_str];
+                result = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
             }
-        }];
-    };
-    
-    if ([id_str hasPrefix:@"1"]) {
-        plBlock();
-        if (!photo) {
-            pwBlock();
+            if (result.count > 0) {
+                photo = result.firstObject;
+            }
         }
-    }
-    else {
-        pwBlock();
-        if (!photo) {
-            plBlock();
+        else {
+            [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
+                NSFetchRequest *request = [NSFetchRequest new];
+                request.entity = [NSEntityDescription entityForName:kPLPhotoObjectName inManagedObjectContext:context];
+                request.predicate = [NSPredicate predicateWithFormat:@"id_str = %@", id_str];
+                request.fetchLimit = 1;
+                NSError *error = nil;
+                NSArray *objects = [context executeFetchRequest:request error:&error];
+                if (objects.count > 0) {
+                    photo = objects.firstObject;
+                }
+            }];
         }
     }
     

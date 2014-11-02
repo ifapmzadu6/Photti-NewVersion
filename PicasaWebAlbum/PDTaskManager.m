@@ -244,6 +244,42 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     }];
 }
 
+- (void)addTaskPhotos:(NSArray *)photos toAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(NSError *error))completion {
+    if (photos.count == 0) {
+        if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);
+        return;
+    }
+    if (![self checkOKAddTask]) return;
+    
+    // Google Analytics
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"PDTaskManager" action:@"addTasks" label:@"FromPhotos_ToLocalAlbum" value:@(photos.count)] build]];
+    
+    __weak typeof(self) wself = self;
+    [PDTaskObjectFactoryMethods makeTaskFromPhotos:photos toAssetCollection:assetCollection completion:^(NSManagedObjectID *taskObjectID, NSError *error) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (error) {
+#ifdef DEBUG
+            NSLog(@"%@", error);
+#endif
+            return;
+        }
+        [PDTaskManager getCountOfTasksWithCompletion:^(NSUInteger count, NSError *error) {
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PDTaskObject *taskObject = (PDTaskObject *)[context objectWithID:taskObjectID];
+                taskObject.sort_index = @(count);
+            }];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion ? completion(nil) : 0;
+            });
+            
+            [sself start];
+        }];
+    }];
+}
+
 - (void)addTaskPhotos:(NSArray *)photos toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *))completion {
     if (photos.count == 0) {
         if (completion) completion([NSError errorWithDomain:kPDTaskManagerErrorDomain code:0 userInfo:nil]);

@@ -83,12 +83,13 @@
     NSString *toWebAlbumID = toWebAlbum.id_str;
     NSOrderedSet *fromLocalAlbums = fromLocalAlbum.photos;
     
-    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+    __block NSManagedObjectID *taskObjectID = nil;
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
         taskObject.type = @(PDTaskObjectTypeLocalAlbumToWebAlbum);
         taskObject.from_album_id_str = fromLocalAlbumID;
         taskObject.to_album_id_str = toWebAlbumID;
-        NSManagedObjectID *taskObjectID = taskObject.objectID;
+        taskObjectID = taskObject.objectID;
         
         NSMutableArray *id_strs = @[].mutableCopy;
         [PLCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
@@ -103,11 +104,9 @@
             localPhoto.task = taskObject;
             [taskObject addPhotosObject:localPhoto];
         }
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            completion ? completion(taskObjectID, nil) : 0;
-        });
     }];
+    
+    completion ? completion(taskObjectID, nil) : 0;
 }
 
 + (void)makeTaskFromAssetCollection:(PHAssetCollection *)assetCollection toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSManagedObjectID *, NSError *))completion {
@@ -119,12 +118,13 @@
         [assetIdentifiers addObject:asset.localIdentifier];
     }
     
-    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+    __block NSManagedObjectID *taskObjectID = nil;
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:kPDTaskObjectName inManagedObjectContext:context];
         taskObject.type = @(PDTaskObjectTypeLocalAlbumToWebAlbum);
         taskObject.from_album_id_str = localIdentifier;
         taskObject.to_album_id_str = toWebAlbumID;
-        NSManagedObjectID *taskObjectID = taskObject.objectID;
+        taskObjectID = taskObject.objectID;
         
         for (NSString *id_str in assetIdentifiers) {
             PDLocalPhotoObject *localPhoto = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDLocalPhotoObject class]) inManagedObjectContext:context];
@@ -132,21 +132,19 @@
             localPhoto.task = taskObject;
             [taskObject addPhotosObject:localPhoto];
         }
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            completion ? completion(taskObjectID, nil) : 0;
-        });
     }];
+    
+    completion ? completion(taskObjectID, nil) : 0;
 }
 
-+ (void)makeTaskFromPhotos:(NSArray *)photos toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSManagedObjectID *, NSError *))completion {
-    NSString *to_album_id_str = toLocalAlbum.id_str;
-    
++ (void)makeTaskFromPhotos:(NSArray *)photos toAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(NSManagedObjectID *taskObject, NSError *error))completion {
+    NSString *to_album_id_str = assetCollection.localIdentifier;
+    __block NSManagedObjectID *taskObjectID = nil;
     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDTaskObject class]) inManagedObjectContext:context];
         taskObject.type = @(PDTaskObjectTypePhotosToLocalAlbum);
         taskObject.to_album_id_str = to_album_id_str;
-        NSManagedObjectID *taskObjectID = taskObject.objectID;
+        taskObjectID = taskObject.objectID;
         
         for (id tmpphoto in photos) {
             if ([tmpphoto isKindOfClass:[PWPhotoObject class]]) {
@@ -161,7 +159,6 @@
                 PLPhotoObject *photo = (PLPhotoObject *)tmpphoto;
                 PDLocalCopyPhotoObject *localCopyPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalCopyPhotoObjectName inManagedObjectContext:context];
                 localCopyPhoto.photo_object_id_str = photo.id_str;
-                localCopyPhoto.is_done = @(YES);
                 localCopyPhoto.task = taskObject;
                 [taskObject addPhotosObject:localCopyPhoto];
             }
@@ -169,26 +166,63 @@
                 PHAsset *asset = (PHAsset *)tmpphoto;
                 PDLocalCopyPhotoObject *localCopyPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalCopyPhotoObjectName inManagedObjectContext:context];
                 localCopyPhoto.photo_object_id_str = asset.localIdentifier;
-                localCopyPhoto.is_done = @(YES);
                 localCopyPhoto.task = taskObject;
                 [taskObject addPhotosObject:localCopyPhoto];
             }
         }
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            completion ? completion(taskObjectID, nil): 0;
-        });
     }];
+    
+    completion ? completion(taskObjectID, nil): 0;
+}
+
++ (void)makeTaskFromPhotos:(NSArray *)photos toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSManagedObjectID *, NSError *))completion {
+    NSString *to_album_id_str = toLocalAlbum.id_str;
+    
+    __block NSManagedObjectID *taskObjectID = nil;
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+        PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDTaskObject class]) inManagedObjectContext:context];
+        taskObject.type = @(PDTaskObjectTypePhotosToLocalAlbum);
+        taskObject.to_album_id_str = to_album_id_str;
+        taskObjectID = taskObject.objectID;
+        
+        for (id tmpphoto in photos) {
+            if ([tmpphoto isKindOfClass:[PWPhotoObject class]]) {
+                PWPhotoObject *photo = (PWPhotoObject *)tmpphoto;
+                PDWebPhotoObject *webPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDWebPhotoObjectName inManagedObjectContext:context];
+                webPhoto.photo_object_id_str = photo.id_str;
+                webPhoto.tag_sort_index = photo.sortIndex;
+                webPhoto.task = taskObject;
+                [taskObject addPhotosObject:webPhoto];
+            }
+            else if ([tmpphoto isKindOfClass:[PLPhotoObject class]]) {
+                PLPhotoObject *photo = (PLPhotoObject *)tmpphoto;
+                PDLocalCopyPhotoObject *localCopyPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalCopyPhotoObjectName inManagedObjectContext:context];
+                localCopyPhoto.photo_object_id_str = photo.id_str;
+                localCopyPhoto.task = taskObject;
+                [taskObject addPhotosObject:localCopyPhoto];
+            }
+            else if ([tmpphoto isKindOfClass:[PHAsset class]]) {
+                PHAsset *asset = (PHAsset *)tmpphoto;
+                PDLocalCopyPhotoObject *localCopyPhoto = [NSEntityDescription insertNewObjectForEntityForName:kPDLocalCopyPhotoObjectName inManagedObjectContext:context];
+                localCopyPhoto.photo_object_id_str = asset.localIdentifier;
+                localCopyPhoto.task = taskObject;
+                [taskObject addPhotosObject:localCopyPhoto];
+            }
+        }
+    }];
+    
+    completion ? completion(taskObjectID, nil): 0;
 }
 
 + (void)makeTaskFromPhotos:(NSArray *)photos toWebAlbum:(PWAlbumObject *)toWebAlbum completion:(void (^)(NSManagedObjectID *, NSError *))completion {
     NSString *to_album_id_str = toWebAlbum.id_str;
     
-    [PDCoreDataAPI writeWithBlock:^(NSManagedObjectContext *context) {
+    __block NSManagedObjectID *taskObjectID = nil;
+    [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         PDTaskObject *taskObject = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([PDTaskObject class]) inManagedObjectContext:context];
         taskObject.type = @(PDTaskObjectTypePhotosToWebAlbum);
         taskObject.to_album_id_str = to_album_id_str;
-        NSManagedObjectID *taskObjectID = taskObject.objectID;
+        taskObjectID = taskObject.objectID;
         
         for (id photo in photos) {
             if ([photo isKindOfClass:[PLPhotoObject class]]) {
@@ -214,11 +248,9 @@
                 [taskObject addPhotosObject:localPhotoObject];
             }
         }
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            completion ? completion(taskObjectID, nil) : 0;
-        });
     }];
+    
+    completion ? completion(taskObjectID, nil) : 0;
 }
 
 #pragma mark UIAlertView
