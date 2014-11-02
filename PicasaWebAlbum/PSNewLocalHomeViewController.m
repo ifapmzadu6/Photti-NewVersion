@@ -111,6 +111,12 @@
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
         [tabBarController addSelectedPhoto:asset];
     };
+    self.panoramaListDataSource.didDeselectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
 }
 
 - (void)setUpFavoriteDataSource {
@@ -119,6 +125,12 @@
     self.favoriteListDataSource.isSelectMode = YES;
     __weak typeof(self) wself = self;
     self.favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
+    self.favoriteListDataSource.didDeselectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
@@ -137,6 +149,12 @@
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
         [tabBarController addSelectedPhoto:asset];
     };
+    self.timelapseListDataSource.didDeselectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
 }
 
 - (void)setUpCloudDataSource {
@@ -145,6 +163,12 @@
     self.cloudListDataSource.isSelectMode = YES;
     __weak typeof(self) wself = self;
     self.cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
+    self.cloudListDataSource.didDeselectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
@@ -163,6 +187,12 @@
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
         [tabBarController addSelectedPhoto:asset];
     };
+    self.burstsListDataSource.didDeselectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
 }
 
 - (void)setUpSlomoVideosDataSource {
@@ -176,6 +206,12 @@
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
         [tabBarController addSelectedPhoto:asset];
     };
+    self.slomoVideosListDataSource.didDeselectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
 }
 
 - (void)setUpAllPhotosDataSource {
@@ -184,6 +220,12 @@
     self.allPhotoListDataSource.isSelectMode = YES;
     __weak typeof(self) wself = self;
     self.allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
+        [tabBarController addSelectedPhoto:asset];
+    };
+    self.allPhotoListDataSource.didDeselectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
