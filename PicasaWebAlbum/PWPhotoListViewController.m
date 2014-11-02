@@ -562,7 +562,8 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         }];
         UIAlertAction *cancelAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
         
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:album.title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        NSString *title = [NSString stringWithFormat:@"\"%@\"", album.title];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
         alertController.popoverPresentationController.barButtonItem = sender;
         [alertController addAction:editAlertAction];
         [alertController addAction:shareAlertAction];
@@ -572,7 +573,8 @@ static NSString * const kPWPhotoListViewControllerName = @"PWPLVCN";
         [self presentViewController:alertController animated:YES completion:nil];
     }
     else {
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:album.title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:NSLocalizedString(@"Edit", nil), NSLocalizedString(@"Share", nil), NSLocalizedString(@"Download", nil), nil];
+        NSString *title = [NSString stringWithFormat:@"\"%@\"", album.title];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:NSLocalizedString(@"Edit", nil), NSLocalizedString(@"Share", nil), NSLocalizedString(@"Download", nil), nil];
         actionSheet.tag = 1003;
         [actionSheet showFromBarButtonItem:sender animated:YES];
     }

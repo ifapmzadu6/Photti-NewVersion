@@ -229,7 +229,7 @@
 }
 
 - (void)actionBarButtonAction:(id)sender {
-    [self showSlbumActionSheet:sender albumTitle:self.title];
+    [self showAlbumActionSheet:sender albumTitle:self.title];
 }
 
 - (void)addBarButtonAction:(id)sender {
@@ -339,7 +339,7 @@
 }
 
 #pragma mark Album
-- (void)showSlbumActionSheet:(id)sender albumTitle:(NSString *)albumTitle {
+- (void)showAlbumActionSheet:(id)sender albumTitle:(NSString *)albumTitle {
     __weak typeof(self) wself = self;
     UIAlertAction *editAlertAction = nil;
     if (_type == kPHPhotoListViewControllerType_Album) {
@@ -381,7 +381,8 @@
     }
     UIAlertAction *cancelAlertAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
     
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    NSString *title = [NSString stringWithFormat:@"\"%@\"", albumTitle];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     alertController.popoverPresentationController.barButtonItem = sender;
     if (editAlertAction) {
         [alertController addAction:editAlertAction];

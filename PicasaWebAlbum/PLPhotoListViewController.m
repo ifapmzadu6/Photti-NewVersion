@@ -621,7 +621,8 @@
     _actionSheetItem = album;
     _actionSheetSender = sender;
     
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:album.name delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:NSLocalizedString(@"Edit", nil), NSLocalizedString(@"Share", nil), NSLocalizedString(@"Upload", nil), nil];
+    NSString *title = [NSString stringWithFormat:@"\"%@\"", album.name];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Delete", nil) otherButtonTitles:NSLocalizedString(@"Edit", nil), NSLocalizedString(@"Share", nil), NSLocalizedString(@"Upload", nil), nil];
     actionSheet.tag = 1003;
     [actionSheet showFromBarButtonItem:sender animated:YES];
 }
