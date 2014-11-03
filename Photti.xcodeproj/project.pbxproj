@@ -12,6 +12,8 @@
 		710461841917742A00DF369D /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 710461831917742A00DF369D /* CoreData.framework */; };
 		710461A01917759900DF369D /* PWCoreDataAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 7104619F1917759900DF369D /* PWCoreDataAPI.m */; };
 		710BC2651A06EF4400205DFD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 710BC2641A06EF4400205DFD /* Images.xcassets */; };
+		710BC26D1A06F85800205DFD /* SEImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 710BC26C1A06F85800205DFD /* SEImageViewController.m */; };
+		710BC26E1A070E0300205DFD /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 713300B519404B130061DBA3 /* MobileCoreServices.framework */; };
 		711000201964EB88009A329C /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7110001F1964EB88009A329C /* MediaPlayer.framework */; };
 		71109BD1196FBC3700EEDAAE /* PLPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109BD0196FBC3700EEDAAE /* PLPhotoEditViewController.m */; };
 		71109BD51973C90000EEDAAE /* PLAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109BD41973C90000EEDAAE /* PLAlbumEditViewController.m */; };
@@ -253,6 +255,8 @@
 		7104619E1917759900DF369D /* PWCoreDataAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWCoreDataAPI.h; sourceTree = "<group>"; };
 		7104619F1917759900DF369D /* PWCoreDataAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWCoreDataAPI.m; sourceTree = "<group>"; };
 		710BC2641A06EF4400205DFD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		710BC26B1A06F85800205DFD /* SEImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEImageViewController.h; sourceTree = "<group>"; };
+		710BC26C1A06F85800205DFD /* SEImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEImageViewController.m; sourceTree = "<group>"; };
 		7110001F1964EB88009A329C /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		71109BCF196FBC3700EEDAAE /* PLPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPhotoEditViewController.h; sourceTree = "<group>"; };
 		71109BD0196FBC3700EEDAAE /* PLPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoEditViewController.m; sourceTree = "<group>"; };
@@ -650,6 +654,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				710BC26E1A070E0300205DFD /* MobileCoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -728,6 +733,47 @@
 				7104619F1917759900DF369D /* PWCoreDataAPI.m */,
 			);
 			name = PWCoreDataAPI;
+			sourceTree = "<group>";
+		};
+		710BC2661A06F7DF00205DFD /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				710BC2691A06F7FC00205DFD /* ShareViewController */,
+				710BC26A1A06F81000205DFD /* SEImageViewController */,
+			);
+			name = ViewController;
+			sourceTree = "<group>";
+		};
+		710BC2671A06F7EC00205DFD /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		710BC2681A06F7F200205DFD /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		710BC2691A06F7FC00205DFD /* ShareViewController */ = {
+			isa = PBXGroup;
+			children = (
+				714A8D6A1A0690BD00F1FA2F /* ShareViewController.h */,
+				714A8D6B1A0690BD00F1FA2F /* ShareViewController.m */,
+			);
+			name = ShareViewController;
+			sourceTree = "<group>";
+		};
+		710BC26A1A06F81000205DFD /* SEImageViewController */ = {
+			isa = PBXGroup;
+			children = (
+				710BC26B1A06F85800205DFD /* SEImageViewController.h */,
+				710BC26C1A06F85800205DFD /* SEImageViewController.m */,
+			);
+			name = SEImageViewController;
 			sourceTree = "<group>";
 		};
 		71109BCE196FBC2500EEDAAE /* PLPhotoEditViewController */ = {
@@ -1312,8 +1358,9 @@
 		714A8D671A0690BD00F1FA2F /* PhottiShareExtention */ = {
 			isa = PBXGroup;
 			children = (
-				714A8D6A1A0690BD00F1FA2F /* ShareViewController.h */,
-				714A8D6B1A0690BD00F1FA2F /* ShareViewController.m */,
+				710BC2671A06F7EC00205DFD /* Model */,
+				710BC2681A06F7F200205DFD /* View */,
+				710BC2661A06F7DF00205DFD /* ViewController */,
 				714A8D781A069CDF00F1FA2F /* MainInterface.storyboard */,
 				710BC2641A06EF4400205DFD /* Images.xcassets */,
 				714A8D681A0690BD00F1FA2F /* Supporting Files */,
@@ -2933,6 +2980,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				710BC26D1A06F85800205DFD /* SEImageViewController.m in Sources */,
 				714A8D6C1A0690BD00F1FA2F /* ShareViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
