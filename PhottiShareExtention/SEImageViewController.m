@@ -11,6 +11,9 @@
 @import MobileCoreServices;
 @import ImageIO;
 
+#import "PAActivityIndicatorView.h"
+#import "PAResizeData.h"
+
 
 @interface SEImageViewController ()
 
@@ -18,6 +21,7 @@
 @property (strong, nonatomic) NSItemProvider *item;
 
 @property (strong, nonatomic) UIImageView *imageView;
+@property (strong ,nonatomic) UIActivityIndicatorView *indicatorView;
 
 @end
 
@@ -37,28 +41,22 @@
     
     self.view.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.1f];
     
+    _indicatorView = [PAActivityIndicatorView new];
+    [_indicatorView startAnimating];
+    [self.view addSubview:_indicatorView];
+    
     if ([_item hasItemConformingToTypeIdentifier:(__bridge NSString *)kUTTypeImage]) {
         __weak typeof(self) wself = self;
         [_item loadItemForTypeIdentifier:(__bridge NSString *)kUTTypeImage options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;
-            if (error) {
-                return;
-            }
+            if (error) return;
             NSURL *url = (NSURL *)item;
-            CGImageSourceRef imageSourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
-            CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(imageSourceRef, 0, (__bridge CFDictionaryRef) @{(NSString *)kCGImageSourceCreateThumbnailFromImageAlways: @YES, (NSString *)kCGImageSourceThumbnailMaxPixelSize: @(500), (NSString *)kCGImageSourceCreateThumbnailWithTransform : @YES});
-            CFRelease(imageSourceRef);
-            UIImage *image = [UIImage imageWithCGImage:imageRef];
-            CGImageRelease(imageRef);
+            UIImage *image = [PAResizeData imageFromFileUrl:url maxPixelSize:500];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (image) {
-                    sself.imageView = [UIImageView new];
-                    sself.imageView.image = (UIImage *)image;
-                    sself.imageView.contentMode = UIViewContentModeScaleAspectFill;
-                    sself.imageView.clipsToBounds = YES;
-                    [sself.view addSubview:sself.imageView];
+                    [sself showImageViewWithImage:image];
                 }
             });
         }];
@@ -79,6 +77,23 @@
     CGRect rect = self.view.bounds;
     
     _imageView.frame = rect;
+    _indicatorView.center = self.view.center;
+}
+
+#pragma mark ShowView
+- (void)showImageViewWithImage:(UIImage *)image {
+    _imageView = [UIImageView new];
+    _imageView.image = (UIImage *)image;
+    _imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _imageView.clipsToBounds = YES;
+    _imageView.alpha = 0.0f;
+    [self.view addSubview:_imageView];
+    
+    [UIView animateWithDuration:0.2f animations:^{
+        _imageView.alpha = 1.0f;
+    } completion:^(BOOL finished) {
+        [_indicatorView stopAnimating];
+    }];
 }
 
 @end

@@ -14,6 +14,8 @@
 		710BC2651A06EF4400205DFD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 710BC2641A06EF4400205DFD /* Images.xcassets */; };
 		710BC26D1A06F85800205DFD /* SEImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 710BC26C1A06F85800205DFD /* SEImageViewController.m */; };
 		710BC26E1A070E0300205DFD /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 713300B519404B130061DBA3 /* MobileCoreServices.framework */; };
+		710BC2711A071E8F00205DFD /* PAActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 710BC2701A071E8F00205DFD /* PAActivityIndicatorView.m */; };
+		710BC2761A07258200205DFD /* PAResizeData.m in Sources */ = {isa = PBXBuildFile; fileRef = 710BC2751A07258200205DFD /* PAResizeData.m */; };
 		711000201964EB88009A329C /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7110001F1964EB88009A329C /* MediaPlayer.framework */; };
 		71109BD1196FBC3700EEDAAE /* PLPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109BD0196FBC3700EEDAAE /* PLPhotoEditViewController.m */; };
 		71109BD51973C90000EEDAAE /* PLAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109BD41973C90000EEDAAE /* PLAlbumEditViewController.m */; };
@@ -257,6 +259,10 @@
 		710BC2641A06EF4400205DFD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		710BC26B1A06F85800205DFD /* SEImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEImageViewController.h; sourceTree = "<group>"; };
 		710BC26C1A06F85800205DFD /* SEImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEImageViewController.m; sourceTree = "<group>"; };
+		710BC26F1A071E8F00205DFD /* PAActivityIndicatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PAActivityIndicatorView.h; path = PicasaWebAlbum/PAActivityIndicatorView.h; sourceTree = SOURCE_ROOT; };
+		710BC2701A071E8F00205DFD /* PAActivityIndicatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PAActivityIndicatorView.m; path = PicasaWebAlbum/PAActivityIndicatorView.m; sourceTree = SOURCE_ROOT; };
+		710BC2741A07258200205DFD /* PAResizeData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PAResizeData.h; path = PicasaWebAlbum/PAResizeData.h; sourceTree = SOURCE_ROOT; };
+		710BC2751A07258200205DFD /* PAResizeData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PAResizeData.m; path = PicasaWebAlbum/PAResizeData.m; sourceTree = SOURCE_ROOT; };
 		7110001F1964EB88009A329C /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		71109BCF196FBC3700EEDAAE /* PLPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPhotoEditViewController.h; sourceTree = "<group>"; };
 		71109BD0196FBC3700EEDAAE /* PLPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoEditViewController.m; sourceTree = "<group>"; };
@@ -747,6 +753,7 @@
 		710BC2671A06F7EC00205DFD /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				710BC2771A07258700205DFD /* PAResizeData */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -754,6 +761,7 @@
 		710BC2681A06F7F200205DFD /* View */ = {
 			isa = PBXGroup;
 			children = (
+				710BC2721A071E9600205DFD /* PAActivityIndicatorView */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -774,6 +782,24 @@
 				710BC26C1A06F85800205DFD /* SEImageViewController.m */,
 			);
 			name = SEImageViewController;
+			sourceTree = "<group>";
+		};
+		710BC2721A071E9600205DFD /* PAActivityIndicatorView */ = {
+			isa = PBXGroup;
+			children = (
+				710BC26F1A071E8F00205DFD /* PAActivityIndicatorView.h */,
+				710BC2701A071E8F00205DFD /* PAActivityIndicatorView.m */,
+			);
+			name = PAActivityIndicatorView;
+			sourceTree = "<group>";
+		};
+		710BC2771A07258700205DFD /* PAResizeData */ = {
+			isa = PBXGroup;
+			children = (
+				710BC2741A07258200205DFD /* PAResizeData.h */,
+				710BC2751A07258200205DFD /* PAResizeData.m */,
+			);
+			name = PAResizeData;
 			sourceTree = "<group>";
 		};
 		71109BCE196FBC2500EEDAAE /* PLPhotoEditViewController */ = {
@@ -2980,7 +3006,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				710BC2711A071E8F00205DFD /* PAActivityIndicatorView.m in Sources */,
 				710BC26D1A06F85800205DFD /* SEImageViewController.m in Sources */,
+				710BC2761A07258200205DFD /* PAResizeData.m in Sources */,
 				714A8D6C1A0690BD00F1FA2F /* ShareViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

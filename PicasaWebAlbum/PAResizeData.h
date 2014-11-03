@@ -7,9 +7,12 @@
 //
 
 @import Foundation;
+@import UIKit;
 
 @interface PAResizeData : NSObject
 
 + (NSData *)resizedDataWithImageData:(NSData *)imageData maxPixelSize:(NSUInteger)maxPixelSize;
+
++ (UIImage *)imageFromFileUrl:(NSURL *)fileUrl maxPixelSize:(NSInteger)maxPixelSize;
 
 @end

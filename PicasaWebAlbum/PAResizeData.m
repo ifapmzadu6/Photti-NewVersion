@@ -48,6 +48,15 @@
     return resizedData;
 }
 
++ (UIImage *)imageFromFileUrl:(NSURL *)url maxPixelSize:(NSInteger)maxPixelSize {
+    CGImageSourceRef imageSourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
+    CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(imageSourceRef, 0, (__bridge CFDictionaryRef) @{(NSString *)kCGImageSourceCreateThumbnailFromImageAlways: @YES, (NSString *)kCGImageSourceThumbnailMaxPixelSize: @(maxPixelSize), (NSString *)kCGImageSourceCreateThumbnailWithTransform : @YES});
+    CFRelease(imageSourceRef);
+    UIImage *image = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    return image;
+}
+
 CGContextRef createBitmapContext (int pixelsWide, int pixelsHigh) {
     CGContextRef bitmapContext = NULL;
     

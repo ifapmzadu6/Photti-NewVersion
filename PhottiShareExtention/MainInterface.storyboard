@@ -50,7 +50,7 @@
                                             <items/>
                                         </toolbar>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vJN-oP-TkL">
-                                            <rect key="frame" x="16" y="346" width="110" height="20"/>
+                                            <rect key="frame" x="8" y="346" width="110" height="20"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="20" id="UOo-p1-FrL"/>
                                                 <constraint firstAttribute="width" constant="110" id="mm6-R7-LcI"/>
@@ -93,7 +93,7 @@
                                             <blurEffect style="dark"/>
                                         </visualEffectView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rnp-Du-aHP">
-                                            <rect key="frame" x="126" y="346" width="140" height="20"/>
+                                            <rect key="frame" x="118" y="346" width="148" height="20"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="20" id="wt5-Fk-qqX"/>
                                             </constraints>
@@ -116,7 +116,7 @@
                                         <constraint firstItem="Kab-0f-Auf" firstAttribute="top" secondItem="aUL-hx-ZeL" secondAttribute="top" id="oOP-gk-g5w"/>
                                         <constraint firstItem="rnp-Du-aHP" firstAttribute="leading" secondItem="vJN-oP-TkL" secondAttribute="trailing" id="onz-oR-roa"/>
                                         <constraint firstAttribute="bottom" secondItem="VSm-Xp-zjc" secondAttribute="bottom" id="rL9-w8-oMw"/>
-                                        <constraint firstItem="vJN-oP-TkL" firstAttribute="leading" secondItem="aUL-hx-ZeL" secondAttribute="leading" constant="16" id="uDs-Hx-mgG"/>
+                                        <constraint firstItem="vJN-oP-TkL" firstAttribute="leading" secondItem="aUL-hx-ZeL" secondAttribute="leading" constant="8" id="uDs-Hx-mgG"/>
                                         <constraint firstItem="Kab-0f-Auf" firstAttribute="leading" secondItem="aUL-hx-ZeL" secondAttribute="leading" id="v9s-rA-j9k"/>
                                     </constraints>
                                 </view>

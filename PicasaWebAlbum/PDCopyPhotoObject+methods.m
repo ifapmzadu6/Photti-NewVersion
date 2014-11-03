@@ -152,7 +152,7 @@ static NSString * const kPDCopyPhotoObjectPostURL = @"https://picasaweb.google.c
     NSManagedObjectID *selfObjectID = self.objectID;
     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         PDCopyPhotoObject *selfObject = (PDCopyPhotoObject *)[context objectWithID:selfObjectID];
-        selfObject.is_done = @(YES);
+        selfObject.is_done = @YES;
     }];
 }
 

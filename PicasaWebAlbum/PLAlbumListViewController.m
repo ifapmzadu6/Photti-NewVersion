@@ -241,7 +241,7 @@
             albumObject.tag_date = [PADateTimestamp dateForTimestamp:timestamp.stringValue];
             if (![albumObject.timestamp isEqualToNumber:timestamp]) {
                 albumObject.timestamp = timestamp;
-                albumObject.edited = @(YES);
+                albumObject.edited = @YES;
             }
             albumObject.tag_uploading_type = uploading_type;
         }];

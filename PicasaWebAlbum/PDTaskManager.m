@@ -475,7 +475,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
                 }
                 else {
                     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-                        photoObject.is_done = @(YES);
+                        photoObject.is_done = @YES;
                     }];
                 }
             }

@@ -48,7 +48,7 @@
         NSManagedObjectID *selfObjectID = self.objectID;
         [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
             PDBasePhotoObject *selfObject = (PDBasePhotoObject *)[context objectWithID:selfObjectID];
-            selfObject.is_done = @(YES);
+            selfObject.is_done = @YES;
         }];
     }
 }
@@ -85,7 +85,7 @@
     NSManagedObjectID *selfObjectID = self.objectID;
     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         PDBasePhotoObject *selfObject = (PDBasePhotoObject *)[context objectWithID:selfObjectID];
-        selfObject.is_done = @(YES);
+        selfObject.is_done = @YES;
     }];
 }
 

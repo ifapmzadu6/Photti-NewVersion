@@ -52,7 +52,7 @@ static CGFloat kPageViewControllerOptionInterPageSpacingValue = 20.0f;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [UIView animateWithDuration:0.5f animations:^{
+    [UIView animateWithDuration:0.2f animations:^{
         self.view.alpha = 1.0f;
     } completion:^(BOOL finished) {
     }];
@@ -68,7 +68,7 @@ static CGFloat kPageViewControllerOptionInterPageSpacingValue = 20.0f;
 
 #pragma mark UIBarButtonAction
 - (IBAction)cancelBarButtonAction:(id)sender {
-    [UIView animateWithDuration:0.5f animations:^{
+    [UIView animateWithDuration:0.2f animations:^{
         self.view.alpha = 0.0f;
     } completion:^(BOOL finished) {
         [self.extensionContext cancelRequestWithError:nil];
@@ -76,7 +76,7 @@ static CGFloat kPageViewControllerOptionInterPageSpacingValue = 20.0f;
 }
 
 - (IBAction)saveBarButtonAction:(id)sender {
-    [UIView animateWithDuration:0.5f animations:^{
+    [UIView animateWithDuration:0.2f animations:^{
         self.view.alpha = 0.0f;
     } completion:^(BOOL finished) {
         [self.extensionContext completeRequestReturningItems:nil completionHandler:nil];
@@ -117,6 +117,19 @@ static CGFloat kPageViewControllerOptionInterPageSpacingValue = 20.0f;
         sself.pageLabel.text = [NSString stringWithFormat:@"%ld/%ld", (long)sself.index + 1, (long)numberObItems];
     };
     return viewController;
+}
+
+#pragma mark PathExtention
++ (BOOL)isUrlImagePathExtention:(NSURL *)url {
+    if ([url.pathExtension isEqualToString:@"jpeg"] ||
+        [url.pathExtension isEqualToString:@"jpg"] ||
+        [url.pathExtension isEqualToString:@"gif"] ||
+        [url.pathExtension isEqualToString:@"mp4"] ||
+        [url.pathExtension isEqualToString:@"png"] ||
+        [url.pathExtension isEqualToString:@"bmp"]) {
+        return YES;
+    }
+    return NO;
 }
 
 @end

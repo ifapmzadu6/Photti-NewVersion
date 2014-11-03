@@ -189,7 +189,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
     
     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
         PDWebPhotoObject *webObject = (PDWebPhotoObject *)[context objectWithID:selfObjectID];
-        webObject.is_done = @(YES);
+        webObject.is_done = @YES;
     }];
     
     if (![[NSFileManager defaultManager] removeItemAtURL:location error:&error]) {
@@ -252,7 +252,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
                     
                     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
                         PDWebPhotoObject *webObject = (PDWebPhotoObject *)[context objectWithID:selfObjectID];
-                        webObject.is_done = @(YES);
+                        webObject.is_done = @YES;
                     }];
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -293,7 +293,7 @@ static NSString * const kPDWebPhotoObjectMethodsErrorDomain = @"com.photti.PDWeb
                 [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
                     PDWebPhotoObject *webObject = (PDWebPhotoObject *)[context objectWithID:selfObjectID];
                     if (webObject) {
-                        webObject.is_done = @(YES);
+                        webObject.is_done = @YES;
                     }
                 }];
                 
