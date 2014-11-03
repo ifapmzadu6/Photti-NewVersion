@@ -49,13 +49,13 @@
                                             </constraints>
                                             <items/>
                                         </toolbar>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vJN-oP-TkL">
-                                            <rect key="frame" x="8" y="346" width="110" height="20"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="保存先のアルバム" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vJN-oP-TkL">
+                                            <rect key="frame" x="8" y="346" width="140" height="20"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="20" id="UOo-p1-FrL"/>
-                                                <constraint firstAttribute="width" constant="110" id="mm6-R7-LcI"/>
+                                                <constraint firstAttribute="width" constant="140" id="mm6-R7-LcI"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -93,14 +93,26 @@
                                             <blurEffect style="dark"/>
                                         </visualEffectView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rnp-Du-aHP">
-                                            <rect key="frame" x="118" y="346" width="148" height="20"/>
+                                            <rect key="frame" x="158" y="346" width="108" height="20"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="20" id="wt5-Fk-qqX"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eOF-kw-tBH">
+                                            <rect key="frame" x="0.0" y="334" width="290" height="44"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="44" id="Oea-ms-fhC"/>
+                                            </constraints>
+                                            <state key="normal">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="toolBarButtonAction:" destination="j1y-V4-xli" eventType="touchUpInside" id="3T3-eA-lFM"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="VSm-Xp-zjc" secondAttribute="trailing" id="35Q-vd-Vxx"/>
@@ -110,11 +122,14 @@
                                         <constraint firstItem="wW3-Hx-VY2" firstAttribute="leading" secondItem="rnp-Du-aHP" secondAttribute="trailing" constant="9" id="Jdq-fP-94o"/>
                                         <constraint firstAttribute="trailing" secondItem="wW3-Hx-VY2" secondAttribute="trailing" constant="8" id="O8W-17-Pdu"/>
                                         <constraint firstAttribute="trailing" secondItem="Kab-0f-Auf" secondAttribute="trailing" id="SvE-Uh-vh7"/>
+                                        <constraint firstAttribute="bottom" secondItem="eOF-kw-tBH" secondAttribute="bottom" id="YLo-yL-xXv"/>
+                                        <constraint firstItem="eOF-kw-tBH" firstAttribute="leading" secondItem="aUL-hx-ZeL" secondAttribute="leading" id="Zs5-qF-LwN"/>
                                         <constraint firstAttribute="bottom" secondItem="rnp-Du-aHP" secondAttribute="bottom" constant="12" id="cUq-7c-e8e"/>
                                         <constraint firstAttribute="bottom" secondItem="vJN-oP-TkL" secondAttribute="bottom" constant="12" id="gDY-Av-vhh"/>
+                                        <constraint firstAttribute="trailing" secondItem="eOF-kw-tBH" secondAttribute="trailing" id="o94-Ys-j0C"/>
                                         <constraint firstItem="VSm-Xp-zjc" firstAttribute="top" secondItem="71s-F0-kjh" secondAttribute="bottom" constant="17" id="oCD-gi-jDg"/>
                                         <constraint firstItem="Kab-0f-Auf" firstAttribute="top" secondItem="aUL-hx-ZeL" secondAttribute="top" id="oOP-gk-g5w"/>
-                                        <constraint firstItem="rnp-Du-aHP" firstAttribute="leading" secondItem="vJN-oP-TkL" secondAttribute="trailing" id="onz-oR-roa"/>
+                                        <constraint firstItem="rnp-Du-aHP" firstAttribute="leading" secondItem="vJN-oP-TkL" secondAttribute="trailing" constant="10" id="onz-oR-roa"/>
                                         <constraint firstAttribute="bottom" secondItem="VSm-Xp-zjc" secondAttribute="bottom" id="rL9-w8-oMw"/>
                                         <constraint firstItem="vJN-oP-TkL" firstAttribute="leading" secondItem="aUL-hx-ZeL" secondAttribute="leading" constant="8" id="uDs-Hx-mgG"/>
                                         <constraint firstItem="Kab-0f-Auf" firstAttribute="leading" secondItem="aUL-hx-ZeL" secondAttribute="leading" id="v9s-rA-j9k"/>
@@ -141,11 +156,12 @@
                         <outlet property="pageBackgroundView" destination="71s-F0-kjh" id="eOp-1b-TcQ"/>
                         <outlet property="pageLabel" destination="awk-kT-DKd" id="CpU-EW-PgY"/>
                         <outlet property="staticAlbumLabel" destination="vJN-oP-TkL" id="SvI-9V-zJZ"/>
+                        <outlet property="toolbarButton" destination="eOF-kw-tBH" id="Aup-WF-OVM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CEy-Cv-SGf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="715" y="693"/>
+            <point key="canvasLocation" x="628" y="689"/>
         </scene>
     </scenes>
     <resources>

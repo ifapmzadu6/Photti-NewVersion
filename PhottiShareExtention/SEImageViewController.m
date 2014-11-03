@@ -45,21 +45,44 @@
     [_indicatorView startAnimating];
     [self.view addSubview:_indicatorView];
     
-    if ([_item hasItemConformingToTypeIdentifier:(__bridge NSString *)kUTTypeImage]) {
+    if ([_item hasItemConformingToTypeIdentifier:(NSString *)kUTTypeImage]) {
         __weak typeof(self) wself = self;
-        [_item loadItemForTypeIdentifier:(__bridge NSString *)kUTTypeImage options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+        [_item loadItemForTypeIdentifier:(NSString *)kUTTypeImage options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
             typeof(wself) sself = wself;
             if (!sself) return;
             if (error) return;
             NSURL *url = (NSURL *)item;
             UIImage *image = [PAResizeData imageFromFileUrl:url maxPixelSize:500];
-            
+            if (!image) {
+                NSData *data = [NSData dataWithContentsOfURL:url];
+                image = [UIImage imageWithData:data];
+            }
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (image) {
-                    [sself showImageViewWithImage:image];
-                }
+                [sself showImageViewWithImage:image];
             });
         }];
+    }
+    else if ([_item hasItemConformingToTypeIdentifier:(__bridge NSString *)kUTTypeURL]) {
+        __weak typeof(self) wself = self;
+        [_item loadItemForTypeIdentifier:(__bridge NSString *)kUTTypeURL options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            if (error) return;
+            NSURL *url = (NSURL *)item;
+            NSURLRequest *request = [NSURLRequest requestWithURL:url];
+            [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                if (error) return;
+                UIImage *image = [UIImage imageWithData:data];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [sself showImageViewWithImage:image];
+                });
+            }];
+        }];
+    }
+    else {
+        [self logLabelWithString:_item.registeredTypeIdentifiers.description];
     }
 }
 
@@ -82,6 +105,10 @@
 
 #pragma mark ShowView
 - (void)showImageViewWithImage:(UIImage *)image {
+    if (!image) {
+        return;
+    }
+    
     _imageView = [UIImageView new];
     _imageView.image = (UIImage *)image;
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -94,6 +121,14 @@
     } completion:^(BOOL finished) {
         [_indicatorView stopAnimating];
     }];
+}
+
+#pragma mark UILabel
+- (void)logLabelWithString:(NSString *)string {
+    UITextView *textView = [UITextView new];
+    textView.text = string;
+    textView.frame = self.view.bounds;
+    [self.view addSubview:textView];
 }
 
 @end

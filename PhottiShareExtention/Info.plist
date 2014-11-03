@@ -32,6 +32,12 @@
 		<dict>
 			<key>NSExtensionActivationRule</key>
 			<dict>
+				<key>NSExtensionActivationSupportsFileWithMaxCount</key>
+				<integer>1</integer>
+				<key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
+				<integer>1</integer>
+				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+				<integer>1</integer>
 				<key>NSExtensionActivationSupportsAttachmentsWithMinCount</key>
 				<integer>1</integer>
 				<key>NSExtensionActivationSupportsImageWithMaxCount</key>
@@ -39,7 +45,7 @@
 				<key>NSExtensionActivationSupportsMovieWithMaxCount</key>
 				<integer>100</integer>
 				<key>NSExtensionActivationSupportsText</key>
-				<false/>
+				<true/>
 			</dict>
 		</dict>
 		<key>NSExtensionMainStoryboard</key>

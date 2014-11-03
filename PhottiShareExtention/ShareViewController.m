@@ -9,14 +9,15 @@
 #import "ShareViewController.h"
 
 #import "SEImageViewController.h"
+#import "PAIcons.h"
 
 
 static CGFloat kPageViewControllerOptionInterPageSpacingValue = 20.0f;
 
-
 @interface ShareViewController () <UIPageViewControllerDataSource>
 
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *contentView;
+@property (weak, nonatomic) IBOutlet UIButton *toolbarButton;
 @property (weak, nonatomic) IBOutlet UILabel *staticAlbumLabel;
 @property (weak, nonatomic) IBOutlet UILabel *albumTitleLabel;
 @property (weak, nonatomic) IBOutlet UIVisualEffectView *pageBackgroundView;
@@ -36,6 +37,8 @@ static CGFloat kPageViewControllerOptionInterPageSpacingValue = 20.0f;
     _contentView.layer.masksToBounds = YES;
     _pageBackgroundView.layer.cornerRadius = 5.0f;
     _pageBackgroundView.layer.masksToBounds = YES;
+    
+    [_toolbarButton setBackgroundImage:[PAIcons imageWithColor:[UIColor colorWithWhite:0.0f alpha:0.667f]] forState:UIControlStateHighlighted];
     
     _staticAlbumLabel.text = NSLocalizedString(@"Album to save", nil);
     
@@ -83,6 +86,11 @@ static CGFloat kPageViewControllerOptionInterPageSpacingValue = 20.0f;
     }];
 }
 
+#pragma mark ToolBarButton
+- (IBAction)toolBarButtonAction:(id)sender {
+    
+}
+
 #pragma mark UIPageViewControllerDataSource
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
     SEImageViewController *imageViewController = (SEImageViewController *)viewController;
@@ -117,19 +125,6 @@ static CGFloat kPageViewControllerOptionInterPageSpacingValue = 20.0f;
         sself.pageLabel.text = [NSString stringWithFormat:@"%ld/%ld", (long)sself.index + 1, (long)numberObItems];
     };
     return viewController;
-}
-
-#pragma mark PathExtention
-+ (BOOL)isUrlImagePathExtention:(NSURL *)url {
-    if ([url.pathExtension isEqualToString:@"jpeg"] ||
-        [url.pathExtension isEqualToString:@"jpg"] ||
-        [url.pathExtension isEqualToString:@"gif"] ||
-        [url.pathExtension isEqualToString:@"mp4"] ||
-        [url.pathExtension isEqualToString:@"png"] ||
-        [url.pathExtension isEqualToString:@"bmp"]) {
-        return YES;
-    }
-    return NO;
 }
 
 @end

@@ -158,6 +158,7 @@
 		71A2546C19195EDB009914F7 /* PWNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546B19195EDB009914F7 /* PWNavigationController.m */; };
 		71A254701919CFF5009914F7 /* PASearchNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546F1919CFF5009914F7 /* PASearchNavigationController.m */; };
 		71A25478191B3247009914F7 /* PAIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A25477191B3247009914F7 /* PAIcons.m */; };
+		71ADB5311A077F5B00C1529D /* PAIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = 71ADB5301A077F5B00C1529D /* PAIcons.m */; };
 		71B11D8719E8E7C000263124 /* PXEditItemsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71B11D8619E8E7C000263124 /* PXEditItemsViewController.m */; };
 		71BA33871978292600CD0011 /* PDTaskObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BA33861978292600CD0011 /* PDTaskObject.m */; };
 		71BD2340197683F40034CD3B /* PDLocalPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD233F197683F40034CD3B /* PDLocalPhotoObject+methods.m */; };
@@ -544,6 +545,8 @@
 		71A2546F1919CFF5009914F7 /* PASearchNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PASearchNavigationController.m; sourceTree = "<group>"; };
 		71A25476191B3247009914F7 /* PAIcons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAIcons.h; sourceTree = "<group>"; };
 		71A25477191B3247009914F7 /* PAIcons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAIcons.m; sourceTree = "<group>"; };
+		71ADB52F1A077F5B00C1529D /* PAIcons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PAIcons.h; path = PicasaWebAlbum/PAIcons.h; sourceTree = SOURCE_ROOT; };
+		71ADB5301A077F5B00C1529D /* PAIcons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PAIcons.m; path = PicasaWebAlbum/PAIcons.m; sourceTree = SOURCE_ROOT; };
 		71B11D8519E8E7C000263124 /* PXEditItemsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PXEditItemsViewController.h; sourceTree = "<group>"; };
 		71B11D8619E8E7C000263124 /* PXEditItemsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PXEditItemsViewController.m; sourceTree = "<group>"; };
 		71BA33851978292600CD0011 /* PDTaskObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskObject.h; sourceTree = "<group>"; };
@@ -753,6 +756,7 @@
 		710BC2671A06F7EC00205DFD /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				71ADB5321A077F6000C1529D /* PAIcons */,
 				710BC2771A07258700205DFD /* PAResizeData */,
 			);
 			name = Model;
@@ -1905,6 +1909,15 @@
 			name = PAIcons;
 			sourceTree = "<group>";
 		};
+		71ADB5321A077F6000C1529D /* PAIcons */ = {
+			isa = PBXGroup;
+			children = (
+				71ADB52F1A077F5B00C1529D /* PAIcons.h */,
+				71ADB5301A077F5B00C1529D /* PAIcons.m */,
+			);
+			name = PAIcons;
+			sourceTree = "<group>";
+		};
 		71B11D8219E8E50000263124 /* X    - Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -3007,6 +3020,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				710BC2711A071E8F00205DFD /* PAActivityIndicatorView.m in Sources */,
+				71ADB5311A077F5B00C1529D /* PAIcons.m in Sources */,
 				710BC26D1A06F85800205DFD /* SEImageViewController.m in Sources */,
 				710BC2761A07258200205DFD /* PAResizeData.m in Sources */,
 				714A8D6C1A0690BD00F1FA2F /* ShareViewController.m in Sources */,
