@@ -19,7 +19,7 @@
         while (YES) {
             NSIndexPath *indexPath = [NSIndexPath indexPathForItem:index inSection:section];
             [indexPaths addObject:indexPath];
-            
+
             if (index == lastIndex) {
                 break;
             }

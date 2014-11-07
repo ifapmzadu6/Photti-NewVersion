@@ -37,7 +37,8 @@
 + (PHAsset *)getAssetWithIdentifier:(NSString *)identifier {
     PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[identifier] options:nil];
     if (fetchResult.count == 0) {
-        fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[identifier] options:nil];
+        NSURL *url = [NSURL URLWithString:identifier];
+        fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
     }
     PHAsset *asset = fetchResult.firstObject;
     NSAssert(asset, nil);

@@ -9,11 +9,6 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>PhottiShareExtention.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>18</integer>
-		</dict>
 		<key>Photti_release.xcscheme</key>
 		<dict>
 			<key>orderHint</key>

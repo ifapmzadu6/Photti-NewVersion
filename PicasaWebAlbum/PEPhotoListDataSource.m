@@ -140,9 +140,9 @@
     NSArray *insertIndexPaths = [changeDetails.insertedIndexes indexPathsForSection:0];
     NSArray *reloadIndexPaths = [changeDetails.changedIndexes indexPathsForSection:0];
     if (_ascending) {
-        deleteIndexPaths = [self.class convertIndexPaths:deleteIndexPaths reverseIndex:_fetchResult.count-1];
-        insertIndexPaths = [self.class convertIndexPaths:insertIndexPaths reverseIndex:_fetchResult.count-1];
-        reloadIndexPaths = [self.class convertIndexPaths:reloadIndexPaths reverseIndex:_fetchResult.count-1];
+        deleteIndexPaths = [self.class convertIndexPaths:deleteIndexPaths reverseIndex:changeDetails.fetchResultBeforeChanges.count-1];
+        insertIndexPaths = [self.class convertIndexPaths:insertIndexPaths reverseIndex:changeDetails.fetchResultAfterChanges.count-1];
+        reloadIndexPaths = [self.class convertIndexPaths:reloadIndexPaths reverseIndex:changeDetails.fetchResultBeforeChanges.count-1];
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -313,6 +313,7 @@
     
     for (NSIndexPath *indexPath in indexPaths) {
         NSIndexPath *convertedIndexPath = [NSIndexPath indexPathForItem:(index-indexPath.item) inSection:indexPath.section];
+        
         [convertedIndexPaths addObject:convertedIndexPath];
     }
     

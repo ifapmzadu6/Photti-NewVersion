@@ -465,16 +465,20 @@
     __weak typeof(self) wself = self;
     [PWPicasaAPI getAuthorizedURLRequest:[NSURL URLWithString:urlString] completion:^(NSMutableURLRequest *request, NSError *error) {
         typeof(wself) sself = wself;
-        if (!sself) {
+        if (!sself || error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [alertView dismissWithClickedButtonIndex:alertView.cancelButtonIndex animated:YES];
+                if (alertView.isVisible) {
+                    [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                }
             });
             return;
         };
         
         NSURLSessionDataTask *task = (NSURLSessionDataTask *)[[NSURLSession sharedSession] downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [alertView dismissWithClickedButtonIndex:alertView.cancelButtonIndex animated:YES];
+                if (alertView.isVisible) {
+                    [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                }
             });
             if (error) return;
             
