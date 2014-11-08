@@ -136,7 +136,7 @@
         _photoListDataSource.didChangeSelectedItemCountBlock = ^(NSUInteger count){
             typeof(wself) sself = wself;
             if (!sself) return;
-            sself.selectActionBarButtonItem.enabled = (count) ? YES : NO;
+            sself.selectActionBarButtonItem.enabled = (count>0 && count<=5) ? YES : NO;
             sself.selectUploadBarButtonItem.enabled = (count) ? YES : NO;
             sself.selectTrashBarButtonItem.enabled = (count) ? YES : NO;
         };

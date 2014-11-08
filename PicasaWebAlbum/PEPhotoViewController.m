@@ -51,15 +51,17 @@
     [self.view addSubview:_imageScrollView];
     
     CGRect rect = [UIScreen mainScreen].bounds;
-    CGFloat imageWidth = _asset.pixelWidth;
-    CGFloat imageHeight = _asset.pixelHeight;
-    if (CGRectGetWidth(rect) > CGRectGetHeight(rect)) {
-        imageHeight = floorf(imageHeight * CGRectGetWidth(rect) / imageWidth * 2.0f + 1.0f) / 2.0f;
-        imageWidth = CGRectGetWidth(rect);
+    double imageWidth = _asset.pixelWidth;
+    double imageHeight = _asset.pixelHeight;
+    double width = CGRectGetWidth(rect);
+    double height = CGRectGetHeight(rect);
+    if (width > height) {
+        imageHeight = floorf(imageHeight * width / imageWidth * 2.0 + 1.0) / 2.0;
+        imageWidth = width;
     }
     else {
-        imageWidth = floorf(imageWidth * CGRectGetHeight(rect) / imageHeight * 2.0f + 1.0f) / 2.0f;
-        imageHeight = CGRectGetHeight(rect);
+        imageWidth = floorf(imageWidth * height / imageHeight * 2.0 + 1.0) / 2.0;
+        imageHeight = height;
     }
     CGSize targetSize = CGSizeMake(imageWidth, imageHeight);
     [[PHImageManager defaultManager] requestImageForAsset:_asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
