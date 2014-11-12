@@ -9,10 +9,9 @@
 #import "PWAppDelegate.h"
 
 #import <Crashlytics/Crashlytics.h>
+#import <GAI.h>
 #import <SDImageCache.h>
 #import <UAAppReviewManager.h>
-#import <GAI.h>
-#import <GAIDictionaryBuilder.h>
 #import <SKNotificationManager.h>
 
 #import "PAColors.h"
@@ -24,6 +23,7 @@
 #import "PWCoreDataAPI.h"
 #import "PLCoreDataAPI.h"
 #import "PDCoreDataAPI.h"
+#import "Photti-Swift.h"
 
 #import "PWNavigationController.h"
 #import "PLNavigationController.h"
@@ -115,11 +115,10 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
         localNavigationController = [PLNavigationController new];
     }
     PWNavigationController *webNavigationViewController = [PWNavigationController new];
-    PDNavigationController *taskNavigationController = [PDNavigationController new];
     
     NSUInteger initialTabPageIndex = 0;
-    NSArray *viewControllers = @[localNavigationController, webNavigationViewController, taskNavigationController];
-    NSArray *colors = @[[PAColors getColor:kPAColorsTypeTintLocalColor], [PAColors getColor:kPAColorsTypeTintWebColor], [PAColors getColor:kPAColorsTypeTintUploadColor]];
+    NSArray *viewControllers = @[localNavigationController, webNavigationViewController];
+    NSArray *colors = @[[PAColors getColor:kPAColorsTypeTintLocalColor], [PAColors getColor:kPAColorsTypeTintWebColor]];
     
     PATabBarAdsController *tabBarController = [[PATabBarAdsController alloc] initWithIndex:initialTabPageIndex viewControllers:viewControllers colors:colors];
     tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
@@ -169,9 +168,7 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     [[PDTaskManager sharedManager] start];
     
-    // Google Analytics
-    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:GOOGLEANALYTICSID];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"PWAppDelegate" action:@"Background Fetch" label:@"default" value:@(0)] build]];
+    [PAAnalytics sendEventWithClass:self.class action:@"Background Fetch"];
     
     __block BOOL isFinish = NO;
     if ([PLAssetsManager sharedManager].autoCreateAlbumType == PLAssetsManagerAutoCreateAlbumTypeEnable) {
