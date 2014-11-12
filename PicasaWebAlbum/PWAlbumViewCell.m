@@ -70,7 +70,6 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
         UIImageView *imageView = [UIImageView new];
         imageView.clipsToBounds = YES;
         imageView.contentMode = UIViewContentModeScaleAspectFill;
-        imageView.tintColor = [[PAColors getColor:kPAColorsTypeTintWebColor] colorWithAlphaComponent:0.4f];
         imageView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
         imageView.layer.borderWidth = 1.0f;
         imageView.layer.borderColor = [UIColor whiteColor].CGColor;
