@@ -28,10 +28,11 @@
 
 @implementation PEPhotoViewController
 
-- (instancetype)initWithAsset:(PHAsset *)asset {
+- (instancetype)initWithAsset:(PHAsset *)asset index:(NSUInteger)index {
     self = [super init];
     if (self) {
         _asset = asset;
+        _index = index;
     }
     return self;
 }
@@ -64,7 +65,9 @@
         imageHeight = height;
     }
     CGSize targetSize = CGSizeMake(imageWidth, imageHeight);
-    [[PHImageManager defaultManager] requestImageForAsset:_asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.networkAccessAllowed = YES;
+    [[PHImageManager defaultManager] requestImageForAsset:_asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
         typeof(wself) sself = wself;
         if (!sself) return;
         sself.imageScrollView.image = result;
@@ -150,6 +153,7 @@
     CGSize targetSize = CGSizeMake(_asset.pixelWidth, _asset.pixelHeight);
     PHImageRequestOptions *options = [PHImageRequestOptions new];
     options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.networkAccessAllowed = YES;
     __weak typeof(self) wself = self;
     [[PHImageManager defaultManager] requestImageForAsset:_asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
         typeof(wself) sself = wself;

@@ -13,9 +13,10 @@
 
 @interface PEPhotoViewController : PABaseViewController
 
-- (instancetype)initWithAsset:(PHAsset *)asset;
+- (instancetype)initWithAsset:(PHAsset *)asset index:(NSUInteger)index;
 
 @property (strong, nonatomic, readonly) PHAsset *asset;
+@property (nonatomic, readonly) NSUInteger index;
 @property (copy, nonatomic) void (^viewDidAppearBlock)();
 @property (copy, nonatomic) void (^didSingleTapBlock)();
 

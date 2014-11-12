@@ -352,14 +352,14 @@
 #pragma mark UIPageViewControllerDataSource
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
     PEPhotoViewController *photoViewController = (PEPhotoViewController *)viewController;
-    NSInteger index = [_fetchedResult indexOfObject:photoViewController.asset];
+    NSInteger index = photoViewController.index;
     NSUInteger beforeIndex = (_ascending) ? index+1 : index-1;
     return [self makePhotoViewController:beforeIndex];
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController {
     PEPhotoViewController *photoViewController = (PEPhotoViewController *)viewController;
-    NSInteger index = [_fetchedResult indexOfObject:photoViewController.asset];
+    NSInteger index = photoViewController.index;
     NSUInteger afterIndex = (_ascending) ? index-1 : index+1;
     return [self makePhotoViewController:afterIndex];
 }
@@ -371,7 +371,7 @@
     }
     
     PHAsset *asset = _fetchedResult[index];
-    PEPhotoViewController *viewController = [[PEPhotoViewController alloc] initWithAsset:asset];
+    PEPhotoViewController *viewController = [[PEPhotoViewController alloc] initWithAsset:asset index:index];
     NSString *title = [NSString stringWithFormat:@"%ld/%ld", (long)index + 1, (long)_fetchedResult.count];
     viewController.title = title;
     BOOL isGPSEnable = asset.location ? YES : NO;
@@ -425,7 +425,9 @@
 #pragma mark PHPhotoLibraryDelegate
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
     PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:_fetchedResult];
-    _fetchedResult = changeDetails.fetchResultAfterChanges;
+    if (changeDetails) {
+        _fetchedResult = changeDetails.fetchResultAfterChanges;
+    }
 }
 
 #pragma mark UIAlertController
