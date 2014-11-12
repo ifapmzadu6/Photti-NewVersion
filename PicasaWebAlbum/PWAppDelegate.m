@@ -23,7 +23,6 @@
 #import "PWCoreDataAPI.h"
 #import "PLCoreDataAPI.h"
 #import "PDCoreDataAPI.h"
-#import "Photti-Swift.h"
 
 #import "PWNavigationController.h"
 #import "PLNavigationController.h"

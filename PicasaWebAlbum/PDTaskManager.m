@@ -22,7 +22,6 @@
 #import "PWCoreDataAPI.h"
 #import "PASnowFlake.h"
 #import "NSURLResponse+methods.h"
-#import "Photti-Swift.h"
 
 static NSString * const kPDTaskManagerBackgroundSessionIdentifier = @"kPDBSI";
 static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
