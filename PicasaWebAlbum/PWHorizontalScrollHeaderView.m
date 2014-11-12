@@ -94,9 +94,9 @@
     CGFloat moreButtonWidth = CGRectGetWidth(_moreButton.bounds) + 50.0f;
     _moreButton.frame = CGRectMake(CGRectGetWidth(rect) - moreButtonWidth, 17.0f, moreButtonWidth, 26.0f);
     _greaterThanImageView.frame = CGRectMake(CGRectGetMaxX(_moreButton.frame)-CGRectGetWidth(_greaterThanImageView.frame), CGRectGetMinY(_moreButton.frame)+(CGRectGetHeight(_moreButton.frame)-CGRectGetHeight(_greaterThanImageView.frame))/2.0f, CGRectGetWidth(_greaterThanImageView.frame), CGRectGetHeight(_greaterThanImageView.frame));
-    _horizontalScrollView.frame = CGRectMake(-15.0f, 44.0f, CGRectGetWidth(rect)+15.0f*2.0f, CGRectGetHeight(rect) - 100.0f);
-    _bottomLineView.frame = CGRectMake(0.0f, CGRectGetHeight(rect)-46.0f, CGRectGetWidth(rect)+15.0f, 0.5f);
-    _bottomTitleLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect)-30.0f, 200.0f, 20.0f);
+    _horizontalScrollView.frame = CGRectMake(-15.0f, 42.0f, CGRectGetWidth(rect)+15.0f*2.0f, CGRectGetHeight(rect) - 102.0f);
+    _bottomLineView.frame = CGRectMake(0.0f, CGRectGetHeight(rect)-54.0f, CGRectGetWidth(rect)+15.0f, 0.5f);
+    _bottomTitleLabel.frame = CGRectMake(0.0f, CGRectGetHeight(rect)-36.0f, 200.0f, 20.0f);
 }
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
