@@ -119,17 +119,18 @@
                 if (!sself) return;
                 if (count == 0) {
                     [sself disableSelectMode];
-                }
-                if (sself.type == kPHPhotoListViewControllerType_Moment ||
-                    sself.type == kPHPhotoListViewControllerType_Bursts ||
-                    sself.type == kPHPhotoListViewControllerType_Dates ||
-                    sself.type == kPHPhotoListViewControllerType_Favorite ||
-                    sself.type == kPHPhotoListViewControllerType_iCloud ||
-                    sself.type == kPHPhotoListViewControllerType_Panorama ||
-                    sself.type == kPHPhotoListViewControllerType_SlomoVideo ||
-                    sself.type == kPHPhotoListViewControllerType_Timelapse ||
-                    sself.type == kPHPhotoListViewControllerType_Video) {
-                    [sself.navigationController popViewControllerAnimated:YES];
+                    
+                    if (sself.type == kPHPhotoListViewControllerType_Moment ||
+                        sself.type == kPHPhotoListViewControllerType_Bursts ||
+                        sself.type == kPHPhotoListViewControllerType_Dates ||
+                        sself.type == kPHPhotoListViewControllerType_Favorite ||
+                        sself.type == kPHPhotoListViewControllerType_iCloud ||
+                        sself.type == kPHPhotoListViewControllerType_Panorama ||
+                        sself.type == kPHPhotoListViewControllerType_SlomoVideo ||
+                        sself.type == kPHPhotoListViewControllerType_Timelapse ||
+                        sself.type == kPHPhotoListViewControllerType_Video) {
+                        [sself.navigationController popViewControllerAnimated:YES];
+                    }
                 }
             });
         };
