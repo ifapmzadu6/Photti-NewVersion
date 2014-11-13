@@ -62,7 +62,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
         NSManagedObjectContext *context = [PDCoreDataAPI readContext];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:context];
         
-        _restartTimeInterval = 60;
+        _restartTimeInterval = 100;
         
         [self restartTimer];
     }

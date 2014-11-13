@@ -14,6 +14,8 @@
 #import "PAIcons.h"
 #import "PAString.h"
 #import "PADateFormatter.h"
+#import "PDCoreDataAPI.h"
+#import "PDTaskManager.h"
 #import "PATabBarAdsController.h"
 #import "PXSettingsViewController.h"
 #import "PASearchNavigationController.h"
@@ -64,8 +66,16 @@
         [self setUpBurstsDataSource];
         [self setUpSlomoVideosDataSource];
         [self setUpAllPhotosDataSource];
+        
+        NSManagedObjectContext *context = [PDCoreDataAPI readContext];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeContext:) name:NSManagedObjectContextDidSaveNotification object:context];
     }
     return self;
+}
+
+- (void)dealloc {
+    NSManagedObjectContext *context = [PDCoreDataAPI readContext];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
 }
 
 - (void)viewDidLoad {
@@ -141,6 +151,14 @@
         
         [_tableView reloadData];
     }
+    
+    __weak typeof(self) wself = self;
+    [[PDTaskManager sharedManager] countOfAllPhotosInTaskWithCompletion:^(NSUInteger count, NSError *error) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        BOOL hasTasks = (count > 0) ? YES : NO;
+        sself.navigationItem.leftBarButtonItem.enabled = hasTasks;
+    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -752,6 +770,17 @@
     bannerView.gradientView.startColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     bannerView.gradientView.endColor = [UIColor colorWithRed:129.0f/255.0f green:243.0f/255.0f blue:253.0f/255.0f alpha:1.0f];
     return bannerView;
+}
+
+#pragma mark NSmanagedObjectContext
+- (void)didChangeContext:(NSNotification *)notitication {
+    __weak typeof(self) wself = self;
+    [[PDTaskManager sharedManager] countOfAllPhotosInTaskWithCompletion:^(NSUInteger count, NSError *error) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        BOOL hasTasks = (count > 0) ? YES : NO;
+        sself.navigationItem.leftBarButtonItem.enabled = hasTasks;
+    }];
 }
 
 
