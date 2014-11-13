@@ -198,6 +198,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     if (_collectionView.indexPathsForVisibleItems.count > 0) {
         [_collectionView reloadItemsAtIndexPaths:_collectionView.indexPathsForVisibleItems];
     }
+    if (_recentlyUploadedCollectionView.indexPathsForVisibleItems.count > 0) {
+        [_recentlyUploadedCollectionView reloadItemsAtIndexPaths:_recentlyUploadedCollectionView.indexPathsForVisibleItems];
+    }
     
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:NO];
