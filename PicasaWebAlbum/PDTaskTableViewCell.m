@@ -283,7 +283,9 @@
             
             PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
             if (fetchResult.count == 0) return;
-            [[PHImageManager defaultManager] requestImageForAsset:fetchResult.firstObject targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+            PHImageRequestOptions *options = [PHImageRequestOptions new];
+            options.networkAccessAllowed = YES;
+            [[PHImageManager defaultManager] requestImageForAsset:fetchResult.firstObject targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 [sself setImage:result toImageView:sself.thumbnailImageView toAlpha:1.0f hash:hash];
@@ -329,7 +331,9 @@
                 NSString *photo_object_id_str = ((PDLocalPhotoObject *)obj).photo_object_id_str;
                 if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
                     PHAsset *asset = [PAPhotoKit getAssetWithIdentifier:photo_object_id_str];
-                    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+                    PHImageRequestOptions *options = [PHImageRequestOptions new];
+                    options.networkAccessAllowed = YES;
+                    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
                         typeof(wself) sself = wself;
                         if (!sself) return;
                         if (idx == 0) {

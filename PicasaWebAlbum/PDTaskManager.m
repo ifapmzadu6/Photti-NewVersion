@@ -304,7 +304,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 - (void)countOfAllPhotosInTaskWithCompletion:(void (^)(NSUInteger count, NSError *error))completion {
     if (!completion) return;
     
-    [PDCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
+    [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
         request.entity = [NSEntityDescription entityForName:@"PDBasePhotoObject" inManagedObjectContext:context];
         NSError *error = nil;

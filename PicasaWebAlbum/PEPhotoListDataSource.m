@@ -205,7 +205,9 @@
     CGSize targetSize = (_flowLayout) ? _flowLayout.itemSize : _cellSize;
     NSUInteger index = (_ascending) ? (_fetchResult.count-indexPath.item-1) : indexPath.item;
     PHAsset *asset = _fetchResult[index];
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.networkAccessAllowed = YES;
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
         typeof(wcell) scell = wcell;
         if (!scell) return;
         if (scell.tag == tag) {

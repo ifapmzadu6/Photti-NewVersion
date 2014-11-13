@@ -149,8 +149,10 @@
     cell.backgroundColor = (_cellBackgroundColor) ? _cellBackgroundColor : [UIColor whiteColor];
     
     PHFetchResult *assetsResult = _assetCollectionFetchResults[indexPath.row];
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.networkAccessAllowed = YES;
     if (assetsResult.count >= 1) {
-        [[PHImageManager defaultManager] requestImageForAsset:assetsResult[0] targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHImageManager defaultManager] requestImageForAsset:assetsResult[0] targetSize:CGSizeMake(100.0f, 100.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
             typeof(wcell) scell = wcell;
             if (!scell) return;
             if (scell.tag == tag) {
@@ -159,7 +161,7 @@
         }];
     }
     if (assetsResult.count >= 2) {
-        [[PHImageManager defaultManager] requestImageForAsset:assetsResult[1] targetSize:CGSizeMake(75.0f, 75.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHImageManager defaultManager] requestImageForAsset:assetsResult[1] targetSize:CGSizeMake(75.0f, 75.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
             typeof(wcell) scell = wcell;
             if (!scell) return;
             if (scell) {
@@ -168,7 +170,7 @@
         }];
     }
     if (assetsResult.count >= 3) {
-        [[PHImageManager defaultManager] requestImageForAsset:assetsResult[2] targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHImageManager defaultManager] requestImageForAsset:assetsResult[2] targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
             typeof(wcell) scell = wcell;
             if (!scell) return;
             if (scell) {

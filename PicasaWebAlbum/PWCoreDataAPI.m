@@ -62,6 +62,9 @@
 + (BOOL)shouldPerformCoreDataMigration {
     NSError *error = nil;
     NSDictionary *sourceMetaData = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:NSSQLiteStoreType URL:[self storeURL] error:&error];
+    if (!sourceMetaData) {
+        return NO;
+    }
     
     NSManagedObjectModel *managedObjectModel = [self managedObjectModel];
     BOOL isCompatible = [managedObjectModel isConfiguration:nil compatibleWithStoreMetadata:sourceMetaData];

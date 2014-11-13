@@ -23,10 +23,10 @@
 #import "PWCoreDataAPI.h"
 #import "PLCoreDataAPI.h"
 #import "PDCoreDataAPI.h"
+#import "PAAlertControllerKit.h"
 
 #import "PWNavigationController.h"
 #import "PLNavigationController.h"
-#import "PDNavigationController.h"
 #import "PENavigationController.h"
 #import "PEHomeViewController.h"
 #import "PATabBarAdsController.h"
@@ -39,7 +39,6 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // OAuth
     [PWOAuthManager refreshKeychain];
-    
     
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
@@ -72,15 +71,20 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:jsonURL]];
     [SKNotificationManager setJSONRequest:request];
     [SKNotificationManager appLaunched];
-    
     NSString *idfaURL = @"http://54.64.82.148/";
-    NSNumber *appID = @(APPID.longLongValue);
     [SKNotificationManager sharedManager].notificationViewTappedAction = ^(SKNotification *notification) {
         NSNumber *appID = @(notification.appid.integerValue);
         [SKNotificationIDFAManager tappedAdsenceWithAppID:appID serverURL:idfaURL];
     };
-    [SKNotificationIDFAManager appLaunched:appID serverURL:idfaURL];
+    [SKNotificationIDFAManager appLaunched:@(APPID.longLongValue) serverURL:idfaURL];
     
+    // TaskManager
+    [PDTaskManager sharedManager].notAllowedAccessPhotoLibraryAction = ^{
+        [PAAlertControllerKit showNotPermittedToPhotoLibrary];
+    };
+    [PDTaskManager sharedManager].notLoginGoogleAccountAction = ^{
+        [PAAlertControllerKit showYouNeedToLoginWebAlbum];
+    };
     
     UIViewController *rootViewController = nil;
     if ([PWCoreDataAPI shouldPerformCoreDataMigration] || [PDCoreDataAPI shouldPerformCoreDataMigration]) {

@@ -29,6 +29,28 @@
     });
 }
 
++ (void)showNotPermittedToPhotoLibrary {
+    if (![NSThread isMainThread]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self showNotPermittedToPhotoLibrary];
+        });
+        return;
+    }
+    
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Go to Settings > Privacy > Photos and switch Photti to ON to access Photo Library.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+}
+
++ (void)showYouNeedToLoginWebAlbum {
+    if (![NSThread isMainThread]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self showYouNeedToLoginWebAlbum];
+        });
+        return;
+    }
+    
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"You need to login Web Album.", nil) message:nil delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", nil), nil] show];
+}
+
 + (void)showDontRemoveThoseItemsUntilTheTaskIsFinished {
     if (![NSThread isMainThread]) {
         dispatch_async(dispatch_get_main_queue(), ^{

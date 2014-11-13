@@ -39,6 +39,7 @@
 #import "PWNewAlbumEditViewController.h"
 #import "PWAlbumShareViewController.h"
 #import "PXSettingsViewController.h"
+#import "PDNavigationController.h"
 #import "PAActivityIndicatorView.h"
 
 
@@ -149,9 +150,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
     self.navigationItem.rightBarButtonItems = @[addBarButtonItem, searchBarButtonItem];
-    UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
-    settingsBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
-    self.navigationItem.leftBarButtonItem = settingsBarButtonItem;
+    UIBarButtonItem *taskBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Upload"] style:UIBarButtonItemStylePlain target:self action:@selector(taskBarButtonAction:)];
+    taskBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
+    self.navigationItem.leftBarButtonItems = @[taskBarButtonItem];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
@@ -333,9 +334,9 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)settingsBarButtonAction {
-    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeWeb];
-    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
+- (void)taskBarButtonAction:(id)sender {
+    PDNavigationController *navigationController = [PDNavigationController new];
+    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
 @end

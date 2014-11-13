@@ -11,6 +11,8 @@
 @interface PAAlertControllerKit : NSObject
 
 + (void)showNotCollectedToNetwork;
++ (void)showNotPermittedToPhotoLibrary;
++ (void)showYouNeedToLoginWebAlbum;
 
 + (void)showDontRemoveThoseItemsUntilTheTaskIsFinished;
 

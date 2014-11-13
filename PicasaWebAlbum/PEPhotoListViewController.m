@@ -559,6 +559,7 @@
         if (asset.mediaType == PHAssetMediaTypeImage) {
             PHImageRequestOptions *options = [PHImageRequestOptions new];
             options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+            options.networkAccessAllowed = YES;
             options.synchronous = YES;
             [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage *result, NSDictionary *info) {
                 [images addObject:result];
@@ -567,6 +568,7 @@
         else if (asset.mediaType == PHAssetMediaTypeVideo) {
             PHVideoRequestOptions *options = [PHVideoRequestOptions new];
             options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+            options.networkAccessAllowed = YES;
             [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
                 [images addObject:asset];
             }];
@@ -581,6 +583,7 @@
     NSMutableArray *images = @[].mutableCopy;
     PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
     imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    imageOptions.networkAccessAllowed = YES;
     imageOptions.synchronous = YES;
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
     for (PHAsset *asset in fetchResult) {

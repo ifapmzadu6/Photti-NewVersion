@@ -13,13 +13,11 @@
 #import "PDModelObject.h"
 #import "PDTaskManager.h"
 #import "PDCoreDataAPI.h"
-
 #import "PWCoreDataAPI.h"
 #import "PLCoreDataAPI.h"
 
 #import "PDTaskTableViewCell.h"
 #import "PDTaskManagerViewControllerHeaderView.h"
-#import "PATabBarController.h"
 #import "PXSettingsViewController.h"
 #import "PAActivityIndicatorView.h"
 
@@ -38,9 +36,6 @@
     if (self) {
         self.title = NSLocalizedString(@"Tasks", nil);
         
-        self.automaticallyAdjustsScrollViewInsets = NO;
-        self.edgesForExtendedLayout = UIRectEdgeAll;
-        
         NSManagedObjectContext *plcontext = [PLCoreDataAPI readContext];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:plcontext];
         NSManagedObjectContext *pwcontext = [PWCoreDataAPI readContext];
@@ -55,7 +50,7 @@
     self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBarButtonAction)];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction:)];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
     }
@@ -81,19 +76,11 @@
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-}
-
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
     CGRect rect = self.view.bounds;
     
-    PATabBarController *tabBarViewController = (PATabBarController *)self.tabBarController;
-    UIEdgeInsets viewInsets = [tabBarViewController viewInsets];
-    _tableView.contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom + 50.0f, 0.0f);
-    _tableView.scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
     _tableView.frame = rect;
 }
 
@@ -127,9 +114,8 @@
     });
 }
 
-- (void)settingsBarButtonAction {
-    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeTaskManager];
-    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
+- (void)doneBarButtonAction:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark UITableViewDataSource
@@ -193,6 +179,7 @@
 #pragma mark UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     NSString *title = [NSString stringWithFormat:NSLocalizedString(@"%ld Tasks", nil), 1];
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Remove", nil) otherButtonTitles:nil];
     

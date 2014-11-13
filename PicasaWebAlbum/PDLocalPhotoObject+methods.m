@@ -62,6 +62,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     if (asset.mediaType == PHAssetMediaTypeImage) {
         PHImageRequestOptions *options = [PHImageRequestOptions new];
         options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        options.networkAccessAllowed = YES;
         [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
             NSError *error = nil;
             
@@ -86,6 +87,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     else if (asset.mediaType == PHAssetMediaTypeVideo) {
         PHVideoRequestOptions *options = [PHVideoRequestOptions new];
         options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+        options.networkAccessAllowed = YES;
         NSString *exportPreset = nil;
         if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
             exportPreset = AVAssetExportPreset640x480;

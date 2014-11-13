@@ -12,8 +12,6 @@
 #import "PAIcons.h"
 #import "PLAssetsManager.h"
 #import "PEAssetsManager.h"
-
-#import "PXSettingsViewController.h"
 #import "PATabBarAdsController.h"
 
 @interface PLAccessPhotoLibraryViewController ()
@@ -39,11 +37,6 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
-    
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
-    for (UIView *view in self.navigationController.navigationBar.subviews) {
-        view.exclusiveTouch = YES;
-    }
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PictureLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -167,12 +160,6 @@
             _accessButton.frame = CGRectMake(304.0f, 800.0f, 160.0f, 50.0f);
         }
     }
-}
-
-#pragma mark UIBarButtonAction
-- (void)settingsBarButtonAction {
-    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
-    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
 #pragma mark UIButtonAction

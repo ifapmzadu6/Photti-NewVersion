@@ -117,7 +117,9 @@
     if (!asset) {
         return;
     }
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(72.0f, 72.0f) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+    PHImageRequestOptions *imageRequestOptions = [PHImageRequestOptions new];
+    imageRequestOptions.networkAccessAllowed = YES;
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(72.0f, 72.0f) contentMode:PHImageContentModeAspectFill options:imageRequestOptions resultHandler:^(UIImage *result, NSDictionary *info) {
         _thumbnailImageView.image = result;
     }];
 }

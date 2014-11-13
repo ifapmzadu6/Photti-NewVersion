@@ -14,8 +14,6 @@
 #import "PAIcons.h"
 #import "PWPicasaAPI.h"
 #import "PLAssetsManager.h"
-
-#import "PXSettingsViewController.h"
 #import "PATabBarAdsController.h"
 
 @interface PWGoogleLoginViewController ()
@@ -44,11 +42,6 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
-    
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
-    for (UIView *view in self.navigationController.navigationBar.subviews) {
-        view.exclusiveTouch = YES;
-    }
     
     _iconImageView = [UIImageView new];
     _iconImageView.image = [[UIImage imageNamed:@"PicasaLarge"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -238,12 +231,6 @@
             }
         }
     }
-}
-
-#pragma mark UIBarButtonAction
-- (void)settingsBarButtonAction {
-    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeWeb];
-    [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
 #pragma mark UIButton

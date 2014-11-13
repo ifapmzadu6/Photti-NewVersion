@@ -14,6 +14,10 @@
 @implementation PAResizeData
 
 + (NSData *)resizedDataWithImageData:(NSData *)imageData maxPixelSize:(NSUInteger)maxPixelSize {
+    if (!imageData) {
+        return nil;
+    }
+    
     //metadataの取得
     CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, nil);
     NSDictionary *metadata = (__bridge_transfer  NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil);

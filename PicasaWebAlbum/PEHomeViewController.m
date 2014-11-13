@@ -22,7 +22,6 @@
 #import "PEScrollBannerHeaderView.h"
 #import "PEBannerContentView.h"
 #import "PAHorizontalScrollView.h"
-
 #import "PEPhotoDataSourceFactoryMethod.h"
 #import "PEAlbumListDataSource.h"
 #import "PEMomentListDataSource.h"
@@ -31,6 +30,7 @@
 #import "PEMomentListViewController.h"
 #import "PEPhotoListViewController.h"
 #import "PEPhotoPageViewController.h"
+#import "PDNavigationController.h"
 
 @interface PEHomeViewController () <UITableViewDelegate>
 
@@ -45,69 +45,6 @@
 @end
 
 @implementation PEHomeViewController
-
-+ (NSArray *)defaultEnabledItems {
-    return @[kPEHomeViewControllerRowType_Albums,
-             kPEHomeViewControllerRowType_Moments,
-             kPEHomeViewControllerRowType_AllPhotos,
-             kPEHomeViewControllerRowType_Favorites,
-             kPEHomeViewControllerRowType_Panoramas,
-             kPEHomeViewControllerRowType_Videos,
-             kPEHomeViewControllerRowType_Timelapse,
-             kPEHomeViewControllerRowType_Bursts,
-             kPEHomeViewControllerRowType_SlomoVideos,
-             kPEHomeViewControllerRowType_Cloud];
-}
-
-+ (NSString *)localizedStringFromRowType:(NSString *)rowType {
-    if ([rowType isEqualToString:kPEHomeViewControllerRowType_Albums])
-        return NSLocalizedString(@"Albums", nil);
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments])
-        return NSLocalizedString(@"Moments", nil);
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos])
-        return NSLocalizedString(@"Videos", nil);
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas])
-        return NSLocalizedString(@"Panoramas", nil);
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse])
-        return NSLocalizedString(@"Timelapse", nil);
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites])
-        return NSLocalizedString(@"Favorites", nil);
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud])
-        return NSLocalizedString(@"iCloud", nil);
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Bursts])
-        return NSLocalizedString(@"Bursts", nil);
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_SlomoVideos])
-        return NSLocalizedString(@"Slo-mo", nil);
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos])
-        return NSLocalizedString(@"Camera Roll", nil);
-    return nil;
-}
-
-+ (NSString *)rowTypeFromLocalizedString:(NSString *)rowType {
-    if ([rowType isEqualToString:NSLocalizedString(@"Albums", nil)])
-        return kPEHomeViewControllerRowType_Albums;
-    else if ([rowType isEqualToString:NSLocalizedString(@"Moments", nil)])
-        return kPEHomeViewControllerRowType_Moments;
-    else if ([rowType isEqualToString:NSLocalizedString(@"Videos", nil)])
-        return kPEHomeViewControllerRowType_Videos;
-    else if ([rowType isEqualToString:NSLocalizedString(@"Panoramas", nil)])
-        return kPEHomeViewControllerRowType_Panoramas;
-    else if ([rowType isEqualToString:NSLocalizedString(@"Timelapse", nil)])
-        return kPEHomeViewControllerRowType_Timelapse;
-    else if ([rowType isEqualToString:NSLocalizedString(@"Favorites", nil)])
-        return kPEHomeViewControllerRowType_Favorites;
-    else if ([rowType isEqualToString:NSLocalizedString(@"iCloud", nil)])
-        return kPEHomeViewControllerRowType_Cloud;
-    else if ([rowType isEqualToString:NSLocalizedString(@"Bursts", nil)])
-        return kPEHomeViewControllerRowType_Bursts;
-    else if ([rowType isEqualToString:NSLocalizedString(@"Slo-mo", nil)])
-        return kPEHomeViewControllerRowType_SlomoVideos;
-    else if ([rowType isEqualToString:NSLocalizedString(@"Camera Roll", nil)])
-        return kPEHomeViewControllerRowType_AllPhotos;
-    return nil;
-}
-
-
 
 - (instancetype)init {
     self = [super init];
@@ -139,9 +76,9 @@
     
     UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
     self.navigationItem.rightBarButtonItems = @[searchBarButtonItem];
-    UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
-    settingsBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
-    self.navigationItem.leftBarButtonItem = settingsBarButtonItem;
+    UIBarButtonItem *taskBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Upload"] style:UIBarButtonItemStylePlain target:self action:@selector(taskBarButtonAction:)];
+    taskBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
+    self.navigationItem.leftBarButtonItems = @[taskBarButtonItem];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
@@ -251,6 +188,11 @@
         [tabBarController setTabBarHidden:NO animated:NO completion:nil];
         [tabBarController setAdsHidden:NO animated:YES];
     }];
+}
+
+- (void)taskBarButtonAction:(id)sender {
+    PDNavigationController *navigationController = [PDNavigationController new];
+    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)settingsBarButtonAction {
@@ -435,13 +377,23 @@
         return _enabledItems.count;
     }
     else {
-        return 3;
+        return 4;
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         PECategoryViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([PECategoryViewCell class]) forIndexPath:indexPath];
+        
+        __weak typeof(cell) wcell = cell;
+        void (^didChangeItemCountBlock)(NSUInteger) = ^(NSUInteger count){
+            typeof(wcell) scell = wcell;
+            if (!scell) return;
+            cell.noItemLabel.hidden = (count==0) ? NO : YES;
+            cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
+            cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
+            cell.horizontalScrollView.collectionView.userInteractionEnabled = cell.noItemLabel.hidden;
+        };
         
         NSString *rowType = _enabledItems[indexPath.row];
         __weak typeof(self) wself = self;
@@ -457,15 +409,7 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_albumListDataSource.fetchResult.count==0) ? NO : YES;
-            __weak typeof(cell) wcell = cell;
-            _albumListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
-                typeof(wcell) scell = wcell;
-                if (!scell) return;
-                cell.noItemLabel.hidden = (count==0) ? NO : YES;
-                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.userInteractionEnabled = cell.noItemLabel.hidden;
-            };
+            _albumListDataSource.didChangeItemCountBlock = didChangeItemCountBlock;
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments]) {
             _momentListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -479,15 +423,7 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_momentListDataSource.fetchResult.count==0) ? NO : YES;
-            __weak typeof(cell) wcell = cell;
-            _momentListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
-                typeof(wcell) scell = wcell;
-                if (!scell) return;
-                cell.noItemLabel.hidden = (count==0) ? NO : YES;
-                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.userInteractionEnabled = cell.noItemLabel.hidden;
-            };
+            _momentListDataSource.didChangeItemCountBlock = didChangeItemCountBlock;
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas]) {
             _panoramaListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -501,15 +437,7 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_panoramaListDataSource.fetchResult.count==0) ? NO : YES;
-            __weak typeof(cell) wcell = cell;
-            _panoramaListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
-                typeof(wcell) scell = wcell;
-                if (!scell) return;
-                cell.noItemLabel.hidden = (count==0) ? NO : YES;
-                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.userInteractionEnabled = cell.noItemLabel.hidden;
-            };
+            _panoramaListDataSource.didChangeItemCountBlock = didChangeItemCountBlock;
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos]) {
             _videoListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -523,15 +451,7 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_videoListDataSource.fetchResult.count==0) ? NO : YES;
-            __weak typeof(cell) wcell = cell;
-            _videoListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
-                typeof(wcell) scell = wcell;
-                if (!scell) return;
-                cell.noItemLabel.hidden = (count==0) ? NO : YES;
-                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.userInteractionEnabled = cell.noItemLabel.hidden;
-            };
+            _videoListDataSource.didChangeItemCountBlock = didChangeItemCountBlock;
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites]) {
             _favoriteListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -545,15 +465,7 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_favoriteListDataSource.fetchResult.count==0) ? NO : YES;
-            __weak typeof(cell) wcell = cell;
-            _favoriteListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
-                typeof(wcell) scell = wcell;
-                if (!scell) return;
-                cell.noItemLabel.hidden = (count==0) ? NO : YES;
-                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.userInteractionEnabled = cell.noItemLabel.hidden;
-            };
+            _favoriteListDataSource.didChangeItemCountBlock = didChangeItemCountBlock;
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse]) {
             _timelapseListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -567,15 +479,7 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_timelapseListDataSource.fetchResult.count==0) ? NO : YES;
-            __weak typeof(cell) wcell = cell;
-            _timelapseListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
-                typeof(wcell) scell = wcell;
-                if (!scell) return;
-                cell.noItemLabel.hidden = (count==0) ? NO : YES;
-                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.userInteractionEnabled = cell.noItemLabel.hidden;
-            };
+            _timelapseListDataSource.didChangeItemCountBlock = didChangeItemCountBlock;
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud]) {
             _cloudListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -589,15 +493,7 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_cloudListDataSource.fetchResult.count==0) ? NO : YES;
-            __weak typeof(cell) wcell = cell;
-            _cloudListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
-                typeof(wcell) scell = wcell;
-                if (!scell) return;
-                cell.noItemLabel.hidden = (count==0) ? NO : YES;
-                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.userInteractionEnabled = cell.noItemLabel.hidden;
-            };
+            _cloudListDataSource.didChangeItemCountBlock = didChangeItemCountBlock;
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Bursts]) {
             _burstsListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -611,15 +507,7 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_burstsListDataSource.fetchResult.count==0) ? NO : YES;
-            __weak typeof(cell) wcell = cell;
-            _burstsListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
-                typeof(wcell) scell = wcell;
-                if (!scell) return;
-                cell.noItemLabel.hidden = (count==0) ? NO : YES;
-                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.userInteractionEnabled = cell.noItemLabel.hidden;
-            };
+            _burstsListDataSource.didChangeItemCountBlock = didChangeItemCountBlock;
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_SlomoVideos]) {
             _slomoVideosListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -633,15 +521,7 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_slomoVideosListDataSource.fetchResult.count==0) ? NO : YES;
-            __weak typeof(cell) wcell = cell;
-            _slomoVideosListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
-                typeof(wcell) scell = wcell;
-                if (!scell) return;
-                cell.noItemLabel.hidden = (count==0) ? NO : YES;
-                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.userInteractionEnabled = cell.noItemLabel.hidden;
-            };
+            _slomoVideosListDataSource.didChangeItemCountBlock = didChangeItemCountBlock;
         }
         else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos]) {
             _allPhotoListDataSource.collectionView = cell.horizontalScrollView.collectionView;
@@ -655,15 +535,7 @@
                 [sself.navigationController pushViewController:viewController animated:YES];
             };
             cell.noItemLabel.hidden = (_allPhotoListDataSource.fetchResult.count==0) ? NO : YES;
-            __weak typeof(cell) wcell = cell;
-            _allPhotoListDataSource.didChangeItemCountBlock = ^(NSUInteger count){
-                typeof(wcell) scell = wcell;
-                if (!scell) return;
-                cell.noItemLabel.hidden = (count==0) ? NO : YES;
-                cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
-                cell.horizontalScrollView.collectionView.userInteractionEnabled = cell.noItemLabel.hidden;
-            };
+            _allPhotoListDataSource.didChangeItemCountBlock = didChangeItemCountBlock;
         }
         cell.noItemLabel.userInteractionEnabled = !cell.noItemLabel.hidden;
         cell.horizontalScrollView.collectionView.hidden = !cell.noItemLabel.hidden;
@@ -699,44 +571,51 @@
             cell.centerTextLabel.textColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
+        else if (indexPath.row == 3) {
+            cell.centerTextLabel.text = NSLocalizedString(@"Settings", nil);
+            cell.centerTextLabel.textColor = [PAColors getColor:kPAColorsTypeTintLocalColor];
+            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+        }
         
         return cell;
     }
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *rowType = _enabledItems[indexPath.row];
-    if ([rowType isEqualToString:kPEHomeViewControllerRowType_Albums]) {
-        _albumListDataSource.collectionView = nil;
-        _albumListDataSource.didChangeItemCountBlock = nil;
-    }
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments]) {
-        _momentListDataSource.collectionView = nil;
-        _momentListDataSource.didChangeItemCountBlock = nil;
-    }
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas]) {
-        _panoramaListDataSource.collectionView = nil;
-        _panoramaListDataSource.didChangeItemCountBlock = nil;
-    }
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos]) {
-        _videoListDataSource.collectionView = nil;
-        _videoListDataSource.didChangeItemCountBlock = nil;
-    }
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites]) {
-        _favoriteListDataSource.collectionView = nil;
-        _favoriteListDataSource.didChangeItemCountBlock = nil;
-    }
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse]) {
-        _timelapseListDataSource.collectionView = nil;
-        _timelapseListDataSource.didChangeItemCountBlock = nil;
-    }
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud]) {
-        _cloudListDataSource.collectionView = nil;
-        _cloudListDataSource.didChangeItemCountBlock = nil;
-    }
-    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos]) {
-        _allPhotoListDataSource.collectionView = nil;
-        _allPhotoListDataSource.didChangeItemCountBlock = nil;
+    if (indexPath.section == 0) {
+        NSString *rowType = _enabledItems[indexPath.row];
+        if ([rowType isEqualToString:kPEHomeViewControllerRowType_Albums]) {
+            _albumListDataSource.collectionView = nil;
+            _albumListDataSource.didChangeItemCountBlock = nil;
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments]) {
+            _momentListDataSource.collectionView = nil;
+            _momentListDataSource.didChangeItemCountBlock = nil;
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas]) {
+            _panoramaListDataSource.collectionView = nil;
+            _panoramaListDataSource.didChangeItemCountBlock = nil;
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos]) {
+            _videoListDataSource.collectionView = nil;
+            _videoListDataSource.didChangeItemCountBlock = nil;
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites]) {
+            _favoriteListDataSource.collectionView = nil;
+            _favoriteListDataSource.didChangeItemCountBlock = nil;
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse]) {
+            _timelapseListDataSource.collectionView = nil;
+            _timelapseListDataSource.didChangeItemCountBlock = nil;
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud]) {
+            _cloudListDataSource.collectionView = nil;
+            _cloudListDataSource.didChangeItemCountBlock = nil;
+        }
+        else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos]) {
+            _allPhotoListDataSource.collectionView = nil;
+            _allPhotoListDataSource.didChangeItemCountBlock = nil;
+        }
     }
 }
 
@@ -763,10 +642,14 @@
         if (indexPath.row == 1) {
             NSString *title = NSLocalizedString(@"Photti - Unlimitedly upload your photos. Free! New Photo Management App.", nil);
             NSURL *url = [NSURL URLWithString:@"https://itunes.apple.com/app/id892657316"];
-            UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:@[title, url] applicationActivities:nil];
+            UIImage *image = [UIImage imageNamed:@"original_img"];
+            UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:@[title, url, image] applicationActivities:nil];
             [self.tabBarController presentViewController:viewController animated:YES completion:nil];
         }
         else if (indexPath.row == 2) {
+            [self settingsBarButtonAction];
+        }
+        else if (indexPath.row == 3) {
             [self settingsBarButtonAction];
         }
     }
@@ -851,7 +734,9 @@
     };
     PHAsset *asset = fetchResult.firstObject;
     __weak typeof(contentView) wcontentView = contentView;
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+    PHImageRequestOptions *imageRequestOptions = [PHImageRequestOptions new];
+    imageRequestOptions.networkAccessAllowed = YES;
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeAspectFill options:imageRequestOptions resultHandler:^(UIImage *result, NSDictionary *info) {
         typeof(wcontentView) scontentView = wcontentView;
         if (!scontentView) return;
         scontentView.imageView.image = result;
@@ -867,6 +752,70 @@
     bannerView.gradientView.startColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     bannerView.gradientView.endColor = [UIColor colorWithRed:129.0f/255.0f green:243.0f/255.0f blue:253.0f/255.0f alpha:1.0f];
     return bannerView;
+}
+
+
+#pragma mark Class Methods
+
++ (NSArray *)defaultEnabledItems {
+    return @[kPEHomeViewControllerRowType_Albums,
+             kPEHomeViewControllerRowType_Moments,
+             kPEHomeViewControllerRowType_AllPhotos,
+             kPEHomeViewControllerRowType_Favorites,
+             kPEHomeViewControllerRowType_Panoramas,
+             kPEHomeViewControllerRowType_Videos,
+             kPEHomeViewControllerRowType_Timelapse,
+             kPEHomeViewControllerRowType_Bursts,
+             kPEHomeViewControllerRowType_SlomoVideos,
+             kPEHomeViewControllerRowType_Cloud];
+}
+
++ (NSString *)localizedStringFromRowType:(NSString *)rowType {
+    if ([rowType isEqualToString:kPEHomeViewControllerRowType_Albums])
+        return NSLocalizedString(@"Albums", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Moments])
+        return NSLocalizedString(@"Moments", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Videos])
+        return NSLocalizedString(@"Videos", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Panoramas])
+        return NSLocalizedString(@"Panoramas", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Timelapse])
+        return NSLocalizedString(@"Timelapse", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Favorites])
+        return NSLocalizedString(@"Favorites", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Cloud])
+        return NSLocalizedString(@"iCloud", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_Bursts])
+        return NSLocalizedString(@"Bursts", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_SlomoVideos])
+        return NSLocalizedString(@"Slo-mo", nil);
+    else if ([rowType isEqualToString:kPEHomeViewControllerRowType_AllPhotos])
+        return NSLocalizedString(@"Camera Roll", nil);
+    return nil;
+}
+
++ (NSString *)rowTypeFromLocalizedString:(NSString *)rowType {
+    if ([rowType isEqualToString:NSLocalizedString(@"Albums", nil)])
+        return kPEHomeViewControllerRowType_Albums;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Moments", nil)])
+        return kPEHomeViewControllerRowType_Moments;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Videos", nil)])
+        return kPEHomeViewControllerRowType_Videos;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Panoramas", nil)])
+        return kPEHomeViewControllerRowType_Panoramas;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Timelapse", nil)])
+        return kPEHomeViewControllerRowType_Timelapse;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Favorites", nil)])
+        return kPEHomeViewControllerRowType_Favorites;
+    else if ([rowType isEqualToString:NSLocalizedString(@"iCloud", nil)])
+        return kPEHomeViewControllerRowType_Cloud;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Bursts", nil)])
+        return kPEHomeViewControllerRowType_Bursts;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Slo-mo", nil)])
+        return kPEHomeViewControllerRowType_SlomoVideos;
+    else if ([rowType isEqualToString:NSLocalizedString(@"Camera Roll", nil)])
+        return kPEHomeViewControllerRowType_AllPhotos;
+    return nil;
 }
 
 @end

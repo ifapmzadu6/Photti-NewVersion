@@ -166,6 +166,7 @@
     }
     PHImageRequestOptions *options = [PHImageRequestOptions new];
     options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.networkAccessAllowed = YES;
     __weak typeof(self) wself = self;
     [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
         typeof(wself) sself = wself;
@@ -195,6 +196,7 @@
     CLLocation *location = asset.location;
     PHImageRequestOptions *options = [PHImageRequestOptions new];
     options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.networkAccessAllowed = YES;
     __weak typeof(self) wself = self;
     [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(200.0f, 200.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
         typeof(wself) sself = wself;

@@ -156,9 +156,11 @@
     NSUInteger numberOfColAndRow = sqrtf(cell.numberOfImageView);
     CGSize cellSize = (_flowLayout) ? [_flowLayout itemSize] : _cellSize;
     CGSize targetSize = CGSizeMake(cellSize.width/numberOfColAndRow, cellSize.height/numberOfColAndRow);
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.networkAccessAllowed = YES;
     for (int i=0; i<cell.numberOfImageView; i++) {
         PHAsset *asset = assetsResult[i];
-        [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
             typeof(wcell) scell = wcell;
             if (!scell) return;
             if (scell.tag == tag) {

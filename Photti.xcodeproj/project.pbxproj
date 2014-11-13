@@ -84,7 +84,6 @@
 		71573B061A051985001F11BC /* PAPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 71573B051A051985001F11BC /* PAPlayerView.m */; };
 		715943C11957C1F3009315E5 /* PLNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 715943C01957C1F3009315E5 /* PLNavigationController.m */; };
 		715943C51957C231009315E5 /* PDNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 715943C41957C231009315E5 /* PDNavigationController.m */; };
-		715943C91957E573009315E5 /* PDUploadDescriptionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 715943C81957E573009315E5 /* PDUploadDescriptionViewController.m */; };
 		715A310219893754002A0A37 /* NSURLResponse+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 715A310119893754002A0A37 /* NSURLResponse+methods.m */; };
 		715A31AB198F5876002A0A37 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 715A31AD198F5876002A0A37 /* Localizable.strings */; };
 		715A31B4198FD5E8002A0A37 /* NSFileManager+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 715A31B3198FD5E8002A0A37 /* NSFileManager+methods.m */; };
@@ -385,8 +384,6 @@
 		715943C01957C1F3009315E5 /* PLNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLNavigationController.m; sourceTree = "<group>"; };
 		715943C31957C231009315E5 /* PDNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDNavigationController.h; sourceTree = "<group>"; };
 		715943C41957C231009315E5 /* PDNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDNavigationController.m; sourceTree = "<group>"; };
-		715943C71957E573009315E5 /* PDUploadDescriptionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDUploadDescriptionViewController.h; sourceTree = "<group>"; };
-		715943C81957E573009315E5 /* PDUploadDescriptionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDUploadDescriptionViewController.m; sourceTree = "<group>"; };
 		715A310019893754002A0A37 /* NSURLResponse+methods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLResponse+methods.h"; sourceTree = "<group>"; };
 		715A310119893754002A0A37 /* NSURLResponse+methods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLResponse+methods.m"; sourceTree = "<group>"; };
 		715A3172198E0243002A0A37 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -1382,15 +1379,6 @@
 			name = PDNavigationController;
 			sourceTree = "<group>";
 		};
-		715943C61957E54E009315E5 /* PDUploadDescriptionViewController */ = {
-			isa = PBXGroup;
-			children = (
-				715943C71957E573009315E5 /* PDUploadDescriptionViewController.h */,
-				715943C81957E573009315E5 /* PDUploadDescriptionViewController.m */,
-			);
-			name = PDUploadDescriptionViewController;
-			sourceTree = "<group>";
-		};
 		715A30FF1989372A002A0A37 /* NSURLResponse+methods */ = {
 			isa = PBXGroup;
 			children = (
@@ -1827,7 +1815,6 @@
 			children = (
 				715943C21957C220009315E5 /* PDNavigationController */,
 				719D925A1918E24A00B75D8B /* PDTaskManagerViewController */,
-				715943C61957E54E009315E5 /* PDUploadDescriptionViewController */,
 			);
 			name = "D    - Task";
 			sourceTree = "<group>";
@@ -2959,7 +2946,6 @@
 				71C54F4019CD232500BCD9CF /* PEHomeViewController.m in Sources */,
 				7118F86B193318F40016697E /* PLPhotoListViewController.m in Sources */,
 				714F78BF19F94DCC00BF3444 /* PLPhotoObject+methods.m in Sources */,
-				715943C91957E573009315E5 /* PDUploadDescriptionViewController.m in Sources */,
 				71109BD51973C90000EEDAAE /* PLAlbumEditViewController.m in Sources */,
 				71342FE11941F76C002331F6 /* PTAlbumPickerController.m in Sources */,
 				71349CB1192DF7A8003CC2AA /* PLPhotoViewCell.m in Sources */,
