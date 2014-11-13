@@ -24,6 +24,8 @@
 @interface PDTaskManagerViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
+@property (strong, nonatomic) UIImageView *noTaskImageView;
+@property (strong, nonatomic) UILabel *noTaskLabel;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
@@ -37,9 +39,9 @@
         self.title = NSLocalizedString(@"Tasks", nil);
         
         NSManagedObjectContext *plcontext = [PLCoreDataAPI readContext];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:plcontext];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeContext:) name:NSManagedObjectContextDidSaveNotification object:plcontext];
         NSManagedObjectContext *pwcontext = [PWCoreDataAPI readContext];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerDidChangeContent:) name:NSManagedObjectContextDidSaveNotification object:pwcontext];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeContext:) name:NSManagedObjectContextDidSaveNotification object:pwcontext];
     }
     return self;
 }
@@ -65,6 +67,19 @@
     _tableView.exclusiveTouch = YES;
     [self.view addSubview:_tableView];
     
+    _noTaskImageView = [UIImageView new];
+    _noTaskImageView.image = [UIImage imageNamed:@"icon_240"];
+    _noTaskImageView.frame = CGRectMake(0.0f, 0.0f, 240.0f, 240.0f);
+    [self.view addSubview:_noTaskImageView];
+    
+    _noTaskLabel = [UILabel new];
+    _noTaskLabel.text = NSLocalizedString(@"No Tasks", nil);
+    _noTaskLabel.textColor = [PAColors getColor:kPAColorsTypeTextLightColor];
+    _noTaskLabel.textAlignment = NSTextAlignmentCenter;
+    _noTaskLabel.font = [UIFont systemFontOfSize:15.0f];
+    [_noTaskLabel sizeToFit];
+    [self.view addSubview:_noTaskLabel];
+    
     [self loadData];
 }
 
@@ -80,8 +95,13 @@
     [super viewWillLayoutSubviews];
     
     CGRect rect = self.view.bounds;
+    CGPoint center = self.view.center;
     
     _tableView.frame = rect;
+    
+    _noTaskImageView.center = CGPointMake(center.x, center.y - 20.0f);
+    
+    _noTaskLabel.center = CGPointMake(center.x, center.y + 100.0f);
 }
 
 - (void)dealloc {
@@ -208,14 +228,31 @@
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        BOOL hasTasks = (_fetchedResultsController.fetchedObjects.count > 0) ? YES : NO;
+        _tableView.hidden = !hasTasks;
+        _noTaskImageView.hidden = hasTasks;
+        _noTaskLabel.hidden = hasTasks;
+        self.navigationItem.rightBarButtonItem.enabled = hasTasks;
         if (_tableView.indexPathsForVisibleRows.count == 0) {
             [_tableView reloadData];
         }
     });
 }
 
-#pragma NSFetchedResultsControllerDelegate
+#pragma mark NSFetchedResultsControllerDelegate
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        BOOL hasTasks = (controller.fetchedObjects.count > 0) ? YES : NO;
+        _tableView.hidden = !hasTasks;
+        [_tableView reloadData];
+        _noTaskImageView.hidden = hasTasks;
+        _noTaskLabel.hidden = hasTasks;
+        self.navigationItem.rightBarButtonItem.enabled = hasTasks;
+    });
+}
+
+#pragma mark CoreData
+- (void)didChangeContext:(NSNotification *)notification {
     dispatch_async(dispatch_get_main_queue(), ^{
         [_tableView reloadData];
     });
