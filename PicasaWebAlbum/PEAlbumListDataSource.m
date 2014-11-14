@@ -161,6 +161,7 @@
         }];
     }
     if (assetsResult.count >= 2) {
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
         [[PHImageManager defaultManager] requestImageForAsset:assetsResult[1] targetSize:CGSizeMake(75.0f, 75.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
             typeof(wcell) scell = wcell;
             if (!scell) return;
@@ -170,6 +171,7 @@
         }];
     }
     if (assetsResult.count >= 3) {
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
         [[PHImageManager defaultManager] requestImageForAsset:assetsResult[2] targetSize:CGSizeMake(50.0f, 50.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
             typeof(wcell) scell = wcell;
             if (!scell) return;

@@ -11,7 +11,7 @@
 
 #import "ALAsset+methods.h"
 
-#import "PAResizeData.h"
+#import "PAImageResize.h"
 
 
 @implementation ALAsset (methods)
@@ -30,7 +30,7 @@
     NSUInteger bytesRead = [representation getBytes:buff fromOffset:0 length:size error:&error];
     if (bytesRead && !error) {
         NSData *photoData = [NSData dataWithBytesNoCopy:buff length:bytesRead freeWhenDone:YES];
-        resizedData = [PAResizeData resizedDataWithImageData:photoData maxPixelSize:maxPixelSize];
+        resizedData = [PAImageResize resizedDataWithImageData:photoData maxPixelSize:maxPixelSize];
     }
     if (error) {
 #ifdef DEBUG

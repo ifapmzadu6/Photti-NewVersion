@@ -14,7 +14,7 @@
 #import "PDLocalPhotoObject+methods.h"
 
 #import "PAKit.h"
-#import "PAResizeData.h"
+#import "PAImageResize.h"
 #import "PDCoreDataAPI.h"
 #import "PLCoreDataAPI.h"
 #import "PLModelObject.h"
@@ -68,10 +68,10 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
             
             NSData *resizedData = nil;
             if ([[NSUserDefaults standardUserDefaults] boolForKey:kPDTaskManagerIsResizePhotosKey]) {
-                resizedData = [PAResizeData resizedDataWithImageData:imageData maxPixelSize:2048];
+                resizedData = [PAImageResize resizedDataWithImageData:imageData maxPixelSize:2048];
             }
             else {
-                resizedData = [PAResizeData resizedDataWithImageData:imageData maxPixelSize:NSUIntegerMax];
+                resizedData = [PAImageResize resizedDataWithImageData:imageData maxPixelSize:NSUIntegerMax];
             }
             
             [resizedData writeToFile:filePath options:(NSDataWritingAtomic | NSDataWritingFileProtectionNone) error:&error];

@@ -6,12 +6,12 @@
 //  Copyright (c) 2014年 Keisuke Karijuku. All rights reserved.
 //
 
-#import "PAResizeData.h"
+#import "PAImageResize.h"
 
 @import ImageIO;
 @import MobileCoreServices;
 
-@implementation PAResizeData
+@implementation PAImageResize
 
 + (NSData *)resizedDataWithImageData:(NSData *)imageData maxPixelSize:(NSUInteger)maxPixelSize {
     if (!imageData) {
@@ -61,7 +61,7 @@
     return image;
 }
 
-CGContextRef createBitmapContext (int pixelsWide, int pixelsHigh) {
+CGContextRef createBitmapContext(int pixelsWide, int pixelsHigh) {
     CGContextRef bitmapContext = NULL;
     
     void *bitmapData = calloc(1, pixelsWide * pixelsHigh * 4);
@@ -74,6 +74,20 @@ CGContextRef createBitmapContext (int pixelsWide, int pixelsHigh) {
         CGColorSpaceRelease(colorSpace);
     }
     return bitmapContext;
+}
+
++ (UIImage *)resizeImage:(UIImage *)image maxPixelSize:(NSUInteger)maxPixelSize {
+    CGFloat imageWidth = image.size.width;
+    CGFloat imageHeight = image.size.height;
+    CGFloat scale = (imageWidth > imageHeight ? maxPixelSize/imageHeight : maxPixelSize/imageWidth);
+    
+    CGSize resizedSize = CGSizeMake(imageWidth * scale, imageHeight * scale);
+    UIGraphicsBeginImageContext(resizedSize);
+    [image drawInRect:CGRectMake(0, 0, resizedSize.width, resizedSize.height)];
+    UIImage* resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return resizedImage;
 }
 
 @end

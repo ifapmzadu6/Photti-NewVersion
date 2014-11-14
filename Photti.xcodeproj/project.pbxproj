@@ -98,7 +98,7 @@
 		717456E6196AB4F5003D2436 /* XmlReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 717456E5196AB4F5003D2436 /* XmlReader.m */; };
 		7177479F1936F5A8005179B6 /* PDModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7177479D1936F5A8005179B6 /* PDModel.xcdatamodeld */; };
 		717A6D0D1A0C5F5E0031D416 /* PAIcons.m in Sources */ = {isa = PBXBuildFile; fileRef = 717A6D0C1A0C5F5E0031D416 /* PAIcons.m */; };
-		717A6D101A0C5F730031D416 /* PAResizeData.m in Sources */ = {isa = PBXBuildFile; fileRef = 717A6D0F1A0C5F730031D416 /* PAResizeData.m */; };
+		717A6D101A0C5F730031D416 /* PAImageResize.m in Sources */ = {isa = PBXBuildFile; fileRef = 717A6D0F1A0C5F730031D416 /* PAImageResize.m */; };
 		717A6D131A0C5FB20031D416 /* PAActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 717A6D121A0C5FB20031D416 /* PAActivityIndicatorView.m */; };
 		7187904319A58B71005545E1 /* PATabBarAdsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7187904219A58B71005545E1 /* PATabBarAdsController.m */; };
 		718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 718A0918194D301500480E57 /* PWRoundedCornerBadgeLabel.m */; };
@@ -416,8 +416,8 @@
 		7177479E1936F5A8005179B6 /* PDModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PDModel.xcdatamodel; sourceTree = "<group>"; };
 		717A6D0B1A0C5F5E0031D416 /* PAIcons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAIcons.h; sourceTree = "<group>"; };
 		717A6D0C1A0C5F5E0031D416 /* PAIcons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAIcons.m; sourceTree = "<group>"; };
-		717A6D0E1A0C5F730031D416 /* PAResizeData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAResizeData.h; sourceTree = "<group>"; };
-		717A6D0F1A0C5F730031D416 /* PAResizeData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAResizeData.m; sourceTree = "<group>"; };
+		717A6D0E1A0C5F730031D416 /* PAImageResize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAImageResize.h; sourceTree = "<group>"; };
+		717A6D0F1A0C5F730031D416 /* PAImageResize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAImageResize.m; sourceTree = "<group>"; };
 		717A6D111A0C5FB20031D416 /* PAActivityIndicatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAActivityIndicatorView.h; sourceTree = "<group>"; };
 		717A6D121A0C5FB20031D416 /* PAActivityIndicatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAActivityIndicatorView.m; sourceTree = "<group>"; };
 		7187904119A58B71005545E1 /* PATabBarAdsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PATabBarAdsController.h; sourceTree = "<group>"; };
@@ -2185,8 +2185,8 @@
 		71BE586E19F4AA91002A85AB /* PAResizeData */ = {
 			isa = PBXGroup;
 			children = (
-				717A6D0E1A0C5F730031D416 /* PAResizeData.h */,
-				717A6D0F1A0C5F730031D416 /* PAResizeData.m */,
+				717A6D0E1A0C5F730031D416 /* PAImageResize.h */,
+				717A6D0F1A0C5F730031D416 /* PAImageResize.m */,
 			);
 			name = PAResizeData;
 			sourceTree = "<group>";
@@ -2934,7 +2934,7 @@
 				714318DC193E04300066A1F8 /* PDTaskManagerViewController.m in Sources */,
 				71A254701919CFF5009914F7 /* PASearchNavigationController.m in Sources */,
 				718A0919194D301500480E57 /* PWRoundedCornerBadgeLabel.m in Sources */,
-				717A6D101A0C5F730031D416 /* PAResizeData.m in Sources */,
+				717A6D101A0C5F730031D416 /* PAImageResize.m in Sources */,
 				71BD234C19778C020034CD3B /* PDWebPhotoObject.m in Sources */,
 				71BDCF8519F69792001135FB /* PSNewLocalPhotoListViewController.m in Sources */,
 				71CD06171931799D00BECF6B /* PASnowFlake.m in Sources */,
