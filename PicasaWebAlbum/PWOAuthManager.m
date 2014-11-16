@@ -9,6 +9,7 @@
 #import "PWOAuthManager.h"
 
 #import "PAColors.h"
+#import "GTMOAuth2Keychain+Override.h"
 
 static NSString * const PWScope = @"https://picasaweb.google.com/data/";
 static NSString * const PWClientID = @"982107973738-pqihuiltucj69o5413n38hm52lj3ubm3.apps.googleusercontent.com";

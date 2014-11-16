@@ -215,14 +215,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     [tabBarController setUserInteractionEnabled:NO];
     [tabBarController setTabBarHidden:NO animated:NO completion:nil];
     [tabBarController setToolbarHidden:YES animated:YES completion:nil];
-    
-    __weak typeof(self) wself = self;
-    [[PDTaskManager sharedManager] countOfAllPhotosInTaskWithCompletion:^(NSUInteger count, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        BOOL hasTasks = (count > 0) ? YES : NO;
-        sself.navigationItem.leftBarButtonItem.enabled = hasTasks;
-    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -363,13 +355,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 
 #pragma mark NSmanagedObjectContext
 - (void)didChangeContext:(NSNotification *)notitication {
-    __weak typeof(self) wself = self;
-    [[PDTaskManager sharedManager] countOfAllPhotosInTaskWithCompletion:^(NSUInteger count, NSError *error) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        BOOL hasTasks = (count > 0) ? YES : NO;
-        sself.navigationItem.leftBarButtonItem.enabled = hasTasks;
-    }];
 }
 
 @end
