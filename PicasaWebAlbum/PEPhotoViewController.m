@@ -44,6 +44,7 @@
     [super viewDidLoad];
     
     _imageScrollView = [[PAImageScrollView alloc] initWithFrame:self.view.bounds];
+    _imageScrollView.zoomOption = PAImageScrollViewZoomOptionAdjust;
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     __weak typeof(self) wself = self;
     _imageScrollView.firstTimeZoomBlock = ^(PAImageScrollView *scrollView) {
@@ -57,8 +58,13 @@
     CGRect rect = [UIScreen mainScreen].bounds;
     double imageWidth = _asset.pixelWidth;
     double imageHeight = _asset.pixelHeight;
-    double width = CGRectGetWidth(rect);
-    double height = CGRectGetHeight(rect);
+    double width = MIN(CGRectGetWidth(rect), CGRectGetHeight(rect));
+    double height = MAX(CGRectGetWidth(rect), CGRectGetHeight(rect));
+    if (self.isLandscape) {
+        CGFloat tmp = width;
+        width = height;
+        height = tmp;
+    }
     if (width > height) {
         imageHeight = floorf(imageHeight * width / imageWidth * 2.0 + 1.0) / 2.0;
         imageWidth = width;
