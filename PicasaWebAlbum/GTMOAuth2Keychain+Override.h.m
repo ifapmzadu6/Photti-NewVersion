@@ -8,11 +8,12 @@
 
 #import "GTMOAuth2Keychain+Override.h"
 
+#import <objc/runtime.h>
 @import Security;
 
 @implementation GTMOAuth2Keychain (override)
 
-+ (NSMutableDictionary *)keychainQueryForService:(NSString *)service account:(NSString *)account {
++ (NSMutableDictionary *)overrideKeychainQueryForService:(NSString *)service account:(NSString *)account {
     NSMutableDictionary *query = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                   (__bridge id)kSecClassGenericPassword, (__bridge id)kSecClass,
                                   @"OAuth", (__bridge id)kSecAttrGeneric,
@@ -22,5 +23,14 @@
                                   nil];
     return query;
 }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
++ (void)switchOverrideMethods {
+    Method fromMethod = class_getClassMethod(self, @selector(keychainQueryForService:account:));
+    Method toMethod = class_getClassMethod(self, @selector(overrideKeychainQueryForService:account:));
+    method_exchangeImplementations(fromMethod, toMethod);
+}
+#pragma clang diagnostic pop
 
 @end

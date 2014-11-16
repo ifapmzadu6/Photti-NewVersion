@@ -18,6 +18,7 @@
 #import "PASearchNavigationController.h"
 #import "PXSettingsViewController.h"
 #import "PTAlbumPickerController.h"
+#import "PDNavigationController.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -201,19 +202,9 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
     [self.tabBarController presentViewController:viewController animated:YES completion:nil];
 }
 
-- (void)allPhotoSelectBarButtonAction {
-    UIViewController *viewController = _myViewControllers[_index];
-    
-    if ([viewController isKindOfClass:[PLAllPhotosViewController class]]) {
-        [(PLAllPhotosViewController *)viewController setSelectedPhotos:@[].mutableCopy];
-        [(PLAllPhotosViewController *)viewController setIsSelectMode:YES];
-    }
-    else if ([viewController isKindOfClass:[PLiCloudViewController class]]) {
-        [(PLiCloudViewController *)viewController setSelectedPhotos:@[].mutableCopy];
-        [(PLiCloudViewController *)viewController setIsSelectMode:YES];
-    }
-    
-    [self enableSelectMode:viewController];
+- (void)taskBarButtonAction:(id)sender {
+    PDNavigationController *navigationController = [PDNavigationController new];
+    [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)selectCancelBarButtonAction {
@@ -317,8 +308,9 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         
         UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[searchBarButtonItem] animated:YES];
-        UIBarButtonItem *allPhotoSelectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select", nil) style:UIBarButtonItemStylePlain target:self action:@selector(allPhotoSelectBarButtonAction)];
-        [sself.navigationItem setLeftBarButtonItem:allPhotoSelectBarButtonItem animated:YES];
+        UIBarButtonItem *taskBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Upload"] style:UIBarButtonItemStylePlain target:self action:@selector(taskBarButtonAction:)];
+        taskBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
+        [sself.navigationItem setLeftBarButtonItem:taskBarButtonItem animated:YES];
         for (UIView *view in sself.navigationController.navigationBar.subviews) {
             view.exclusiveTouch = YES;
         }
@@ -348,10 +340,10 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
         UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[addBarButtonItem, searchBarButtonItem] animated:YES];
-        UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction)];
-        settingsBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
-        self.navigationItem.leftBarButtonItem = settingsBarButtonItem;
-        [sself.navigationItem setLeftBarButtonItem:settingsBarButtonItem animated:YES];
+        UIBarButtonItem *taskBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Upload"] style:UIBarButtonItemStylePlain target:self action:@selector(taskBarButtonAction:)];
+        taskBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
+        self.navigationItem.leftBarButtonItem = taskBarButtonItem;
+        [sself.navigationItem setLeftBarButtonItem:taskBarButtonItem animated:YES];
         for (UIView *view in sself.navigationController.navigationBar.subviews) {
             view.exclusiveTouch = YES;
         }
@@ -369,8 +361,9 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         
         UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[searchBarButtonItem] animated:YES];
-        UIBarButtonItem *allPhotoSelectBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Select", nil) style:UIBarButtonItemStylePlain target:self action:@selector(allPhotoSelectBarButtonAction)];
-        [sself.navigationItem setLeftBarButtonItem:allPhotoSelectBarButtonItem animated:YES];
+        UIBarButtonItem *taskBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Upload"] style:UIBarButtonItemStylePlain target:self action:@selector(taskBarButtonAction:)];
+        taskBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
+        [sself.navigationItem setLeftBarButtonItem:taskBarButtonItem animated:YES];
         for (UIView *view in sself.navigationController.navigationBar.subviews) {
             view.exclusiveTouch = YES;
         }

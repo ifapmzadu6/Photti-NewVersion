@@ -66,16 +66,8 @@
         [self setUpBurstsDataSource];
         [self setUpSlomoVideosDataSource];
         [self setUpAllPhotosDataSource];
-        
-        NSManagedObjectContext *context = [PDCoreDataAPI readContext];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeContext:) name:NSManagedObjectContextDidSaveNotification object:context];
     }
     return self;
-}
-
-- (void)dealloc {
-    NSManagedObjectContext *context = [PDCoreDataAPI readContext];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
 }
 
 - (void)viewDidLoad {
@@ -762,10 +754,6 @@
     bannerView.gradientView.startColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     bannerView.gradientView.endColor = [UIColor colorWithRed:129.0f/255.0f green:243.0f/255.0f blue:253.0f/255.0f alpha:1.0f];
     return bannerView;
-}
-
-#pragma mark NSmanagedObjectContext
-- (void)didChangeContext:(NSNotification *)notitication {
 }
 
 

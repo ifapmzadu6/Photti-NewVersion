@@ -1962,13 +1962,13 @@
 			isa = PBXGroup;
 			children = (
 				71BD235919779E1C0034CD3B /* ALAsset+methods */,
+				7142C5E61A187B41001A505A /* GTMOAuth2Keychain+Override */,
 				71BDE39D1998FA8100853E85 /* NSAttributedString+methods */,
 				715A31B5198FD5F6002A0A37 /* NSFileManager+methods */,
 				7149D2D019DC2CB1004BD7A7 /* NSIndexSet+methods */,
 				715A30FF1989372A002A0A37 /* NSURLResponse+methods */,
 				71958C4F191B4BC500CFC15F /* UIImage+ImageEffects */,
 				71958C36191B494A00CFC15F /* UIView+ScreenCapture */,
-				7142C5E61A187B41001A505A /* GTMOAuth2Keychain+Override */,
 			);
 			name = "X    - Category";
 			sourceTree = "<group>";

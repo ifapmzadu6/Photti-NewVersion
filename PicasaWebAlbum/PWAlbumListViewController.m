@@ -138,16 +138,8 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:index placeholder:placeholder cache:nil];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
-        
-        NSManagedObjectContext *pdcontext = [PDCoreDataAPI readContext];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeContext:) name:NSManagedObjectContextDidSaveNotification object:pdcontext];
     }
     return self;
-}
-
-- (void)dealloc {
-    NSManagedObjectContext *context = [PDCoreDataAPI readContext];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
 }
 
 - (void)viewDidLoad {
@@ -351,10 +343,6 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (void)taskBarButtonAction:(id)sender {
     PDNavigationController *navigationController = [PDNavigationController new];
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
-}
-
-#pragma mark NSmanagedObjectContext
-- (void)didChangeContext:(NSNotification *)notitication {
 }
 
 @end

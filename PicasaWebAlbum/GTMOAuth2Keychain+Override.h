@@ -12,6 +12,9 @@
 
 @interface GTMOAuth2Keychain (override)
 
-+ (NSMutableDictionary *)keychainQueryForService:(NSString *)service account:(NSString *)account;
++ (void)switchOverrideMethods;
+
+
++ (NSMutableDictionary *)overrideKeychainQueryForService:(NSString *)service account:(NSString *)account;
 
 @end

@@ -39,6 +39,8 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
     self = [super init];
     if (self) {
         void (^block)() = ^{
+            [GTMOAuth2Keychain switchOverrideMethods];
+            
             _auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
             
             _countOfLoginError = 0;
