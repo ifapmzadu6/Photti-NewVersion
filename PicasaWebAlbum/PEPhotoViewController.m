@@ -17,10 +17,13 @@
 
 @property (strong, nonatomic) PAImageScrollView *imageScrollView;
 @property (strong, nonatomic) UIButton *videoButton;
+@property (strong, nonatomic) UIActivityIndicatorView *indicatorView;
 
 @property (strong, nonatomic) PAPlayerView *playerView;
 @property (strong, nonatomic) UIButton *playerOverrayButton;
 @property (strong, nonatomic) AVPlayer *player;
+@property (strong, nonatomic) AVPlayerItem *playerItem;
+@property (nonatomic) BOOL isAutoPlay;
 
 @property (nonatomic) BOOL statusBarHiddenBeforePlay;
 
@@ -83,6 +86,11 @@
         [_playerOverrayButton addTarget:self action:@selector(playerOverrayButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:_playerOverrayButton];
         
+        _indicatorView = [UIActivityIndicatorView new];
+        _indicatorView.center = self.view.center;
+        [self.view addSubview:_indicatorView];
+        [_indicatorView startAnimating];
+        
         _videoButton = [UIButton new];
         [_videoButton addTarget:self action:@selector(videoButtonAction) forControlEvents:UIControlEventTouchUpInside];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
@@ -107,21 +115,31 @@
     
     _imageScrollView.didSingleTapBlock = _didSingleTapBlock;
     
-    if (_asset.mediaType == PHAssetMediaTypeVideo) {
+    if ((_asset.mediaType == PHAssetMediaTypeVideo) && !_playerItem && !_player) {
         __weak typeof(self) wself = self;
-        [[PHImageManager defaultManager] requestPlayerItemForVideo:_asset options:nil resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
+        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+        options.networkAccessAllowed = YES;
+        [[PHImageManager defaultManager] requestPlayerItemForVideo:_asset options:options resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
             typeof(wself) sself = wself;
             if (!sself) return;
+            sself.playerItem = playerItem;
             sself.player = [[AVPlayer alloc] initWithPlayerItem:playerItem];
             AVPlayerLayer *layer = (AVPlayerLayer *)sself.playerView.layer;
             layer.videoGravity = AVLayerVideoGravityResizeAspect;
             layer.player = sself.player;
+            if (sself.isAutoPlay) {
+                [sself.player play];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [sself.indicatorView stopAnimating];
+                });
+            }
+            
+            [playerItem addObserver:sself forKeyPath:@"status" options:0 context:nil];
+            [playerItem addObserver:sself forKeyPath:@"playbackBufferEmpty" options:0 context:nil];
             
             [[NSNotificationCenter defaultCenter] removeObserver:self];
-            [[NSNotificationCenter defaultCenter] addObserver:sself
-                                                     selector:@selector(playerItemDidReachEnd:)
-                                                         name:AVPlayerItemDidPlayToEndTimeNotification
-                                                       object:playerItem];
+            [[NSNotificationCenter defaultCenter] addObserver:sself selector:@selector(playerItemDidReachEnd:) name:AVPlayerItemDidPlayToEndTimeNotification object:playerItem];
         }];
     }
 }
@@ -131,9 +149,14 @@
     
     _imageScrollView.didSingleTapBlock = nil;
     
+    if (_playerItem) {
+        [_playerItem removeObserver:self forKeyPath:@"status" context:nil];
+        [_playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty" context:nil];
+        _playerItem = nil;
+    }
     if (_player) {
-        _player = nil;
         [[NSNotificationCenter defaultCenter] removeObserver:self];
+        _player = nil;
     }
 }
 
@@ -146,6 +169,8 @@
     _playerOverrayButton.frame = rect;
     
     _videoButton.center = self.view.center;
+    
+    _indicatorView.center = self.view.center;
 }
 
 #pragma loadFullResolutionImage
@@ -168,8 +193,15 @@
         _didSingleTapBlock();
     }
     
-    if (_player.rate == 0) {
-        [_player play];
+    if (_player) {
+        if (_player.rate == 0) {
+            [_player play];
+        }
+    }
+    else {
+        _isAutoPlay = YES;
+        
+        [_indicatorView startAnimating];
     }
     
     UIScrollView *scrollView = self.parentViewController.view.subviews.firstObject;
@@ -183,7 +215,7 @@
 }
 
 - (void)playerOverrayButtonAction:(id)sender {
-    if (_player.rate != 0) {
+    if (_player && _player.rate != 0) {
         if (_didSingleTapBlock) {
             _didSingleTapBlock();
         }
@@ -201,8 +233,9 @@
     }
 }
 
+#pragma mark NSNotificationCenter
 - (void)playerItemDidReachEnd:(id)sender {
-    if (_player.rate == 0) {
+    if (_player && _player.rate == 0) {
         if (_didSingleTapBlock) {
             _didSingleTapBlock();
         }
@@ -217,6 +250,32 @@
                 scrollView.scrollEnabled = YES;
             }
         }];
+    }
+}
+
+#pragma mark KVO
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if ([object isKindOfClass:[AVPlayerItem class]]) {
+        AVPlayerItem *item = (AVPlayerItem *)object;
+        if ([keyPath isEqualToString:@"status"]) {
+            switch(item.status)
+            {
+                case AVPlayerItemStatusFailed:
+                    [_indicatorView stopAnimating];
+                    break;
+                case AVPlayerItemStatusReadyToPlay:
+                    [_indicatorView stopAnimating];
+                    break;
+                case AVPlayerItemStatusUnknown:
+                    [_indicatorView stopAnimating];
+                    break;
+            }
+        }
+        else if ([keyPath isEqualToString:@"playbackBufferEmpty"]) {
+            if (item.playbackBufferEmpty) {
+                [_indicatorView startAnimating];
+            }
+        }
     }
 }
 
