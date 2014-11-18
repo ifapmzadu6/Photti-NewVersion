@@ -51,7 +51,9 @@
     
     self.view.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBarButtonAction)];
+    UIBarButtonItem *settingsBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Settings"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsBarButtonAction:)];
+    settingsBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Settings"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
+    self.navigationItem.rightBarButtonItem = settingsBarButtonItem;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneBarButtonAction:)];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
@@ -118,24 +120,13 @@
 }
 
 #pragma mark UIBarButtonAction
-- (void)refreshBarButtonAction {
-    PAActivityIndicatorView *indicatorView = [PAActivityIndicatorView new];
-    UIBarButtonItem *indicatorBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:indicatorView];
-    [indicatorView startAnimating];
-    [self.navigationItem setRightBarButtonItem:indicatorBarButtonItem animated:YES];
-    
-    [[PDTaskManager sharedManager] cancel];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[PDTaskManager sharedManager] start];
-        
-        UIBarButtonItem *refreshBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBarButtonAction)];
-        [self.navigationItem setRightBarButtonItem:refreshBarButtonItem animated:YES];
-    });
-}
-
 - (void)doneBarButtonAction:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)settingsBarButtonAction:(id)sender {
+    PXSettingsViewController *viewController = [[PXSettingsViewController alloc] initWithInitType:PWSettingsViewControllerInitTypeLocal];
+    [self.navigationController presentViewController:viewController animated:YES completion:nil];
 }
 
 #pragma mark UITableViewDataSource
@@ -232,7 +223,6 @@
         _tableView.hidden = !hasTasks;
         _noTaskImageView.hidden = hasTasks;
         _noTaskLabel.hidden = hasTasks;
-        self.navigationItem.rightBarButtonItem.enabled = hasTasks;
         if (_tableView.indexPathsForVisibleRows.count == 0) {
             [_tableView reloadData];
         }
@@ -247,7 +237,6 @@
         [_tableView reloadData];
         _noTaskImageView.hidden = hasTasks;
         _noTaskLabel.hidden = hasTasks;
-        self.navigationItem.rightBarButtonItem.enabled = hasTasks;
     });
 }
 
