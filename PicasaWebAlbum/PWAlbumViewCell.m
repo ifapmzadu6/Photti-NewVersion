@@ -287,25 +287,24 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
                 if (isGifImage) {
                     FLAnimatedImage *animatedImage = [FLAnimatedImage animatedImageWithGIFData:data];
                     UIImage *image = [UIImage decodedImageWithImage:animatedImage.posterImage];
-                    if (isShrink) {
-                        image = [PAImageResize resizeImage:image maxPixelSize:kPWAlbumViewCellShrinkedImageSize];
-                    }
-                    [sself setImage:image hash:hash imageView:imageView];
                     if (data && urlString) {
                         [sself storeData:data key:urlString];
                     }
-                }
-                else {
-                    UIImage *image = [UIImage imageWithData:data];
                     if (isShrink) {
                         image = [PAImageResize resizeImage:image maxPixelSize:kPWAlbumViewCellShrinkedImageSize];
                     }
                     [sself setImage:image hash:hash imageView:imageView];
+                }
+                else {
+                    UIImage *image = [UIImage imageWithData:data];
                     if (image && urlString) {
                         [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
                     }
+                    if (isShrink) {
+                        image = [PAImageResize resizeImage:image maxPixelSize:kPWAlbumViewCellShrinkedImageSize];
+                    }
+                    [sself setImage:image hash:hash imageView:imageView];
                 }
-                
             }];
             [task resume];
         }];
