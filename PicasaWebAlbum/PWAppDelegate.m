@@ -40,6 +40,10 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     // OAuth
     [PWOAuthManager refreshKeychain];
     
+    // NSURLSession
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    [NSURLCache setSharedURLCache:nil];
+    
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     

@@ -9,7 +9,6 @@
 #import "PWOAuthManager.h"
 
 #import "PAColors.h"
-#import "GTMOAuth2Keychain+Override.h"
 
 static NSString * const PWScope = @"https://picasaweb.google.com/data/";
 static NSString * const PWClientID = @"982107973738-pqihuiltucj69o5413n38hm52lj3ubm3.apps.googleusercontent.com";
@@ -39,9 +38,8 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
     self = [super init];
     if (self) {
         void (^block)() = ^{
-            [GTMOAuth2Keychain switchOverrideMethods];
-            
-            _auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret];
+            NSError *error = nil;
+            _auth = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:PWKeyChainItemName clientID:PWClientID clientSecret:PWClientSecret error:&error];
             
             _countOfLoginError = 0;
         };
@@ -149,7 +147,6 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
                 }];
             }];
         }];
-        viewController.keychainItemAccessibility = kSecAttrAccessibleAfterFirstUnlock;
         viewController.automaticallyAdjustsScrollViewInsets = NO;
         viewController.edgesForExtendedLayout = UIRectEdgeAll;
         viewController.title = NSLocalizedString(@"Login", nil);
@@ -176,7 +173,6 @@ static NSUInteger kPWOAuthManagerMaxCounfOfLoginError = 5;
         navigationController.edgesForExtendedLayout = UIRectEdgeAll;
         navigationController.navigationBar.tintColor = [PAColors getColor:kPAColorsTypeTintWebColor];
         navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: [PAColors getColor:kPAColorsTypeTextColor]};
-        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         
         completion ? completion(navigationController) : 0;
     };

@@ -71,7 +71,6 @@
 		7137A84E19AD8F8400C715CB /* PABaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7137A84D19AD8F8400C715CB /* PABaseViewController.m */; };
 		71388286193E13E8009AFB1F /* PDCoreDataAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 71388285193E13E8009AFB1F /* PDCoreDataAPI.m */; };
 		713EE07819E2F4F900983301 /* PWHorizontalScrollHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 713EE07719E2F4F900983301 /* PWHorizontalScrollHeaderView.m */; };
-		7142C5E51A18797B001A505A /* GTMOAuth2Keychain+Override.h.m in Sources */ = {isa = PBXBuildFile; fileRef = 7142C5E41A18797B001A505A /* GTMOAuth2Keychain+Override.h.m */; };
 		714318D8193DF6F70066A1F8 /* PDTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 714318D7193DF6F70066A1F8 /* PDTaskManager.m */; };
 		714318DC193E04300066A1F8 /* PDTaskManagerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 714318DB193E04300066A1F8 /* PDTaskManagerViewController.m */; };
 		71433D9319B6C4950046F37C /* PWModel.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = 71433D9219B6C4950046F37C /* PWModel.xcmappingmodel */; };
@@ -359,8 +358,6 @@
 		7138828A193E31A2009AFB1F /* PDModelObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PDModelObject.h; sourceTree = "<group>"; };
 		713EE07619E2F4F900983301 /* PWHorizontalScrollHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWHorizontalScrollHeaderView.h; sourceTree = "<group>"; };
 		713EE07719E2F4F900983301 /* PWHorizontalScrollHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWHorizontalScrollHeaderView.m; sourceTree = "<group>"; };
-		7142C5E31A18797B001A505A /* GTMOAuth2Keychain+Override.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMOAuth2Keychain+Override.h"; sourceTree = "<group>"; };
-		7142C5E41A18797B001A505A /* GTMOAuth2Keychain+Override.h.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMOAuth2Keychain+Override.h.m"; sourceTree = "<group>"; };
 		714318D6193DF6F70066A1F8 /* PDTaskManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskManager.h; sourceTree = "<group>"; };
 		714318D7193DF6F70066A1F8 /* PDTaskManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskManager.m; sourceTree = "<group>"; };
 		714318DA193E04300066A1F8 /* PDTaskManagerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskManagerViewController.h; sourceTree = "<group>"; };
@@ -1266,15 +1263,6 @@
 			name = PWHorizontalScrollHeaderView;
 			sourceTree = "<group>";
 		};
-		7142C5E61A187B41001A505A /* GTMOAuth2Keychain+Override */ = {
-			isa = PBXGroup;
-			children = (
-				7142C5E31A18797B001A505A /* GTMOAuth2Keychain+Override.h */,
-				7142C5E41A18797B001A505A /* GTMOAuth2Keychain+Override.h.m */,
-			);
-			name = "GTMOAuth2Keychain+Override";
-			sourceTree = "<group>";
-		};
 		714318C5193DF6DB0066A1F8 /* PDTaskManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -1962,7 +1950,6 @@
 			isa = PBXGroup;
 			children = (
 				71BD235919779E1C0034CD3B /* ALAsset+methods */,
-				7142C5E61A187B41001A505A /* GTMOAuth2Keychain+Override */,
 				71BDE39D1998FA8100853E85 /* NSAttributedString+methods */,
 				715A31B5198FD5F6002A0A37 /* NSFileManager+methods */,
 				7149D2D019DC2CB1004BD7A7 /* NSIndexSet+methods */,
@@ -2996,7 +2983,6 @@
 				71B11D8719E8E7C000263124 /* PXEditItemsViewController.m in Sources */,
 				71E8851219115C7E005A78E0 /* PWAppDelegate.m in Sources */,
 				71197E7119862EB3009DB4D3 /* PDLocalCopyPhotoObject.m in Sources */,
-				7142C5E51A18797B001A505A /* GTMOAuth2Keychain+Override.h.m in Sources */,
 				71D52F2219853BCF005CFF30 /* PLFullAlbumViewCell.m in Sources */,
 				712F121219DBDFE500ED6566 /* PEBannerContentView.m in Sources */,
 				71388286193E13E8009AFB1F /* PDCoreDataAPI.m in Sources */,
