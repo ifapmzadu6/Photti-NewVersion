@@ -90,6 +90,7 @@ static NSString * const PWSearchNavigationControllerHistoryItemUpdateKey = @"PWS
 @property (strong, nonatomic) UIButton *cancelButton;
 @property (strong, nonatomic) UIView *searchBarBackgroundView;
 @property (strong, nonatomic) UIImageView *backbroundView;
+@property (strong, nonatomic) UIVisualEffectView *backgroundBlurView;
 @property (strong, nonatomic) UITableView *tableView;
 
 @property (nonatomic) BOOL isSearchBarOpen;
@@ -148,12 +149,13 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     _searchBarBackgroundView.exclusiveTouch = YES;
     [self.view addSubview:_searchBarBackgroundView];
     
-    _searchBar = [[UISearchBar alloc] init];
+    _searchBar = [UISearchBar new];
     _searchBar.searchBarStyle = UISearchBarStyleMinimal;
     _searchBar.delegate = self;
     _searchBar.showsCancelButton = NO;
     _searchBar.placeholder = NSLocalizedString(@"Search", nil);
     _searchBar.exclusiveTouch = YES;
+//    [self enableSearchKeyAlways:_searchBar];
     [_searchBarBackgroundView addSubview:_searchBar];
     
     _cancelButton = [UIButton new];
@@ -165,12 +167,22 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     _cancelButton.exclusiveTouch = YES;
     [_searchBarBackgroundView addSubview:_cancelButton];
     
-    _backbroundView = [UIImageView new];
-    _backbroundView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
-    _backbroundView.alpha = 0.0;
-    _backbroundView.userInteractionEnabled = YES;
-    _backbroundView.exclusiveTouch = YES;
-    [self.view addSubview:_backbroundView];
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        _backgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+        _backgroundBlurView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.6f];
+        _backgroundBlurView.alpha = 0.0;
+        _backgroundBlurView.userInteractionEnabled = YES;
+        _backgroundBlurView.exclusiveTouch = YES;
+        [self.view addSubview:_backgroundBlurView];
+    }
+    else {
+        _backbroundView = [UIImageView new];
+        _backbroundView.alpha = 0.0;
+        _backbroundView.userInteractionEnabled = YES;
+        _backbroundView.exclusiveTouch = YES;
+        [self.view addSubview:_backbroundView];
+    }
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.dataSource = self;
@@ -182,7 +194,12 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     [_tableView registerClass:[PWSearchTableViewLocalAlbumCell class] forCellReuseIdentifier:PWSearchNavigationControllerLocalAlbumCell];
     _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     _tableView.exclusiveTouch = YES;
-    [_backbroundView addSubview:_tableView];
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        [_backgroundBlurView.contentView addSubview:_tableView];
+    }
+    else {
+        [_backbroundView addSubview:_tableView];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -200,6 +217,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     _cancelButton.frame = CGRectMake(navigationBarSize.width - (cancelButtonSize.width + 10.0f), statusBarHeight, cancelButtonSize.width, navigationBarSize.height);
     
     _backbroundView.frame = self.view.bounds;
+    _backgroundBlurView.frame = self.view.bounds;
     _tableView.frame = self.view.bounds;
     
     _tableView.contentInset = UIEdgeInsetsMake(navigationBarSize.height + statusBarHeight, 0.0f, _tableView.contentInset.bottom, 0.0f);
@@ -248,11 +266,17 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     _beforeSctollToTopScrollView.scrollsToTop = NO;
     _tableView.scrollsToTop = YES;
     
-    UIImage *backgroundImage = [self.view screenCapture];
-    UIColor *tintColor = [UIColor colorWithWhite:0.5f alpha:0.3f];
-    _backbroundView.image = [backgroundImage applyBlurWithRadius:25 tintColor:tintColor saturationDeltaFactor:1.8 maskImage:nil];
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        
+    }
+    else {
+        UIImage *backgroundImage = [self.view screenCapture];
+        UIColor *tintColor = [UIColor colorWithWhite:0.5f alpha:0.3f];
+        _backbroundView.image = [backgroundImage applyBlurWithRadius:25 tintColor:tintColor saturationDeltaFactor:1.8 maskImage:nil];
+    }
     
     [self.view bringSubviewToFront:_backbroundView];
+    [self.view bringSubviewToFront:_backgroundBlurView];
     [self.view bringSubviewToFront:_tableView];
     [self.view bringSubviewToFront:_searchBarBackgroundView];
     [_searchBar becomeFirstResponder];
@@ -271,6 +295,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     
     [UIView animateWithDuration:0.25f animations:^{
         _backbroundView.alpha = 1.0f;
+        _backgroundBlurView.alpha = 1.0f;
         _searchBarBackgroundView.alpha = 1.0f;
     } completion:^(BOOL finished) {
         _isAnimation = NO;
@@ -295,6 +320,7 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
     
     [UIView animateWithDuration:0.25f animations:^{
         _backbroundView.alpha = 0.0f;
+        _backgroundBlurView.alpha = 0.0f;
         _searchBarBackgroundView.alpha = 0.0f;
     } completion:^(BOOL finished) {
         _isAnimation = NO;
@@ -303,6 +329,20 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
             completion();
         }
     }];
+}
+
+#pragma mark SearchBar
+- (void)enableSearchKeyAlways:(UISearchBar *)searchBar {
+    UITextField *searchBarTextField = nil;
+    for (UIView *subView in searchBar.subviews) {
+        for (UIView *sndSubView in subView.subviews) {
+            if ([sndSubView isKindOfClass:[UITextField class]]) {
+                searchBarTextField = (UITextField *)sndSubView;
+                break;
+            }
+        }
+    }
+    searchBarTextField.enablesReturnKeyAutomatically = NO;
 }
 
 #pragma mark UITableViewDataSource
@@ -741,6 +781,9 @@ static NSString * const PWSearchNavigationControllerLocalPhotoCell = @"PWSNCLPC4
         PHFetchOptions *options = [PHFetchOptions new];
         options.predicate = [NSPredicate predicateWithFormat:@"localizedTitle contains[c] %@", name];
         PHFetchResult *albumFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:options];
+        if (albumFetchResult.count == 0) {
+            albumFetchResult = [PHAssetCollection fetchMomentsWithOptions:options];
+        }
         NSMutableArray *assetCollections = @[].mutableCopy;
         for (PHAssetCollection *assetCollection in albumFetchResult) {
             [assetCollections addObject:assetCollection];
