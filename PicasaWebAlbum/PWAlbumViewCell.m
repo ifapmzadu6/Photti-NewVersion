@@ -26,6 +26,7 @@
 #import "PAImageResize.h"
 
 static int const kPWAlbumViewCellNumberOfImageView = 3;
+static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
 
 @interface PWAlbumViewCell () <NSFetchedResultsControllerDelegate>
 
@@ -221,18 +222,18 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
         if (isGifImage) {
             if ([[NSFileManager defaultManager] fileExistsAtPath:[sharedImageCache defaultCachePathForKey:urlString]]) {
                 NSData *data = [self diskImageDataBySearchingAllPathsForKey:urlString];
-                FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
+                FLAnimatedImage *animatedImage = [FLAnimatedImage animatedImageWithGIFData:data];
                 if (animatedImage) {
                     UIImage *image = [UIImage decodedImageWithImage:animatedImage.posterImage];
                     if (isShrink) {
-                        image = [PAImageResize resizeImage:image maxPixelSize:50];
+                        image = [PAImageResize resizeImage:image maxPixelSize:kPWAlbumViewCellShrinkedImageSize];
                     }
                     [self setImage:image hash:hash imageView:imageView];
                 }
                 else {
                     UIImage *image = [UIImage imageWithData:data];
                     if (isShrink) {
-                        image = [PAImageResize resizeImage:image maxPixelSize:50];
+                        image = [PAImageResize resizeImage:image maxPixelSize:kPWAlbumViewCellShrinkedImageSize];
                     }
                     else {
                         image = [UIImage decodedImageWithImage:image];
@@ -243,13 +244,20 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
             }
         }
         else {
-            if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
-                UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
-                if (isShrink) {
-                    diskCachedImage = [PAImageResize resizeImage:diskCachedImage maxPixelSize:50];
+            if (isShrink) {
+                NSString *filePath = [sharedImageCache defaultCachePathForKey:urlString];
+                if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+                    UIImage *image = [PAImageResize imageFromFileUrl:[NSURL fileURLWithPath:filePath] maxPixelSize:kPWAlbumViewCellShrinkedImageSize];
+                    [self setImage:image hash:hash imageView:imageView];
+                    return;
                 }
-                [self setImage:diskCachedImage hash:hash imageView:imageView];
-                return;
+            }
+            else {
+                if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
+                    UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
+                    [self setImage:diskCachedImage hash:hash imageView:imageView];
+                    return;
+                }
             }
         }
         
@@ -277,10 +285,10 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
                     return;
                 }
                 if (isGifImage) {
-                    FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
+                    FLAnimatedImage *animatedImage = [FLAnimatedImage animatedImageWithGIFData:data];
                     UIImage *image = [UIImage decodedImageWithImage:animatedImage.posterImage];
                     if (isShrink) {
-                        image = [PAImageResize resizeImage:image maxPixelSize:50];
+                        image = [PAImageResize resizeImage:image maxPixelSize:kPWAlbumViewCellShrinkedImageSize];
                     }
                     [sself setImage:image hash:hash imageView:imageView];
                     if (data && urlString) {
@@ -290,7 +298,7 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
                 else {
                     UIImage *image = [UIImage imageWithData:data];
                     if (isShrink) {
-                        image = [PAImageResize resizeImage:image maxPixelSize:50];
+                        image = [PAImageResize resizeImage:image maxPixelSize:kPWAlbumViewCellShrinkedImageSize];
                     }
                     [sself setImage:image hash:hash imageView:imageView];
                     if (image && urlString) {
