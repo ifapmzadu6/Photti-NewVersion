@@ -183,7 +183,7 @@
             }
             else {
                 width = ceilf(rect.size.width * width/height * 2.0f + 0.5f) / 2.0f;
-                _imageView.frame = CGRectMake(ceilf((rect.size.width-width) + 0.5f)/2.0f, 0.0f, width, rect.size.width);
+                _imageView.frame = CGRectMake(ceilf((rect.size.width-width) + 0.5f)/2.0f, 0.0f, width, rect.size.height);
             }
         }
         else {
