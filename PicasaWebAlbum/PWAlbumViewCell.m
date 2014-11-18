@@ -23,6 +23,7 @@
 #import "NSURLResponse+methods.h"
 #import "PAString.h"
 #import "PAActivityIndicatorView.h"
+#import "PAImageResize.h"
 
 static int const kPWAlbumViewCellNumberOfImageView = 3;
 
@@ -178,7 +179,8 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
                 if (photoObject.sortIndex.integerValue == i+1) {
                     NSString *urlString = photoObject.tag_thumbnail_url;
                     UIImageView *imageView = _imageViews[i];
-                    [self loadThumbnailImage:urlString hash:hash imageView:imageView];
+                    BOOL isShrink = (i>=1) ? YES : NO;
+                    [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:isShrink];
                 }
             }
         }
@@ -186,7 +188,7 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
             NSString *urlString = album.tag_thumbnail_url;
             if (!urlString) return;
             UIImageView *imageView = _imageViews.firstObject;
-            [self loadThumbnailImage:urlString hash:hash imageView:imageView];
+            [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:NO];
         }
     }
     else {
@@ -196,11 +198,11 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
     }
 }
 
-- (void)loadThumbnailImage:(NSString *)urlString hash:(NSUInteger)hash imageView:(UIImageView *)imageView {
+- (void)loadThumbnailImage:(NSString *)urlString hash:(NSUInteger)hash imageView:(UIImageView *)imageView isShrink:(BOOL)isShrink {
     NSURL *url = [NSURL URLWithString:urlString];
     BOOL isGifImage = [url.pathExtension isEqualToString:@"gif"];
     
-    if (!isGifImage) {
+    if (!isGifImage && !isShrink) {
         UIImage *memoryCachedImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:urlString];
         if (memoryCachedImage) {
             imageView.image = memoryCachedImage;
@@ -221,11 +223,21 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
                 NSData *data = [self diskImageDataBySearchingAllPathsForKey:urlString];
                 FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
                 if (animatedImage) {
-                    [self setImage:[UIImage decodedImageWithImage:animatedImage.posterImage] hash:hash imageView:imageView];
+                    UIImage *image = [UIImage decodedImageWithImage:animatedImage.posterImage];
+                    if (isShrink) {
+                        image = [PAImageResize resizeImage:image maxPixelSize:50];
+                    }
+                    [self setImage:image hash:hash imageView:imageView];
                 }
                 else {
                     UIImage *image = [UIImage imageWithData:data];
-                    [self setImage:[UIImage decodedImageWithImage:image] hash:hash imageView:imageView];
+                    if (isShrink) {
+                        image = [PAImageResize resizeImage:image maxPixelSize:50];
+                    }
+                    else {
+                        image = [UIImage decodedImageWithImage:image];
+                    }
+                    [self setImage:image hash:hash imageView:imageView];
                 }
                 return;
             }
@@ -233,6 +245,9 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
         else {
             if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
                 UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
+                if (isShrink) {
+                    diskCachedImage = [PAImageResize resizeImage:diskCachedImage maxPixelSize:50];
+                }
                 [self setImage:diskCachedImage hash:hash imageView:imageView];
                 return;
             }
@@ -258,19 +273,26 @@ static int const kPWAlbumViewCellNumberOfImageView = 3;
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (error || !response.isSuccess) {
-                    [sself loadThumbnailImage:urlString hash:hash imageView:imageView];
+                    [sself loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:isShrink];
                     return;
                 }
                 if (isGifImage) {
                     FLAnimatedImage *animatedImage = [[FLAnimatedImage alloc] initWithAnimatedGIFData:data];
-                    [sself setImage:[UIImage decodedImageWithImage:animatedImage.posterImage] hash:hash imageView:imageView];
+                    UIImage *image = [UIImage decodedImageWithImage:animatedImage.posterImage];
+                    if (isShrink) {
+                        image = [PAImageResize resizeImage:image maxPixelSize:50];
+                    }
+                    [sself setImage:image hash:hash imageView:imageView];
                     if (data && urlString) {
                         [sself storeData:data key:urlString];
                     }
                 }
                 else {
                     UIImage *image = [UIImage imageWithData:data];
-                    [sself setImage:[UIImage decodedImageWithImage:image] hash:hash imageView:imageView];
+                    if (isShrink) {
+                        image = [PAImageResize resizeImage:image maxPixelSize:50];
+                    }
+                    [sself setImage:image hash:hash imageView:imageView];
                     if (image && urlString) {
                         [[SDImageCache sharedImageCache] storeImage:image forKey:urlString toDisk:YES];
                     }

@@ -1977,7 +1977,7 @@
 				71737EB719A318F800CBE68A /* PANetworkActivityIndicator */,
 				711AF6201993ACBF00640D2D /* PAPhotoCollectionViewFloyLayout */,
 				71573AD11A03EE8B001F11BC /* PAPhotoKit */,
-				71BE586E19F4AA91002A85AB /* PAResizeData */,
+				71BE586E19F4AA91002A85AB /* PAImageResize */,
 				71CD06141931779D00BECF6B /* PASnowFlake */,
 				712E03B11920B53D0035D9E0 /* PAString */,
 			);
@@ -2182,13 +2182,13 @@
 			name = PAKit;
 			sourceTree = "<group>";
 		};
-		71BE586E19F4AA91002A85AB /* PAResizeData */ = {
+		71BE586E19F4AA91002A85AB /* PAImageResize */ = {
 			isa = PBXGroup;
 			children = (
 				717A6D0E1A0C5F730031D416 /* PAImageResize.h */,
 				717A6D0F1A0C5F730031D416 /* PAImageResize.m */,
 			);
-			name = PAResizeData;
+			name = PAImageResize;
 			sourceTree = "<group>";
 		};
 		71BE92F119E663260088AEFE /* PEPhotoEditViewController */ = {

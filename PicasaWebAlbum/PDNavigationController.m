@@ -24,6 +24,14 @@
     if (self) {
         self.title = NSLocalizedString(@"Tasks", nil);
         
+        BOOL isPhone = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? YES : NO;
+        if (isPhone) {
+            self.transitioningDelegate = (id)self;
+        }
+        else {
+            self.modalPresentationStyle = UIModalPresentationFormSheet;
+        }
+        
         PDTaskManagerViewController *taskManagerViewController = [PDTaskManagerViewController new];
         [self setViewControllers:@[taskManagerViewController] animated:NO];
     }
