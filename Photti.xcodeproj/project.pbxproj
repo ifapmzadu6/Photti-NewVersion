@@ -149,6 +149,7 @@
 		71A2546819195259009914F7 /* PWPhotoViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546719195259009914F7 /* PWPhotoViewCell.m */; };
 		71A2546C19195EDB009914F7 /* PWNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546B19195EDB009914F7 /* PWNavigationController.m */; };
 		71A254701919CFF5009914F7 /* PASearchNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A2546F1919CFF5009914F7 /* PASearchNavigationController.m */; };
+		71A917CA1A1D9BFC007CC5FD /* PDTaskViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71A917C91A1D9BFC007CC5FD /* PDTaskViewController.m */; };
 		71B11D8719E8E7C000263124 /* PXEditItemsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71B11D8619E8E7C000263124 /* PXEditItemsViewController.m */; };
 		71BA33871978292600CD0011 /* PDTaskObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BA33861978292600CD0011 /* PDTaskObject.m */; };
 		71BD2340197683F40034CD3B /* PDLocalPhotoObject+methods.m in Sources */ = {isa = PBXBuildFile; fileRef = 71BD233F197683F40034CD3B /* PDLocalPhotoObject+methods.m */; };
@@ -513,6 +514,8 @@
 		71A2546B19195EDB009914F7 /* PWNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWNavigationController.m; sourceTree = "<group>"; };
 		71A2546E1919CFF5009914F7 /* PASearchNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PASearchNavigationController.h; sourceTree = "<group>"; };
 		71A2546F1919CFF5009914F7 /* PASearchNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PASearchNavigationController.m; sourceTree = "<group>"; };
+		71A917C81A1D9BFC007CC5FD /* PDTaskViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskViewController.h; sourceTree = "<group>"; };
+		71A917C91A1D9BFC007CC5FD /* PDTaskViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDTaskViewController.m; sourceTree = "<group>"; };
 		71B11D8519E8E7C000263124 /* PXEditItemsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PXEditItemsViewController.h; sourceTree = "<group>"; };
 		71B11D8619E8E7C000263124 /* PXEditItemsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PXEditItemsViewController.m; sourceTree = "<group>"; };
 		71BA33851978292600CD0011 /* PDTaskObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDTaskObject.h; sourceTree = "<group>"; };
@@ -1774,6 +1777,22 @@
 			name = PAIcons;
 			sourceTree = "<group>";
 		};
+		71A917C71A1D9BD0007CC5FD /* PDTaskViewController */ = {
+			isa = PBXGroup;
+			children = (
+				71A917C81A1D9BFC007CC5FD /* PDTaskViewController.h */,
+				71A917C91A1D9BFC007CC5FD /* PDTaskViewController.m */,
+			);
+			name = PDTaskViewController;
+			sourceTree = "<group>";
+		};
+		71A917CB1A1DA1E4007CC5FD /* PDPhotoViewCell */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = PDPhotoViewCell;
+			sourceTree = "<group>";
+		};
 		71B11D8219E8E50000263124 /* X    - Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -1815,6 +1834,7 @@
 			children = (
 				715943C21957C220009315E5 /* PDNavigationController */,
 				719D925A1918E24A00B75D8B /* PDTaskManagerViewController */,
+				71A917C71A1D9BD0007CC5FD /* PDTaskViewController */,
 			);
 			name = "D    - Task";
 			sourceTree = "<group>";
@@ -1889,6 +1909,7 @@
 		71B72FF219DDAB7F00D105EA /* D    - Task */ = {
 			isa = PBXGroup;
 			children = (
+				71A917CB1A1DA1E4007CC5FD /* PDPhotoViewCell */,
 				71D52EF9197F98D9005CFF30 /* PDTaskManagerViewControllerHeaderView */,
 				71C07838194ABBB60071702D /* PDTaskTableViewCell */,
 			);
@@ -2974,6 +2995,7 @@
 				712F39AE1938D011005CF60B /* PWPhotoObject.m in Sources */,
 				71BDCF8819F697B5001135FB /* PSNewLocalMomentListViewController.m in Sources */,
 				71BDCF7D19F6973D001135FB /* PSNewLocalAlbumListViewController.m in Sources */,
+				71A917CA1A1D9BFC007CC5FD /* PDTaskViewController.m in Sources */,
 				71737EBA19A3193100CBE68A /* PANetworkActivityIndicator.m in Sources */,
 				71BD234619778C010034CD3B /* PDLocalPhotoObject.m in Sources */,
 				71E885A219120E7A005A78E0 /* PWOAuthManager.m in Sources */,

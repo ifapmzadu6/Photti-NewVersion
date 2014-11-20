@@ -18,6 +18,7 @@
 
 #import "PDTaskTableViewCell.h"
 #import "PDTaskManagerViewControllerHeaderView.h"
+#import "PDTaskViewController.h"
 #import "PXSettingsViewController.h"
 #import "PAActivityIndicatorView.h"
 
@@ -189,12 +190,15 @@
 
 #pragma mark UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"%ld Tasks", nil), 1];
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:title delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) destructiveButtonTitle:NSLocalizedString(@"Remove", nil) otherButtonTitles:nil];
-    
-    [actionSheet showInView:self.view];
+    PDTaskObject *taskObject = nil;
+    if (indexPath.section == 0) {
+        taskObject = _fetchedResultsController.fetchedObjects.firstObject;
+    }
+    else {
+        taskObject = _fetchedResultsController.fetchedObjects[indexPath.row+1];
+    }
+    PDTaskViewController *viewController = [[PDTaskViewController alloc] initWithTaskObject:taskObject];
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -234,9 +238,9 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL hasTasks = (controller.fetchedObjects.count > 0) ? YES : NO;
         _tableView.hidden = !hasTasks;
-        [_tableView reloadData];
         _noTaskImageView.hidden = hasTasks;
         _noTaskLabel.hidden = hasTasks;
+        [_tableView reloadData];
     });
 }
 

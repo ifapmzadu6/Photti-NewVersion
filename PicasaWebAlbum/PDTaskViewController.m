@@ -8,30 +8,62 @@
 
 #import "PDTaskViewController.h"
 
-@interface PDTaskViewController ()
+#import "PAColors.h"
+#import "PDModelObject.h"
+
+@interface PDTaskViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
+
+@property (strong, nonatomic) UICollectionView *collectionView;
 
 @end
 
 @implementation PDTaskViewController
 
+- (instancetype)initWithTaskObject:(PDTaskObject *)taskObject {
+    self = [self init];
+    if (self) {
+        _taskObject = taskObject;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    UICollectionViewFlowLayout *collectionViewLayout = [UICollectionViewFlowLayout new];
+    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
+    _collectionView.dataSource = self;
+    _collectionView.delegate = self;
+    _collectionView.alwaysBounceVertical = YES;
+    _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
+    _collectionView.exclusiveTouch = YES;
+    _collectionView.allowsMultipleSelection = YES;
+    [self.view addSubview:_collectionView];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    
+    CGRect rect = self.view.bounds;
+    
+    _collectionView.frame = rect;
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+#pragma mark UICollectionViewDataSource
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    return 1;
 }
-*/
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return _taskObject.photos.count;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
+    
+    PDBasePhotoObject *photoObject = _taskObject.photos[indexPath.row];
+    
+    return cell;
+}
 
 @end
