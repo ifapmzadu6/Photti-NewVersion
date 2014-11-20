@@ -31,6 +31,7 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
 @interface PWAlbumViewCell () <NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) NSArray *imageViews;
+@property (strong, nonatomic) NSArray *imageViewBackgroundViews;
 @property (strong, nonatomic) PAActivityIndicatorView *activityIndicatorView;
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) UILabel *numPhotosLabel;
@@ -38,6 +39,7 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
 
 @property (nonatomic) NSUInteger albumHash;
 
+@property (strong, nonatomic) NSFetchRequest *request;
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
 @end
@@ -68,17 +70,25 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
     [self.contentView addSubview:_activityIndicatorView];
     
     NSMutableArray *imageViews = @[].mutableCopy;
+    NSMutableArray *imageViewBackgroundViews = @[].mutableCopy;
     for (int i=0; i<kPWAlbumViewCellNumberOfImageView; i++) {
         UIImageView *imageView = [UIImageView new];
         imageView.clipsToBounds = YES;
         imageView.contentMode = UIViewContentModeScaleAspectFill;
         imageView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundLightColor];
-        imageView.layer.borderWidth = 1.0f;
-        imageView.layer.borderColor = [UIColor whiteColor].CGColor;
+        imageView.opaque = YES;
         [self.contentView insertSubview:imageView atIndex:0];
+        
+        UIView *backgroundView = [UIView new];
+        backgroundView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
+        backgroundView.opaque = YES;
+        [self.contentView insertSubview:backgroundView belowSubview:imageView];
+        
         [imageViews addObject:imageView];
+        [imageViewBackgroundViews addObject:backgroundView];
     }
     _imageViews = imageViews;
+    _imageViewBackgroundViews = imageViewBackgroundViews;
     
     _titleLabel = [UILabel new];
     _titleLabel.font = [UIFont systemFontOfSize:12.0f];
@@ -94,6 +104,12 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
     _overrayView.alpha = 0.0f;
     _overrayView.backgroundColor = self.backgroundColor;
     [self.contentView addSubview:_overrayView];
+    
+    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
+    _request = [NSFetchRequest new];
+    _request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
+    _request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
+    _request.fetchLimit = 3;
 }
 
 - (void)setSelected:(BOOL)selected {
@@ -117,7 +133,10 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
     
     for (int i=0; i<kPWAlbumViewCellNumberOfImageView; i++) {
         UIImageView *imageView = _imageViews[i];
-        imageView.frame = CGRectMake(delta*i, delta*((kPWAlbumViewCellNumberOfImageView-1)-i), imageSize, imageSize);
+        imageView.frame = CGRectMake(delta*i+1, delta*((kPWAlbumViewCellNumberOfImageView-1)-i)+1, imageSize-2, imageSize-2);
+        
+        UIView *backgroundView = _imageViewBackgroundViews[i];
+        backgroundView.frame = CGRectMake(delta*i, delta*((kPWAlbumViewCellNumberOfImageView-1)-i), imageSize, imageSize);
     }
     
     UIImageView *imageView = _imageViews.firstObject;
@@ -138,6 +157,8 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
         UIImageView *imageView = _imageViews[i];
         imageView.image = nil;
     }
+    
+    _fetchedResultsController = nil;
 }
 
 - (void)setAlbum:(PWAlbumObject *)album {
@@ -154,49 +175,47 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
     _titleLabel.text = album.title;
     _numPhotosLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ Items", nil), album.gphoto.numphotos];
     
-    NSManagedObjectContext *context = [PWCoreDataAPI readContext];
-    NSFetchRequest *request = [NSFetchRequest new];
-    request.entity = [NSEntityDescription entityForName:kPWPhotoObjectName inManagedObjectContext:context];
-    request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
-    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"sortIndex" ascending:YES]];
-    request.fetchLimit = 3;
-    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-    _fetchedResultsController.delegate = self;
-    NSError *error = nil;
-    if (![_fetchedResultsController performFetch:&error]) {
+    [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
+        _request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
+        _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:_request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        _fetchedResultsController.delegate = self;
+        
+        NSError *error = nil;
+        if (![_fetchedResultsController performFetch:&error]) {
 #ifdef DEBUG
-        NSLog(@"%@", error);
+            NSLog(@"%@", error);
 #endif
-        return;
-    }
-    
-    NSUInteger numPhotos = _album.gphoto.numphotos.integerValue;
-    if (numPhotos > 0) {
-        NSUInteger fetchedCount = _fetchedResultsController.fetchedObjects.count;
-        PWPhotoObject *firstPhotoObject = _fetchedResultsController.fetchedObjects.firstObject;
-        if ((fetchedCount > 0) && (firstPhotoObject.sortIndex.integerValue == 1)) {
-            for (int i=0; i<MIN(MIN(3, numPhotos), fetchedCount); i++) {
-                PWPhotoObject *photoObject = _fetchedResultsController.fetchedObjects[i];
-                if (photoObject.sortIndex.integerValue == i+1) {
-                    NSString *urlString = photoObject.tag_thumbnail_url;
-                    UIImageView *imageView = _imageViews[i];
-                    BOOL isShrink = (i>=1) ? YES : NO;
-                    [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:isShrink];
+            return;
+        }
+        
+        NSUInteger numPhotos = _album.gphoto.numphotos.integerValue;
+        if (numPhotos > 0) {
+            NSUInteger fetchedCount = _fetchedResultsController.fetchedObjects.count;
+            PWPhotoObject *firstPhotoObject = _fetchedResultsController.fetchedObjects.firstObject;
+            if ((fetchedCount > 0) && (firstPhotoObject.sortIndex.integerValue == 1)) {
+                for (int i=0; i<MIN(MIN(3, numPhotos), fetchedCount); i++) {
+                    PWPhotoObject *photoObject = _fetchedResultsController.fetchedObjects[i];
+                    if (photoObject.sortIndex.integerValue == i+1) {
+                        NSString *urlString = photoObject.tag_thumbnail_url;
+                        UIImageView *imageView = _imageViews[i];
+                        BOOL isShrink = (i>=1) ? YES : NO;
+                        [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:isShrink];
+                    }
                 }
+            }
+            else {
+                NSString *urlString = album.tag_thumbnail_url;
+                if (!urlString) return;
+                UIImageView *imageView = _imageViews.firstObject;
+                [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:NO];
             }
         }
         else {
-            NSString *urlString = album.tag_thumbnail_url;
-            if (!urlString) return;
             UIImageView *imageView = _imageViews.firstObject;
-            [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:NO];
+            UIImage *noPhotoImage = [UIImage imageNamed:@"icon_240"];
+            imageView.image = noPhotoImage;
         }
-    }
-    else {
-        UIImageView *imageView = _imageViews.firstObject;
-        UIImage *noPhotoImage = [UIImage imageNamed:@"icon_240"];
-        imageView.image = noPhotoImage;
-    }
+    }];
 }
 
 - (void)loadThumbnailImage:(NSString *)urlString hash:(NSUInteger)hash imageView:(UIImageView *)imageView isShrink:(BOOL)isShrink {
@@ -253,8 +272,8 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
                 }
             }
             else {
-                if ([[SDImageCache sharedImageCache] diskImageExistsWithKey:urlString]) {
-                    UIImage *diskCachedImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:urlString];
+                if ([sharedImageCache diskImageExistsWithKey:urlString]) {
+                    UIImage *diskCachedImage = [sharedImageCache imageFromDiskCacheForKey:urlString];
                     [self setImage:diskCachedImage hash:hash imageView:imageView];
                     return;
                 }
