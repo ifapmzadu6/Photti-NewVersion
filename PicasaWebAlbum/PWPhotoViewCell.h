@@ -12,8 +12,12 @@
 
 @interface PWPhotoViewCell : UICollectionViewCell
 
+@property (strong, nonatomic, readonly) UIImageView *imageView;
+
 @property (strong, nonatomic) PWPhotoObject *photo;
 @property (nonatomic) BOOL isSelectWithCheckMark;
+
+- (void)initialization;
 
 - (UIImage *)image;
 - (FLAnimatedImage *)animatedImage;

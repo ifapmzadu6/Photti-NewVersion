@@ -9,7 +9,9 @@
 @import UIKit;
 @import Photos;
 
-@interface PEPhotoPageViewController : UIPageViewController
+#import "PABasePageViewController.h"
+
+@interface PEPhotoPageViewController : PABasePageViewController
 
 @property (nonatomic, readonly) BOOL ascending;
 @property (nonatomic) BOOL needsFavoriteChangedPopBack;
@@ -19,5 +21,6 @@
 - (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index;
 - (instancetype)initWithResult:(PHFetchResult *)result index:(NSUInteger)index ascending:(BOOL)ascending;
 
+@property (strong, nonatomic) PANavigationPopupTransition *popupTransition;
 
 @end

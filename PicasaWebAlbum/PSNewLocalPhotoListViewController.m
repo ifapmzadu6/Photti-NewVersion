@@ -20,7 +20,7 @@
     if (self) {
         self.photoListDataSource.isSelectMode = YES;
         __weak typeof(self) wself = self;
-        self.photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+        self.photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
             typeof(wself) sself = wself;
             if (!sself) return;
             PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;

@@ -86,7 +86,7 @@
     
     self.videoListDataSource.isSelectMode = YES;
     __weak typeof(self) wself = self;
-    self.videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+    self.videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
@@ -105,7 +105,7 @@
     
     self.panoramaListDataSource.isSelectMode = YES;
     __weak typeof(self) wself = self;
-    self.panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+    self.panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
@@ -124,7 +124,7 @@
     
     self.favoriteListDataSource.isSelectMode = YES;
     __weak typeof(self) wself = self;
-    self.favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+    self.favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
@@ -143,7 +143,7 @@
     
     self.timelapseListDataSource.isSelectMode = YES;
     __weak typeof(self) wself = self;
-    self.timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+    self.timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
@@ -162,7 +162,7 @@
     
     self.cloudListDataSource.isSelectMode = YES;
     __weak typeof(self) wself = self;
-    self.cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+    self.cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
@@ -181,7 +181,7 @@
     
     self.burstsListDataSource.isSelectMode = YES;
     __weak typeof(self) wself = self;
-    self.burstsListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+    self.burstsListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
@@ -200,7 +200,7 @@
     
     self.slomoVideosListDataSource.isSelectMode = YES;
     __weak typeof(self) wself = self;
-    self.slomoVideosListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+    self.slomoVideosListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;
@@ -219,7 +219,7 @@
     
     self.allPhotoListDataSource.isSelectMode = YES;
     __weak typeof(self) wself = self;
-    self.allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+    self.allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
         typeof(wself) sself = wself;
         if (!sself) return;
         PSImagePickerController *tabBarController = (PSImagePickerController *)sself.tabBarController;

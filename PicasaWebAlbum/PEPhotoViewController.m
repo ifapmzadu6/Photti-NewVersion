@@ -55,25 +55,25 @@
     _imageScrollView.didSingleTapBlock = _didSingleTapBlock;
     [self.view addSubview:_imageScrollView];
     
-    CGRect rect = [UIScreen mainScreen].bounds;
     double imageWidth = _asset.pixelWidth;
     double imageHeight = _asset.pixelHeight;
-    double width = MIN(CGRectGetWidth(rect), CGRectGetHeight(rect));
-    double height = MAX(CGRectGetWidth(rect), CGRectGetHeight(rect));
+    double imageAspect = imageHeight / imageWidth;
+    CGRect rect = [UIScreen mainScreen].bounds;
+    double screenWidth = MIN(CGRectGetWidth(rect), CGRectGetHeight(rect));
+    double screenHeight = MAX(CGRectGetWidth(rect), CGRectGetHeight(rect));
     if (self.isLandscape) {
-        CGFloat tmp = width;
-        width = height;
-        height = tmp;
+        CGFloat tmp = screenWidth; screenWidth = screenHeight; screenHeight = tmp;
     }
-    if (width > height) {
-        imageHeight = floorf(imageHeight * width / imageWidth * 2.0 + 1.0) / 2.0;
-        imageWidth = width;
+    double screenAspect = screenHeight / screenWidth;
+    if (screenAspect > imageAspect) {
+        imageHeight = floorf(screenWidth * imageHeight / imageWidth * 2.0 + 1.0) / 2.0;
+        imageWidth = screenWidth;
     }
     else {
-        imageWidth = floorf(imageWidth * height / imageHeight * 2.0 + 1.0) / 2.0;
-        imageHeight = height;
+        imageWidth = floorf(screenHeight * imageWidth / imageHeight * 2.0 + 1.0) / 2.0;
+        imageHeight = screenHeight;
     }
-    CGSize targetSize = CGSizeMake(imageWidth, imageHeight);
+    CGSize targetSize = CGSizeMake(imageWidth*[UIScreen mainScreen].scale, imageHeight*[UIScreen mainScreen].scale);
     PHImageRequestOptions *options = [PHImageRequestOptions new];
     options.networkAccessAllowed = YES;
     [[PHImageManager defaultManager] requestImageForAsset:_asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
@@ -114,7 +114,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
+        
     if (_viewDidAppearBlock) {
         _viewDidAppearBlock();
     }

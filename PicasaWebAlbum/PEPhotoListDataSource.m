@@ -289,8 +289,9 @@
     
     NSUInteger index = (_ascending) ? _fetchResult.count-indexPath.item-1 : indexPath.item;
     PHAsset *asset = _fetchResult[index];
+    PEPhotoViewCell *cell = (PEPhotoViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
     if (_didSelectAssetBlock) {
-        _didSelectAssetBlock(asset, index, _isSelectMode);
+        _didSelectAssetBlock(asset, cell.imageView, index, _isSelectMode);
     }
     if (!_isSelectMode) {
         [collectionView deselectItemAtIndexPath:indexPath animated:YES];

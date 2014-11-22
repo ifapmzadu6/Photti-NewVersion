@@ -20,4 +20,6 @@
 - (void)hideNoItem;
 - (void)layoutNoItem;
 
+@property (strong, nonatomic) NSObject<UINavigationControllerDelegate> *navigationControllerTransition;
+
 @end

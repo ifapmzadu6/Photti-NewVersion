@@ -21,4 +21,6 @@
 
 @property (nonatomic) BOOL isSelectWithCheckmark;
 
+- (void)initialization;
+
 @end

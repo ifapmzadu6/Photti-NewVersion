@@ -11,7 +11,7 @@
 
 @interface PEPhotoListDataSource : NSObject <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
-@property (copy, nonatomic) void (^didSelectAssetBlock)(PHAsset *asset, NSUInteger index, BOOL isSelectMode);
+@property (copy, nonatomic) void (^didSelectAssetBlock)(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode);
 @property (copy, nonatomic) void (^didDeselectAssetBlock)(PHAsset *asset, NSUInteger index, BOOL isSelectMode);
 @property (copy, nonatomic) void (^didChangeItemCountBlock)(NSUInteger count);
 @property (copy, nonatomic) void (^didChangeSelectedItemCountBlock)(NSUInteger count);

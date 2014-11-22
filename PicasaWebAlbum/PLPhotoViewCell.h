@@ -12,7 +12,11 @@
 
 @interface PLPhotoViewCell : UICollectionViewCell
 
+@property (strong, nonatomic, readonly) UIImageView *imageView;
+
 @property (strong, nonatomic) PLPhotoObject *photo;
 @property (nonatomic) BOOL isSelectWithCheckMark;
+
+- (void)initialization;
 
 @end

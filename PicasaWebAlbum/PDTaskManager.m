@@ -392,6 +392,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 
 #pragma mark NSURLSessionTaskDelegate
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
+    if (self.taskManagerProgressBlock) {
+        CGFloat progress = totalBytesSent / totalBytesExpectedToSend;
+        self.taskManagerProgressBlock(progress);
+    }
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
@@ -469,6 +473,48 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     }
 }
 
+#pragma mark NSURLSessionDownloadDelegate
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
+    NSString *filePath = [PAKit makeUniquePathInTmpDir];
+    NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+    
+    NSError *error = nil;
+    if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:fileURL error:&error]) {
+#ifdef DEBUG
+        NSLog(@"%@", error);
+#endif
+        return;
+    }
+    
+    _location = fileURL;
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+    if (self.taskManagerProgressBlock) {
+        CGFloat progress = totalBytesWritten / totalBytesExpectedToWrite;
+        self.taskManagerProgressBlock(progress);
+    }
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
+}
+
+#pragma mark NSURLSessionDataTask
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
+    _uploadResponseData = data;
+}
+
+#pragma mark contextchanged
+- (void)contextDidSaveNotification:(NSNotification *)notification {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (_taskManagerChangedBlock) {
+            __weak PDTaskManager *taskManager = [PDTaskManager sharedManager];
+            _taskManagerChangedBlock(taskManager);
+        }
+    });
+}
+
+#pragma mark Start Task
 - (void)taskIsDoneAndStartNext:(PDTaskObject *)taskObject {
     if (!taskObject) {
         _isOperating = NO;
@@ -535,43 +581,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
             [self taskIsDoneAndStartNext:[PDTaskManager getFirstTaskObject]];
         }
     }
-}
-
-#pragma mark NSURLSessionDownloadDelegate
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
-    NSString *filePath = [PAKit makeUniquePathInTmpDir];
-    NSURL *fileURL = [NSURL fileURLWithPath:filePath];
-    
-    NSError *error = nil;
-    if (![[NSFileManager defaultManager] moveItemAtURL:location toURL:fileURL error:&error]) {
-#ifdef DEBUG
-        NSLog(@"%@", error);
-#endif
-        return;
-    }
-    
-    _location = fileURL;
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
-}
-
-#pragma mark NSURLSessionDataTask
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
-    _uploadResponseData = data;
-}
-
-#pragma mark contextchanged
-- (void)contextDidSaveNotification:(NSNotification *)notification {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (_taskManagerChangedBlock) {
-            __weak PDTaskManager *taskManager = [PDTaskManager sharedManager];
-            _taskManagerChangedBlock(taskManager);
-        }
-    });
 }
 
 #pragma GetData

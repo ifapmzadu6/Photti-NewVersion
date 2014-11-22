@@ -43,6 +43,8 @@ static NSString * const kPDTaskManagerIsResizePhotosKey = @"kPDTMIRPK";
 
 @property (copy, nonatomic) void (^taskManagerChangedBlock)(PDTaskManager *taskManager);
 
+@property (copy, nonatomic) void (^taskManagerProgressBlock)(CGFloat progress);
+
 @property (copy, nonatomic) void (^backgroundComplecationHandler)();
 
 @property (copy, nonatomic) void (^notLoginGoogleAccountAction)();

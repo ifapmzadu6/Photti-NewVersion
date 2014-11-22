@@ -239,7 +239,7 @@
     _videoListDataSource.minimumLineSpacing = 15.0f;
     _videoListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
+    _videoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
         if (!isSelectMode) {
@@ -256,7 +256,7 @@
     _panoramaListDataSource.minimumLineSpacing = 15.0f;
     _panoramaListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
+    _panoramaListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
         if (!isSelectMode) {
@@ -273,7 +273,7 @@
     _favoriteListDataSource.minimumLineSpacing = 15.0f;
     _favoriteListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
+    _favoriteListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
         if (!isSelectMode) {
@@ -291,7 +291,7 @@
     _timelapseListDataSource.minimumLineSpacing = 15.0f;
     _timelapseListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
+    _timelapseListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
         if (!isSelectMode) {
@@ -308,7 +308,7 @@
     _cloudListDataSource.minimumLineSpacing = 15.0f;
     _cloudListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
+    _cloudListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
         if (!isSelectMode) {
@@ -325,7 +325,7 @@
     _burstsListDataSource.minimumLineSpacing = 15.0f;
     _burstsListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _burstsListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
+    _burstsListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
         if (!isSelectMode) {
@@ -342,7 +342,7 @@
     _slomoVideosListDataSource.minimumLineSpacing = 15.0f;
     _slomoVideosListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _slomoVideosListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
+    _slomoVideosListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
         if (!isSelectMode) {
@@ -359,7 +359,7 @@
     _allPhotoListDataSource.minimumLineSpacing = 15.0f;
     _allPhotoListDataSource.cellBackgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     __weak typeof(self) wself = self;
-    _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode){
+    _allPhotoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode){
         typeof(wself) sself = wself;
         if (!sself) return;
         if (!isSelectMode) {

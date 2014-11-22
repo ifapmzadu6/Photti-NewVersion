@@ -8,19 +8,19 @@
 
 #import "PWPhotoViewCell.h"
 
+#import <Reachability.h>
+#import <SDImageCache.h>
+#import <Reachability.h>
+#import <FLAnimatedImageView.h>
+#import <FLAnimatedImage.h>
 #import "PWPicasaAPI.h"
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PADateFormatter.h"
-#import <Reachability.h>
-#import <SDImageCache.h>
 #import "SDWebImageDecoder.h"
 #import "PWCoreDataAPI.h"
-#import <Reachability.h>
 #import "NSURLResponse+methods.h"
 #import "PAActivityIndicatorView.h"
-#import <FLAnimatedImageView.h>
-#import <FLAnimatedImage.h>
 
 @interface PWPhotoViewCell ()
 
@@ -212,7 +212,6 @@
     _videoBackgroundView.hidden = YES;
     _videoDurationLabel.hidden = YES;
     _videoIconView.hidden = YES;
-    
 }
 
 - (UIImage *)image {

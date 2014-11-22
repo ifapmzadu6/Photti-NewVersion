@@ -9,15 +9,60 @@
 #import "PDTaskViewController.h"
 
 #import "PAColors.h"
+#import "PADateFormatter.h"
 #import "PDModelObject.h"
+#import "PWModelObject.h"
+#import "PLModelObject.h"
+#import "PDModelObject.h"
+#import "PWCoreDataAPI.h"
+#import "PLCoreDataAPI.h"
+#import "PDCoreDataAPI.h"
+#import "PDTaskManager.h"
+#import "PAPhotoKit.h"
+#import "PDWebPhotoViewCell.h"
+#import "PDLocalPhotoViewCell.h"
+#import "PDNewLocalPhotoViewCell.h"
+#import "PAPhotoCollectionViewFlowLayout.h"
+#import "PATabBarController.h"
+#import "PAViewControllerKit.h"
 
 @interface PDTaskViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
+@property (weak, nonatomic) UICollectionViewCell *firstCell;
 
 @end
 
 @implementation PDTaskViewController
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.title = NSLocalizedString(@"Uploading", nil);
+        
+        __weak typeof(self) wself = self;
+        [PDTaskManager sharedManager].taskManagerProgressBlock = ^(CGFloat progress){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                typeof(wself) sself = wself;
+                if (!sself) return;
+                id firstCell = sself.firstCell;
+                if ([firstCell isKindOfClass:[PDWebPhotoViewCell class]]) {
+                    ((PDWebPhotoViewCell *)firstCell).progress = progress;
+                }
+                else if ([firstCell isKindOfClass:[PDLocalPhotoObject class]]) {
+                    ((PDLocalPhotoViewCell *)firstCell).progress = progress;
+                }
+                else if ([firstCell isKindOfClass:[PDNewLocalPhotoViewCell class]]) {
+                    ((PDNewLocalPhotoViewCell *)firstCell).progress = progress;
+                }
+            });
+        };
+        
+        NSManagedObjectContext *context = [PDCoreDataAPI readContext];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeContext:) name:NSManagedObjectContextDidSaveNotification object:context];
+    }
+    return self;
+}
 
 - (instancetype)initWithTaskObject:(PDTaskObject *)taskObject {
     self = [self init];
@@ -27,13 +72,25 @@
     return self;
 }
 
+- (void)dealloc {
+    NSManagedObjectContext *context = [PDCoreDataAPI readContext];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UICollectionViewFlowLayout *collectionViewLayout = [UICollectionViewFlowLayout new];
+    PAPhotoCollectionViewFlowLayout *collectionViewLayout = [PAPhotoCollectionViewFlowLayout new];
     _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewLayout];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
+    [_collectionView registerClass:[PDWebPhotoViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PDWebPhotoViewCell class])];
+    if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+        [_collectionView registerClass:[PDNewLocalPhotoViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PDNewLocalPhotoViewCell class])];
+    }
+    else {
+        [_collectionView registerClass:[PDLocalPhotoViewCell class] forCellWithReuseIdentifier:NSStringFromClass([PDLocalPhotoViewCell class])];
+    }
     _collectionView.alwaysBounceVertical = YES;
     _collectionView.backgroundColor = [PAColors getColor:kPAColorsTypeBackgroundColor];
     _collectionView.exclusiveTouch = YES;
@@ -46,7 +103,18 @@
     
     CGRect rect = self.view.bounds;
     
-    _collectionView.frame = rect;
+    CGFloat navigationBarHeight = self.navigationController.navigationBar.bounds.size.height;
+    CGFloat statusBarHeight = [PAViewControllerKit statusBarHeight];
+    UIEdgeInsets viewInsets = UIEdgeInsetsMake(navigationBarHeight + statusBarHeight, 0.0f, 0.0f, 0.0f);
+    UIEdgeInsets contentInset = UIEdgeInsetsZero;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+    }
+    else {
+        contentInset = UIEdgeInsetsMake(viewInsets.top + 20.0f, 20.0f, viewInsets.bottom + 20.0f, 20.0f);
+    }
+    UIEdgeInsets scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
+    [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
 }
 
 #pragma mark UICollectionViewDataSource
@@ -59,11 +127,73 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
-    
     PDBasePhotoObject *photoObject = _taskObject.photos[indexPath.row];
+    if ([photoObject isKindOfClass:[PDWebPhotoObject class]] ||
+        [photoObject isKindOfClass:[PDCopyPhotoObject class]]) {
+        PDWebPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PDWebPhotoViewCell class]) forIndexPath:indexPath];
+        cell.photo = [PWPhotoObject getPhotoObjectWithID:photoObject.photo_object_id_str];
+        _firstCell = (indexPath.item == 0) ? cell : nil;
+        return cell;
+    }
+    else if ([photoObject isKindOfClass:[PDLocalPhotoObject class]] ||
+             [photoObject isKindOfClass:[PDLocalCopyPhotoObject class]]) {
+        if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
+            PDNewLocalPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PDNewLocalPhotoViewCell class]) forIndexPath:indexPath];
+            __weak typeof(cell) wcell = cell;
+            NSUInteger tag = indexPath.row;
+            cell.tag = tag;
+            cell.backgroundColor = [UIColor whiteColor];
+            CGSize targetSize = [PAPhotoCollectionViewFlowLayout itemSize];
+            PHAsset *asset = [PAPhotoKit getAssetWithIdentifier:photoObject.photo_object_id_str];
+            PHImageRequestOptions *options = [PHImageRequestOptions new];
+            options.networkAccessAllowed = YES;
+            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {
+                typeof(wcell) scell = wcell;
+                if (!scell) return;
+                if (scell.tag == tag) {
+                    scell.imageView.image = result;
+                }
+            }];
+            cell.favoriteIconView.hidden = (asset.favorite) ? NO : YES;
+            if (asset.mediaType == PHAssetMediaTypeVideo) {
+                cell.videoBackgroundView.hidden = NO;
+                cell.videoDurationLabel.hidden = NO;
+                cell.videoDurationLabel.text = [PADateFormatter arrangeDuration:asset.duration];
+                if (asset.mediaSubtypes == PHAssetMediaSubtypeVideoTimelapse) {
+                    cell.videoTimelapseIconView.hidden = NO;
+                }
+                else if (asset.mediaSubtypes == PHAssetMediaSubtypeVideoHighFrameRate) {
+                    cell.videoSlomoIconView.hidden = NO;
+                }
+                else {
+                    cell.videoIconView.hidden = NO;
+                }
+            }
+            _firstCell = (indexPath.item == 0) ? cell : nil;
+            return cell;
+        }
+        else {
+            PDLocalPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PDLocalPhotoViewCell class]) forIndexPath:indexPath];
+            cell.photo = [PLPhotoObject getPhotoObjectWithID:photoObject.photo_object_id_str];
+            _firstCell = (indexPath.item == 0) ? cell : nil;
+            return cell;
+        }
+    }
     
-    return cell;
+    return nil;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.item == 0) {
+        _firstCell = nil;
+    }
+}
+
+#pragma mark CoreData
+- (void)didChangeContext:(NSNotification *)notification {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_collectionView reloadData];
+    });
 }
 
 @end

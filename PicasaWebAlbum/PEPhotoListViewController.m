@@ -38,6 +38,13 @@
 
 @implementation PEPhotoListViewController
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+    }
+    return self;
+}
+
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(kPHPhotoListViewControllerType)type {
     self = [self initWithAssetCollection:assetCollection type:type title:nil];
     return self;
@@ -49,7 +56,7 @@
 }
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection type:(kPHPhotoListViewControllerType)type title:(NSString *)title startDate:(NSDate *)startDate endDate:(NSDate *)endDate {
-    self = [super init];
+    self = [self init];
     if (self) {
         _type = type;
         
@@ -67,7 +74,7 @@
         __weak typeof(self) wself = self;
         if (type == kPHPhotoListViewControllerType_AllPhotos) {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makeAllPhotoListDataSource];
-            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (!isSelectMode) {
@@ -78,7 +85,7 @@
         }
         else if (type == kPHPhotoListViewControllerType_Dates) {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makePhotoListDataSourceWithStartDate:startDate endDate:endDate];
-            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (!isSelectMode) {
@@ -90,7 +97,7 @@
         else {
             _photoListDataSource = [PEPhotoDataSourceFactoryMethod makePhotoInAlbumListDataSourceWithCollection:assetCollection];
             BOOL isTypeFavorite = (type==kPHPhotoListViewControllerType_Favorite) ? YES : NO;
-            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, NSUInteger index, BOOL isSelectMode) {
+            _photoListDataSource.didSelectAssetBlock = ^(PHAsset *asset, UIImageView *imageView, NSUInteger index, BOOL isSelectMode) {
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (!isSelectMode) {
@@ -218,6 +225,10 @@
     PATabBarAdsController *tabBarController = (PATabBarAdsController *)self.tabBarController;
     [tabBarController setUserInteractionEnabled:YES];
     [tabBarController setAdsHidden:NO animated:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
 }
 
 - (void)viewWillLayoutSubviews {
