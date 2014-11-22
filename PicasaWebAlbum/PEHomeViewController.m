@@ -13,6 +13,7 @@
 #import "PAColors.h"
 #import "PAIcons.h"
 #import "PAString.h"
+#import "PAPhotoKit.h"
 #import "PADateFormatter.h"
 #import "PDCoreDataAPI.h"
 #import "PDTaskManager.h"
@@ -226,7 +227,7 @@
     _momentListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        NSString *title = [PEMomentListDataSource titleForMoment:assetCollection];
+        NSString *title = [PAPhotoKit titleForMoment:assetCollection];
         PEPhotoListViewController *viewController = [[PEPhotoListViewController alloc] initWithAssetCollection:assetCollection type:kPHPhotoListViewControllerType_Moment title:title];
         [sself.navigationController pushViewController:viewController animated:YES];
     };
@@ -585,6 +586,10 @@
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
+        if (indexPath.row >= _enabledItems.count) {
+            return;
+        }
+        
         NSString *rowType = _enabledItems[indexPath.row];
         if ([rowType isEqualToString:kPEHomeViewControllerRowType_Albums]) {
             _albumListDataSource.collectionView = nil;

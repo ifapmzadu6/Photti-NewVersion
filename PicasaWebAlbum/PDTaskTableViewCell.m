@@ -279,7 +279,7 @@
         NSString *id_str = taskObject.from_album_id_str;
         if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
             PHAssetCollection *assetCollection = [PAPhotoKit getAssetCollectionWithIdentifier:id_str];
-            _titleLabel.text = assetCollection.localizedTitle;
+            _titleLabel.text = [PAPhotoKit titleForMoment:assetCollection];
             
             PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
             if (fetchResult.count == 0) return;

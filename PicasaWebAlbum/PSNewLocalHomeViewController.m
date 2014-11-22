@@ -8,6 +8,7 @@
 
 #import "PSNewLocalHomeViewController.h"
 
+#import "PAPhotoKit.h"
 #import "PEAlbumListDataSource.h"
 #import "PEMomentListDataSource.h"
 #import "PEPhotoListDataSource.h"
@@ -74,7 +75,7 @@
     self.momentListDataSource.didSelectCollectionBlock = ^(PHAssetCollection *assetCollection) {
         typeof(wself) sself = wself;
         if (!sself) return;
-        NSString *title = [PEMomentListDataSource titleForMoment:assetCollection];
+        NSString *title = [PAPhotoKit titleForMoment:assetCollection];
         PSNewLocalPhotoListViewController *viewController = [[PSNewLocalPhotoListViewController alloc] initWithAssetCollection:assetCollection type:kPHPhotoListViewControllerType_Album title:title];
         viewController.navigationItem.prompt = sself.navigationItem.prompt;
         [sself.navigationController pushViewController:viewController animated:YES];

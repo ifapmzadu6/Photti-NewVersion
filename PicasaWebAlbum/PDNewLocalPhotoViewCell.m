@@ -22,13 +22,13 @@
     [super initialization];
     
     _progressView = [PWProgressView new];
-    [self.contentView addSubview:_progressView];
+    [self.imageView addSubview:_progressView];
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    _progressView.frame = self.imageView.frame;
+    _progressView.frame = self.imageView.bounds;
 }
 
 - (void)prepareForReuse {
@@ -43,6 +43,7 @@
     _progress = progress;
     
     _progressView.progress = progress;
+    [_progressView setNeedsLayout];
 }
 
 @end

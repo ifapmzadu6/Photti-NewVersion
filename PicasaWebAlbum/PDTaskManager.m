@@ -393,7 +393,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 #pragma mark NSURLSessionTaskDelegate
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
     if (self.taskManagerProgressBlock) {
-        CGFloat progress = totalBytesSent / totalBytesExpectedToSend;
+        CGFloat progress = (double)totalBytesSent / (double)totalBytesExpectedToSend;
         self.taskManagerProgressBlock(progress);
     }
 }
@@ -491,7 +491,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
     if (self.taskManagerProgressBlock) {
-        CGFloat progress = totalBytesWritten / totalBytesExpectedToWrite;
+        CGFloat progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
         self.taskManagerProgressBlock(progress);
     }
 }
@@ -511,6 +511,12 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
             __weak PDTaskManager *taskManager = [PDTaskManager sharedManager];
             _taskManagerChangedBlock(taskManager);
         }
+        
+        [self countOfAllPhotosInTaskWithCompletion:^(NSUInteger count, NSError *error) {
+            if (count == 0) {
+                _isOperating = NO;
+            }
+        }];
     });
 }
 

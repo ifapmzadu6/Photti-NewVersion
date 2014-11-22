@@ -111,7 +111,7 @@
         contentInset = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
     }
     else {
-        contentInset = UIEdgeInsetsMake(viewInsets.top + 20.0f, 20.0f, viewInsets.bottom + 20.0f, 20.0f);
+        contentInset = UIEdgeInsetsMake(viewInsets.top + 20.0f, 60.0f, viewInsets.bottom + 20.0f, 60.0f);
     }
     UIEdgeInsets scrollIndicatorInsets = UIEdgeInsetsMake(viewInsets.top, 0.0f, viewInsets.bottom, 0.0f);
     [PAViewControllerKit rotateCollectionView:_collectionView rect:rect contentInset:contentInset scrollIndicatorInsets:scrollIndicatorInsets];
@@ -132,7 +132,6 @@
         [photoObject isKindOfClass:[PDCopyPhotoObject class]]) {
         PDWebPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PDWebPhotoViewCell class]) forIndexPath:indexPath];
         cell.photo = [PWPhotoObject getPhotoObjectWithID:photoObject.photo_object_id_str];
-        _firstCell = (indexPath.item == 0) ? cell : nil;
         return cell;
     }
     else if ([photoObject isKindOfClass:[PDLocalPhotoObject class]] ||
@@ -169,13 +168,11 @@
                     cell.videoIconView.hidden = NO;
                 }
             }
-            _firstCell = (indexPath.item == 0) ? cell : nil;
             return cell;
         }
         else {
             PDLocalPhotoViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PDLocalPhotoViewCell class]) forIndexPath:indexPath];
             cell.photo = [PLPhotoObject getPhotoObjectWithID:photoObject.photo_object_id_str];
-            _firstCell = (indexPath.item == 0) ? cell : nil;
             return cell;
         }
     }
@@ -183,8 +180,16 @@
     return nil;
 }
 
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.item == 0) {
+        ((PDNewLocalPhotoViewCell *)cell).progress = 0.0f;
+        _firstCell = cell;
+    }
+}
+
 - (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.item == 0) {
+        ((PDNewLocalPhotoViewCell *)_firstCell).progress = 0.0f;
         _firstCell = nil;
     }
 }
@@ -193,6 +198,10 @@
 - (void)didChangeContext:(NSNotification *)notification {
     dispatch_async(dispatch_get_main_queue(), ^{
         [_collectionView reloadData];
+        
+        if (_taskObject.photos.count == 0) {
+            [self.navigationController popViewControllerAnimated:YES];
+        }
     });
 }
 

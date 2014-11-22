@@ -15,6 +15,8 @@
 
 + (PHAsset *)getAssetWithIdentifier:(NSString *)identifier;
 
++ (NSString *)titleForMoment:(PHAssetCollection *)moment;
+
 + (void)deleteAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(BOOL, NSError *))completion;
 
 + (void)deleteAssets:(NSArray *)assets completion:(void (^)(BOOL, NSError *))completion;

@@ -27,6 +27,4 @@
 @property (nonatomic) BOOL isSelectMode;
 @property (nonatomic, readonly) NSArray *selectedCollections;
 
-+ (NSString *)titleForMoment:(PHAssetCollection *)moment;
-
 @end

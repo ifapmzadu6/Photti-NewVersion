@@ -324,7 +324,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
     NSString *timestamp = nil;
     if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
         PHAssetCollection *assetCollection = [PAPhotoKit getAssetCollectionWithIdentifier:from_album_id_str];
-        title = assetCollection.localizedTitle;
+        title = [PAPhotoKit titleForMoment:assetCollection];
         timestamp = [PADateTimestamp timestampForDate:assetCollection.startDate];
     }
     else {

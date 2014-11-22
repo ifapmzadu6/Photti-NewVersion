@@ -42,6 +42,7 @@
     _progress = progress;
     
     _progressView.progress = progress;
+    [_progressView setNeedsLayout];
 }
 
 @end

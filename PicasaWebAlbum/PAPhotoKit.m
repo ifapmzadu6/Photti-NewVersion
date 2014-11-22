@@ -8,6 +8,8 @@
 
 #import "PAPhotoKit.h"
 
+#import "PADateFormatter.h"
+
 @interface PAPhotoKit ()
 
 @end
@@ -43,6 +45,21 @@
     PHAsset *asset = fetchResult.firstObject;
     NSAssert(asset, nil);
     return asset;
+}
+
++ (NSString *)titleForMoment:(PHAssetCollection *)moment {
+    NSString *title = moment.localizedTitle;
+    if (!title) {
+        NSString *startDate = [[PADateFormatter mmmddFormatter] stringFromDate:moment.startDate];
+        NSString *endDate = [[PADateFormatter mmmddFormatter] stringFromDate:moment.endDate];
+        if ([startDate isEqualToString:endDate]) {
+            title = startDate;
+        }
+        else {
+            title = [NSString stringWithFormat:@"%@ - %@", startDate, endDate];
+        }
+    }
+    return title;
 }
 
 + (void)deleteAssetCollection:(PHAssetCollection *)assetCollection completion:(void (^)(BOOL, NSError *))completion {

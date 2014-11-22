@@ -13,6 +13,7 @@
 #import "PEMomentViewCell.h"
 #import "PADateFormatter.h"
 #import "PAString.h"
+#import "PAPhotoKit.h"
 #import "NSIndexSet+methods.h"
 #import "PLCollectionFooterView.h"
 
@@ -171,7 +172,7 @@
     }
     
     PHAssetCollection *collection = _fetchResult[indexPath.row];
-    cell.titleLabel.text = [PEMomentListDataSource titleForMoment:collection];
+    cell.titleLabel.text = [PAPhotoKit titleForMoment:collection];
     cell.detailLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%ld Items", nil), collection.estimatedAssetCount];
     
     return cell;
@@ -242,22 +243,6 @@
             _didChangeSelectedItemCountBlock(collectionView.indexPathsForSelectedItems.count);
         }
     }
-}
-
-#pragma mark Title
-+ (NSString *)titleForMoment:(PHAssetCollection *)moment {
-    NSString *title = moment.localizedTitle;
-    if (!title) {
-        NSString *startDate = [[PADateFormatter mmmddFormatter] stringFromDate:moment.startDate];
-        NSString *endDate = [[PADateFormatter mmmddFormatter] stringFromDate:moment.endDate];
-        if ([startDate isEqualToString:endDate]) {
-            title = startDate;
-        }
-        else {
-            title = [NSString stringWithFormat:@"%@ - %@", startDate, endDate];
-        }
-    }
-    return title;
 }
 
 @end
