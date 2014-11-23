@@ -651,6 +651,10 @@
             NSURL *url = [NSURL URLWithString:@"https://itunes.apple.com/app/id892657316"];
             UIImage *image = [UIImage imageNamed:@"original_img"];
             UIActivityViewController *viewController = [[UIActivityViewController alloc] initWithActivityItems:@[title, url, image] applicationActivities:nil];
+            viewController.popoverPresentationController.sourceView = self.view;
+            CGRect frame = [tableView rectForRowAtIndexPath:indexPath];
+            CGFloat height = [self tableView:tableView heightForRowAtIndexPath:indexPath];
+            viewController.popoverPresentationController.sourceRect = CGRectMake(0.0f, CGRectGetMinY(frame)-tableView.contentOffset.y, CGRectGetWidth(tableView.bounds), height);
             [self.tabBarController presentViewController:viewController animated:YES completion:nil];
         }
         else if (indexPath.row == 2) {
