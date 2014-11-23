@@ -59,6 +59,7 @@
     [super viewDidLoad];
     
     _imageScrollView = [[PAImageScrollView alloc] initWithFrame:self.view.bounds];
+    _imageScrollView.zoomOption = PAImageScrollViewZoomOptionAdjust;
     _imageScrollView.imageViewClass = FLAnimatedImageView.class;
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:_imageScrollView];

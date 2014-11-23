@@ -43,6 +43,7 @@
     [super viewDidLoad];
     
     _imageScrollView = [[PAImageScrollView alloc] initWithFrame:self.view.bounds];
+    _imageScrollView.zoomOption = PAImageScrollViewZoomOptionAdjust;
     _imageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     __weak typeof(self) wself = self;
     _imageScrollView.firstTimeZoomBlock = ^(PAImageScrollView *scrollView){
