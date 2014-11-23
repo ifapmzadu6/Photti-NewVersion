@@ -11,7 +11,7 @@
 #import "PWPicasaGETRequest.h"
 #import "PWPicasaPOSTRequest.h"
 #import "PWPicasaParser.h"
-#import "XmlReader.h"
+#import "PWXMLReader.h"
 #import "NSURLResponse+methods.h"
 #import "PANetworkActivityIndicator.h"
 
@@ -41,7 +41,7 @@ static NSString * const PWXMLNode = @"text";
             return;
         }
         
-        NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+        NSDictionary *json = [PWXMLReader dictionaryForXMLData:data error:nil];
         NSDictionary *feed = NtN(json[@"feed"]);
         NSDictionary *startIndexDic = NtN(feed[@"openSearch:startIndex"]);
         NSDictionary *totalResultsDic = NtN(feed[@"openSearch:totalResults"]);
@@ -109,7 +109,7 @@ static NSString * const PWXMLNode = @"text";
             return;
         }
         
-        NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+        NSDictionary *json = [PWXMLReader dictionaryForXMLData:data error:nil];
         NSDictionary *feed = NtN(json[@"feed"]);
         NSDictionary *startIndexDic = NtN(feed[@"openSearch:startIndex"]);
         NSDictionary *totalResultsDic = NtN(feed[@"openSearch:totalResults"]);
@@ -172,7 +172,7 @@ static NSString * const PWXMLNode = @"text";
             return;
         }
         
-        NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+        NSDictionary *json = [PWXMLReader dictionaryForXMLData:data error:nil];
         NSDictionary *feed = NtN(json[@"feed"]);
         NSDictionary *totalResultsDic = NtN(feed[@"openSearch:totalResults"]);
         NSString *totalResults = NtN(totalResultsDic[PWXMLNode]);
@@ -220,7 +220,7 @@ static NSString * const PWXMLNode = @"text";
             return;
         }
         
-        NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+        NSDictionary *json = [PWXMLReader dictionaryForXMLData:data error:nil];
         id entries = NtN(json[@"entry"]);
         if (!entries) {
             completion ? completion(nil, [NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]) : 0;
@@ -251,7 +251,7 @@ static NSString * const PWXMLNode = @"text";
             completion ? completion([NSError errorWithDomain:PWParserErrorDomain code:response.statusCode userInfo:nil]) : 0;
             return;
         }
-        NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+        NSDictionary *json = [PWXMLReader dictionaryForXMLData:data error:nil];
         if (!json) {
             completion ? completion([NSError errorWithDomain:PWParserErrorDomain code:0 userInfo:nil]) : 0;
             return;

@@ -1,6 +1,6 @@
 //
-//  XmlReader.h
-//  XmlReader
+//  PWXMLReader.h
+//  PWXMLReader
 //
 //  Created by Benoit C on 10/31/13.
 //  Copyright (c) 2013 Benoit Caccinolo. All rights reserved.
@@ -9,7 +9,7 @@
 @import Foundation;
 
 
-@interface XMLReader : NSObject <NSXMLParserDelegate> {
+@interface PWXMLReader : NSObject <NSXMLParserDelegate> {
     NSMutableArray *dictionaryStack;
     NSMutableString *textInProgress;
 }

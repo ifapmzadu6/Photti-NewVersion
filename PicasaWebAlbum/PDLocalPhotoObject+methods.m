@@ -25,7 +25,7 @@
 #import "PDModelObject.h"
 #import "PWPicasaAPI.h"
 #import "PWPicasaParser.h"
-#import "XmlReader.h"
+#import "PWXMLReader.h"
 #import "PWPicasaPOSTRequest.h"
 #import "ALAsset+methods.h"
 #import "NSURLResponse+methods.h"
@@ -374,7 +374,7 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
         return;
     }
     
-    NSDictionary *json = [XMLReader dictionaryForXMLData:data error:nil];
+    NSDictionary *json = [PWXMLReader dictionaryForXMLData:data error:nil];
     
     id entries = NtN(json[@"entry"]);
     if (!entries) {

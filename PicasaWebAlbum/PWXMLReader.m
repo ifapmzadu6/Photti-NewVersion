@@ -1,16 +1,16 @@
 //
-//  XmlReader.m
-//  XmlReader
+//  PWXMLReader.m
+//  PWXMLReader
 //
 //  Created by Benoit C on 10/31/13.
 //  Copyright (c) 2013 Benoit Caccinolo. All rights reserved.
 //
 
-#import "XMLReader.h"
+#import "PWXMLReader.h"
 
 NSString * const kXMLReaderTextNodeKey = @"text";
 
-@interface XMLReader (Internal)
+@interface PWXMLReader (Internal)
 
 - (id)initWithError:(NSError **)error;
 - (NSDictionary *)objectWithData:(NSData *)data;
@@ -18,7 +18,7 @@ NSString * const kXMLReaderTextNodeKey = @"text";
 @end
 
 
-@implementation XMLReader
+@implementation PWXMLReader
 
 #pragma mark -
 #pragma mark Public methods
@@ -27,7 +27,7 @@ NSString * const kXMLReaderTextNodeKey = @"text";
     NSDictionary *rootDictionary = nil;
     
     @autoreleasepool {
-        XMLReader *reader = [[XMLReader alloc] initWithError:error];
+        PWXMLReader *reader = [[PWXMLReader alloc] initWithError:error];
         rootDictionary = [reader objectWithData:data];
     }
     
@@ -36,7 +36,7 @@ NSString * const kXMLReaderTextNodeKey = @"text";
 
 + (NSDictionary *)dictionaryForXMLString:(NSString *)string error:(NSError **)error {
     NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
-    return [XMLReader dictionaryForXMLData:data error:error];
+    return [PWXMLReader dictionaryForXMLData:data error:error];
 }
 
 #pragma mark -
