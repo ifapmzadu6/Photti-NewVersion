@@ -8,9 +8,10 @@
 
 #import "PATabBarAdsController.h"
 
+#import "PAInAppPurchase.h"
 #import <GADBannerView.h>
 
-@interface PATabBarAdsController ()
+@interface PATabBarAdsController () <PAInAppPurchaseDelegate>
 
 @property (strong, nonatomic) GADBannerView *bannerView;
 
@@ -18,12 +19,16 @@
 
 @implementation PATabBarAdsController
 
-- (id)initWithIndex:(NSUInteger)index viewControllers:(NSArray *)viewControllers colors:(NSArray *)colors isRemoveAdsAddonPurchased:(BOOL)isRemoveAdsAddonPurchased {
-    self = [super initWithIndex:index viewControllers:viewControllers colors:colors];
+- (instancetype)init {
+    self = [super init];
     if (self) {
-        _isRemoveAdsAddonPurchased = isRemoveAdsAddonPurchased;
+        [[PAInAppPurchase sharedInstance] addInAppPurchaseObserver:self];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[PAInAppPurchase sharedInstance] removeInAppPurchaseObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -81,6 +86,7 @@
     
     void (^block)() = ^{
         _bannerView.alpha = isRemoveAdsAddonPurchased ? 0.0f : 1.0f;
+        [self.view setNeedsLayout];
     };
     
     if ([NSThread isMainThread]) {
@@ -116,7 +122,7 @@
     }
 }
 
-- (void)disableBannerBounce:(GADBannerView *)bannerView{
+- (void)disableBannerBounce:(GADBannerView *)bannerView {
     for (UIView *view in bannerView.subviews) {
         if ([view isKindOfClass:[UIWebView class]]) {
             ((UIWebView *)view).scrollView.bounces = NO;
@@ -126,5 +132,19 @@
         }
     }
 }
+
+#pragma mark PAInAppPurchaseDelegate
+- (void)inAppPurchaseDidPaymentQueuePurchaced:(NSArray *)transactions success:(BOOL)success {
+    self.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
+}
+
+- (void)inAppPurchaseDidPaymentQueueRestored:(NSArray *)transactions success:(BOOL)success {
+    self.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
+}
+
+- (void)inAppPurchaseDidPaymentQueueTransactionFinishd {
+    self.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
+}
+
 
 @end

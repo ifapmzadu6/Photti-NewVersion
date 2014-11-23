@@ -10,15 +10,23 @@
 @import StoreKit;
 @import Security;
 
+@protocol PAInAppPurchaseDelegate <NSObject>
+
+@optional
+- (void)inAppPurchaseDidPaymentQueuePurchaced:(NSArray *)transactions success:(BOOL)success;
+- (void)inAppPurchaseDidPaymentQueueRestored:(NSArray *)transactions success:(BOOL)success;
+- (void)inAppPurchaseDidPaymentQueueTransactionFinishd;
+
+@end
+
 static NSString * const kPDRemoveAdsPuroductID = @"34789274982com.photti.picasawebalbum.uploadanddownload";
 
 @interface PAInAppPurchase : NSObject
 
-@property (copy, nonatomic) void (^paymentQueuePurchaced)(NSArray *transactions, bool success);
-@property (copy, nonatomic) void (^paymentQueueRestored)(NSArray *transactions, bool success);
-@property (copy, nonatomic) void (^paymentQueueTransactionFinishd)();
-
 + (PAInAppPurchase *)sharedInstance;
+
+- (void)addInAppPurchaseObserver:(NSObject *)observer;
+- (void)removeInAppPurchaseObserver:(NSObject *)observer;
 
 + (void)getProductsWithProductIDs:(NSArray *)productIDs completion:(void (^)(NSArray *products, NSError *error))completion;
 + (bool)isPurchasedWithProduct:(SKProduct *)product;

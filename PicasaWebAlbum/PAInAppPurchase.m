@@ -17,6 +17,8 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
 
 @property (copy, nonatomic) void (^getProductsCompletionBlock)(NSArray *, NSError *);
 
+@property (strong, nonatomic) NSMutableArray *observers;
+
 @end
 
 @implementation PAInAppPurchase
@@ -34,12 +36,26 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
     self = [super init];
     if (self) {
         [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+        
+        _observers = @[].mutableCopy;
     }
     return self;
 }
 
 - (void)dealloc {
     [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+}
+
+- (void)addInAppPurchaseObserver:(NSObject *)observer {
+    if (![_observers containsObject:observer]) {
+        [_observers addObject:observer];
+    }
+}
+
+- (void)removeInAppPurchaseObserver:(NSObject *)observer {
+    if ([_observers containsObject:observer]) {
+        [_observers removeObject:observer];
+    }
 }
 
 + (void)getProductsWithProductIDs:(NSArray *)productIDs completion:(void (^)(NSArray *, NSError*))completion {
@@ -120,13 +136,17 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
     if (isFinished) {
         //支払いが完了したとき
         if(isPurchaced) {
-            if (_paymentQueuePurchaced) {
-                _paymentQueuePurchaced(transactions, true);
+            for (NSObject<PAInAppPurchaseDelegate> *observer in _observers) {
+                if ([observer respondsToSelector:@selector(inAppPurchaseDidPaymentQueuePurchaced:success:)]) {
+                    [observer inAppPurchaseDidPaymentQueuePurchaced:transactions success:YES];
+                }
             }
         }
         else if(!isPurchaced) {
-            if (_paymentQueueTransactionFinishd) {
-                _paymentQueueTransactionFinishd();
+            for (NSObject<PAInAppPurchaseDelegate> *observer in _observers) {
+                if ([observer respondsToSelector:@selector(inAppPurchaseDidPaymentQueueTransactionFinishd)]) {
+                    [observer inAppPurchaseDidPaymentQueueTransactionFinishd];
+                }
             }
         }
     }
@@ -134,8 +154,10 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
 
 - (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error {
     //リストアの失敗
-    if (_paymentQueueRestored) {
-        _paymentQueueRestored(queue.transactions, false);
+    for (NSObject<PAInAppPurchaseDelegate> *observer in _observers) {
+        if ([observer respondsToSelector:@selector(inAppPurchaseDidPaymentQueueRestored:success:)]) {
+            [observer inAppPurchaseDidPaymentQueueRestored:queue.transactions success:NO];
+        }
     }
 }
 
@@ -147,8 +169,10 @@ static NSString * const kPasswordsKey = @"com.photti.picasawebalbum.password";
         [SFHFKeychainUtils storeUsername:key andPassword:password forServiceName:kServiceName updateExisting:YES error:&error];
     }
     
-    if (_paymentQueueRestored) {
-        _paymentQueueRestored(queue.transactions, true);
+    for (NSObject<PAInAppPurchaseDelegate> *observer in _observers) {
+        if ([observer respondsToSelector:@selector(inAppPurchaseDidPaymentQueueRestored:success:)]) {
+            [observer inAppPurchaseDidPaymentQueueRestored:queue.transactions success:YES];
+        }
     }
     
 #ifdef DEBUG

@@ -25,7 +25,7 @@
 #import "PXSelectItemFromArrayViewController.h"
 #import "PEHomeViewController.h"
 
-@interface PXSettingsTableViewController () <SKStoreProductViewControllerDelegate, UIActionSheetDelegate>
+@interface PXSettingsTableViewController () <SKStoreProductViewControllerDelegate, UIActionSheetDelegate, PAInAppPurchaseDelegate>
 
 @property (strong, nonatomic) KKStaticTableView *tableView;
 
@@ -41,8 +41,14 @@
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"Settings", nil);
+        
+        [[PAInAppPurchase sharedInstance] addInAppPurchaseObserver:self];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[PAInAppPurchase sharedInstance] removeInAppPurchaseObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -77,8 +83,6 @@
     [self setUpInAppPurchaseSection];
     [self setUpCacheSection];
     [self setUpAboutSection];
-    
-    [self setInAppPurchaseBlocks];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -536,37 +540,29 @@
     return button;
 }
 
-- (void)setInAppPurchaseBlocks {
-    PAInAppPurchase *inAppPurchase = [PAInAppPurchase sharedInstance];
-    __weak typeof(self) wself = self;
-    [inAppPurchase setPaymentQueuePurchaced:^(NSArray *transactions, bool success) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if (!success) {
-            return;
-        }
-        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
-        tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            [sself.tableView reloadData];
-        });
-    }];
-    [inAppPurchase setPaymentQueueRestored:^(NSArray *transactions, bool success) {
-        typeof(wself) sself = wself;
-        if (!sself) return;
-        if (!success) {
-            return;
-        }
-        PATabBarAdsController *tabBarController = (PATabBarAdsController *)sself.tabBarController;
-        tabBarController.isRemoveAdsAddonPurchased = [PAInAppPurchase isPurchasedWithKey:kPDRemoveAdsPuroductID];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            typeof(wself) sself = wself;
-            if (!sself) return;
-            [sself.tableView reloadData];
-        });
-    }];
+#pragma mark PAInAppPurchaseDelegate
+- (void)inAppPurchaseDidPaymentQueuePurchaced:(NSArray *)transactions success:(BOOL)success {
+    if (!success) {
+        return;
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_tableView reloadData];
+    });
+}
+
+- (void)inAppPurchaseDidPaymentQueueRestored:(NSArray *)transactions success:(BOOL)success {
+    if (!success) {
+        return;
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_tableView reloadData];
+    });
+}
+
+- (void)inAppPurchaseDidPaymentQueueTransactionFinishd {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_tableView reloadData];
+    });
 }
 
 #pragma mark OtherAppAction
