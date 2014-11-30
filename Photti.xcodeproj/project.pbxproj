@@ -11,6 +11,7 @@
 		710461821917725200DF369D /* PWPicasaParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 710461811917725200DF369D /* PWPicasaParser.m */; };
 		710461841917742A00DF369D /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 710461831917742A00DF369D /* CoreData.framework */; };
 		710461A01917759900DF369D /* PWCoreDataAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 7104619F1917759900DF369D /* PWCoreDataAPI.m */; };
+		710656D71A2364880082FE59 /* PDUploadBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 710656D61A2364880082FE59 /* PDUploadBarButtonItem.m */; };
 		711000201964EB88009A329C /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7110001F1964EB88009A329C /* MediaPlayer.framework */; };
 		71109BD1196FBC3700EEDAAE /* PLPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109BD0196FBC3700EEDAAE /* PLPhotoEditViewController.m */; };
 		71109BD51973C90000EEDAAE /* PLAlbumEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 71109BD41973C90000EEDAAE /* PLAlbumEditViewController.m */; };
@@ -245,6 +246,8 @@
 		710461831917742A00DF369D /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		7104619E1917759900DF369D /* PWCoreDataAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWCoreDataAPI.h; sourceTree = "<group>"; };
 		7104619F1917759900DF369D /* PWCoreDataAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWCoreDataAPI.m; sourceTree = "<group>"; };
+		710656D51A2364880082FE59 /* PDUploadBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDUploadBarButtonItem.h; sourceTree = "<group>"; };
+		710656D61A2364880082FE59 /* PDUploadBarButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDUploadBarButtonItem.m; sourceTree = "<group>"; };
 		7110001F1964EB88009A329C /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		71109BCF196FBC3700EEDAAE /* PLPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLPhotoEditViewController.h; sourceTree = "<group>"; };
 		71109BD0196FBC3700EEDAAE /* PLPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLPhotoEditViewController.m; sourceTree = "<group>"; };
@@ -717,6 +720,15 @@
 				7104619F1917759900DF369D /* PWCoreDataAPI.m */,
 			);
 			name = PWCoreDataAPI;
+			sourceTree = "<group>";
+		};
+		710656D41A23645F0082FE59 /* PDUploadBarButtonItem */ = {
+			isa = PBXGroup;
+			children = (
+				710656D51A2364880082FE59 /* PDUploadBarButtonItem.h */,
+				710656D61A2364880082FE59 /* PDUploadBarButtonItem.m */,
+			);
+			name = PDUploadBarButtonItem;
 			sourceTree = "<group>";
 		};
 		71109BCE196FBC2500EEDAAE /* PLPhotoEditViewController */ = {
@@ -1961,6 +1973,7 @@
 		71B72FF219DDAB7F00D105EA /* D    - Task */ = {
 			isa = PBXGroup;
 			children = (
+				710656D41A23645F0082FE59 /* PDUploadBarButtonItem */,
 				71A917D71A1DD18D007CC5FD /* PDNewLocalPhotoViewCell */,
 				71A917D31A1DCAE2007CC5FD /* PDLocalPhotoViewCell */,
 				71A917CB1A1DA1E4007CC5FD /* PDWebPhotoViewCell */,
@@ -2968,6 +2981,7 @@
 				71A2546819195259009914F7 /* PWPhotoViewCell.m in Sources */,
 				71573B061A051985001F11BC /* PAPlayerView.m in Sources */,
 				7149D2D319DC2CFE004BD7A7 /* NSIndexSet+methods.m in Sources */,
+				710656D71A2364880082FE59 /* PDUploadBarButtonItem.m in Sources */,
 				712E03BB1920BA6E0035D9E0 /* PWPhotoObject+Methods.m in Sources */,
 				714F78BB19F9401600BF3444 /* PLAlbumObject+methods.m in Sources */,
 				7118F88F19335B630016697E /* PSLocalAllPhotoViewController.m in Sources */,

@@ -15,7 +15,21 @@
 
 static NSString * const kPDTaskManagerIsResizePhotosKey = @"kPDTMIRPK";
 
+
+
+@protocol PDTaskManagerDelegate <NSObject>
+
+@optional
+- (void)taskManagerChangedTaskCount;
+- (void)taskManagerProgress:(CGFloat)progress photoObject:(PDBasePhotoObject *)photoObject;
+
+@end
+
+
 @interface PDTaskManager : NSObject
+
+- (void)addTaskManagerObserver:(id<PDTaskManagerDelegate>)observer;
+- (void)removeTaskManagerObserver:(id<PDTaskManagerDelegate>)observer;
 
 // Default Time Interval is 100 sec.
 @property (nonatomic) NSUInteger restartTimeInterval;
@@ -39,11 +53,6 @@ static NSString * const kPDTaskManagerIsResizePhotosKey = @"kPDTMIRPK";
 - (void)start;
 - (void)stop;
 - (void)cancel;
-
-
-@property (copy, nonatomic) void (^taskManagerChangedBlock)(PDTaskManager *taskManager);
-
-@property (copy, nonatomic) void (^taskManagerProgressBlock)(CGFloat progress);
 
 @property (copy, nonatomic) void (^backgroundComplecationHandler)();
 

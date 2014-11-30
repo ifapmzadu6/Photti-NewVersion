@@ -26,7 +26,7 @@
 #import "PATabBarController.h"
 #import "PAViewControllerKit.h"
 
-@interface PDTaskViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
+@interface PDTaskViewController () <UICollectionViewDataSource, UICollectionViewDelegate, PDTaskManagerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (weak, nonatomic) UICollectionViewCell *firstCell;
@@ -40,23 +40,7 @@
     if (self) {
         self.title = NSLocalizedString(@"Uploading", nil);
         
-        __weak typeof(self) wself = self;
-        [PDTaskManager sharedManager].taskManagerProgressBlock = ^(CGFloat progress){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                typeof(wself) sself = wself;
-                if (!sself) return;
-                id firstCell = sself.firstCell;
-                if ([firstCell isKindOfClass:[PDWebPhotoViewCell class]]) {
-                    ((PDWebPhotoViewCell *)firstCell).progress = progress;
-                }
-                else if ([firstCell isKindOfClass:[PDLocalPhotoObject class]]) {
-                    ((PDLocalPhotoViewCell *)firstCell).progress = progress;
-                }
-                else if ([firstCell isKindOfClass:[PDNewLocalPhotoViewCell class]]) {
-                    ((PDNewLocalPhotoViewCell *)firstCell).progress = progress;
-                }
-            });
-        };
+        [[PDTaskManager sharedManager] addTaskManagerObserver:self];
         
         NSManagedObjectContext *context = [PDCoreDataAPI readContext];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeContext:) name:NSManagedObjectContextDidSaveNotification object:context];
@@ -73,6 +57,8 @@
 }
 
 - (void)dealloc {
+    [[PDTaskManager sharedManager] removeTaskManagerObserver:self];
+    
     NSManagedObjectContext *context = [PDCoreDataAPI readContext];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
 }
@@ -201,6 +187,25 @@
         
         if (_taskObject.photos.count == 0) {
             [self.navigationController popViewControllerAnimated:YES];
+        }
+    });
+}
+
+#pragma mark PDTaskManagerDelegate
+- (void)taskManagerProgress:(CGFloat)progress photoObject:(PDBasePhotoObject *)photoObject {
+    __weak typeof(self) wself = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        id firstCell = sself.firstCell;
+        if ([firstCell isKindOfClass:[PDWebPhotoViewCell class]]) {
+            ((PDWebPhotoViewCell *)firstCell).progress = progress;
+        }
+        else if ([firstCell isKindOfClass:[PDLocalPhotoObject class]]) {
+            ((PDLocalPhotoViewCell *)firstCell).progress = progress;
+        }
+        else if ([firstCell isKindOfClass:[PDNewLocalPhotoViewCell class]]) {
+            ((PDNewLocalPhotoViewCell *)firstCell).progress = progress;
         }
     });
 }

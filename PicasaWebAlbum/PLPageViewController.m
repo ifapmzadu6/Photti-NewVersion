@@ -19,6 +19,7 @@
 #import "PXSettingsViewController.h"
 #import "PTAlbumPickerController.h"
 #import "PDNavigationController.h"
+#import "PDUploadBarButtonItem.h"
 
 #import "PAColors.h"
 #import "PAIcons.h"
@@ -31,7 +32,7 @@
 #import "PDTaskManager.h"
 #import "PAAlertControllerKit.h"
 
-@interface PLPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate, UIActionSheetDelegate>
+@interface PLPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate, UIActionSheetDelegate, PDTaskManagerDelegate>
 
 @property (strong, nonatomic) NSArray *myViewControllers;
 @property (strong, nonatomic) PLParallelNavigationTitleView *titleView;
@@ -53,8 +54,14 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         
         self.delegate = self;
         self.dataSource = self;
+        
+        [[PDTaskManager sharedManager] addTaskManagerObserver:self];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[PDTaskManager sharedManager] removeTaskManagerObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -296,7 +303,7 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
 - (NSArray *)makeViewControllers {
     __weak typeof(self) wself = self;
     
-    PLAllPhotosViewController *allPhotosViewController = [[PLAllPhotosViewController alloc] init];
+    PLAllPhotosViewController *allPhotosViewController = [PLAllPhotosViewController new];
     NSString *allPhotosViewControllerTitle = allPhotosViewController.title;
     [allPhotosViewController setViewDidAppearBlock:^{
         typeof(wself) sself = wself;
@@ -308,9 +315,10 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         
         UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[searchBarButtonItem] animated:YES];
-        UIBarButtonItem *taskBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Upload"] style:UIBarButtonItemStylePlain target:self action:@selector(taskBarButtonAction:)];
-        taskBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
-        [sself.navigationItem setLeftBarButtonItem:taskBarButtonItem animated:YES];
+        PDUploadBarButtonItem *uploadBarButtonItem = [PDUploadBarButtonItem new];
+        UIButton *button = (UIButton *)uploadBarButtonItem.customView;
+        [button addTarget:self action:@selector(taskBarButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [sself.navigationItem setLeftBarButtonItem:uploadBarButtonItem animated:YES];
         for (UIView *view in sself.navigationController.navigationBar.subviews) {
             view.exclusiveTouch = YES;
         }
@@ -340,16 +348,16 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
         UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[addBarButtonItem, searchBarButtonItem] animated:YES];
-        UIBarButtonItem *taskBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Upload"] style:UIBarButtonItemStylePlain target:self action:@selector(taskBarButtonAction:)];
-        taskBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
-        self.navigationItem.leftBarButtonItem = taskBarButtonItem;
-        [sself.navigationItem setLeftBarButtonItem:taskBarButtonItem animated:YES];
+        PDUploadBarButtonItem *uploadBarButtonItem = [PDUploadBarButtonItem new];
+        UIButton *button = (UIButton *)uploadBarButtonItem.customView;
+        [button addTarget:self action:@selector(taskBarButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [sself.navigationItem setLeftBarButtonItem:uploadBarButtonItem animated:YES];
         for (UIView *view in sself.navigationController.navigationBar.subviews) {
             view.exclusiveTouch = YES;
         }
     }];
     
-    PLiCloudViewController *iCloudViewController = [[PLiCloudViewController alloc] init];
+    PLiCloudViewController *iCloudViewController = [PLiCloudViewController new];
     NSString *iCloudViewControllerTitle = iCloudViewController.title;
     [iCloudViewController setViewDidAppearBlock:^{
         typeof(wself) sself = wself;
@@ -359,14 +367,12 @@ static CGFloat PageViewControllerOptionInterPageSpacingValue = 40.0f;
         [sself.titleView setCurrentIndex:2];
         [sself.titleView setCurrentTitle:iCloudViewControllerTitle];
         
-        UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
+        UIBarButtonItem *searchBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
         [sself.navigationItem setRightBarButtonItems:@[searchBarButtonItem] animated:YES];
-        UIBarButtonItem *taskBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Upload"] style:UIBarButtonItemStylePlain target:self action:@selector(taskBarButtonAction:)];
-        taskBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
-        [sself.navigationItem setLeftBarButtonItem:taskBarButtonItem animated:YES];
-        for (UIView *view in sself.navigationController.navigationBar.subviews) {
-            view.exclusiveTouch = YES;
-        }
+        PDUploadBarButtonItem *uploadBarButtonItem = [PDUploadBarButtonItem new];
+        UIButton *button = (UIButton *)uploadBarButtonItem.customView;
+        [button addTarget:self action:@selector(taskBarButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        [sself.navigationItem setLeftBarButtonItem:uploadBarButtonItem animated:YES];
         for (UIView *view in sself.navigationController.navigationBar.subviews) {
             view.exclusiveTouch = YES;
         }

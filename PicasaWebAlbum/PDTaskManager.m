@@ -28,6 +28,8 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 
 @interface PDTaskManager () <NSURLSessionDataDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate, NSURLSessionTaskDelegate>
 
+@property (strong, nonatomic) NSMutableArray *observers;
+
 @property (strong, nonatomic) NSURLSession *backgroundSession;
 
 @property (nonatomic) BOOL isPreparing;
@@ -50,6 +52,8 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 - (id)init {
     self = [super init];
     if (self) {
+        _observers = @[].mutableCopy;
+        
         NSURLSessionConfiguration *config = nil;
         if (UIDevice.currentDevice.systemVersion.floatValue >= 8.0f) {
             config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kPDTaskManagerBackgroundSessionIdentifier];
@@ -73,6 +77,20 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     return [[PDTaskManager sharedManager] backgroundSession];
 }
 
+#pragma mark OBserver
+- (void)addTaskManagerObserver:(id<PDTaskManagerDelegate>)observer {
+    if (![_observers containsObject:observer]) {
+        [_observers addObject:observer];
+    }
+}
+
+- (void)removeTaskManagerObserver:(id<PDTaskManagerDelegate>)observer {
+    if ([_observers containsObject:observer]) {
+        [_observers removeObject:observer];
+    }
+}
+
+#pragma mark Tasks
 - (BOOL)checkOKAddTask {
     if (!PEAssetsManager.isStatusAuthorized) {
         if (_notAllowedAccessPhotoLibraryAction) _notAllowedAccessPhotoLibraryAction();
@@ -85,15 +103,6 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     }
     
     return YES;
-}
-
-+ (void)performTaskManagerChangedBlock {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if ([PDTaskManager sharedManager].taskManagerChangedBlock) {
-            __weak PDTaskManager *taskManager = [PDTaskManager sharedManager];
-            [PDTaskManager sharedManager].taskManagerChangedBlock(taskManager);
-        }
-    });
 }
 
 - (void)addTaskFromWebAlbum:(PWAlbumObject *)fromWebAlbum toLocalAlbum:(PLAlbumObject *)toLocalAlbum completion:(void (^)(NSError *))completion {
@@ -392,9 +401,13 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 
 #pragma mark NSURLSessionTaskDelegate
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
-    if (self.taskManagerProgressBlock) {
-        CGFloat progress = (double)totalBytesSent / (double)totalBytesExpectedToSend;
-        self.taskManagerProgressBlock(progress);
+    CGFloat progress = (double)totalBytesSent / (double)totalBytesExpectedToSend;
+    PDTaskObject *taskObject = [PDTaskManager getFirstTaskObject];
+    PDBasePhotoObject *photoObject = taskObject.photos.firstObject;
+    for (id<PDTaskManagerDelegate> observer in _observers) {
+        if ([observer respondsToSelector:@selector(taskManagerProgress:photoObject:)]) {
+            [observer taskManagerProgress:progress photoObject:photoObject];
+        }
     }
 }
 
@@ -490,9 +503,13 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-    if (self.taskManagerProgressBlock) {
-        CGFloat progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
-        self.taskManagerProgressBlock(progress);
+    CGFloat progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
+    PDTaskObject *taskObject = [PDTaskManager getFirstTaskObject];
+    PDBasePhotoObject *photoObject = taskObject.photos.firstObject;
+    for (id<PDTaskManagerDelegate> observer in _observers) {
+        if ([observer respondsToSelector:@selector(taskManagerProgress:photoObject:)]) {
+            [observer taskManagerProgress:progress photoObject:photoObject];
+        }
     }
 }
 
@@ -507,9 +524,10 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
 #pragma mark contextchanged
 - (void)contextDidSaveNotification:(NSNotification *)notification {
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (_taskManagerChangedBlock) {
-            __weak PDTaskManager *taskManager = [PDTaskManager sharedManager];
-            _taskManagerChangedBlock(taskManager);
+        for (id<PDTaskManagerDelegate> observer in _observers) {
+            if ([observer respondsToSelector:@selector(taskManagerChangedTaskCount)]) {
+                [observer taskManagerChangedTaskCount];
+            }
         }
         
         [self countOfAllPhotosInTaskWithCompletion:^(NSUInteger count, NSError *error) {

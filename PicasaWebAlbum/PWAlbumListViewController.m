@@ -27,6 +27,7 @@
 #import "PAAlertControllerKit.h"
 #import "PRAlbumListDataSource.h"
 #import "PRPhotoListDataSource.h"
+#import "PDUploadBarButtonItem.h"
 #import <Reachability.h>
 #import <SDImageCache.h>
 
@@ -44,7 +45,7 @@
 #import "PAActivityIndicatorView.h"
 
 
-@interface PWAlbumListViewController () <UIActionSheetDelegate>
+@interface PWAlbumListViewController () <UIActionSheetDelegate, PDTaskManagerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) UICollectionView *recentlyUploadedCollectionView;
@@ -138,8 +139,14 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
             PWPhotoPageViewController *viewController = [[PWPhotoPageViewController alloc] initWithPhotos:photos index:index placeholder:placeholder cache:nil];
             [sself.navigationController pushViewController:viewController animated:YES];
         };
+        
+        [[PDTaskManager sharedManager] addTaskManagerObserver:self];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[PDTaskManager sharedManager] removeTaskManagerObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -151,9 +158,10 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
     UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
     UIBarButtonItem *addBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBarButtonAction)];
     self.navigationItem.rightBarButtonItems = @[addBarButtonItem, searchBarButtonItem];
-    UIBarButtonItem *taskBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Upload"] style:UIBarButtonItemStylePlain target:self action:@selector(taskBarButtonAction:)];
-    taskBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
-    self.navigationItem.leftBarButtonItems = @[taskBarButtonItem];
+    PDUploadBarButtonItem *uploadBarButtonItem = [PDUploadBarButtonItem new];
+    UIButton *button = (UIButton *)uploadBarButtonItem.customView;
+    [button addTarget:self action:@selector(taskBarButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItems = @[uploadBarButtonItem];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
@@ -343,6 +351,24 @@ static NSString * const lastUpdateAlbumKey = @"ALVCKEY";
 - (void)taskBarButtonAction:(id)sender {
     PDNavigationController *navigationController = [PDNavigationController new];
     [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+}
+
+#pragma mark PDTaskManagerDelegate
+- (void)taskManagerChangedTaskCount {
+    __weak typeof(self) wself = self;
+    [[PDTaskManager sharedManager] countOfAllPhotosInTaskWithCompletion:^(NSUInteger count, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PDUploadBarButtonItem *uploadBarButtonItem = (PDUploadBarButtonItem *)sself.navigationItem.leftBarButtonItem;
+            if (count > 0) {
+                [uploadBarButtonItem startAnimation];
+            }
+            else {
+                [uploadBarButtonItem endAnimation];
+            }
+        });
+    }];
 }
 
 @end

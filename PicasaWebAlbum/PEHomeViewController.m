@@ -28,6 +28,7 @@
 #import "PEPhotoDataSourceFactoryMethod.h"
 #import "PEAlbumListDataSource.h"
 #import "PEMomentListDataSource.h"
+#import "PDUploadBarButtonItem.h"
 
 #import "PEAlbumListViewController.h"
 #import "PEMomentListViewController.h"
@@ -35,7 +36,7 @@
 #import "PEPhotoPageViewController.h"
 #import "PDNavigationController.h"
 
-@interface PEHomeViewController () <UITableViewDelegate>
+@interface PEHomeViewController () <UITableViewDelegate, PDTaskManagerDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIImageView *todayImageView;
@@ -67,8 +68,14 @@
         [self setUpBurstsDataSource];
         [self setUpSlomoVideosDataSource];
         [self setUpAllPhotosDataSource];
+        
+        [[PDTaskManager sharedManager] addTaskManagerObserver:self];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[PDTaskManager sharedManager] removeTaskManagerObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -79,9 +86,10 @@
     
     UIBarButtonItem *searchBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonAction)];
     self.navigationItem.rightBarButtonItems = @[searchBarButtonItem];
-    UIBarButtonItem *taskBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Upload"] style:UIBarButtonItemStylePlain target:self action:@selector(taskBarButtonAction:)];
-    taskBarButtonItem.landscapeImagePhone = [PAIcons imageWithImage:[UIImage imageNamed:@"Upload"] insets:UIEdgeInsetsMake(2.0f, 2.0f, 2.0f, 2.0f)];
-    self.navigationItem.leftBarButtonItems = @[taskBarButtonItem];
+    PDUploadBarButtonItem *uploadBarButtonItem = [PDUploadBarButtonItem new];
+    UIButton *button = (UIButton *)uploadBarButtonItem.customView;
+    [button addTarget:self action:@selector(taskBarButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItems = @[uploadBarButtonItem];
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     for (UIView *view in self.navigationController.navigationBar.subviews) {
         view.exclusiveTouch = YES;
@@ -692,6 +700,24 @@
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     PEScrollBannerHeaderView *headerView = (PEScrollBannerHeaderView *)_tableView.tableHeaderView;
     headerView.shouldAnimate = YES;
+}
+
+#pragma mark PDTaskManagerDelegate
+- (void)taskManagerChangedTaskCount {
+    __weak typeof(self) wself = self;
+    [[PDTaskManager sharedManager] countOfAllPhotosInTaskWithCompletion:^(NSUInteger count, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            typeof(wself) sself = wself;
+            if (!sself) return;
+            PDUploadBarButtonItem *uploadBarButtonItem = (PDUploadBarButtonItem *)sself.navigationItem.leftBarButtonItem;
+            if (count > 0) {
+                [uploadBarButtonItem startAnimation];
+            }
+            else {
+                [uploadBarButtonItem endAnimation];
+            }
+        });
+    }];
 }
 
 #pragma mark Banner
