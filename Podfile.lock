@@ -1,10 +1,12 @@
 PODS:
   - FLAnimatedImage (1.0.7)
   - Google-Mobile-Ads-SDK (6.12.2)
-  - GoogleAnalytics-iOS-SDK (3.10)
-  - gtm-oauth2 (0.1.0):
-    - GTMHTTPFetcher
-  - GTMHTTPFetcher (0.1.0)
+  - GoogleAnalytics-iOS-SDK (3.10):
+    - GoogleAnalytics-iOS-SDK/Core (= 3.10)
+  - GoogleAnalytics-iOS-SDK/Core (3.10)
+  - gtm-http-fetcher (1.0.141)
+  - gtm-oauth2 (1.0.125):
+    - gtm-http-fetcher (~> 1.0.141)
   - KKStaticTableView (0.1.0)
   - LXReorderableCollectionViewFlowLayout (0.1.1)
   - PAImageScrollView (0.4.1)
@@ -22,7 +24,6 @@ DEPENDENCIES:
   - Google-Mobile-Ads-SDK
   - GoogleAnalytics-iOS-SDK
   - gtm-oauth2
-  - GTMHTTPFetcher
   - KKStaticTableView (from `git@github.com:ifapmzadu6/KKStaticTableView.git`)
   - LXReorderableCollectionViewFlowLayout
   - PAImageScrollView (from `git@github.com:ifapmzadu6/PAImageScrollView.git`)
@@ -55,9 +56,9 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   FLAnimatedImage: d9e8422a9e1d8ee9a657b7433b4a9b073ef3efb3
   Google-Mobile-Ads-SDK: 9761186eb5dc5e1493e71dcce2b525159f763d42
-  GoogleAnalytics-iOS-SDK: e5872d2acc120613d954320e206c7e3bc8357d7c
-  gtm-oauth2: 64f2d404a50676ab63b5437a02a7567da8f8b7fa
-  GTMHTTPFetcher: 0f02d5a5803dd08736462981064de6a7f59cf9bd
+  GoogleAnalytics-iOS-SDK: f422062075d9ccb1ea8d783fc5ba3829461e9502
+  gtm-http-fetcher: 81c529957d3ab67726898d1c1d62f98b2ed18ff5
+  gtm-oauth2: 3f97d22a6066a80df0b1f878c1ce41176472daad
   KKStaticTableView: 72430b9ddbf508e0fc574bda5aaee232ace55b82
   LXReorderableCollectionViewFlowLayout: b4e25543263e27d4c147109ae5ead01cc9119f23
   PAImageScrollView: 9fe52d2190db89f18dc4e1c6ee48a23e9c7b2cca

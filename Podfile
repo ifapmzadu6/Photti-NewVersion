@@ -6,7 +6,6 @@ platform :ios, '7.0'
 # inhibit_all_warnings!
 
 pod 'gtm-oauth2'
-pod 'GTMHTTPFetcher'
 pod 'SDWebImage'
 pod 'LXReorderableCollectionViewFlowLayout'
 pod 'SFHFKeychainUtils'
