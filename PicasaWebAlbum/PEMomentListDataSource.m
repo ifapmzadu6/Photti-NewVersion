@@ -110,25 +110,27 @@
         _assetCollectionFetchResults = assetCollectionFetchResults;
         
         UICollectionView *collectionView = _collectionView;
-        [collectionView performBatchUpdates:^{
-            if (deleteIndexPaths.count > 0) {
-                [collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
-            }
-            if (insertIndexPaths.count > 0) {
-                [collectionView insertItemsAtIndexPaths:insertIndexPaths];
-            }
-            if (reloadIndexPaths.count > 0) {
-                [collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
-            }
-        } completion:^(BOOL finished) {
-            (_didChangeItemCountBlock) ? _didChangeItemCountBlock(count) : 0;
-            
-            PLCollectionFooterView *footerView = _footerView;
-            if (footerView) {
-                NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Moments -", nil), (unsigned long)_fetchResult.count];
-                [footerView setText:albumCountString];
-            }
-        }];
+        if (collectionView) {
+            [collectionView performBatchUpdates:^{
+                if (deleteIndexPaths.count > 0) {
+                    [collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
+                }
+                if (insertIndexPaths.count > 0) {
+                    [collectionView insertItemsAtIndexPaths:insertIndexPaths];
+                }
+                if (reloadIndexPaths.count > 0) {
+                    [collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
+                }
+            } completion:^(BOOL finished) {
+                (_didChangeItemCountBlock) ? _didChangeItemCountBlock(count) : 0;
+                
+                PLCollectionFooterView *footerView = _footerView;
+                if (footerView) {
+                    NSString *albumCountString = [NSString stringWithFormat:NSLocalizedString(@"- %lu Moments -", nil), (unsigned long)_fetchResult.count];
+                    [footerView setText:albumCountString];
+                }
+            }];
+        }
     });
 }
 
@@ -159,6 +161,7 @@
     CGSize targetSize = CGSizeMake(cellSize.width/numberOfColAndRow, cellSize.height/numberOfColAndRow);
     PHImageRequestOptions *options = [PHImageRequestOptions new];
     options.networkAccessAllowed = YES;
+    options.resizeMode = PHImageRequestOptionsResizeModeFast;
     for (int i=0; i<cell.numberOfImageView; i++) {
         PHAsset *asset = assetsResult[i];
         [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage *result, NSDictionary *info) {

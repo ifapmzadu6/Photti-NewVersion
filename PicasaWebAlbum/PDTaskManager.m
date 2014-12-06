@@ -315,7 +315,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     
     [PDCoreDataAPI readWithBlockAndWait:^(NSManagedObjectContext *context) {
         NSFetchRequest *request = [NSFetchRequest new];
-        request.entity = [NSEntityDescription entityForName:@"PDBasePhotoObject" inManagedObjectContext:context];
+        request.entity = [NSEntityDescription entityForName:kPDBasePhotoObjectName inManagedObjectContext:context];
         NSError *error = nil;
         NSUInteger count = [context countForFetchRequest:request error:&error];
         
@@ -460,6 +460,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
     }
     else if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
         PDBasePhotoObject *photoObject = [PDTaskManager getFirstTaskObject].photos.firstObject;
+        NSManagedObjectID *photoObjectID = photoObject.objectID;
         
         if ([photoObject isKindOfClass:[PDCopyPhotoObject class]]) {
             [(PDCopyPhotoObject *)photoObject finishUpload];
@@ -477,6 +478,7 @@ static NSString * const kPDTaskManagerErrorDomain = @"com.photti.PDTaskManager";
                 }
                 else {
                     [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                        PDBasePhotoObject *photoObject = (PDBasePhotoObject *)[context objectWithID:photoObjectID];
                         photoObject.is_done = @YES;
                     }];
                 }

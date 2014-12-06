@@ -3245,6 +3245,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = PicasaWebAlbum/PicasaWebAlbum.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)",
 					"$(inherited)",
@@ -3259,6 +3260,7 @@
 					"$(PROJECT_DIR)/PicasaWebAlbum",
 				);
 				PRODUCT_NAME = Photti;
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "PicasaWebAlbum/Photti-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				WRAPPER_EXTENSION = app;
@@ -3274,6 +3276,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = PicasaWebAlbum/PicasaWebAlbum.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)",
 					"$(inherited)",
@@ -3288,6 +3291,7 @@
 					"$(PROJECT_DIR)/PicasaWebAlbum",
 				);
 				PRODUCT_NAME = Photti;
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "PicasaWebAlbum/Photti-Bridging-Header.h";
 				WRAPPER_EXTENSION = app;
 			};

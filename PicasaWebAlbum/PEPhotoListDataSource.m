@@ -161,24 +161,31 @@
         
         UICollectionView *collectionView = _collectionView;
         if (collectionView) {
-            [collectionView performBatchUpdates:^{
-                @try {
-                    if (deleteIndexPaths.count > 0) {
-                        [collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
+            @try {
+                [collectionView performBatchUpdates:^{
+                    @try {
+                        if (deleteIndexPaths.count > 0) {
+                            [collectionView deleteItemsAtIndexPaths:deleteIndexPaths];
+                        }
+                        if (insertIndexPaths.count > 0) {
+                            [collectionView insertItemsAtIndexPaths:insertIndexPaths];
+                        }
+                        if (reloadIndexPaths.count > 0) {
+                            [collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
+                        }
                     }
-                    if (insertIndexPaths.count > 0) {
-                        [collectionView insertItemsAtIndexPaths:insertIndexPaths];
+                    @catch (NSException *exception) {
+                        [collectionView reloadData];
                     }
-                    if (reloadIndexPaths.count > 0) {
-                        [collectionView reloadItemsAtIndexPaths:reloadIndexPaths];
-                    }
-                }
-                @catch (NSException *exception) {
-                    [collectionView reloadData];
-                }
-            } completion:^(BOOL finished) {
+                } completion:^(BOOL finished) {
+                    completionBlock();
+                }];
+            }
+            @catch (NSException *exception) {
+                [collectionView reloadData];
+                
                 completionBlock();
-            }];
+            }
         }
         else {
             completionBlock();

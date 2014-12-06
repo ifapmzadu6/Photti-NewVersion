@@ -284,10 +284,23 @@ static NSString * const kPDLocalPHotoObjectPostNewAlbumURL = @"https://picasaweb
             return;
         }
         NSURLSessionTask *sessionTask = [PDLocalPhotoObject getSessionTaskWithRequest:request session:session filePath:filePath bodySize:bodySize isVideo:isVideo];
-        [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
-            PDLocalPhotoObject *selfObject = (PDLocalPhotoObject *)[context objectWithID:selfObjectID];
-            selfObject.session_task_identifier = @(sessionTask.taskIdentifier);
-        }];
+        if (sessionTask) {
+            NSInteger taskIdentifier = sessionTask.taskIdentifier;
+            [PDCoreDataAPI writeWithBlockAndWait:^(NSManagedObjectContext *context) {
+                PDLocalPhotoObject *selfObject = (PDLocalPhotoObject *)[context objectWithID:selfObjectID];
+                if (selfObject) {
+                    selfObject.session_task_identifier = @(taskIdentifier);
+                }
+                else {
+                    completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+                    return;
+                }
+            }];
+        }
+        else {
+            completion ? completion(nil, [NSError errorWithDomain:kPDLocalPhotoObjectMethodsErrorDomain code:0 userInfo:nil]) : 0;
+            return;
+        }
         
         completion ? completion(sessionTask, nil) : 0;
     }];

@@ -18,6 +18,7 @@ typedef NS_ENUM(NSUInteger, PDTaskObjectType) {
 
 
 static NSString * const kPDTaskObjectName = @"PDTaskObject";
+static NSString * const kPDBasePhotoObjectName = @"PDBasePhotoObject";
 static NSString * const kPDWebPhotoObjectName = @"PDWebPhotoObject";
 static NSString * const kPDLocalPhotoObjectName = @"PDLocalPhotoObject";
 static NSString * const kPDCopyPhotoObjectName = @"PDCopyPhotoObject";

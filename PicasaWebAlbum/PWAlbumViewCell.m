@@ -198,8 +198,8 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
                     if (photoObject.sortIndex.integerValue == i+1) {
                         NSString *urlString = photoObject.tag_thumbnail_url;
                         UIImageView *imageView = _imageViews[i];
-                        BOOL isShrink = (i>=1) ? YES : NO;
-                        [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:isShrink];
+                        BOOL isBehind = (i>=1) ? YES : NO;
+                        [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:isBehind isLowPriority:isBehind];
                     }
                 }
             }
@@ -207,7 +207,7 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
                 NSString *urlString = album.tag_thumbnail_url;
                 if (!urlString) return;
                 UIImageView *imageView = _imageViews.firstObject;
-                [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:NO];
+                [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:NO isLowPriority:NO];
             }
         }
         else {
@@ -218,7 +218,7 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
     }];
 }
 
-- (void)loadThumbnailImage:(NSString *)urlString hash:(NSUInteger)hash imageView:(UIImageView *)imageView isShrink:(BOOL)isShrink {
+- (void)loadThumbnailImage:(NSString *)urlString hash:(NSUInteger)hash imageView:(UIImageView *)imageView isShrink:(BOOL)isShrink isLowPriority:(BOOL)isLowPriority {
     NSURL *url = [NSURL URLWithString:urlString];
     BOOL isGifImage = [url.pathExtension isEqualToString:@"gif"];
     
@@ -234,8 +234,16 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
     
     [_activityIndicatorView startAnimating];
     
+    dispatch_queue_t queue = nil;
+    if (isLowPriority) {
+        queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
+    }
+    else {
+        queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    }
+    
     __weak typeof(self) wself = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(queue, ^{
         if (_albumHash != hash) return;
         SDImageCache *sharedImageCache = [SDImageCache sharedImageCache];
         if (isGifImage) {
@@ -300,7 +308,7 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
                 typeof(wself) sself = wself;
                 if (!sself) return;
                 if (error || !response.isSuccess) {
-                    [sself loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:isShrink];
+                    [sself loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:isShrink isLowPriority:isLowPriority];
                     return;
                 }
                 if (isGifImage) {
