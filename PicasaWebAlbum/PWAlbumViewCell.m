@@ -175,47 +175,55 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
     _titleLabel.text = album.title;
     _numPhotosLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ Items", nil), album.gphoto.numphotos];
     
+    __weak typeof(self) wself = self;
     [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
-        _request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", _album.id_str];
-        _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:_request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-        _fetchedResultsController.delegate = self;
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (sself.albumHash != hash) return;
+        sself.request.predicate = [NSPredicate predicateWithFormat:@"albumid = %@", sself.album.id_str];
+        sself.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:sself.request managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        sself.fetchedResultsController.delegate = sself;
         
         NSError *error = nil;
-        if (![_fetchedResultsController performFetch:&error]) {
+        if (![sself.fetchedResultsController performFetch:&error]) {
 #ifdef DEBUG
             NSLog(@"%@", error);
 #endif
             return;
         }
         
-        NSUInteger numPhotos = _album.gphoto.numphotos.integerValue;
-        if (numPhotos > 0) {
-            NSUInteger fetchedCount = _fetchedResultsController.fetchedObjects.count;
-            PWPhotoObject *firstPhotoObject = _fetchedResultsController.fetchedObjects.firstObject;
-            if ((fetchedCount > 0) && (firstPhotoObject.sortIndex.integerValue == 1)) {
-                for (int i=0; i<MIN(MIN(3, numPhotos), fetchedCount); i++) {
-                    PWPhotoObject *photoObject = _fetchedResultsController.fetchedObjects[i];
-                    if (photoObject.sortIndex.integerValue == i+1) {
-                        NSString *urlString = photoObject.tag_thumbnail_url;
-                        UIImageView *imageView = _imageViews[i];
-                        BOOL isBehind = (i>=1) ? YES : NO;
-                        [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:isBehind isLowPriority:isBehind];
-                    }
+        [sself loadThumbnailImagesWithHash:hash];
+    }];
+}
+
+- (void)loadThumbnailImagesWithHash:(NSUInteger)hash {
+    NSUInteger numPhotos = _album.gphoto.numphotos.integerValue;
+    if (numPhotos > 0) {
+        NSUInteger fetchedCount = _fetchedResultsController.fetchedObjects.count;
+        PWPhotoObject *firstPhotoObject = _fetchedResultsController.fetchedObjects.firstObject;
+        if ((fetchedCount > 0) && (firstPhotoObject.sortIndex.integerValue == 1)) {
+            for (int i=0; i<MIN(MIN(3, numPhotos), fetchedCount); i++) {
+                PWPhotoObject *photoObject = _fetchedResultsController.fetchedObjects[i];
+                if (photoObject.sortIndex.integerValue == i+1) {
+                    NSString *urlString = photoObject.tag_thumbnail_url;
+                    UIImageView *imageView = _imageViews[i];
+                    BOOL isBehind = (i>=1) ? YES : NO;
+                    [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:isBehind isLowPriority:isBehind];
                 }
-            }
-            else {
-                NSString *urlString = album.tag_thumbnail_url;
-                if (!urlString) return;
-                UIImageView *imageView = _imageViews.firstObject;
-                [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:NO isLowPriority:NO];
             }
         }
         else {
+            NSString *urlString = _album.tag_thumbnail_url;
+            if (!urlString) return;
             UIImageView *imageView = _imageViews.firstObject;
-            UIImage *noPhotoImage = [UIImage imageNamed:@"icon_240"];
-            imageView.image = noPhotoImage;
+            [self loadThumbnailImage:urlString hash:hash imageView:imageView isShrink:NO isLowPriority:NO];
         }
-    }];
+    }
+    else {
+        UIImageView *imageView = _imageViews.firstObject;
+        UIImage *noPhotoImage = [UIImage imageNamed:@"icon_240"];
+        imageView.image = noPhotoImage;
+    }
 }
 
 - (void)loadThumbnailImage:(NSString *)urlString hash:(NSUInteger)hash imageView:(UIImageView *)imageView isShrink:(BOOL)isShrink isLowPriority:(BOOL)isLowPriority {
@@ -244,18 +252,20 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
     
     __weak typeof(self) wself = self;
     dispatch_async(queue, ^{
-        if (_albumHash != hash) return;
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        if (sself.albumHash != hash) return;
         SDImageCache *sharedImageCache = [SDImageCache sharedImageCache];
         if (isGifImage) {
             if ([[NSFileManager defaultManager] fileExistsAtPath:[sharedImageCache defaultCachePathForKey:urlString]]) {
-                NSData *data = [self diskImageDataBySearchingAllPathsForKey:urlString];
+                NSData *data = [sself diskImageDataBySearchingAllPathsForKey:urlString];
                 FLAnimatedImage *animatedImage = [FLAnimatedImage animatedImageWithGIFData:data];
                 if (animatedImage) {
                     UIImage *image = [UIImage decodedImageWithImage:animatedImage.posterImage];
                     if (isShrink) {
                         image = [PAImageResize resizeImage:image maxPixelSize:kPWAlbumViewCellShrinkedImageSize];
                     }
-                    [self setImage:image hash:hash imageView:imageView];
+                    [sself setImage:image hash:hash imageView:imageView];
                 }
                 else {
                     UIImage *image = [UIImage imageWithData:data];
@@ -265,7 +275,7 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
                     else {
                         image = [UIImage decodedImageWithImage:image];
                     }
-                    [self setImage:image hash:hash imageView:imageView];
+                    [sself setImage:image hash:hash imageView:imageView];
                 }
                 return;
             }
@@ -275,14 +285,14 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
                 NSString *filePath = [sharedImageCache defaultCachePathForKey:urlString];
                 if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
                     UIImage *image = [PAImageResize imageFromFileUrl:[NSURL fileURLWithPath:filePath] maxPixelSize:kPWAlbumViewCellShrinkedImageSize];
-                    [self setImage:image hash:hash imageView:imageView];
+                    [sself setImage:image hash:hash imageView:imageView];
                     return;
                 }
             }
             else {
                 if ([sharedImageCache diskImageExistsWithKey:urlString]) {
                     UIImage *diskCachedImage = [sharedImageCache imageFromDiskCacheForKey:urlString];
-                    [self setImage:diskCachedImage hash:hash imageView:imageView];
+                    [sself setImage:diskCachedImage hash:hash imageView:imageView];
                     return;
                 }
             }
@@ -370,6 +380,19 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
         
         [[NSFileManager defaultManager] createFileAtPath:[[SDImageCache sharedImageCache] defaultCachePathForKey:key] contents:data attributes:nil];
     }
+}
+
+#pragma mark CoreData
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    NSInteger hash = _albumHash;
+    
+    __weak typeof(self) wself = self;
+    [PWCoreDataAPI readWithBlock:^(NSManagedObjectContext *context) {
+        typeof(wself) sself = wself;
+        if (!sself) return;
+        
+        [sself loadThumbnailImagesWithHash:hash];
+    }];
 }
 
 @end
