@@ -46,6 +46,17 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
 
 @implementation PWAlbumViewCell
 
+static dispatch_queue_t thumbnail_queue() {
+    static dispatch_queue_t queue;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        queue = dispatch_queue_create("com.photti.PWAlbumViewCell", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_t background_queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+        dispatch_set_target_queue(queue, background_queue);
+    });
+    return queue;
+}
+
 - (id)init {
     self = [super init];
     if (self) {
@@ -244,7 +255,7 @@ static CGFloat const kPWAlbumViewCellShrinkedImageSize = 30;
     
     dispatch_queue_t queue = nil;
     if (isLowPriority) {
-        queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
+        queue = thumbnail_queue();
     }
     else {
         queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
