@@ -71,11 +71,11 @@ static NSString * const kPWAppDelegateBackgroundFetchDateKey = @"kPWADBFDK";
     
     // SKNotification
     NSString *lang = [[NSUserDefaults standardUserDefaults] arrayForKey:@"AppleLanguages"].firstObject;
-    NSString *jsonURL = [NSString stringWithFormat:@"http://54.64.82.148/%@/gioqulo.json", lang];
+    NSString *jsonURL = [NSString stringWithFormat:@"http://**********/%@/gioqulo.json", lang];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:jsonURL]];
     [SKNotificationManager setJSONRequest:request];
     [SKNotificationManager appLaunched];
-    NSString *idfaURL = @"http://54.64.82.148/";
+    NSString *idfaURL = @"http://**********/";
     [SKNotificationManager sharedManager].notificationViewTappedAction = ^(SKNotification *notification) {
         NSNumber *appID = @(notification.appid.integerValue);
         [SKNotificationIDFAManager tappedAdsenceWithAppID:appID serverURL:idfaURL];

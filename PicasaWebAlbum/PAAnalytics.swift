@@ -8,7 +8,7 @@
 
 import UIKit
 
-let gooeleAnalyticsId = "UA-53899497-2"
+let gooeleAnalyticsId = "*"
 
 class PAAnalytics: NSObject {
     

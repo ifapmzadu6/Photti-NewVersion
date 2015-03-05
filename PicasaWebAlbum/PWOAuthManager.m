@@ -11,8 +11,8 @@
 #import "PAColors.h"
 
 static NSString * const PWScope = @"https://picasaweb.google.com/data/";
-static NSString * const PWClientID = @"982107973738-pqihuiltucj69o5413n38hm52lj3ubm3.apps.googleusercontent.com";
-static NSString * const PWClientSecret = @"5OS58Vf-PA09YGHlFZUc_BtX";
+static NSString * const PWClientID = @"*";
+static NSString * const PWClientSecret = @"*";
 static NSString * const PWKeyChainItemName = @"PWOAuthKeyChainItem";
 
 static NSString * const kPWOAuthManagerOAuthErrorDomain = @"com.photti.PWOAuthManager";

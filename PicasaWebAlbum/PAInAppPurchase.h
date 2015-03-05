@@ -19,7 +19,7 @@
 
 @end
 
-static NSString * const kPDRemoveAdsPuroductID = @"34789274982com.photti.picasawebalbum.uploadanddownload";
+static NSString * const kPDRemoveAdsPuroductID = @"*";
 
 @interface PAInAppPurchase : NSObject
 
