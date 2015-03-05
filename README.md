@@ -1,5 +1,15 @@
 # Photti
 
+NOW ON SALE!! -> [App Store](https://itunes.apple.com/app/id892657316)
+
+
+現在AppStoreにて販売しているPhottiのソースコードを公開しました。
+数カ月更新が止まっておりますが、今後もアップデートを続けていく予定です。
+
+そして、この数カ月間新しいアプリを作っていました。
+今までに見たことのないようなYoutube閲覧アプリになる予定です。近日公開します。お楽しみに！
+
+
 
 ## Description
 
