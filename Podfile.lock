@@ -57,7 +57,7 @@ SPEC CHECKSUMS:
   FLAnimatedImage: d9e8422a9e1d8ee9a657b7433b4a9b073ef3efb3
   Google-Mobile-Ads-SDK: 9761186eb5dc5e1493e71dcce2b525159f763d42
   GoogleAnalytics-iOS-SDK: f422062075d9ccb1ea8d783fc5ba3829461e9502
-  gtm-http-fetcher: 81c529957d3ab67726898d1c1d62f98b2ed18ff5
+  gtm-http-fetcher: 6d4617e7d343b6e4c082b777541c334eb6f5d81e
   gtm-oauth2: 3f97d22a6066a80df0b1f878c1ce41176472daad
   KKStaticTableView: 72430b9ddbf508e0fc574bda5aaee232ace55b82
   LXReorderableCollectionViewFlowLayout: b4e25543263e27d4c147109ae5ead01cc9119f23
